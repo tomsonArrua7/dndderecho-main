@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { GraduationCap, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -62,6 +63,20 @@ const PlanEstudios = () => {
     const v = Object.values(estados);
     return { aprobadas: v.filter((e) => e === "aprobada").length, cursando: v.filter((e) => e === "cursando").length };
   }, [estados]);
+  const completionPercentage = useMemo(() => {
+    if (materias.length === 0) return 0;
+    return Math.round((totals.aprobadas / materias.length) * 100);
+  }, [totals.aprobadas, materias.length]);
+  const effectivePercentage = useMemo(() => {
+    if (materias.length === 0) return 0;
+    return Math.round(((totals.aprobadas + totals.cursando) / materias.length) * 100);
+  }, [totals.aprobadas, totals.cursando, materias.length]);
+
+  const getProgressColor = (value: number) => {
+    if (value < 40) return "bg-destructive";
+    if (value < 70) return "bg-warning";
+    return "bg-success";
+  };
 
   if (loading) return <div className="container py-20 grid place-items-center"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>;
   if (materias.length === 0) {
@@ -86,6 +101,33 @@ const PlanEstudios = () => {
           <span className="px-3 py-1 rounded-full bg-success/10 text-success border border-success/30 font-semibold">{totals.aprobadas} aprobadas</span>
           <span className="px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/30 font-semibold">{totals.cursando} cursando</span>
           <span className="px-3 py-1 rounded-full bg-secondary text-muted-foreground border border-border font-semibold">{materias.length - totals.aprobadas - totals.cursando} pendientes</span>
+        </div>
+        <div className="mt-4 rounded-xl border border-border bg-card p-4 shadow-paper">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="text-muted-foreground">Progreso de carrera (aprobadas)</span>
+            <span className="font-semibold text-foreground">{completionPercentage}%</span>
+          </div>
+          <Progress
+            value={completionPercentage}
+            className="h-2.5 bg-secondary"
+            indicatorClassName={getProgressColor(completionPercentage)}
+          />
+          <p className="mt-2 text-xs text-muted-foreground">
+            {totals.aprobadas} de {materias.length} materias aprobadas
+          </p>
+
+          <div className="flex items-center justify-between text-sm mt-4 mb-2">
+            <span className="text-muted-foreground">Progreso efectivo (aprobadas + cursando)</span>
+            <span className="font-semibold text-foreground">{effectivePercentage}%</span>
+          </div>
+          <Progress
+            value={effectivePercentage}
+            className="h-2.5 bg-secondary"
+            indicatorClassName={getProgressColor(effectivePercentage)}
+          />
+          <p className="mt-2 text-xs text-muted-foreground">
+            {totals.aprobadas + totals.cursando} de {materias.length} materias entre aprobadas y cursando
+          </p>
         </div>
       </div>
 
