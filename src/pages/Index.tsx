@@ -140,46 +140,24 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════
-          UPCOMING DATES — Widget de Próximas Fechas
+          CALENDARIO / FECHAS SECTION
           ════════════════════════════════════════════════════════════ */}
-      <section className="container pb-20">
-        <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
-
-          {/* Left column — copy + teaser */}
-          <div className="flex flex-col justify-center py-4">
-            <div className="text-sm uppercase tracking-[0.3em] text-accent font-black mb-4">
-              Calendario Académico
+      <section className="container pb-24">
+        <div className="grid lg:grid-cols-[400px_1fr] gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-6">
+              <CalendarDays className="h-3 w-3" /> Agenda Estudiantil
             </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-5 text-foreground tracking-tight leading-tight">
-              Siempre un paso <br className="hidden md:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">adelante</span>
+            <h2 className="font-display text-4xl md:text-5xl font-black mb-6 text-foreground tracking-tight leading-tight">
+              Tu Carrera, <br/>
+              <span className="text-white/40">Día a Día.</span>
             </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-md">
-              No te pierdas ninguna inscripción ni mesa de examen. Guardá las fechas críticas directo
-              en tu Google Calendar o descargalas como archivo&nbsp;<code className="text-white/60 text-sm">.ics</code>.
+            <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+              No te pierdas ninguna inscripción ni mesa de examen. Guardá las fechas críticas directo en tu calendario o descargalas como archivo <code>.ics</code>.
             </p>
-            <div className="flex flex-wrap gap-3">
-              {[
-                { label: "Inscripciones SIU", color: "text-sky-400 border-sky-400/30 bg-sky-400/8" },
-                { label: "Mesas de Examen",   color: "text-violet-400 border-violet-400/30 bg-violet-400/8" },
-                { label: "Feria Judicial",     color: "text-amber-400 border-amber-400/30 bg-amber-400/8" },
-                { label: "Eventos DND",        color: "text-rose-400 border-rose-400/30 bg-rose-400/8" },
-              ].map((tag) => (
-                <span
-                  key={tag.label}
-                  className={cn(
-                    "inline-flex items-center px-3 py-1 rounded-full border text-[11px] font-semibold uppercase tracking-widest",
-                    tag.color
-                  )}
-                >
-                  {tag.label}
-                </span>
-              ))}
-            </div>
           </div>
 
-          {/* Right column — widget */}
-          <div className="w-full">
+          <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-4 md:p-8">
             <UpcomingDates />
           </div>
         </div>
