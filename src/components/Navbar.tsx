@@ -30,12 +30,12 @@ export const Navbar = () => {
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-elegant">
       <div className="container flex h-16 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setOpen(false)}>
-          <div className="bg-white rounded-md p-1 shadow-paper">
+          <div className="bg-white/90 rounded p-1 shadow-paper">
             <img src={logo} alt="DND Defendamos Nuestro Derecho" className="h-8 w-8 object-contain" />
           </div>
           <div className="leading-tight hidden sm:block">
             <div className="font-display font-bold text-base tracking-tight text-white">DND</div>
-            <div className="text-[10px] uppercase tracking-widest text-white/75">Derecho UNLP</div>
+            <div className="text-[10px] uppercase tracking-widest text-white/60">Derecho UNLP</div>
           </div>
         </Link>
 
@@ -47,10 +47,10 @@ export const Navbar = () => {
               end={l.to === "/"}
               className={({ isActive }) =>
                 cn(
-                  "px-3 py-2 rounded-md text-sm font-medium transition-smooth",
+                  "px-3 py-2 rounded-sm text-sm font-medium transition-smooth",
                   isActive
-                    ? "bg-white text-primary shadow-paper"
-                    : "text-white/85 hover:text-white hover:bg-white/10"
+                    ? "bg-white/10 text-white shadow-glow border border-white/20"
+                    : "text-white/70 hover:text-white hover:bg-white/5"
                 )
               }
             >
@@ -73,14 +73,17 @@ export const Navbar = () => {
             <Button
               size="sm"
               onClick={() => navigate("/auth")}
-              className="hidden sm:inline-flex bg-white text-primary hover:bg-white/90 shadow-paper"
+              className="hidden sm:inline-flex bg-primary-glow text-white hover:bg-primary-glow/80 shadow-elegant border border-white/10"
             >
               <LogIn className="mr-2 h-4 w-4" /> Ingreso Estudiantil
             </Button>
           )}
+          <div className="hidden md:flex items-center px-3 py-1 rounded border border-accent bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-widest animate-pulse">
+            Feria Activa
+          </div>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="lg:hidden p-2 rounded-md text-white hover:bg-white/15"
+            className="lg:hidden p-2 rounded-md text-white hover:bg-white/10"
             aria-label="Menu"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

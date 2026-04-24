@@ -2,7 +2,7 @@ import logo from "@/assets/dnd-logo.png";
 import { Instagram, Mail } from "lucide-react";
 
 export const Footer = () => (
-  <footer className="mt-20 border-t border-border bg-white">
+  <footer className="mt-20 border-t border-white/5 bg-background/50 backdrop-blur-sm">
     <div className="container py-10 grid gap-8 md:grid-cols-3">
       <div className="flex items-start gap-3">
         <img src={logo} alt="DND" className="h-12 w-12 object-contain" />

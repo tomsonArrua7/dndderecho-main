@@ -9,71 +9,72 @@
 
 @layer base {
   :root {
-    /* Base: papel académico */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    /* Base: Institucional Oscuro */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 222 47% 10%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
 
-    /* === COLORES INSTITUCIONALES DND === */
-    /* Azul UNLP — único azul para nav, botones, headings, links */
-    --primary: 222 89% 48%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 222 95% 58%;
-    --primary-deep: 224 80% 16%;
+    /* === COLORES INSTITUCIONALES DND (REDISEÑO SOBRIO) === */
+    /* Azul Marino Profundo — Color dominante */
+    --primary: 222 80% 20%;
+    --primary-foreground: 210 40% 98%;
+    --primary-glow: 222 80% 30%;
+    --primary-deep: 222 90% 10%;
 
-    /* Rojo DND — único rojo para matches, alertas, destacados */
-    --accent: 354 78% 50%;
-    --accent-foreground: 0 0% 100%;
-    --accent-glow: 354 85% 60%;
+    /* Rojo Puro — Únicamente para alertas y detalles críticos */
+    --accent: 0 100% 50%;
+    --accent-foreground: 210 40% 98%;
+    --accent-glow: 0 100% 60%;
 
-    --secondary: 222 30% 96%;
-    --secondary-foreground: 222 47% 14%;
+    --secondary: 222 47% 15%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 20% 96%;
-    --muted-foreground: 222 16% 40%;
+    --muted: 222 47% 15%;
+    --muted-foreground: 215 20% 65%;
 
-    /* destructive = accent (mismo rojo institucional) */
-    --destructive: 354 78% 50%;
-    --destructive-foreground: 0 0% 100%;
+    /* destructive = accent (Rojo Puro) */
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
 
     --success: 142 65% 38%;
     --warning: 35 92% 48%;
 
-    --border: 220 18% 88%;
-    --input: 220 18% 90%;
-    --ring: 222 89% 48%;
+    --border: 222 47% 18%;
+    --input: 222 47% 18%;
+    --ring: 222 80% 40%;
 
-    --radius: 0.625rem;
+    --radius: 0.25rem; /* Bordes más nítidos e institucionales */
 
-    /* === GRADIENTES === construidos desde tokens */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary-deep) / 0.78) 0%, hsl(var(--primary) / 0.62) 55%, hsl(var(--accent) / 0.55) 100%);
+    /* === GRADIENTES === Ajustados para fondo oscuro */
+    --gradient-hero: linear-gradient(180deg, hsl(var(--primary-deep) / 0.95) 0%, hsl(var(--background)) 100%);
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-glow)) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 30% 99%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
     --gradient-match: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-glow)) 100%);
+    --gradient-overlay: linear-gradient(to bottom, transparent 0%, hsl(var(--background)) 100%);
 
-    /* Sombras suaves estilo papel */
-    --shadow-paper: 0 1px 2px hsl(222 30% 20% / 0.04), 0 4px 12px hsl(222 30% 20% / 0.06);
-    --shadow-elegant: 0 4px 16px -4px hsl(222 89% 40% / 0.18), 0 1px 3px hsl(222 30% 20% / 0.06);
-    --shadow-accent: 0 6px 20px -4px hsl(354 78% 50% / 0.28), 0 1px 3px hsl(354 30% 20% / 0.08);
-    --shadow-card: 0 1px 2px hsl(222 30% 20% / 0.04), 0 2px 8px hsl(222 30% 20% / 0.05);
-    --shadow-glow: 0 0 0 4px hsl(var(--primary) / 0.12);
+    /* Sombras sutiles y elegantes para modo oscuro */
+    --shadow-paper: 0 4px 12px hsl(0 0% 0% / 0.5);
+    --shadow-elegant: 0 12px 32px -4px hsl(0 0% 0% / 0.9), 0 2px 4px hsl(0 0% 0% / 0.4);
+    --shadow-accent: 0 0 20px -2px hsl(0 100% 50% / 0.6);
+    --shadow-card: 0 8px 24px -4px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 0 4px hsl(var(--primary) / 0.3);
 
-    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222 47% 14%;
-    --sidebar-primary: 222 89% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 96%;
-    --sidebar-accent-foreground: 222 47% 14%;
-    --sidebar-border: 220 18% 88%;
-    --sidebar-ring: 222 89% 48%;
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 222 80% 20%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 222 47% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 18%;
+    --sidebar-ring: 222 80% 40%;
   }
 }
 
@@ -89,11 +90,11 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "ss01", "cv11";
-    /* Textura sutil de papel académico */
-    background-color: hsl(220 30% 99%);
-    background-image:
-      radial-gradient(ellipse 60% 40% at 0% 0%, hsl(222 89% 55% / 0.04), transparent 60%),
-      radial-gradient(ellipse 50% 35% at 100% 100%, hsl(354 78% 50% / 0.03), transparent 60%);
+    /* Textura sutil institucional */
+    background-color: hsl(var(--background));
+    background-image: 
+      radial-gradient(ellipse 60% 40% at 0% 0%, hsl(var(--primary) / 0.15), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 100% 100%, hsl(var(--accent) / 0.05), transparent 60%);
     background-attachment: fixed;
   }
 
@@ -130,12 +131,16 @@
   .shadow-glow { box-shadow: var(--shadow-glow); }
 
   .transition-smooth { transition: var(--transition-smooth); }
+  
+  .hero-mask {
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
+  }
 
   .glass {
-    background: hsl(0 0% 100% / 0.85);
+    background: hsl(var(--card) / 0.7);
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
-    border: 1px solid hsl(var(--border));
+    border: 1px solid hsl(var(--white) / 0.1);
   }
 
   /* "Hoja de papel" — borde fino + sombra muy suave */
@@ -151,6 +156,12 @@
   50% { box-shadow: 0 0 0 10px hsl(var(--accent) / 0), var(--shadow-accent); }
 }
 .animate-match { animation: match-pulse 1.8s ease-in-out infinite; }
+
+@keyframes hero-fade-in {
+  from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.animate-hero-content { animation: hero-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 @keyframes float-up {
   from { opacity: 0; transform: translateY(12px); }

@@ -50,7 +50,7 @@ const Dashboard = () => {
               <div className="text-sm text-white/85">Revisá tus permutas para ver los datos de contacto.</div>
             </div>
           </div>
-          <Button asChild className="bg-white text-accent hover:bg-white/90 shadow-paper">
+          <Button asChild className="bg-white/10 text-white hover:bg-white/20 border border-white/20 shadow-paper">
             <Link to="/permutero">Ver permutas</Link>
           </Button>
         </div>
