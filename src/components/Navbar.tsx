@@ -3,21 +3,21 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { LogIn, LogOut, Menu, Scale, X } from "lucide-react";
 import { useState } from "react";
-import logo from "@/assets/dnd-logo.png";
+import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
 
 const publicLinks = [
-  { to: "/",           label: "Inicio" },
-  { to: "/noticias",   label: "Noticias" },
-  { to: "/apuntes",    label: "Apuntes" },
-  { to: "/permutero",  label: "Permutero" },
+  { to: "/",                label: "Inicio" },
+  { to: "/noticias",        label: "Noticias" },
+  { to: "/apuntes",         label: "Apuntes" },
+  { to: "/permutero",       label: "Permutero" },
   { to: "/recomendaciones", label: "Recomendaciones" },
 ];
 
 const privateLinks = [
-  { to: "/mi-espacio",     label: "Mi Espacio" },
-  { to: "/plan",           label: "Plan de Estudios" },
-  { to: "/calendario",     label: "Calendario" },
+  { to: "/mi-espacio", label: "Mi Espacio" },
+  { to: "/plan",       label: "Plan de Estudios" },
+  { to: "/calendario", label: "Calendario" },
 ];
 
 export const Navbar = () => {
@@ -29,27 +29,27 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-primary text-primary-foreground shadow-elegant">
-      {/* Barra principal — altura reducida de h-16 a h-12 */}
       <div className="container flex h-12 items-center justify-between gap-3">
 
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group shrink-0" onClick={() => setOpen(false)}>
-          {/* Logo blanco sobre fondo azul marino */}
-          <div className="relative h-8 w-8 flex items-center justify-center">
-            <img
-              src={logo}
-              alt="DND"
-              className="h-7 w-7 object-contain"
-              style={{ filter: "brightness(0) invert(1)" }} // fuerza todo blanco
-            />
-          </div>
+        {/* ── Logo: marca "D" + wordmark ── */}
+        <Link
+          to="/"
+          className="flex items-center gap-2 group shrink-0"
+          onClick={() => setOpen(false)}
+        >
+          {/* La D icónica — variante onBlue (fondo azul navy de la navbar) */}
+          <DndMark size={32} />
+
+          {/* Wordmark: "DND" + subtitle */}
           <div className="leading-tight hidden sm:block">
-            <div className="font-display font-bold text-sm tracking-tight text-white">DND</div>
-            <div className="text-[9px] uppercase tracking-widest text-white/55">Derecho UNLP</div>
+            <div className="font-display font-black text-sm tracking-tight text-white">DND</div>
+            <div className="text-[9px] uppercase tracking-widest text-white/50 font-medium">
+              Derecho UNLP
+            </div>
           </div>
         </Link>
 
-        {/* Nav desktop */}
+        {/* ── Nav desktop ── */}
         <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
           {links.map((l) => (
             <NavLink
@@ -58,10 +58,10 @@ export const Navbar = () => {
               end={l.to === "/"}
               className={({ isActive }) =>
                 cn(
-                  "px-2.5 py-1.5 rounded text-xs font-medium transition-smooth whitespace-nowrap",
+                  "px-2.5 py-1.5 rounded text-xs font-medium transition-all duration-200 whitespace-nowrap",
                   isActive
                     ? "bg-white/15 text-white border border-white/20"
-                    : "text-white/75 hover:text-white hover:bg-white/8"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
                 )
               }
             >
@@ -70,10 +70,9 @@ export const Navbar = () => {
           ))}
         </nav>
 
-        {/* Acciones */}
+        {/* ── Acciones ── */}
         <div className="flex items-center gap-1.5 shrink-0">
-          {/* Feria activa */}
-          <div className="hidden md:flex items-center px-2 py-0.5 rounded border border-accent bg-accent/10 text-accent text-[9px] font-bold uppercase tracking-widest animate-pulse">
+          <div className="hidden md:flex items-center px-2 py-0.5 rounded border border-accent/60 bg-accent/10 text-accent text-[9px] font-bold uppercase tracking-widest animate-pulse">
             Feria Activa
           </div>
 
@@ -82,7 +81,7 @@ export const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={async () => { await signOut(); navigate("/"); }}
-              className="hidden sm:inline-flex h-7 text-xs text-white hover:bg-white/15 hover:text-white px-2"
+              className="hidden sm:inline-flex h-7 text-xs text-white hover:bg-white/15 px-2"
             >
               <LogOut className="mr-1.5 h-3.5 w-3.5" /> Salir
             </Button>
@@ -96,7 +95,6 @@ export const Navbar = () => {
             </Button>
           )}
 
-          {/* Hamburguesa mobile */}
           <button
             onClick={() => setOpen((v) => !v)}
             className="lg:hidden p-1.5 rounded text-white hover:bg-white/10"
@@ -107,7 +105,7 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Menú móvil */}
+      {/* ── Menú móvil ── */}
       {open && (
         <div className="lg:hidden border-t border-white/15 bg-primary">
           <div className="container py-3 flex flex-col gap-0.5">
@@ -120,7 +118,7 @@ export const Navbar = () => {
                 className={({ isActive }) =>
                   cn(
                     "px-3 py-2 rounded text-sm font-medium",
-                    isActive ? "bg-white/15 text-white" : "text-white/80 hover:bg-white/8"
+                    isActive ? "bg-white/15 text-white" : "text-white/80 hover:bg-white/10"
                   )
                 }
               >
