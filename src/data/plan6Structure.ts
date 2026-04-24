@@ -7,7 +7,7 @@
 // ====================================================================
 
 export type Duracion = "bimestral" | "cuatrimestral" | "semestral" | "trimestral" | "anual";
-export type EstadoMateria = "pendiente" | "cursando" | "aprobada";
+export type EstadoMateria = "pendiente" | "aprobada";
 export type TipoRequisito = "aprobada" | "cursada";
 
 export interface Requisito {
@@ -57,7 +57,6 @@ export const ESTADO_STYLE: Record<EstadoMateria | "habilitada" | "bloqueada", {
   glowColor: string;
 }> = {
   aprobada:   { borderColor: "#22d3ee", bgColor: "#042f2e", textColor: "#a5f3fc", glowColor: "rgba(34,211,238,0.4)" },
-  cursando:   { borderColor: "#ef4444", bgColor: "#1c0505", textColor: "#fca5a5", glowColor: "rgba(239,68,68,0.4)" },
   habilitada: { borderColor: "#3b82f6", bgColor: "#0c1f44", textColor: "#bfdbfe", glowColor: "rgba(59,130,246,0.25)" },
   bloqueada:  { borderColor: "#1e293b", bgColor: "#0a0f1a", textColor: "#475569", glowColor: "none" },
   pendiente:  { borderColor: "#1e293b", bgColor: "#0a0f1a", textColor: "#475569", glowColor: "none" },
@@ -309,7 +308,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     nombreCorto: "D. Administrativo I",
     anio: 4, duracion: "cuatrimestral", col: 4, row: 3,
     requisitos: [
-      { id: "10126", tipo: "cursada" },  // D. Privado V (cursada)
+      { id: "10126", tipo: "aprobada" }, // D. Privado V
       { id: "10110", tipo: "aprobada" }, // D. Procesal I
     ],
     horas: 96,
@@ -516,7 +515,7 @@ export function getEstadoVisual(
   estados: Record<string, EstadoMateria>
 ): EstadoMateria | "habilitada" | "bloqueada" {
   const estadoPropio = estados[materia.id] || "pendiente";
-  if (estadoPropio === "aprobada" || estadoPropio === "cursando") return estadoPropio;
+  if (estadoPropio === "aprobada") return "aprobada";
 
   // Verificar requisitos especiales
   if (materia.requisitosEspeciales?.primerAnioCompleto && !primerAnioCompleto(estados)) {
@@ -527,12 +526,8 @@ export function getEstadoVisual(
     if (pct < materia.requisitosEspeciales.porcentajeCarrera) return "bloqueada";
   }
 
-  // Verificar correlativas
-  const todas = materia.requisitos.every(req => {
-    if (req.tipo === "aprobada") return estados[req.id] === "aprobada";
-    if (req.tipo === "cursada")  return estados[req.id] === "aprobada" || estados[req.id] === "cursando";
-    return false;
-  });
+  // Verificar correlativas (solo se acepta "aprobada")
+  const todas = materia.requisitos.every(req => estados[req.id] === "aprobada");
 
   return todas ? "habilitada" : "bloqueada";
 }
