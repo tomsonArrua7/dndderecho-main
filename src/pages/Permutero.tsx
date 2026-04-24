@@ -12,6 +12,7 @@ import { Loader2, MessageCircle, Phone, Plus, Repeat2, Search, Sparkles, Trash2,
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
+import { CardSkeleton } from "@/components/ui/skeleton";
 
 interface Materia { id: string; nombre: string; anio: number }
 interface PermutaRow {
@@ -263,7 +264,11 @@ const Permutero = () => {
       </div>
 
       {loading ? (
-        <div className="py-20 grid place-items-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <CardSkeleton key={i} />
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <div className="p-12 rounded-xl border border-dashed border-border bg-card text-center">
           <Repeat2 className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />

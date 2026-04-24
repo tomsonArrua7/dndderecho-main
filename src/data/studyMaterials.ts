@@ -42,7 +42,7 @@ export const studyMaterialsTree: MaterialFolder = {
     {
       id: "anio-1",
       kind: "folder",
-      name: "1er Ano",
+      name: "1er Año",
       children: [
         mkSubject("anio-1-intro", "Introduccion al Derecho"),
         mkSubject("anio-1-romano", "Derecho Romano"),
@@ -54,7 +54,7 @@ export const studyMaterialsTree: MaterialFolder = {
     {
       id: "anio-2",
       kind: "folder",
-      name: "2do Ano",
+      name: "2do Año",
       children: [
         mkSubject("anio-2-constitucional-1", "Derecho Constitucional I"),
         mkSubject("anio-2-penal-1", "Derecho Penal I (Parte General)"),
@@ -66,7 +66,7 @@ export const studyMaterialsTree: MaterialFolder = {
     {
       id: "anio-3",
       kind: "folder",
-      name: "3er Ano",
+      name: "3er Año",
       children: [
         mkSubject("anio-3-civil-3", "Derecho Civil III (Contratos)"),
         mkSubject("anio-3-procesal-1", "Derecho Procesal I"),
@@ -78,7 +78,7 @@ export const studyMaterialsTree: MaterialFolder = {
     {
       id: "anio-4",
       kind: "folder",
-      name: "4to Ano",
+      name: "4to Año",
       children: [
         mkSubject("anio-4-admin-1", "Derecho Administrativo I"),
         mkSubject("anio-4-procesal-2", "Derecho Procesal II"),
@@ -90,7 +90,7 @@ export const studyMaterialsTree: MaterialFolder = {
     {
       id: "anio-5",
       kind: "folder",
-      name: "5to Ano",
+      name: "5to Año",
       children: [
         mkSubject("anio-5-trabajo", "Derecho del Trabajo y la Seguridad Social"),
         mkSubject("anio-5-navegacion", "Derecho de la Navegacion y el Transporte"),
@@ -102,7 +102,7 @@ export const studyMaterialsTree: MaterialFolder = {
     {
       id: "anio-6",
       kind: "folder",
-      name: "6to Ano",
+      name: "6to Año",
       children: [
         mkSubject("anio-6-int-privado", "Derecho Internacional Privado"),
         mkSubject("anio-6-filosofia", "Filosofia del Derecho"),

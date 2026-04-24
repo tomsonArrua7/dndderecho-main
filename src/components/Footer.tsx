@@ -35,11 +35,11 @@ const IconTikTok = () => (
 );
 
 const REDES = [
-  { label: "Instagram", href: "https://instagram.com/dndderecho",  icon: IconInstagram, hover: "hover:bg-gradient-to-br hover:from-purple-600 hover:via-pink-500 hover:to-orange-400" },
-  { label: "YouTube",   href: "https://youtube.com/@dndderecho",   icon: IconYoutube,   hover: "hover:bg-red-600" },
+  { label: "Instagram", href: "https://instagram.com/agrupaciondnd",  icon: IconInstagram, hover: "hover:bg-gradient-to-br hover:from-purple-600 hover:via-pink-500 hover:to-orange-400" },
+  { label: "YouTube",   href: "https://www.youtube.com/@DerechoenMinutos",   icon: IconYoutube,   hover: "hover:bg-red-600" },
   { label: "WhatsApp",  href: "https://wa.me/5492214000000",        icon: IconWhatsApp,  hover: "hover:bg-green-600" },
   { label: "Facebook",  href: "https://facebook.com/dndderecho",   icon: IconFacebook,  hover: "hover:bg-blue-600" },
-  { label: "Twitter/X", href: "https://twitter.com/dndderecho",    icon: IconTwitterX,  hover: "hover:bg-neutral-800" },
+  { label: "Twitter/X", href: "https://twitter.com/agrupaciondnd",    icon: IconTwitterX,  hover: "hover:bg-neutral-800" },
   { label: "TikTok",    href: "https://tiktok.com/@dndderecho",    icon: IconTikTok,    hover: "hover:bg-neutral-900" },
 ];
 

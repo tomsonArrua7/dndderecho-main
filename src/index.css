@@ -85,6 +85,7 @@
 
   html {
     color-scheme: light;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -106,6 +107,32 @@
 }
 
 @layer utilities {
+  /* Navbar — drawer slide animation */
+  .drawer-ease {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Navbar — drawer link subtle hover */
+  .hover\:bg-white\/8:hover {
+    background-color: hsl(0 0% 100% / 0.08);
+  }
+
+  /* Category tag backgrounds — /8 opacity variants */
+  .bg-sky-400\/8    { background-color: rgb(56 189 248 / 0.08); }
+  .bg-violet-400\/8 { background-color: rgb(167 139 250 / 0.08); }
+  .bg-amber-400\/8  { background-color: rgb(251 191 36  / 0.08); }
+  .bg-rose-400\/8   { background-color: rgb(251 113 133 / 0.08); }
+
+  /* Navbar — ghost Ingresar button fill animation */
+  .navbar-ghost-btn {
+    transition: background-color 0.2s ease-out, border-color 0.2s ease-out, color 0.2s ease-out;
+  }
+  .navbar-ghost-btn:hover {
+    background-color: hsl(var(--accent));
+    border-color: hsl(var(--accent));
+    color: white;
+  }
+
   .text-gradient-primary {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -141,6 +168,15 @@
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
     border: 1px solid hsl(var(--white) / 0.1);
+  }
+
+  .glass-premium {
+    @apply bg-background/60 backdrop-blur-md border border-white/10;
+  }
+
+  /* App-like Button scale effect */
+  .btn-app {
+    @apply transition-all duration-200 active:scale-95;
   }
 
   /* "Hoja de papel" — borde fino + sombra muy suave */

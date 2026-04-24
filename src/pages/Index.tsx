@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookMarked, CalendarDays, GraduationCap, Repeat2, ShieldCheck, Sparkles, Star } from "lucide-react";
-import facultad from "@/assets/rectorado-unlp.jpg";
+import facultad from "@/assets/facultad_unlp_optimized.png";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
+import { UpcomingDates } from "@/components/UpcomingDates";
+import { InstagramFeed } from "@/components/InstagramFeed";
 
 const features = [
   { icon: Repeat2,      title: "Permutero de Comisiones", desc: "Encontrá tu match para cambiar de comisión en segundos.", to: "/permutero",       accent: true  },
@@ -48,7 +50,7 @@ const Index = () => {
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 backdrop-blur-md border border-accent/40 text-xs font-bold mb-8 text-accent-foreground tracking-widest uppercase">
-            <Sparkles className="h-3.5 w-3.5" />
+            <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
             Plataforma Estudiantil Oficial
           </div>
 
@@ -68,12 +70,12 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-            <Button asChild size="xl" className="bg-accent text-white hover:bg-accent/90 shadow-accent transition-all hover:scale-105 active:scale-95 text-lg font-bold">
+            <Button asChild size="xl" className="bg-accent text-white hover:bg-accent/90 shadow-accent transition-all hover:scale-105 active:scale-95 text-lg font-bold btn-app">
               <Link to="/permutero">
-                Ir al Permutero <ArrowRight className="ml-2 h-6 w-6" />
+                Ir al Permutero <ArrowRight className="ml-2 h-6 w-6" strokeWidth={1.5} />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="xl" className="bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm text-lg">
+            <Button asChild variant="outline" size="xl" className="bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm text-lg btn-app">
               <Link to="/auth">Ingreso Estudiantil</Link>
             </Button>
           </div>
@@ -109,7 +111,7 @@ const Index = () => {
                 key={f.to}
                 to={f.to}
                 className={cn(
-                  "group relative p-7 rounded-2xl border transition-all duration-500",
+                  "group relative p-7 rounded-2xl border transition-all duration-500 btn-app",
                   f.accent
                     ? "bg-accent/5 border-accent/20 hover:bg-accent/10 hover:border-accent/40"
                     : "bg-background/40 border-white/5 hover:bg-background/60 hover:border-white/15"
@@ -124,12 +126,12 @@ const Index = () => {
                   "inline-flex p-3.5 rounded-xl mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3",
                   f.accent ? "bg-accent text-white shadow-accent" : "bg-primary/15 text-white border border-white/10"
                 )}>
-                  <f.icon className="h-5 w-5" />
+                  <f.icon className="h-5 w-5" strokeWidth={1.5} />
                 </div>
                 <h3 className="font-display font-bold text-lg mb-2 text-foreground tracking-tight">{f.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed mb-5">{f.desc}</p>
                 <div className="flex items-center text-xs font-bold uppercase tracking-wider text-primary group-hover:text-accent transition-colors">
-                  Explorar <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover:translate-x-1.5 transition-transform" />
+                  Explorar <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover:translate-x-1.5 transition-transform" strokeWidth={1.5} />
                 </div>
               </Link>
             ))}
@@ -138,9 +140,55 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════
+          UPCOMING DATES — Widget de Próximas Fechas
+          ════════════════════════════════════════════════════════════ */}
+      <section className="container pb-20">
+        <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
+
+          {/* Left column — copy + teaser */}
+          <div className="flex flex-col justify-center py-4">
+            <div className="text-sm uppercase tracking-[0.3em] text-accent font-black mb-4">
+              Calendario Académico
+            </div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold mb-5 text-foreground tracking-tight leading-tight">
+              Siempre un paso <br className="hidden md:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">adelante</span>
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-8 max-w-md">
+              No te pierdas ninguna inscripción ni mesa de examen. Guardá las fechas críticas directo
+              en tu Google Calendar o descargalas como archivo&nbsp;<code className="text-white/60 text-sm">.ics</code>.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { label: "Inscripciones SIU", color: "text-sky-400 border-sky-400/30 bg-sky-400/8" },
+                { label: "Mesas de Examen",   color: "text-violet-400 border-violet-400/30 bg-violet-400/8" },
+                { label: "Feria Judicial",     color: "text-amber-400 border-amber-400/30 bg-amber-400/8" },
+                { label: "Eventos DND",        color: "text-rose-400 border-rose-400/30 bg-rose-400/8" },
+              ].map((tag) => (
+                <span
+                  key={tag.label}
+                  className={cn(
+                    "inline-flex items-center px-3 py-1 rounded-full border text-[11px] font-semibold uppercase tracking-widest",
+                    tag.color
+                  )}
+                >
+                  {tag.label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Right column — widget */}
+          <div className="w-full">
+            <UpcomingDates />
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════
           BANNER CTA — Permutero
           ════════════════════════════════════════════════════════════ */}
-      <section className="container pb-32">
+      <section className="container pb-20">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-deep to-black p-10 md:p-24 shadow-elegant border border-white/5">
 
           {/* Glow rojo */}
@@ -165,7 +213,7 @@ const Index = () => {
               {/* D pequeña en el badge del CTA */}
               <DndMark size={36} />
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent text-white font-black text-xs uppercase tracking-[0.2em] shadow-accent">
-                <ShieldCheck className="h-4 w-4" /> Innovación Estudiantil
+                <ShieldCheck className="h-4 w-4" strokeWidth={1.5} /> Innovación Estudiantil
               </div>
             </div>
 
@@ -176,11 +224,18 @@ const Index = () => {
               Nuestro algoritmo conecta estudiantes para que el intercambio sea automático.{" "}
               <span className="text-white font-bold underline decoration-accent underline-offset-8">Sin vueltas.</span>
             </p>
-            <Button asChild size="xl" className="bg-white text-primary hover:bg-white/90 shadow-elegant text-lg font-bold rounded-full px-10">
-              <Link to="/permutero">Comenzar ahora <Repeat2 className="ml-3 h-6 w-6" /></Link>
+            <Button asChild size="xl" className="bg-white text-primary hover:bg-white/90 shadow-elegant text-lg font-bold rounded-full px-10 btn-app">
+              <Link to="/permutero">Comenzar ahora <Repeat2 className="ml-3 h-6 w-6" strokeWidth={1.5} /></Link>
             </Button>
           </div>
         </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════
+          INSTAGRAM — Comunidad y Novedades
+          ════════════════════════════════════════════════════════════ */}
+      <section className="container pb-32">
+        <InstagramFeed />
       </section>
     </div>
   );

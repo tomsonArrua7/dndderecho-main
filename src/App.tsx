@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
+import { AppProvider } from "@/context/AppContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import Index          from "./pages/Index";
@@ -29,8 +30,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <Routes>
-              <Route element={<Layout />}>
+            <AppProvider>
+              <Routes>
+                <Route element={<Layout />}>
                 <Route path="/"                element={<Index />} />
                 <Route path="/auth"            element={<Auth />} />
                 <Route path="/noticias"        element={<Noticias />} />
@@ -46,8 +48,9 @@ const App = () => (
                 <Route path="*"               element={<NotFound />} />
               </Route>
             </Routes>
-          </AuthProvider>
-        </BrowserRouter>
+          </AppProvider>
+        </AuthProvider>
+      </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

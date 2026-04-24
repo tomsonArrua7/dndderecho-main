@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { MateriaNode, Conexion, EstadoMateria, PlanData, TIPO_CONFIG } from "@/data/planEstudiosData";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { MateriaNode, EstadoMateria, PlanData, TIPO_CONFIG } from "@/data/planEstudiosData";
 import { cn } from "@/lib/utils";
-import { Check, BookOpen, Clock } from "lucide-react";
+import { Check, BookOpen, Clock, Maximize2, Minimize2 } from "lucide-react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 
 // ── Layout constants ──────────────────────────────────────────────────
 const NODE_W = 160;
@@ -10,7 +11,6 @@ const GAP_X  = 52;
 const GAP_Y  = 64;
 const PAD    = 24;
 
-// Compute canvas size from data
 function getGridSize(materias: MateriaNode[]) {
   const maxCol = Math.max(...materias.map(m => m.col));
   const maxRow = Math.max(...materias.map(m => m.row));
@@ -34,47 +34,40 @@ function nodeTopLeft(m: MateriaNode) {
   };
 }
 
-// ── Arrow path ─────────────────────────────────────────────────────────
 function buildArrowPath(from: MateriaNode, to: MateriaNode): string {
   const f = nodeCenter(from);
   const t = nodeCenter(to);
-
-  // Exit bottom of from, enter top of to
   const fx = f.x;
   const fy = f.y + NODE_H / 2;
   const tx = t.x;
   const ty = t.y - NODE_H / 2;
-
   const cy1 = fy + (ty - fy) * 0.4;
   const cy2 = ty - (ty - fy) * 0.4;
-
   return `M ${fx} ${fy} C ${fx} ${cy1}, ${tx} ${cy2}, ${tx} ${ty}`;
 }
 
-// ── Arrow colour ───────────────────────────────────────────────────────
 type ArrowState = "inactive" | "unlocked" | "active";
 
 function arrowColour(state: ArrowState): string {
   switch (state) {
-    case "active":   return "#22d3ee"; // cyan electric
-    case "unlocked": return "#1d4ed8"; // blue
-    default:         return "hsl(222 47% 22%)"; // dark muted
+    case "active":   return "#22d3ee";
+    case "unlocked": return "#1d4ed8";
+    default:         return "hsl(222 47% 22%)";
   }
 }
 
-// ── Node colours ───────────────────────────────────────────────────────
 function nodeBg(estado: EstadoMateria, habilitada: boolean): string {
-  if (estado === "aprobada")  return "#0f2c5e"; // deep navy approved
-  if (estado === "cursando")  return "#1a0a0a"; // deep dark red tint
-  if (habilitada)             return "#0c1f44"; // electric blue tint
-  return "#0c1627";                              // blocked dark
+  if (estado === "aprobada")  return "#0f2c5e";
+  if (estado === "cursando")  return "#1a0a0a";
+  if (habilitada)             return "#0c1f44";
+  return "#0c1627";
 }
 
 function nodeBorder(estado: EstadoMateria, habilitada: boolean): string {
-  if (estado === "aprobada")  return "#22d3ee";  // cyan
-  if (estado === "cursando")  return "#ef4444";  // pure red
-  if (habilitada)             return "#3b82f6";  // blue electric
-  return "hsl(222 47% 22%)";                     // muted
+  if (estado === "aprobada")  return "#22d3ee";
+  if (estado === "cursando")  return "#ef4444";
+  if (habilitada)             return "#3b82f6";
+  return "hsl(222 47% 22%)";
 }
 
 function nodeTextColor(estado: EstadoMateria, habilitada: boolean): string {
@@ -84,7 +77,6 @@ function nodeTextColor(estado: EstadoMateria, habilitada: boolean): string {
   return "hsl(215 20% 45%)";
 }
 
-// ── Props ──────────────────────────────────────────────────────────────
 interface MapaNodosProps {
   plan: PlanData;
   estados: Record<string, EstadoMateria>;
@@ -92,14 +84,13 @@ interface MapaNodosProps {
   saving: boolean;
 }
 
-// ── Component ─────────────────────────────────────────────────────────
 export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEstado, saving }) => {
   const { materias, conexiones } = plan;
   const { width, height } = getGridSize(materias);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const constraintsRef = useRef(null);
 
-  // Responsive: scale down on small screens
   useLayoutEffect(() => {
     const update = () => {
       if (!containerRef.current) return;
@@ -113,7 +104,6 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
     return () => obs.disconnect();
   }, [width]);
 
-  // Pre-compute habilitada for each materia
   const habilitadaMap = useCallback((): Record<string, boolean> => {
     const result: Record<string, boolean> = {};
     materias.forEach(m => {
@@ -122,7 +112,6 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
     return result;
   }, [materias, estados])();
 
-  // Arrow states
   const arrowStateMap = useCallback((): Record<string, ArrowState> => {
     const result: Record<string, ArrowState> = {};
     conexiones.forEach(c => {
@@ -136,7 +125,6 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
     return result;
   }, [conexiones, estados, habilitadaMap])();
 
-  // Cycle: pendiente → cursando → aprobada → pendiente
   const handleClick = (id: string) => {
     if (saving) return;
     onCycleEstado(id);
@@ -145,17 +133,25 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
   const anioLabels = [...new Set(materias.map(m => m.anio))].sort();
 
   return (
-    <div ref={containerRef} className="w-full overflow-x-auto">
-      <div
+    <div 
+      ref={containerRef} 
+      className="w-full h-full min-h-[600px] overflow-hidden cursor-grab active:cursor-grabbing relative bg-[hsl(222_47%_4%)] rounded-2xl border border-white/5"
+    >
+      <div ref={constraintsRef} className="absolute inset-0 pointer-events-none" />
+      
+      <motion.div
+        drag
+        dragConstraints={constraintsRef}
+        dragElastic={0.1}
+        initial={{ x: 0, y: 0 }}
         style={{
           width,
+          height,
           transformOrigin: "top left",
-          transform: `scale(${scale})`,
-          height: height * scale,
-          position: "relative",
         }}
+        className="relative"
       >
-        {/* Year label columns */}
+        {/* Year labels */}
         {anioLabels.map(anio => {
           const anioMats = materias.filter(m => m.anio === anio);
           const minRow = Math.min(...anioMats.map(m => m.row));
@@ -168,27 +164,21 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
                 left: 0,
                 top: y,
                 width: "100%",
-                borderTop: "1px solid hsl(222 47% 18%)",
+                borderTop: "1px solid hsl(222 47% 12%)",
                 paddingTop: 4,
                 paddingLeft: 4,
                 pointerEvents: "none",
                 zIndex: 0,
               }}
             >
-              <span style={{
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "0.1em",
-                color: "hsl(215 20% 45%)",
-                textTransform: "uppercase",
-              }}>
+              <span className="text-[10px] font-bold tracking-widest text-white/20 uppercase">
                 {anio}º Año
               </span>
             </div>
           );
         })}
 
-        {/* SVG for arrows */}
+        {/* Arrows */}
         <svg
           width={width}
           height={height}
@@ -203,7 +193,6 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
             </marker>
             <marker id="arrow-active" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
               <path d="M0,0 L0,6 L8,3 z" fill="#22d3ee" />
-              <animateTransform attributeName="transform" type="scale" values="1;1.3;1" dur="1.5s" repeatCount="indefinite" />
             </marker>
             <filter id="glow-cyan">
               <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
@@ -231,7 +220,7 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
                 markerEnd={`url(#arrow-${state})`}
                 filter={state === "active" ? "url(#glow-cyan)" : undefined}
                 opacity={state === "inactive" ? 0.4 : 1}
-                style={{ transition: "stroke 0.4s, stroke-width 0.4s, opacity 0.4s" }}
+                className="transition-colors duration-300"
               />
             );
           })}
@@ -249,15 +238,10 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
           const isBlocked = !hab && estado === "pendiente";
 
           return (
-            <button
+            <motion.button
               key={m.id}
+              whileTap={{ scale: 0.96 }}
               onClick={() => handleClick(m.id)}
-              title={
-                estado === "aprobada"  ? `${m.nombre} — Aprobada ✓` :
-                estado === "cursando"  ? `${m.nombre} — Cursando` :
-                hab                    ? `${m.nombre} — Habilitada. Click para marcar cursando.` :
-                                         `${m.nombre} — Bloqueada (faltan previas)`
-              }
               style={{
                 position:      "absolute",
                 left:          x,
@@ -266,81 +250,59 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
                 height:        NODE_H,
                 background:    bg,
                 border:        `2px solid ${border}`,
-                borderRadius:  8,
-                padding:       "6px 10px",
+                borderRadius:  12,
+                padding:       "8px 12px",
                 cursor:        isBlocked ? "not-allowed" : "pointer",
                 display:       "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
                 alignItems:    "flex-start",
                 zIndex:        2,
-                transition:    "border-color 0.35s, box-shadow 0.35s, transform 0.2s",
                 boxShadow: estado === "aprobada"
-                  ? `0 0 12px 2px rgba(34,211,238,0.35), 0 4px 16px rgba(0,0,0,0.6)`
+                  ? `0 0 15px 2px rgba(34,211,238,0.2), 0 4px 12px rgba(0,0,0,0.5)`
                   : estado === "cursando"
-                  ? `0 0 12px 2px rgba(239,68,68,0.4), 0 4px 16px rgba(0,0,0,0.6)`
+                  ? `0 0 15px 2px rgba(239,68,68,0.25), 0 4px 12px rgba(0,0,0,0.5)`
                   : hab
-                  ? `0 0 8px 1px rgba(59,130,246,0.25), 0 4px 16px rgba(0,0,0,0.6)`
-                  : `0 2px 8px rgba(0,0,0,0.4)`,
-                transform: estado === "aprobada" ? "translateY(-1px)" : "none",
-                opacity: isBlocked ? 0.6 : 1,
+                  ? `0 0 10px 1px rgba(59,130,246,0.15), 0 4px 12px rgba(0,0,0,0.5)`
+                  : `0 2px 8px rgba(0,0,0,0.3)`,
+                opacity: isBlocked ? 0.5 : 1,
               }}
-              className="group"
+              className="group select-none"
             >
-              {/* Top row: tipo chip + status icon */}
-              <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "center" }}>
+              <div className="flex w-full justify-between items-center">
                 <span style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
+                  fontSize: 8,
+                  fontWeight: 800,
                   textTransform: "uppercase",
                   color: tipoConf.border,
-                  background: `${tipoConf.color}33`,
-                  border: `1px solid ${tipoConf.border}55`,
+                  background: `${tipoConf.color}20`,
+                  border: `1px solid ${tipoConf.border}40`,
                   borderRadius: 4,
-                  padding: "1px 5px",
+                  padding: "1px 4px",
                 }}>
                   {tipoConf.label}
                 </span>
 
-                <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                  {estado === "aprobada" && (
-                    <span style={{ color: "#22d3ee", display: "flex" }}>
-                      <Check size={13} strokeWidth={3} />
-                    </span>
-                  )}
-                  {estado === "cursando" && (
-                    <span style={{ color: "#ef4444", display: "flex" }}>
-                      <BookOpen size={13} />
-                    </span>
-                  )}
-                  {estado === "pendiente" && hab && (
-                    <span style={{ color: "#3b82f6", display: "flex" }}>
-                      <Clock size={11} />
-                    </span>
-                  )}
+                <span className="flex items-center gap-1">
+                  {estado === "aprobada" && <Check size={12} strokeWidth={4} className="text-cyan-400" />}
+                  {estado === "cursando" && <BookOpen size={12} className="text-red-500" />}
+                  {estado === "pendiente" && hab && <Clock size={10} className="text-blue-400" />}
                 </span>
               </div>
 
-              {/* Subject name */}
-              <span style={{
-                fontSize:   11,
-                fontWeight: 600,
-                color:      textCol,
-                lineHeight: 1.25,
-                textAlign:  "left",
-                maxWidth:   "100%",
-                overflow:   "hidden",
-                display:    "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                transition: "color 0.3s",
-              }}>
+              <span className="text-[11px] font-bold text-left leading-tight line-clamp-2" style={{ color: textCol }}>
                 {m.nombre}
               </span>
-            </button>
+            </motion.button>
           );
         })}
+      </motion.div>
+
+      {/* Instructions Overlay */}
+      <div className="absolute bottom-4 left-4 p-3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 pointer-events-none">
+        <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] flex items-center gap-2">
+          <Maximize2 size={10} /> Arrastrá para navegar el mapa
+        </p>
       </div>
     </div>
   );
