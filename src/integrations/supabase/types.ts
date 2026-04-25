@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          id: number
+          permutero_activo: boolean
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          permutero_activo?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          permutero_activo?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       eventos: {
         Row: {
           created_at: string
@@ -127,6 +145,7 @@ export type Database = {
       permutas: {
         Row: {
           activa: boolean
+          status: Database["public"]["Enums"]["estado_permuta"]
           comision_tiene: number
           comisiones_busca: number[]
           created_at: string
@@ -140,6 +159,7 @@ export type Database = {
         }
         Insert: {
           activa?: boolean
+          status?: Database["public"]["Enums"]["estado_permuta"]
           comision_tiene: number
           comisiones_busca: number[]
           created_at?: string
@@ -153,6 +173,7 @@ export type Database = {
         }
         Update: {
           activa?: boolean
+          status?: Database["public"]["Enums"]["estado_permuta"]
           comision_tiene?: number
           comisiones_busca?: number[]
           created_at?: string
@@ -182,6 +203,7 @@ export type Database = {
           id: string
           telefono: string | null
           updated_at: string
+          role: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
           anio_cursada?: number | null
@@ -190,6 +212,7 @@ export type Database = {
           id: string
           telefono?: string | null
           updated_at?: string
+          role?: Database["public"]["Enums"]["user_role"]
         }
         Update: {
           anio_cursada?: number | null
@@ -198,6 +221,7 @@ export type Database = {
           id?: string
           telefono?: string | null
           updated_at?: string
+          role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
       }
@@ -247,8 +271,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      estado_permuta: "activa" | "realizada" | "cancelada"
       estado_materia: "pendiente" | "cursando" | "aprobada"
       tipo_evento: "parcial" | "final" | "entrega" | "clase" | "otro"
+      user_role: "estudiante" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -376,8 +402,10 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      estado_permuta: ["activa", "realizada", "cancelada"],
       estado_materia: ["pendiente", "cursando", "aprobada"],
       tipo_evento: ["parcial", "final", "entrega", "clase", "otro"],
+      user_role: ["estudiante", "admin"],
     },
   },
 } as const

@@ -25,6 +25,7 @@ interface PermutaRow {
   nombre_contacto: string;
   notas: string | null;
   activa: boolean;
+  status: "activa" | "realizada" | "cancelada";
   created_at: string;
   materias?: { nombre: string; anio: number };
 }
@@ -43,6 +44,7 @@ const Permutero = () => {
   const [materias, setMaterias] = useState<Materia[]>([]);
   const [permutas, setPermutas] = useState<PermutaRow[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [appSettings, setAppSettings] = useState<{ permutero_activo: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [filterMateria, setFilterMateria] = useState<string>("all");
   const [search, setSearch] = useState("");
@@ -58,14 +60,16 @@ const Permutero = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
-    const [{ data: mats }, { data: perms }, { data: ms }] = await Promise.all([
+    const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }] = await Promise.all([
       supabase.from("materias").select("id,nombre,anio").order("anio").order("nombre"),
-      supabase.from("permutas").select("*, materias(nombre, anio)").eq("activa", true).order("created_at", { ascending: false }),
+      supabase.from("permutas").select("*, materias(nombre, anio)").eq("status", "activa").order("created_at", { ascending: false }),
       user ? supabase.from("matches").select("*") : Promise.resolve({ data: [] as Match[] }),
+      supabase.from("app_settings").select("permutero_activo").eq("id", 1).maybeSingle(),
     ]);
     setMaterias(mats || []);
     setPermutas((perms as PermutaRow[]) || []);
     setMatches((ms as Match[]) || []);
+    setAppSettings(settings || { permutero_activo: true });
     setLoading(false);
   };
 
@@ -140,9 +144,16 @@ const Permutero = () => {
   };
 
   const remove = async (id: string) => {
+    if (!confirm("¿Seguro que querés eliminar esta permuta?")) return;
     await supabase.from("permutas").delete().eq("id", id);
     setPermutas((p) => p.filter((x) => x.id !== id));
     toast.success("Permuta eliminada");
+  };
+
+  const markAsDone = async (id: string) => {
+    await supabase.from("permutas").update({ status: 'realizada' }).eq("id", id);
+    setPermutas((p) => p.filter((x) => x.id !== id));
+    toast.success("¡Permuta marcada como realizada!");
   };
 
   const filtered = useMemo(() => {
@@ -169,15 +180,21 @@ const Permutero = () => {
             Publicá tu comisión, dejá las que buscás y dejá que el sistema encuentre tu match.
           </p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            {user ? (
-              <Button variant="accent" size="lg" disabled={materias.length === 0}><Plus className="mr-2 h-4 w-4" /> Publicar permuta</Button>
-            ) : (
-              <Button asChild variant="accent" size="lg"><Link to="/auth">Iniciar sesión para publicar</Link></Button>
-            )}
-          </DialogTrigger>
-          <DialogContent className="max-w-lg bg-card">
+        
+        {appSettings?.permutero_activo === false ? (
+          <div className="bg-destructive/10 text-destructive border border-destructive/20 px-4 py-2 rounded-lg font-medium">
+            Permutero deshabilitado por el momento.
+          </div>
+        ) : (
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              {user ? (
+                <Button variant="accent" size="lg" disabled={materias.length === 0}><Plus className="mr-2 h-4 w-4" /> Publicar permuta</Button>
+              ) : (
+                <Button asChild variant="accent" size="lg"><Link to="/auth">Iniciar sesión para publicar</Link></Button>
+              )}
+            </DialogTrigger>
+            <DialogContent className="max-w-lg bg-card">
             <DialogHeader>
               <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-bold mb-1">Ficha de inscripción</div>
               <DialogTitle className="font-display text-2xl">Publicar una permuta</DialogTitle>
@@ -225,8 +242,9 @@ const Permutero = () => {
                 Publicar permuta
               </Button>
             </form>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {materias.length === 0 && (
@@ -337,9 +355,16 @@ const Permutero = () => {
                   </div>
 
                   {isMine ? (
-                    <Button size="sm" variant="ghost" onClick={() => remove(p.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-2">
+                      {isMatch && (
+                        <Button size="sm" variant="match" onClick={() => markAsDone(p.id)}>
+                          Realizada
+                        </Button>
+                      )}
+                      <Button size="sm" variant="ghost" onClick={() => remove(p.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ) : showContact ? (
                     <Button asChild size="sm" variant={isMatch ? "match" : "hero"}>
                       <a href={`https://wa.me/${p.telefono.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">

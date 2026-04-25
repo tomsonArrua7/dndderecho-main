@@ -3,32 +3,44 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, GraduationCap, Repeat2, Sparkles, User } from "lucide-react";
+import { CalendarDays, GraduationCap, Repeat2, Sparkles, User, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 const MiEspacio = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({ aprobadas: 0, eventos: 0, permutas: 0, matches: 0 });
   const [name, setName] = useState("");
+  const [myPermutas, setMyPermutas] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: profile }, { data: ums }, { count: evCount }, { count: pCount }, { count: mCount }] = await Promise.all([
+      const [{ data: profile }, { data: ums }, { count: evCount }, { data: pData }, { count: mCount }] = await Promise.all([
         supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
         supabase.from("user_materias").select("estado").eq("user_id", user.id),
         supabase.from("eventos").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("permutas").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("activa", true),
+        supabase.from("permutas").select("*, materias(nombre)").eq("user_id", user.id).eq("status", "activa"),
         supabase.from("matches").select("*", { count: "exact", head: true }),
       ]);
+      const activePermutas = pData || [];
       setName(profile?.full_name || user.email?.split("@")[0] || "");
       setStats({
         aprobadas: ums?.filter((u) => u.estado === "aprobada").length || 0,
         eventos:   evCount || 0,
-        permutas:  pCount  || 0,
+        permutas:  activePermutas.length,
         matches:   mCount  || 0,
       });
+      setMyPermutas(activePermutas);
     })();
   }, [user]);
+
+  const removePermuta = async (id: string) => {
+    if (!confirm("¿Seguro que querés eliminar esta permuta?")) return;
+    await supabase.from("permutas").delete().eq("id", id);
+    setMyPermutas((p) => p.filter((x) => x.id !== id));
+    setStats((s) => ({ ...s, permutas: s.permutas - 1 }));
+    toast.success("Permuta eliminada");
+  };
 
   return (
     <div className="container py-12 max-w-6xl">
@@ -102,6 +114,27 @@ const MiEspacio = () => {
           color="accent"
         />
       </div>
+
+      {myPermutas.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-xl font-bold mb-4">Mis Permutas Activas</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {myPermutas.map((p) => (
+              <div key={p.id} className="p-4 rounded-xl bg-card border flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-sm">{p.materias?.nombre}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Tengo: C{p.comision_tiene} | Busco: {p.comisiones_busca.map((c: number) => `C${c}`).join(", ")}
+                  </p>
+                </div>
+                <Button size="icon" variant="ghost" onClick={() => removePermuta(p.id)}>
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

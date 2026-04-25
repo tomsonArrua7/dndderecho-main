@@ -5,6 +5,8 @@ import facultad from "@/assets/facultad_unlp_optimized.png";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
 import { UpcomingDates } from "@/components/UpcomingDates";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
 
 const features = [
@@ -16,6 +18,14 @@ const features = [
 ];
 
 const Index = () => {
+  const [realizadasCount, setRealizadasCount] = useState(0);
+
+  useEffect(() => {
+    supabase.from("permutas").select("*", { count: "exact", head: true }).eq("status", "realizada").then(({ count }) => {
+      if (count !== null) setRealizadasCount(count);
+    });
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
 
@@ -202,9 +212,21 @@ const Index = () => {
               Nuestro algoritmo conecta estudiantes para que el intercambio sea automático.{" "}
               <span className="text-white font-bold underline decoration-accent underline-offset-8">Sin vueltas.</span>
             </p>
-            <Button asChild size="xl" className="bg-white text-primary hover:bg-white/90 shadow-elegant text-lg font-bold rounded-full px-10 btn-app">
-              <Link to="/permutero">Comenzar ahora <Repeat2 className="ml-3 h-6 w-6" strokeWidth={1.5} /></Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              <Button asChild size="xl" className="bg-white text-primary hover:bg-white/90 shadow-elegant text-lg font-bold rounded-full px-10 btn-app">
+                <Link to="/permutero">Comenzar ahora <Repeat2 className="ml-3 h-6 w-6" strokeWidth={1.5} /></Link>
+              </Button>
+              {realizadasCount > 0 && (
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full flex items-center gap-3">
+                  <div className="bg-accent rounded-full p-1.5 shadow-accent-glow">
+                    <Sparkles className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="text-white font-medium">
+                    <strong className="text-xl font-bold">{realizadasCount}</strong> permutas logradas gracias a DND
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

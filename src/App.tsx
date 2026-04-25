@@ -19,6 +19,7 @@ import PlanEstudios   from "./pages/PlanEstudios";
 import Calendario     from "./pages/Calendario";
 import Recomendaciones from "./pages/Recomendaciones";
 import NotFound       from "./pages/NotFound";
+import AdminPanel     from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
                 <Route path="/mi-espacio"      element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
                 <Route path="/plan"            element={<ProtectedRoute><PlanEstudios /></ProtectedRoute>} />
                 <Route path="/calendario"      element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
+                <Route path="/admin"           element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
                 <Route path="*"               element={<NotFound />} />
               </Route>
             </Routes>
