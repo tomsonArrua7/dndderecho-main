@@ -28,7 +28,7 @@ export const Navbar = () => {
   const links = [
     ...publicLinks, 
     ...(user ? privateLinks : []),
-    ...(profile?.role?.toLowerCase() === 'admin' ? [{ to: "/admin", label: "Admin Panel" }] : [])
+    ...(profile?.role?.toLowerCase()?.trim() === 'admin' ? [{ to: "/admin", label: "Admin Panel" }] : [])
   ];
 
   /* Close drawer on outside click */

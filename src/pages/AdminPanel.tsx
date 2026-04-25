@@ -26,7 +26,7 @@ export default function AdminPanel() {
     try {
       // Check role
       const { data: profile } = await supabase.from("profiles").select("role").eq("id", user!.id).single();
-      const currentRole = profile?.role?.toLowerCase() || "estudiante";
+      const currentRole = profile?.role?.toLowerCase()?.trim() || "estudiante";
       setRole(currentRole);
 
       if (currentRole === "admin") {
