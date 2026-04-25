@@ -39,6 +39,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    // Fallback de seguridad: si getSession se traba (ej. deadlock entre pestañas), forzamos loading a false.
+    const fallbackTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       try {
         setSession(newSession);
@@ -48,15 +53,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setProfile(null);
         }
+        if (_event === 'INITIAL_SESSION') {
+          clearTimeout(fallbackTimer);
+          setLoading(false);
+        }
       } catch (err) {
         console.error("Error in onAuthStateChange:", err);
       }
     });
-
-    // Fallback de seguridad: si getSession se traba (ej. deadlock entre pestañas), forzamos loading a false.
-    const fallbackTimer = setTimeout(() => {
-      setLoading(false);
-    }, 2500);
 
     // Luego sesión inicial
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
