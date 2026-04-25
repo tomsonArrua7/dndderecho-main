@@ -8,6 +8,7 @@ import { UpcomingDates } from "@/components/UpcomingDates";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
+import { HeroActions } from "@/components/HeroActions";
 
 const features = [
   { icon: Repeat2,      title: "Permutero de Comisiones", desc: "Encontrá tu match para cambiar de comisión en segundos.", to: "/permutero",       accent: true  },
@@ -93,9 +94,14 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════
+          HERO ACTIONS (Ingresantes + Permutas)
+          ════════════════════════════════════════════════════════════ */}
+      <HeroActions />
+
+      {/* ════════════════════════════════════════════════════════════
           FEATURES SECTION
           ════════════════════════════════════════════════════════════ */}
-      <section className="relative container py-32 -mt-10 z-20">
+      <section className="relative container py-16 z-20">
         <div className="bg-card/30 backdrop-blur-sm border border-white/5 rounded-3xl p-8 md:p-16 shadow-elegant">
 
           {/* Header sección — con D mark pequeña */}
@@ -169,64 +175,6 @@ const Index = () => {
 
           <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-4 md:p-8">
             <UpcomingDates />
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════
-          BANNER CTA — Permutero
-          ════════════════════════════════════════════════════════════ */}
-      <section className="container pb-20">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-deep to-black p-10 md:p-24 shadow-elegant border border-white/5">
-
-          {/* Glow rojo */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-accent/20 blur-[120px] rounded-full" />
-
-          {/* Imagen de fondo sutil */}
-          <div
-            className="absolute inset-0 opacity-[0.04] grayscale mix-blend-overlay"
-            style={{ backgroundImage: `url(${facultad})`, backgroundSize: "cover", backgroundPosition: "center" }}
-          />
-
-          {/* DndMark decorativa — esquina inferior derecha del banner */}
-          <div
-            className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 pointer-events-none select-none"
-            aria-hidden="true"
-          >
-            <DndMark size={320} style={{ opacity: 0.08 }} />
-          </div>
-
-          <div className="relative max-w-3xl">
-            <div className="flex items-center gap-3 mb-8">
-              {/* D pequeña en el badge del CTA */}
-              <DndMark size={36} />
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent text-white font-black text-xs uppercase tracking-[0.2em] shadow-accent">
-                <ShieldCheck className="h-4 w-4" strokeWidth={1.5} /> Innovación Estudiantil
-              </div>
-            </div>
-
-            <h3 className="font-display text-4xl md:text-7xl font-black mb-8 text-white leading-tight tracking-tighter">
-              ¿Buscás cambiar<br/> de comisión?
-            </h3>
-            <p className="text-white/70 text-xl md:text-2xl mb-10 leading-relaxed font-medium">
-              Nuestro algoritmo conecta estudiantes para que el intercambio sea automático.{" "}
-              <span className="text-white font-bold underline decoration-accent underline-offset-8">Sin vueltas.</span>
-            </p>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <Button asChild size="xl" className="bg-white text-primary hover:bg-white/90 shadow-elegant text-lg font-bold rounded-full px-10 btn-app">
-                <Link to="/permutero">Comenzar ahora <Repeat2 className="ml-3 h-6 w-6" strokeWidth={1.5} /></Link>
-              </Button>
-              {realizadasCount > 0 && (
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full flex items-center gap-3">
-                  <div className="bg-accent rounded-full p-1.5 shadow-accent-glow">
-                    <Sparkles className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-white font-medium">
-                    <strong className="text-xl font-bold">{realizadasCount}</strong> permutas logradas gracias a DND
-                  </span>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </section>
