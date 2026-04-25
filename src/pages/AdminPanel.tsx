@@ -16,10 +16,10 @@ export default function AdminPanel() {
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       loadData();
     }
-  }, [user]);
+  }, [user?.id]);
 
   const loadData = async () => {
     setLoading(true);

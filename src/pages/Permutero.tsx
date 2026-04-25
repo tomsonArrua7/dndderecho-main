@@ -79,7 +79,7 @@ const Permutero = () => {
     }
   };
 
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => { load(); }, [user?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -87,7 +87,7 @@ const Permutero = () => {
       if (data?.full_name && !nombre) setNombre(data.full_name);
       if (data?.telefono && !telefono) setTelefono(data.telefono);
     });
-  }, [user, open]);
+  }, [user?.id, open]);
 
   const matchedPermutaIds = useMemo(() => {
     const set = new Set<string>();
@@ -113,7 +113,7 @@ const Permutero = () => {
       });
     });
     localStorage.setItem(key, JSON.stringify([...seen, ...fresh.map((m) => m.id)]));
-  }, [matches, permutas, user]);
+  }, [matches, permutas, user?.id]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -32,7 +32,7 @@ const MiEspacio = () => {
       });
       setMyPermutas(activePermutas);
     })();
-  }, [user]);
+  }, [user?.id]);
 
   const removePermuta = async (id: string) => {
     if (!confirm("¿Seguro que querés eliminar esta permuta?")) return;
