@@ -14,5 +14,9 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    detectSessionInUrl: true,
+    flowType: 'pkce',
+    // DESACTIVAR sincronización cruzada de pestañas para evitar el DEADLOCK y LOCK STEALING!
+    multiTab: false,
   }
 });

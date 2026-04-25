@@ -17,7 +17,10 @@ export default function AdminPanel() {
 
   useEffect(() => {
     if (user?.id) {
-      loadData();
+      const timer = setTimeout(() => {
+        loadData();
+      }, 150);
+      return () => clearTimeout(timer);
     }
   }, [user?.id]);
 

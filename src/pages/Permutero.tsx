@@ -79,14 +79,20 @@ const Permutero = () => {
     }
   };
 
-  useEffect(() => { load(); }, [user?.id]);
+  useEffect(() => { 
+    const t = setTimeout(() => load(), 150); 
+    return () => clearTimeout(t); 
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("full_name,telefono").eq("id", user.id).maybeSingle().then(({ data }) => {
-      if (data?.full_name && !nombre) setNombre(data.full_name);
-      if (data?.telefono && !telefono) setTelefono(data.telefono);
-    });
+    const t = setTimeout(() => {
+      supabase.from("profiles").select("full_name,telefono").eq("id", user.id).maybeSingle().then(({ data }) => {
+        if (data?.full_name && !nombre) setNombre(data.full_name);
+        if (data?.telefono && !telefono) setTelefono(data.telefono);
+      });
+    }, 150);
+    return () => clearTimeout(t);
   }, [user?.id, open]);
 
   const matchedPermutaIds = useMemo(() => {

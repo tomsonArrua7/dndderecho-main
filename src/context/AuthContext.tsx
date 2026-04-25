@@ -45,11 +45,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
         if (newSession?.user) {
-          await loadProfile(newSession.user.id);
+          // Usamos setTimeout para salir del hilo actual y permitir que Supabase
+          // libere el "lock" de la sesión antes de hacer la consulta a la DB.
+          // Esto evita el error: 'Lock was released because another request stole it'
+          setTimeout(async () => {
+            await loadProfile(newSession.user.id);
+            setLoading(false);
+          }, 100);
         } else {
           setProfile(null);
+          setLoading(false);
         }
-        setLoading(false);
       } catch (err) {
         console.error("Error in onAuthStateChange:", err);
         setLoading(false);
