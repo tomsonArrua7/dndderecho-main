@@ -20,12 +20,16 @@ const privateLinks = [
 ];
 
 export const Navbar = () => {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
-  const links = [...publicLinks, ...(user ? privateLinks : [])];
+  const links = [
+    ...publicLinks, 
+    ...(user ? privateLinks : []),
+    ...(profile?.role === 'admin' ? [{ to: "/admin", label: "Admin Panel" }] : [])
+  ];
 
   /* Close drawer on outside click */
   useEffect(() => {
