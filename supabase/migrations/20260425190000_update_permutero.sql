@@ -1,10 +1,18 @@
--- Create role enum and add to profiles
-CREATE TYPE public.user_role AS ENUM ('estudiante', 'admin');
-ALTER TABLE public.profiles ADD COLUMN role public.user_role DEFAULT 'estudiante';
+-- Create role enum and add to profiles (if not exists)
+DO $$ BEGIN
+  CREATE TYPE public.user_role AS ENUM ('estudiante', 'admin');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role text DEFAULT 'estudiante';
 
--- Create estado_permuta enum and add to permutas
-CREATE TYPE public.estado_permuta AS ENUM ('activa', 'realizada', 'cancelada');
-ALTER TABLE public.permutas ADD COLUMN status public.estado_permuta DEFAULT 'activa';
+-- Create estado_permuta enum and add to permutas (if not exists)
+DO $$ BEGIN
+  CREATE TYPE public.estado_permuta AS ENUM ('activa', 'realizada', 'cancelada');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+ALTER TABLE public.permutas ADD COLUMN IF NOT EXISTS status text DEFAULT 'activa';
 
 -- Update the match detection function to use status instead of just activa
 CREATE OR REPLACE FUNCTION public.detect_permuta_match()

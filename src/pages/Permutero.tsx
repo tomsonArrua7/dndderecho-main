@@ -60,17 +60,23 @@ const Permutero = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
-    const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }] = await Promise.all([
-      supabase.from("materias").select("id,nombre,anio").order("anio").order("nombre"),
-      supabase.from("permutas").select("*, materias(nombre, anio)").or("status.eq.activa,status.is.null").order("created_at", { ascending: false }),
-      user ? supabase.from("matches").select("*") : Promise.resolve({ data: [] as Match[] }),
-      supabase.from("app_settings").select("permutero_activo").eq("id", 1).maybeSingle(),
-    ]);
-    setMaterias(mats || []);
-    setPermutas((perms as PermutaRow[]) || []);
-    setMatches((ms as Match[]) || []);
-    setAppSettings(settings || { permutero_activo: true });
-    setLoading(false);
+    try {
+      const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }] = await Promise.all([
+        supabase.from("materias").select("id,nombre,anio").order("anio").order("nombre"),
+        supabase.from("permutas").select("*, materias(nombre, anio)").or("status.eq.activa,status.is.null").order("created_at", { ascending: false }),
+        user ? supabase.from("matches").select("*") : Promise.resolve({ data: [] as Match[] }),
+        supabase.from("app_settings").select("permutero_activo").eq("id", 1).maybeSingle(),
+      ]);
+      setMaterias(mats || []);
+      setPermutas((perms as PermutaRow[]) || []);
+      setMatches((ms as Match[]) || []);
+      setAppSettings(settings || { permutero_activo: true });
+    } catch (err) {
+      console.error("Critical error in Permutero load:", err);
+      toast.error("Error al cargar la base de datos.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, [user]);
