@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookMarked, CalendarDays, GraduationCap, Repeat2, ShieldCheck, Sparkles, Star } from "lucide-react";
 import facultad from "@/assets/facultad_unlp_optimized.png";
@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { HeroActions } from "@/components/HeroActions";
+import { AboutUs } from "@/components/AboutUs";
 
 const features = [
   { icon: Repeat2,      title: "Permutero de Comisiones", desc: "Encontrá tu match para cambiar de comisión en segundos.", to: "/permutero",       accent: true  },
@@ -21,11 +22,24 @@ const features = [
 const Index = () => {
   const [realizadasCount, setRealizadasCount] = useState(0);
 
+  const location = useLocation();
+
   useEffect(() => {
     supabase.from("permutas").select("*", { count: "exact", head: true }).eq("status", "realizada").then(({ count }) => {
       if (count !== null) setRealizadasCount(count);
     });
   }, []);
+
+  useEffect(() => {
+    if (location.hash) {
+      const element = document.querySelector(location.hash);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -80,7 +94,7 @@ const Index = () => {
             La herramienta académica definitiva para estudiantes de la Facultad de Ciencias Jurídicas y Sociales de la UNLP.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-10">
             <Button asChild size="xl" className="bg-accent text-white hover:bg-accent/90 shadow-accent transition-all hover:scale-105 active:scale-95 text-lg font-bold btn-app">
               <Link to="/permutero">
                 Ir al Permutero <ArrowRight className="ml-2 h-6 w-6" strokeWidth={1.5} />
@@ -89,6 +103,18 @@ const Index = () => {
             <Button asChild variant="outline" size="xl" className="bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm text-lg btn-app">
               <Link to="/auth">Ingreso Estudiantil</Link>
             </Button>
+          </div>
+
+          {/* Ghost Button: Conocé nuestra historia */}
+          <div className="flex justify-center">
+            <Link 
+              to="/#quienes-somos" 
+              className="group relative inline-flex items-center text-white/70 hover:text-white transition-colors text-sm font-medium"
+            >
+              Conocé nuestra historia 
+              <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
+              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full"></span>
+            </Link>
           </div>
         </div>
       </section>
@@ -180,9 +206,14 @@ const Index = () => {
       </section>
 
       {/* ════════════════════════════════════════════════════════════
+          ABOUT US — Quiénes Somos
+          ════════════════════════════════════════════════════════════ */}
+      <AboutUs />
+
+      {/* ════════════════════════════════════════════════════════════
           INSTAGRAM — Comunidad y Novedades
           ════════════════════════════════════════════════════════════ */}
-      <section className="container pb-32">
+      <section className="container py-24">
         <InstagramFeed />
       </section>
     </div>

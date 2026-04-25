@@ -11,6 +11,7 @@ const publicLinks = [
   { to: "/apuntes",         label: "Apuntes" },
   { to: "/permutero",       label: "Permutero" },
   { to: "/recomendaciones", label: "Recomendaciones" },
+  { to: "/#quienes-somos",  label: "¿Quiénes Somos?" },
 ];
 
 const privateLinks = [
