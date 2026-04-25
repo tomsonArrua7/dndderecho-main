@@ -26,29 +26,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (userId: string) => {
-    const { data } = await supabase.from("profiles").select("role, full_name").eq("id", userId).maybeSingle();
-    setProfile(data as ProfileInfo);
+    try {
+      const { data, error } = await supabase.from("profiles").select("role, full_name").eq("id", userId).maybeSingle();
+      if (error) {
+        console.error("Supabase profile error:", error);
+      }
+      setProfile((data as ProfileInfo) || { role: "estudiante", full_name: null });
+    } catch (err) {
+      console.error("Unexpected error in loadProfile:", err);
+      setProfile({ role: "estudiante", full_name: null });
+    }
   };
 
   useEffect(() => {
-    // Listener primero
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
-      if (newSession?.user) {
-        await loadProfile(newSession.user.id);
-      } else {
-        setProfile(null);
+      try {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        if (newSession?.user) {
+          await loadProfile(newSession.user.id);
+        } else {
+          setProfile(null);
+        }
+      } catch (err) {
+        console.error("Error in onAuthStateChange:", err);
       }
     });
 
     // Luego sesión inicial
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        await loadProfile(s.user.id);
+      try {
+        setSession(s);
+        setUser(s?.user ?? null);
+        if (s?.user) {
+          await loadProfile(s.user.id);
+        }
+      } catch (err) {
+        console.error("Error loading initial session:", err);
+      } finally {
+        setLoading(false);
       }
+    }).catch((err) => {
+      console.error("Critical error in getSession:", err);
       setLoading(false);
     });
 
