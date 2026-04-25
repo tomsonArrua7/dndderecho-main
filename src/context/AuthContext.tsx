@@ -53,6 +53,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
+    // Fallback de seguridad: si getSession se traba (ej. deadlock entre pestañas), forzamos loading a false.
+    const fallbackTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
     // Luego sesión inicial
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       try {
@@ -64,14 +69,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (err) {
         console.error("Error loading initial session:", err);
       } finally {
+        clearTimeout(fallbackTimer);
         setLoading(false);
       }
     }).catch((err) => {
       console.error("Critical error in getSession:", err);
+      clearTimeout(fallbackTimer);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(fallbackTimer);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
