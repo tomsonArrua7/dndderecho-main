@@ -62,7 +62,7 @@ const Permutero = () => {
   const load = async () => {
     const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }] = await Promise.all([
       supabase.from("materias").select("id,nombre,anio").order("anio").order("nombre"),
-      supabase.from("permutas").select("*, materias(nombre, anio)").eq("status", "activa").order("created_at", { ascending: false }),
+      supabase.from("permutas").select("*, materias(nombre, anio)").or("status.eq.activa,status.is.null").order("created_at", { ascending: false }),
       user ? supabase.from("matches").select("*") : Promise.resolve({ data: [] as Match[] }),
       supabase.from("app_settings").select("permutero_activo").eq("id", 1).maybeSingle(),
     ]);

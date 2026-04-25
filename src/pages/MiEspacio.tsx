@@ -19,7 +19,7 @@ const MiEspacio = () => {
         supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
         supabase.from("user_materias").select("estado").eq("user_id", user.id),
         supabase.from("eventos").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("permutas").select("*, materias(nombre)").eq("user_id", user.id).eq("status", "activa"),
+        supabase.from("permutas").select("*, materias(nombre)").eq("user_id", user.id).or("status.eq.activa,status.is.null"),
         supabase.from("matches").select("*", { count: "exact", head: true }),
       ]);
       const activePermutas = pData || [];

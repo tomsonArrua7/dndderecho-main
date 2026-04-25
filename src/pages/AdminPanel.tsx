@@ -25,9 +25,10 @@ export default function AdminPanel() {
     setLoading(true);
     // Check role
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user!.id).single();
-    setRole(profile?.role || "estudiante");
+    const currentRole = profile?.role?.toLowerCase() || "estudiante";
+    setRole(currentRole);
 
-    if (profile?.role === "admin") {
+    if (currentRole === "admin") {
       // Fetch data
       const [{ data: perms }, { data: settings }] = await Promise.all([
         supabase.from("permutas").select("*, materias(nombre)").order("created_at", { ascending: false }),
@@ -79,7 +80,16 @@ export default function AdminPanel() {
   }
 
   if (role !== "admin") {
-    return <Navigate to="/dashboard" />;
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-2xl font-bold mb-4">Acceso Denegado</h2>
+        <p className="mb-4">Tu rol actual es: <strong>{role}</strong></p>
+        <p className="text-muted-foreground">Necesitás tener el rol 'admin' en la tabla profiles para ver este panel.</p>
+        <Button className="mt-6" asChild>
+          <Navigate to="/dashboard" />
+        </Button>
+      </div>
+    );
   }
 
   return (
