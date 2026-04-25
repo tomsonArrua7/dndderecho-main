@@ -23,21 +23,27 @@ export default function AdminPanel() {
 
   const loadData = async () => {
     setLoading(true);
-    // Check role
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user!.id).single();
-    const currentRole = profile?.role?.toLowerCase() || "estudiante";
-    setRole(currentRole);
+    try {
+      // Check role
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user!.id).single();
+      const currentRole = profile?.role?.toLowerCase() || "estudiante";
+      setRole(currentRole);
 
-    if (currentRole === "admin") {
-      // Fetch data
-      const [{ data: perms }, { data: settings }] = await Promise.all([
-        supabase.from("permutas").select("*, materias(nombre)").order("created_at", { ascending: false }),
-        supabase.from("app_settings").select("*").eq("id", 1).single()
-      ]);
-      setPermutas(perms || []);
-      setAppSettings(settings);
+      if (currentRole === "admin") {
+        // Fetch data
+        const [{ data: perms }, { data: settings }] = await Promise.all([
+          supabase.from("permutas").select("*, materias(nombre)").order("created_at", { ascending: false }),
+          supabase.from("app_settings").select("*").eq("id", 1).single()
+        ]);
+        setPermutas(perms || []);
+        setAppSettings(settings || { id: 1, permutero_activo: true });
+      }
+    } catch (err) {
+      console.error("Critical error in AdminPanel loadData:", err);
+      toast.error("Error al cargar datos del panel de administrador.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const togglePermutero = async () => {
