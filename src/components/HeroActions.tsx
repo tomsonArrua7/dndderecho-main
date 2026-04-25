@@ -19,9 +19,14 @@ export const HeroActions = () => {
       <div className="grid md:grid-cols-2 gap-6">
         
         {/* Tarjeta B: Ingresantes (Prioridad Móvil - order 1) */}
-        <div className="order-1 md:order-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0A192F] to-[#020C1B] p-8 md:p-12 shadow-elegant border border-white/10 group transition-all duration-300 hover:scale-105 hover:shadow-accent-glow">
+        <div className="order-1 md:order-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-deep to-black p-8 md:p-12 shadow-elegant border border-white/5 group transition-all duration-300 hover:scale-105 hover:shadow-accent-glow">
           {/* Glow sutil */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 blur-[80px] rounded-full transition-opacity duration-300 group-hover:opacity-70" />
+          
+          {/* DndMark decorativa */}
+          <div className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 pointer-events-none select-none opacity-10 transition-transform duration-500 group-hover:scale-110">
+            <DndMark size={180} />
+          </div>
           
           <div className="relative z-10 flex flex-col h-full justify-between">
             <div>
@@ -63,7 +68,7 @@ export const HeroActions = () => {
                 ¿Buscás cambiar de comisión?
               </h3>
               <p className="text-white/70 text-base md:text-lg mb-8 leading-relaxed font-medium">
-                Conectamos estudiantes para un intercambio automático y directo. Sin vueltas.
+                ¡Encontrá permuta rápido y fácil! Publicás, matcheas y listo.
               </p>
             </div>
             
