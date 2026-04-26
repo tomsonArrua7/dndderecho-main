@@ -49,8 +49,7 @@ const NAV_LINKS = [
   { href: "/apuntes",         label: "Apuntes" },
   { href: "/permutero",       label: "Permutero" },
   { href: "/recomendaciones", label: "Recomendaciones" },
-  { href: "/plan",            label: "Plan de Estudios" },
-  { href: "/calendario",      label: "Calendario" },
+  { href: "/#quienes-somos",  label: "¿Quiénes Somos?" },
 ];
 
 export const Footer = () => (

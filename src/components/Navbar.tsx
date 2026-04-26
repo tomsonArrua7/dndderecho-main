@@ -5,19 +5,13 @@ import { useState, useEffect, useRef } from "react";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
 
-const publicLinks = [
-  { to: "/",                label: "Inicio" },
-  { to: "/noticias",        label: "Noticias" },
-  { to: "/apuntes",         label: "Apuntes" },
-  { to: "/permutero",       label: "Permutero" },
-  { to: "/recomendaciones", label: "Recomendaciones" },
-  { to: "/#quienes-somos",  label: "¿Quiénes Somos?" },
-];
+import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings } from "lucide-react";
 
-const privateLinks = [
-  { to: "/mi-espacio", label: "Mi Espacio" },
-  { to: "/plan",       label: "Plan de Estudios" },
-  { to: "/calendario", label: "Calendario" },
+const publicLinks = [
+  { to: "/",                label: "Inicio",    icon: Home },
+  { to: "/noticias",        label: "Noticias",  icon: Newspaper },
+  { to: "/apuntes",         label: "Apuntes",   icon: BookOpen },
+  { to: "/permutero",       label: "Permutero", icon: Repeat2 },
 ];
 
 export const Navbar = () => {
@@ -26,11 +20,9 @@ export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
-  const links = [
-    ...publicLinks, 
-    ...(user ? privateLinks : []),
-    ...(profile?.role?.toLowerCase()?.trim() === 'admin' ? [{ to: "/admin", label: "Admin Panel" }] : [])
-  ];
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const links = publicLinks;
 
   /* Close drawer on outside click */
   useEffect(() => {
@@ -61,7 +53,7 @@ export const Navbar = () => {
           WebkitBackdropFilter: "blur(14px) saturate(160%)",
         }}
       >
-        <div className="container flex h-14 items-center justify-between gap-4">
+        <div className="container flex h-12 items-center justify-between gap-4">
 
           {/* ── Logo ── */}
           <Link
@@ -96,7 +88,10 @@ export const Navbar = () => {
               >
                 {({ isActive }) => (
                   <>
-                    <span>{l.label}</span>
+                    <div className="flex items-center gap-1.5">
+                      <l.icon className={cn("h-3.5 w-3.5 transition-opacity", isActive ? "opacity-100 text-accent" : "opacity-60")} strokeWidth={1.5} />
+                      <span>{l.label}</span>
+                    </div>
 
                     {/* Animated underline — slides in from left on hover */}
                     <span
@@ -107,11 +102,6 @@ export const Navbar = () => {
                           : "w-0 bg-white/60 group-hover:w-full"
                       )}
                     />
-
-                    {/* Active dot */}
-                    {isActive && (
-                      <span className="absolute -bottom-[3px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent" />
-                    )}
                   </>
                 )}
               </NavLink>
@@ -127,17 +117,44 @@ export const Navbar = () => {
               Feria Activa
             </div>
 
-            {/* Auth button */}
+            {/* Auth button / User Menu */}
             {user ? (
-              <button
-                onClick={async () => { await signOut(); navigate("/"); }}
-                className={cn(
-                  "hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[11px] font-semibold uppercase tracking-widest btn-app",
-                  "text-white/60 hover:text-white transition-colors duration-200"
+              <div className="relative hidden sm:block" onMouseLeave={() => setDropdownOpen(false)}>
+                <button
+                  onMouseEnter={() => setDropdownOpen(true)}
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[11px] font-semibold uppercase tracking-widest btn-app",
+                    "text-white/80 hover:text-white transition-colors duration-200"
+                  )}
+                >
+                  <User className="h-3.5 w-3.5 text-accent" strokeWidth={1.5} /> Mi Espacio
+                </button>
+                
+                {/* Dropdown Menu */}
+                {dropdownOpen && (
+                  <div className="absolute top-full right-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-xl py-1 flex flex-col animate-in fade-in zoom-in-95 duration-200" style={{ backgroundColor: "hsl(222 80% 11%)" }}>
+                    <Link to="/mi-espacio" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
+                      <LayoutDashboard size={14}/> Mi Perfil
+                    </Link>
+                    <Link to="/plan" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
+                      <GraduationCap size={14}/> Plan de Estudios
+                    </Link>
+                    <Link to="/calendario" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
+                      <CalendarDays size={14}/> Calendario
+                    </Link>
+                    {profile?.role?.toLowerCase()?.trim() === 'admin' && (
+                      <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
+                        <Settings size={14}/> Admin Panel
+                      </Link>
+                    )}
+                    <div className="h-px bg-white/10 my-1" />
+                    <button onClick={async () => { await signOut(); navigate("/"); }} className="px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors w-full text-left">
+                      <LogOut size={14}/> Cerrar sesión
+                    </button>
+                  </div>
                 )}
-              >
-                <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} /> Salir
-              </button>
+              </div>
             ) : (
               <button
                 onClick={() => navigate("/auth")}
@@ -204,8 +221,6 @@ export const Navbar = () => {
           </button>
         </div>
 
-        {/* Drawer links */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-0.5">
           {links.map((l, i) => (
             <NavLink
               key={l.to}
@@ -227,15 +242,43 @@ export const Navbar = () => {
             >
               {({ isActive }) => (
                 <>
-                  {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-                  )}
+                  <l.icon className={cn("h-4 w-4 shrink-0 transition-colors", isActive ? "text-accent" : "text-white/50")} strokeWidth={1.5} />
                   {l.label}
                 </>
               )}
             </NavLink>
           ))}
-        </nav>
+          {user && (
+            <>
+              <div className="h-px bg-white/10 my-2 mx-4" />
+              <div className="px-4 py-2 text-[10px] text-white/40 uppercase tracking-widest font-bold">Mi Espacio</div>
+              {[
+                { to: "/mi-espacio", label: "Mi Perfil", icon: LayoutDashboard },
+                { to: "/plan", label: "Plan de Estudios", icon: GraduationCap },
+                { to: "/calendario", label: "Calendario", icon: CalendarDays },
+                ...(profile?.role?.toLowerCase()?.trim() === 'admin' ? [{ to: "/admin", label: "Admin Panel", icon: Settings }] : [])
+              ].map((l, i) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2",
+                      "text-xs font-semibold uppercase tracking-widest",
+                      "transition-all duration-200",
+                      isActive
+                        ? "bg-white/10 text-white text-accent"
+                        : "text-white/55 hover:text-white hover:bg-white/8"
+                    )
+                  }
+                >
+                  <l.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                  {l.label}
+                </NavLink>
+              ))}
+            </>
+          )}
 
         {/* Drawer footer */}
         <div className="px-4 py-5 border-t border-white/10 space-y-2 shrink-0">
