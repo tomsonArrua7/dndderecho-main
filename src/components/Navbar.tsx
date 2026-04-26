@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
 
-import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings } from "lucide-react";
+import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User } from "lucide-react";
 
 const publicLinks = [
   { to: "/",                label: "Inicio",    icon: Home },
