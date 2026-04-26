@@ -133,8 +133,9 @@ export const Navbar = () => {
                 
                 {/* Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className="absolute top-full right-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-xl py-1 flex flex-col animate-in fade-in zoom-in-95 duration-200" style={{ backgroundColor: "hsl(222 80% 11%)" }}>
-                    <Link to="/mi-espacio" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
+                  <div className="absolute top-full right-0 pt-2 w-48 z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-card border border-white/10 rounded-lg shadow-xl py-1 flex flex-col" style={{ backgroundColor: "hsl(222 80% 11%)" }}>
+                      <Link to="/mi-espacio" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
                       <LayoutDashboard size={14}/> Mi Perfil
                     </Link>
                     <Link to="/plan" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
@@ -152,6 +153,7 @@ export const Navbar = () => {
                     <button onClick={async () => { await signOut(); navigate("/"); }} className="px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors w-full text-left">
                       <LogOut size={14}/> Cerrar sesión
                     </button>
+                    </div>
                   </div>
                 )}
               </div>
