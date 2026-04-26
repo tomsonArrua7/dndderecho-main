@@ -106,10 +106,16 @@ export const Footer = () => (
           Defendamos Nuestro Derecho — Facultad de Ciencias Jurídicas y Sociales, UNLP. La herramienta académica al servicio del estudiantado.
         </p>
 
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-accent/40 bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-wider">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-          Feria Activa
-        </div>
+        <Link 
+          to="/feria-activa"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-accent/40 bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-wider hover:bg-accent/20 transition-colors"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3 w-3">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          Feria Activa de Libros
+        </Link>
       </div>
 
       {/* Col 2: Navegación */}

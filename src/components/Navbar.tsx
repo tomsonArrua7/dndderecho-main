@@ -112,10 +112,13 @@ export const Navbar = () => {
           <div className="flex items-center gap-2 shrink-0">
 
             {/* Feria Activa badge */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-accent/50 bg-accent/10 text-accent text-[9px] font-black uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
-              Feria Activa
-            </div>
+            <Link 
+              to="/feria-activa"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-accent/50 bg-accent/15 text-accent text-[10px] font-black uppercase tracking-widest hover:bg-accent/25 hover:scale-105 hover:shadow-accent-glow transition-all duration-300 cursor-pointer"
+            >
+              <BookOpen size={12} className="text-accent" />
+              Feria de Libros
+            </Link>
 
             {/* Auth button / User Menu */}
             {user ? (
@@ -283,12 +286,16 @@ export const Navbar = () => {
           )}
 
         {/* Drawer footer */}
-        <div className="px-4 py-5 border-t border-white/10 space-y-2 shrink-0">
+        <div className="px-4 py-5 border-t border-white/10 space-y-4 shrink-0">
           {/* Feria badge mobile */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-accent/40 bg-accent/10 text-accent text-[10px] font-black uppercase tracking-widest">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
-            Feria Judicial Activa
-          </div>
+          <Link 
+            to="/feria-activa"
+            onClick={() => setOpen(false)}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-accent/40 bg-accent/15 text-accent text-[11px] font-black uppercase tracking-widest hover:bg-accent/25 transition-all duration-300"
+          >
+            <BookOpen size={14} className="text-accent" />
+            Nuestra Feria de Libros
+          </Link>
 
           {user ? (
             <button
