@@ -4,6 +4,7 @@ import { LogIn, LogOut, Menu, Scale, ShieldCheck, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User } from "lucide-react";
 
