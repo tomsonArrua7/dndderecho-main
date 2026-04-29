@@ -5,25 +5,25 @@ const LINKS = [
   {
     title: "Aulas y Horarios",
     icon: DoorOpen,
-    href: "https://www.jursoc.unlp.edu.ar/aulas-y-horarios.html",
+    href: "https://www.jursoc.unlp.edu.ar/index.php/estudiantes/informacion/aulas-horarios.html",
     description: "Consultá dónde cursás y los horarios de cada comisión."
   },
   {
     title: "Calendario Académico",
     icon: CalendarDays,
-    href: "https://www.jursoc.unlp.edu.ar/calendario-academico.html",
+    href: "https://www.jursoc.unlp.edu.ar/index.php/estudiantes/informacion/calendario-academico.html",
     description: "Fechas de inscripción, recesos y feriados universitarios."
   },
   {
     title: "Números de Sorteo",
     icon: Hash,
-    href: "https://www.jursoc.unlp.edu.ar/sorteos.html",
+    href: "https://www.jursoc.unlp.edu.ar/index.php/estudiantes/informacion/numeros-de-sorteo.html",
     description: "Listados oficiales de sorteos para ingreso a materias."
   },
   {
     title: "Fechas de Examen",
     icon: FileText,
-    href: "https://www.jursoc.unlp.edu.ar/fechas-de-examen.html",
+    href: "https://www.jursoc.unlp.edu.ar/index.php/estudiantes/informacion/examenes.html",
     description: "Cronograma de finales, parciales y recuperatorios."
   }
 ];

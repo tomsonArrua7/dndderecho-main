@@ -20,6 +20,7 @@ import Calendario     from "./pages/Calendario";
 import Recomendaciones from "./pages/Recomendaciones";
 import NotFound       from "./pages/NotFound";
 import AdminPanel     from "./pages/AdminPanel";
+import Servicios      from "./pages/Servicios";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/apuntes"         element={<Apuntes />} />
                 <Route path="/permutero"       element={<Permutero />} />
                 <Route path="/recomendaciones" element={<Recomendaciones />} />
+                <Route path="/servicios"       element={<Servicios />} />
 
                 {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
                 <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
