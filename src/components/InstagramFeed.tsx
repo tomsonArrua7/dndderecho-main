@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Instagram, Heart, MessageCircle, Mic, Gavel, Clipboard, Info, ExternalLink } from "lucide-react";
+import { Instagram, Heart, MessageCircle, Mic, BookOpen, Clipboard, Info, ExternalLink, Play } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -7,14 +7,13 @@ import { cn } from "@/lib/utils";
 interface BeholdPost {
   id: string;
   mediaUrl: string;
+  thumbnailUrl?: string; // Para Reels/Videos
   permalink: string;
   caption: string;
   timestamp: string;
   mediaType: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
-  colorPalette?: {
-    vibrant?: string;
-    dominant?: string;
-  };
+  likeCount?: number;
+  commentCount?: number;
 }
 
 const CATEGORIES = {
@@ -25,10 +24,10 @@ const CATEGORIES = {
     keywords: ["charla", "conferencia", "mesa", "debate", "encuentro", "vivo"],
   },
   FERIA: {
-    label: "FERIA JUDICIAL",
+    label: "FERIA DEL LIBRO",
     color: "bg-amber-500",
-    icon: Gavel,
-    keywords: ["feria", "judicial", "juzgado", "tribunales", "justicia"],
+    icon: BookOpen,
+    keywords: ["feria", "libro", "stand", "editorial"],
   },
   SIU: {
     label: "SIU GUARANÍ",
@@ -60,14 +59,11 @@ export function InstagramFeed() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Nueva URL infalible (JSON directo)
         const response = await fetch("https://feeds.behold.so/VLE0e125oUyyQydPF11F");
         if (!response.ok) throw new Error("Failed to fetch");
         const data = await response.json();
-        
-        // La API devuelve un array directamente o un objeto con una propiedad 'posts'
         const postsArray = Array.isArray(data) ? data : data.posts || [];
-        setPosts(postsArray.slice(0, 4)); // Solo 4 como pidió el boceto
+        setPosts(postsArray.slice(0, 4));
       } catch (err) {
         console.error("Error fetching Instagram posts:", err);
         setError(true);
@@ -82,15 +78,15 @@ export function InstagramFeed() {
   return (
     <section className="w-full py-24 px-6 md:px-12 bg-background relative">
       <div className="max-w-7xl mx-auto">
-        {/* Cabecera Pro: Título Izquierda, Botón Derecha */}
+        {/* Cabecera Pro */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
           <div className="space-y-2">
             <div className="flex items-center gap-3 text-accent uppercase tracking-[0.2em] text-xs font-black">
               <div className="w-8 h-[2px] bg-accent"></div>
-              <span>Instagram</span>
+              <span>Comunidad</span>
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
-              Comunidad y <span className="text-accent italic">Novedades</span>
+              Instagram <span className="text-accent italic">Feed</span>
             </h2>
           </div>
 
@@ -133,27 +129,41 @@ export function InstagramFeed() {
 function InstagramCard({ post, index }: { post: BeholdPost; index: number }) {
   const category = getCategory(post.caption);
   const CategoryIcon = category.icon;
+  const isVideo = post.mediaType === "VIDEO";
+  const displayImage = post.thumbnailUrl || post.mediaUrl;
 
   return (
     <motion.a
       href={post.permalink}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, scale: 0.9 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
       viewport={{ once: true }}
       className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl flex flex-col justify-end p-8"
     >
-      {/* Imagen de Fondo */}
-      <img
-        src={post.mediaUrl}
-        alt="Instagram post"
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-      />
+      {/* Imagen de Fondo (Reels/Videos usan thumbnailUrl) */}
+      <div className="absolute inset-0 bg-[#0A0E1A]">
+        <img
+          src={displayImage}
+          alt="Instagram content"
+          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
+        {isVideo && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+            <div className="p-4 rounded-full bg-white/20 backdrop-blur-md border border-white/30">
+              <Play className="h-8 w-8 text-white fill-white" />
+            </div>
+          </div>
+        )}
+      </div>
       
-      {/* Overlay Oscuro para Legibilidad */}
-      <div className="absolute inset-0 bg-gradient-to-t from-primary-deep via-primary-deep/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
+      {/* Overlay Oscuro */}
+      <div className="absolute inset-0 bg-gradient-to-t from-primary-deep via-primary-deep/60 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
 
       {/* Badge Superior */}
       <div className="absolute top-6 left-6 flex items-center gap-2">
@@ -173,26 +183,26 @@ function InstagramCard({ post, index }: { post: BeholdPost; index: number }) {
 
       {/* Contenido Inferior */}
       <div className="relative z-10 space-y-4">
-        {/* Interacciones (Simuladas ya que la API básica no las trae) */}
+        {/* Métricas Reales o Sinceras */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold">
-            <Heart className="h-3.5 w-3.5 text-red-500 fill-red-500" />
-            <span>2.4k</span>
+          <div className="flex items-center gap-1.5 text-white/40 text-[10px] font-bold">
+            <Heart className={cn("h-3.5 w-3.5", post.likeCount ? "text-red-500 fill-red-500" : "text-white/40")} />
+            {post.likeCount && <span>{post.likeCount}</span>}
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold">
+          <div className="flex items-center gap-1.5 text-white/40 text-[10px] font-bold">
             <MessageCircle className="h-3.5 w-3.5" />
-            <span>84</span>
+            {post.commentCount && <span>{post.commentCount}</span>}
           </div>
         </div>
 
-        {/* Caption Truncada */}
+        {/* Caption Truncada (line-clamp-3) */}
         <p className="text-white text-sm font-medium leading-relaxed line-clamp-3">
-          {post.caption || "Ver más en nuestro perfil de Instagram."}
+          {post.caption || "Ver más en nuestro Instagram."}
         </p>
 
         {/* Footer con Fecha */}
         <div className="pt-2 flex items-center justify-between border-t border-white/10">
-          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+          <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
             {new Date(post.timestamp).toLocaleDateString("es-AR", { day: '2-digit', month: 'short' })}
           </span>
           <ExternalLink className="h-4 w-4 text-white/20 group-hover:text-white transition-colors" />
