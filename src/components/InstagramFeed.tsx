@@ -11,7 +11,10 @@ interface BeholdPost {
   caption: string;
   timestamp: string;
   mediaType: "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
-  children?: { mediaUrl: string }[];
+  colorPalette?: {
+    vibrant?: string;
+    dominant?: string;
+  };
 }
 
 const CATEGORIES = {
@@ -57,11 +60,14 @@ export function InstagramFeed() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("https://behold.so/api/feed/VLE0e125oUyyQydPF11F");
+        // Nueva URL infalible (JSON directo)
+        const response = await fetch("https://feeds.behold.so/VLE0e125oUyyQydPF11F");
         if (!response.ok) throw new Error("Failed to fetch");
         const data = await response.json();
-        // Solo tomamos los primeros 4 o 8 posts
-        setPosts(Array.isArray(data) ? data.slice(0, 8) : []);
+        
+        // La API devuelve un array directamente o un objeto con una propiedad 'posts'
+        const postsArray = Array.isArray(data) ? data : data.posts || [];
+        setPosts(postsArray.slice(0, 4)); // Solo 4 como pidió el boceto
       } catch (err) {
         console.error("Error fetching Instagram posts:", err);
         setError(true);
@@ -74,22 +80,17 @@ export function InstagramFeed() {
   }, []);
 
   return (
-    <section className="w-full py-20 px-4 md:px-8 bg-background relative overflow-hidden">
-      {/* Glow background decoration */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
-      
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header de la Sección */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <Instagram className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-sm font-bold tracking-widest text-white/40 uppercase">Instagram Feed</span>
+    <section className="w-full py-24 px-6 md:px-12 bg-background relative">
+      <div className="max-w-7xl mx-auto">
+        {/* Cabecera Pro: Título Izquierda, Botón Derecha */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 text-accent uppercase tracking-[0.2em] text-xs font-black">
+              <div className="w-8 h-[2px] bg-accent"></div>
+              <span>Instagram</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none">
-              Comunidad y <span className="text-gradient-primary italic">Novedades</span>
+            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
+              Comunidad y <span className="text-accent italic">Novedades</span>
             </h2>
           </div>
 
@@ -97,30 +98,28 @@ export function InstagramFeed() {
             href="https://www.instagram.com/agrupaciondnd/"
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
+            className="group flex items-center justify-center gap-3 px-10 py-5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-sm uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_-5px_rgba(220,38,38,0.5)]"
           >
             Seguinos en IG
-            <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <Instagram className="h-5 w-5" />
           </a>
         </div>
 
-        {/* Grid de Fichas */}
+        {/* Layout de Fichas */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="space-y-4">
-                <Skeleton className="aspect-square w-full rounded-[2rem] bg-white/5" />
-                <Skeleton className="h-4 w-2/3 bg-white/5" />
-                <Skeleton className="h-4 w-full bg-white/5" />
-              </div>
+              <Skeleton key={i} className="aspect-[4/5] w-full rounded-[2.5rem] bg-white/5" />
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-20 bg-white/5 rounded-[2rem] border border-white/10">
-            <p className="text-white/60 font-medium">No se pudo cargar el feed en este momento.</p>
+          <div className="w-full aspect-[2/1] flex flex-col items-center justify-center bg-primary-deep rounded-[3rem] border border-white/5 text-center p-10">
+            <Info className="h-12 w-12 text-white/20 mb-4" />
+            <h3 className="text-white font-bold text-xl mb-2">Feed no disponible</h3>
+            <p className="text-white/40 max-w-md">No pudimos conectar con Instagram. Por favor, visita nuestro perfil directamente.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {posts.map((post, idx) => (
               <InstagramCard key={post.id} post={post} index={idx} />
             ))}
@@ -140,65 +139,63 @@ function InstagramCard({ post, index }: { post: BeholdPost; index: number }) {
       href={post.permalink}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
-      className="group flex flex-col bg-[#0A0E1A] rounded-[2rem] overflow-hidden border border-white/5 hover:border-white/20 transition-all hover:shadow-2xl hover:shadow-black/50"
+      className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl flex flex-col justify-end p-8"
     >
-      {/* Contenedor de Imagen */}
-      <div className="relative aspect-square overflow-hidden">
-        <img
-          src={post.mediaUrl}
-          alt={post.caption?.slice(0, 100)}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          loading="lazy"
-        />
-        
-        {/* Capa de Gradiente */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-60 group-hover:opacity-40 transition-opacity" />
+      {/* Imagen de Fondo */}
+      <img
+        src={post.mediaUrl}
+        alt="Instagram post"
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+      />
+      
+      {/* Overlay Oscuro para Legibilidad */}
+      <div className="absolute inset-0 bg-gradient-to-t from-primary-deep via-primary-deep/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
 
-        {/* Icono de Categoría Flotante */}
-        <div className="absolute top-5 left-5 p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
-          <CategoryIcon className="h-5 w-5 text-white" />
-        </div>
-
-        {/* Badge de Categoría */}
+      {/* Badge Superior */}
+      <div className="absolute top-6 left-6 flex items-center gap-2">
         <div className={cn(
-          "absolute top-5 right-5 px-3 py-1 rounded-full text-[10px] font-black tracking-widest text-white uppercase shadow-lg",
+          "px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-white uppercase shadow-lg backdrop-blur-md",
           category.color
         )}>
           {category.label}
         </div>
       </div>
 
-      {/* Contenido / Footer de la Ficha */}
-      <div className="p-6 flex flex-col flex-grow">
-        {/* Interacción (Mocada si la API no la trae) */}
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex items-center gap-1.5 text-white/60 text-xs font-bold">
-            <Heart className="h-4 w-4 text-red-500 fill-red-500" />
-            <span>+120</span>
+      <div className="absolute top-6 right-6">
+        <div className="p-2.5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-xl">
+          <CategoryIcon className="h-5 w-5 text-white" />
+        </div>
+      </div>
+
+      {/* Contenido Inferior */}
+      <div className="relative z-10 space-y-4">
+        {/* Interacciones (Simuladas ya que la API básica no las trae) */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold">
+            <Heart className="h-3.5 w-3.5 text-red-500 fill-red-500" />
+            <span>2.4k</span>
           </div>
-          <div className="flex items-center gap-1.5 text-white/60 text-xs font-bold">
-            <MessageCircle className="h-4 w-4" />
-            <span>12</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold">
+            <MessageCircle className="h-3.5 w-3.5" />
+            <span>84</span>
           </div>
         </div>
 
-        {/* Texto de la Publicación */}
-        <p className="text-white/80 text-sm leading-relaxed font-medium line-clamp-3 overflow-hidden relative">
-          {post.caption || "Sin descripción disponible."}
-          <span className="absolute bottom-0 right-0 w-full h-6 bg-gradient-to-t from-[#0A0E1A] to-transparent pointer-events-none" />
+        {/* Caption Truncada */}
+        <p className="text-white text-sm font-medium leading-relaxed line-clamp-3">
+          {post.caption || "Ver más en nuestro perfil de Instagram."}
         </p>
 
-        <div className="mt-auto pt-4 flex items-center justify-between">
-          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+        {/* Footer con Fecha */}
+        <div className="pt-2 flex items-center justify-between border-t border-white/10">
+          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
             {new Date(post.timestamp).toLocaleDateString("es-AR", { day: '2-digit', month: 'short' })}
           </span>
-          <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-colors">
-            <ExternalLink className="h-3 w-3 text-white/40" />
-          </div>
+          <ExternalLink className="h-4 w-4 text-white/20 group-hover:text-white transition-colors" />
         </div>
       </div>
     </motion.a>
