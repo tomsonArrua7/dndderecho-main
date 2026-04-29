@@ -38,7 +38,7 @@ export function AcademicLinks() {
             <span>Facultad Jursoc</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter">
-            Servicios <span className="text-accent italic">Académicos</span>
+            Información <span className="text-accent italic">Útil</span>
           </h2>
         </div>
 

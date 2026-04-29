@@ -27,8 +27,8 @@ const Servicios = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-tight mb-6"
           >
-            Servicios <br />
-            <span className="text-accent italic">Académicos</span>
+            Información <br />
+            <span className="text-accent italic">Útil</span>
           </motion.h1>
           
           <motion.p

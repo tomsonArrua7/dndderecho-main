@@ -12,7 +12,7 @@ const publicLinks = [
   { to: "/noticias",        label: "Noticias",  icon: Newspaper },
   { to: "/apuntes",         label: "Apuntes",   icon: BookOpen },
   { to: "/permutero",       label: "Permutero", icon: Repeat2 },
-  { to: "/servicios",       label: "Servicios", icon: ShieldCheck },
+  { to: "/servicios",       label: "Información útil", icon: ShieldCheck },
 ];
 
 export const Navbar = () => {
