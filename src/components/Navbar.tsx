@@ -46,275 +46,269 @@ export const Navbar = () => {
   return (
     <>
       {/* ── Navbar ── */}
-      <header
-        className="sticky top-0 z-50 border-b border-[hsl(215_30%_30%/0.5)]"
-        style={{
-          background: "hsl(222 80% 11% / 0.82)",
-          backdropFilter: "blur(14px) saturate(160%)",
-          WebkitBackdropFilter: "blur(14px) saturate(160%)",
-        }}
+      <motion.header
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="sticky top-0 z-50 border-b border-white/5 backdrop-blur-[12px] bg-[#0A0E1A]/80 selection:bg-accent/30"
       >
-        <div className="container flex h-12 items-center justify-between gap-4">
+        <div className="container flex h-14 items-center justify-between gap-4">
 
           {/* ── Logo ── */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 group shrink-0 pl-0.5"
+            className="flex items-center gap-3 group shrink-0 transition-transform duration-300 hover:scale-105"
             onClick={() => setOpen(false)}
           >
-            <DndMark size={34} />
+            <DndMark size={38} />
             <div className="leading-tight hidden sm:block">
-              <div className="font-display font-black text-sm tracking-tight text-white">DND</div>
-              <div className="text-[9px] uppercase tracking-[0.25em] text-white/45 font-medium">
+              <div className="font-display font-black text-base tracking-tighter text-white group-hover:text-accent transition-colors">DND</div>
+              <div className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-bold">
                 Derecho UNLP
               </div>
             </div>
           </Link>
 
           {/* ── Nav desktop ── */}
-          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-            {links.map((l) => (
-              <NavLink
+          <nav className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+            {links.map((l, i) => (
+              <motion.div
                 key={l.to}
-                to={l.to}
-                end={l.to === "/"}
-                className={({ isActive }) =>
-                  cn(
-                    "relative px-3 py-1 flex flex-col items-center group",
-                    "text-[11px] font-semibold uppercase tracking-widest whitespace-nowrap",
-                    "transition-colors duration-200",
-                    isActive ? "text-white" : "text-white/50 hover:text-white/90"
-                  )
-                }
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
               >
-                {({ isActive }) => (
-                  <>
-                    <div className="flex items-center gap-1.5">
-                      <l.icon className={cn("h-3.5 w-3.5 transition-opacity", isActive ? "opacity-100 text-accent" : "opacity-60")} strokeWidth={1.5} />
-                      <span>{l.label}</span>
-                    </div>
+                <NavLink
+                  to={l.to}
+                  end={l.to === "/"}
+                  className={({ isActive }) =>
+                    cn(
+                      "relative px-4 py-2 flex flex-col items-center group",
+                      "text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap",
+                      "transition-all duration-400 ease-out",
+                      isActive ? "text-white" : "text-white/40 hover:text-white"
+                    )
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <l.icon className={cn("h-3.5 w-3.5 transition-all duration-500", isActive ? "text-accent scale-110" : "opacity-40 group-hover:opacity-100 group-hover:rotate-12")} strokeWidth={2} />
+                        <span>{l.label}</span>
+                      </div>
 
-                    {/* Animated underline — slides in from left on hover */}
-                    <span
-                      className={cn(
-                        "absolute bottom-0 left-0 h-[2px] rounded-full transition-all duration-300 ease-out",
-                        isActive
-                          ? "w-full bg-accent"
-                          : "w-0 bg-white/60 group-hover:w-full"
-                      )}
-                    />
-                  </>
-                )}
-              </NavLink>
+                      {/* Premium indicator bar */}
+                      <span
+                        className={cn(
+                          "absolute bottom-0 left-0 h-[2px] rounded-full transition-all duration-500 ease-out",
+                          isActive
+                            ? "w-full bg-accent shadow-[0_0_10px_rgba(220,38,38,0.5)]"
+                            : "w-0 bg-white/20 group-hover:w-1/2 group-hover:left-1/4"
+                        )}
+                      />
+                    </>
+                  )}
+                </NavLink>
+              </motion.div>
             ))}
           </nav>
 
           {/* ── Actions ── */}
-          <div className="flex items-center gap-2 shrink-0">
-
-            {/* Feria Activa badge */}
-            <Link 
-              to="/feria-activa"
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-accent/50 bg-accent/15 text-accent text-[10px] font-black uppercase tracking-widest hover:bg-accent/25 hover:scale-105 hover:shadow-accent-glow transition-all duration-300 cursor-pointer"
-            >
-              <BookOpen size={12} className="text-accent" />
-              Feria de Libros
-            </Link>
-
+          <div className="flex items-center gap-4 shrink-0">
             {/* Auth button / User Menu */}
             {user ? (
               <div className="relative hidden sm:block" onMouseLeave={() => setDropdownOpen(false)}>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onMouseEnter={() => setDropdownOpen(true)}
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className={cn(
-                    "inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[11px] font-semibold uppercase tracking-widest btn-app",
-                    "text-white/80 hover:text-white transition-colors duration-200"
+                    "inline-flex items-center gap-2 h-9 px-4 rounded-xl text-[11px] font-bold uppercase tracking-widest",
+                    "bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-400"
                   )}
                 >
-                  <User className="h-3.5 w-3.5 text-accent" strokeWidth={1.5} /> Mi Espacio
-                </button>
+                  <User className="h-4 w-4 text-accent" strokeWidth={2} /> 
+                  <span className="hidden xl:inline">Mi Perfil</span>
+                </motion.button>
                 
                 {/* Dropdown Menu */}
-                {dropdownOpen && (
-                  <div className="absolute top-full right-0 pt-2 w-48 z-50 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="bg-card border border-white/10 rounded-lg shadow-xl py-1 flex flex-col" style={{ backgroundColor: "hsl(222 80% 11%)" }}>
-                      <Link to="/mi-espacio" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
-                      <LayoutDashboard size={14}/> Mi Perfil
-                    </Link>
-                    <Link to="/plan" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
-                      <GraduationCap size={14}/> Plan de Estudios
-                    </Link>
-                    <Link to="/calendario" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
-                      <CalendarDays size={14}/> Calendario
-                    </Link>
-                    {profile?.role?.toLowerCase()?.trim() === 'admin' && (
-                      <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-3 py-2 text-xs text-white/80 hover:bg-accent/10 hover:text-accent flex items-center gap-2 transition-colors">
-                        <Settings size={14}/> Admin Panel
-                      </Link>
-                    )}
-                    <div className="h-px bg-white/10 my-1" />
-                    <button onClick={async () => { await signOut(); navigate("/"); }} className="px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors w-full text-left">
-                      <LogOut size={14}/> Cerrar sesión
-                    </button>
-                    </div>
-                  </div>
-                )}
+                <AnimatePresence>
+                  {dropdownOpen && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full right-0 pt-3 w-56 z-50"
+                    >
+                      <div className="bg-[#0A0E1A]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-2 flex flex-col overflow-hidden">
+                        <Link to="/mi-espacio" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
+                          <LayoutDashboard size={16} strokeWidth={2}/> Mi Espacio
+                        </Link>
+                        <Link to="/plan" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
+                          <GraduationCap size={16} strokeWidth={2}/> Plan de Estudios
+                        </Link>
+                        <Link to="/calendario" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
+                          <CalendarDays size={16} strokeWidth={2}/> Calendario
+                        </Link>
+                        {profile?.role?.toLowerCase()?.trim() === 'admin' && (
+                          <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
+                            <Settings size={16} strokeWidth={2}/> Panel Admin
+                          </Link>
+                        )}
+                        <div className="h-px bg-white/5 my-1" />
+                        <button onClick={async () => { await signOut(); navigate("/"); }} className="px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-500/10 flex items-center gap-3 transition-all duration-300 w-full text-left">
+                          <LogOut size={16} strokeWidth={2}/> Cerrar sesión
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
-              <button
+              <motion.button
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
                 onClick={() => navigate("/auth")}
                 className={cn(
-                  "hidden sm:inline-flex items-center gap-1.5 h-8 px-4 rounded-md btn-app",
-                  "text-[11px] font-semibold uppercase tracking-widest",
-                  "border border-white/40 text-white/80",
-                  "bg-transparent hover:bg-accent hover:border-accent hover:text-white",
-                  "transition-all duration-250 ease-out"
+                  "hidden sm:inline-flex items-center gap-2 h-9 px-6 rounded-xl",
+                  "text-[11px] font-black uppercase tracking-[0.2em]",
+                  "bg-accent text-white shadow-lg shadow-accent/20 hover:bg-accent/90",
+                  "transition-all duration-400 ease-out hover:scale-105 active:scale-95"
                 )}
               >
-                <LogIn className="h-3.5 w-3.5" strokeWidth={1.5} /> Ingresar
-              </button>
+                <LogIn className="h-4 w-4" strokeWidth={2.5} /> Ingresar
+              </motion.button>
             )}
 
             {/* Hamburger */}
-            <button
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               onClick={() => setOpen((v) => !v)}
-              className="lg:hidden p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 transition-colors btn-app"
+              className="lg:hidden p-2.5 rounded-xl text-white/50 hover:text-white hover:bg-white/5 border border-white/5 transition-all duration-300"
               aria-label="Abrir menú"
             >
-              <Menu className="h-5 w-5" strokeWidth={1.5} />
-            </button>
+              <Menu className="h-6 w-6" strokeWidth={2} />
+            </motion.button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      {/* ── Mobile Drawer overlay ── */}
-      <div
-        className={cn(
-          "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        )}
-        aria-hidden="true"
-      />
-
-      {/* ── Mobile Drawer panel ── */}
-      <div
-        ref={drawerRef}
-        className={cn(
-          "fixed top-0 right-0 z-50 h-full w-72 flex flex-col lg:hidden",
-          "transition-transform duration-300 drawer-ease",
-          open ? "translate-x-0" : "translate-x-full"
-        )}
-        style={{
-          background: "hsl(222 80% 11% / 0.97)",
-          backdropFilter: "blur(20px) saturate(150%)",
-          WebkitBackdropFilter: "blur(20px) saturate(150%)",
-          borderLeft: "1px solid hsl(215 30% 30% / 0.5)",
-        }}
-      >
-        {/* Drawer header */}
-        <div className="flex items-center justify-between px-5 h-14 border-b border-white/10 shrink-0">
-          <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-            <DndMark size={28} />
-            <span className="font-display font-black text-sm tracking-tight text-white">DND</span>
-          </Link>
-          <button
-            onClick={() => setOpen(false)}
-            className="p-2 rounded-md text-white/50 hover:text-white hover:bg-white/10 transition-colors btn-app"
-            aria-label="Cerrar menú"
-          >
-            <X className="h-5 w-5" strokeWidth={1.5} />
-          </button>
-        </div>
-
-          {links.map((l, i) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.to === "/"}
+      {/* ── Mobile Drawer Panel ── */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              style={{ animationDelay: `${i * 40}ms` }}
-              className={({ isActive }) =>
-                cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg",
-                  "text-xs font-semibold uppercase tracking-widest",
-                  "transition-all duration-200",
-                  open ? "animate-float-up" : "",
-                  isActive
-                    ? "bg-white/10 text-white border-l-2 border-accent pl-3.5"
-                    : "text-white/55 hover:text-white hover:bg-white/8"
-                )
-              }
+              className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md lg:hidden"
+            />
+            <motion.div
+              ref={drawerRef}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 z-[70] h-full w-[80%] max-w-sm flex flex-col lg:hidden border-l border-white/10 bg-[#0A0E1A]/95 backdrop-blur-2xl shadow-2xl"
             >
-              {({ isActive }) => (
-                <>
-                  <l.icon className={cn("h-4 w-4 shrink-0 transition-colors", isActive ? "text-accent" : "text-white/50")} strokeWidth={1.5} />
-                  {l.label}
-                </>
-              )}
-            </NavLink>
-          ))}
-          {user && (
-            <>
-              <div className="h-px bg-white/10 my-2 mx-4" />
-              <div className="px-4 py-2 text-[10px] text-white/40 uppercase tracking-widest font-bold">Mi Espacio</div>
-              {[
-                { to: "/mi-espacio", label: "Mi Perfil", icon: LayoutDashboard },
-                { to: "/plan", label: "Plan de Estudios", icon: GraduationCap },
-                { to: "/calendario", label: "Calendario", icon: CalendarDays },
-                ...(profile?.role?.toLowerCase()?.trim() === 'admin' ? [{ to: "/admin", label: "Admin Panel", icon: Settings }] : [])
-              ].map((l, i) => (
-                <NavLink
-                  key={l.to}
-                  to={l.to}
+              {/* Drawer header */}
+              <div className="flex items-center justify-between px-6 h-20 border-b border-white/5 shrink-0">
+                <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
+                  <DndMark size={32} />
+                  <span className="font-display font-black text-lg tracking-tight text-white">DND</span>
+                </Link>
+                <button
                   onClick={() => setOpen(false)}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center gap-3 px-4 py-2.5 rounded-lg mx-2",
-                      "text-xs font-semibold uppercase tracking-widest",
-                      "transition-all duration-200",
-                      isActive
-                        ? "bg-white/10 text-white text-accent"
-                        : "text-white/55 hover:text-white hover:bg-white/8"
-                    )
-                  }
+                  className="p-3 rounded-xl text-white/40 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <l.icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-                  {l.label}
-                </NavLink>
-              ))}
-            </>
-          )}
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
 
-        {/* Drawer footer */}
-        <div className="px-4 py-5 border-t border-white/10 space-y-4 shrink-0">
-          {/* Feria badge mobile */}
-          <Link 
-            to="/feria-activa"
-            onClick={() => setOpen(false)}
-            className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-accent/40 bg-accent/15 text-accent text-[11px] font-black uppercase tracking-widest hover:bg-accent/25 transition-all duration-300"
-          >
-            <BookOpen size={14} className="text-accent" />
-            Nuestra Feria de Libros
-          </Link>
+              {/* Drawer Links */}
+              <div className="flex-1 overflow-y-auto py-8 px-6 space-y-2">
+                <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6 pl-2">Navegación</div>
+                {links.map((l, i) => (
+                  <motion.div
+                    key={l.to}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.05 }}
+                  >
+                    <NavLink
+                      to={l.to}
+                      end={l.to === "/"}
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300",
+                          isActive
+                            ? "bg-accent/10 text-accent font-black border border-accent/20"
+                            : "text-white/40 hover:text-white hover:bg-white/5 font-bold"
+                        )
+                      }
+                    >
+                      <l.icon className="h-5 w-5" strokeWidth={2} />
+                      <span className="text-[13px] uppercase tracking-widest">{l.label}</span>
+                    </NavLink>
+                  </motion.div>
+                ))}
 
-          {user ? (
-            <button
-              className="w-full flex items-center justify-center gap-2 h-10 rounded-lg border border-white/20 text-white/70 hover:text-white hover:bg-white/10 text-xs font-semibold uppercase tracking-widest transition-all btn-app"
-              onClick={async () => { await signOut(); setOpen(false); navigate("/"); }}
-            >
-              <LogOut className="h-4 w-4" strokeWidth={1.5} /> Cerrar sesión
-            </button>
-          ) : (
-            <button
-              className="w-full flex items-center justify-center gap-2 h-10 rounded-lg border border-white/30 text-white hover:bg-accent hover:border-accent text-xs font-semibold uppercase tracking-widest transition-all duration-200 btn-app"
-              onClick={() => { setOpen(false); navigate("/auth"); }}
-            >
-              <Scale className="h-4 w-4" strokeWidth={1.5} /> Ingreso Estudiantil
-            </button>
-          )}
-        </div>
-      </div>
+                {user && (
+                  <div className="pt-8 space-y-2">
+                    <div className="h-px bg-white/5 my-6" />
+                    <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6 pl-2">Área Personal</div>
+                    {[
+                      { to: "/mi-espacio", label: "Mi Perfil", icon: LayoutDashboard },
+                      { to: "/plan", label: "Plan Estudios", icon: GraduationCap },
+                      { to: "/calendario", label: "Calendario", icon: CalendarDays },
+                    ].map((l, i) => (
+                      <NavLink
+                        key={l.to}
+                        to={l.to}
+                        onClick={() => setOpen(false)}
+                        className={({ isActive }) =>
+                          cn(
+                            "flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300",
+                            isActive ? "bg-white/10 text-white" : "text-white/30 hover:text-white"
+                          )
+                        }
+                      >
+                        <l.icon className="h-4 w-4" strokeWidth={2} />
+                        <span className="text-[12px] uppercase tracking-widest font-bold">{l.label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Drawer footer */}
+              <div className="p-6 border-t border-white/5 space-y-4 shrink-0 bg-black/20">
+                {!user && (
+                  <button
+                    onClick={() => { setOpen(false); navigate("/auth"); }}
+                    className="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-accent text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-lg shadow-accent/20"
+                  >
+                    <LogIn className="h-4 w-4" strokeWidth={2.5} /> Ingresar
+                  </button>
+                )}
+                {user && (
+                  <button
+                    onClick={async () => { await signOut(); setOpen(false); navigate("/"); }}
+                    className="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white text-[11px] font-black uppercase tracking-[0.2em] transition-all"
+                  >
+                    <LogOut className="h-4 w-4" strokeWidth={2} /> Cerrar Sesión
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };

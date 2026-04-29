@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { HeroActions } from "@/components/HeroActions";
 import { AboutUs } from "@/components/AboutUs";
+import { motion, AnimatePresence } from "framer-motion";
 
 const features = [
   { icon: Repeat2,      title: "Permutero de Comisiones", desc: "Encontrá tu match para cambiar de comisión en segundos.", to: "/permutero",       accent: true  },
@@ -21,7 +22,6 @@ const features = [
 
 const Index = () => {
   const [realizadasCount, setRealizadasCount] = useState(0);
-
   const location = useLocation();
 
   useEffect(() => {
@@ -42,182 +42,230 @@ const Index = () => {
   }, [location]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-
+    <div className="flex flex-col min-h-screen bg-background">
       {/* ════════════════════════════════════════════════════════════
           HERO SECTION
           ════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden hero-mask bg-primary-deep">
-
-        {/* Fondo fotográfico */}
-        <div className="absolute inset-0 -z-10">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden hero-mask">
+        {/* Fondo fotográfico con zoom suave */}
+        <motion.div 
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
+          className="absolute inset-0 -z-10"
+        >
           <img
             src={facultad}
-            alt="Edificio histórico de la Facultad de Derecho UNLP"
-            className="w-full h-full object-cover object-center scale-105"
-            width={1920} height={1080}
+            alt="Facultad de Derecho UNLP"
+            className="w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-hero" />
-          <div className="absolute inset-0 bg-primary-deep/65 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-overlay" />
-        </div>
+          <div className="absolute inset-0 bg-primary-deep/70 mix-blend-multiply" />
+        </motion.div>
 
-        {/* DndMark gigante como watermark decorativo — esquina derecha */}
-        <div
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 pointer-events-none select-none"
-          aria-hidden="true"
-        >
-          <DndMark size={520} style={{ opacity: 0.07 }} />
-        </div>
+        {/* Content */}
+        <div className="container relative z-10 py-32 flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl text-[10px] font-black uppercase tracking-[0.3em] mb-12 text-white/60">
+              <Sparkles className="h-3 w-3 text-accent" />
+              Plataforma Estudiantil Premium
+            </div>
+          </motion.div>
 
-        {/* Contenido del hero */}
-        <div className="container py-32 md:py-48 max-w-5xl text-center z-10 animate-hero-content relative">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-10"
+          >
+            <DndMark size={100} className="drop-shadow-[0_0_30px_rgba(220,38,38,0.3)]" />
+          </motion.div>
 
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 backdrop-blur-md border border-accent/40 text-xs font-bold mb-8 text-accent-foreground tracking-widest uppercase">
-            <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
-            Plataforma Estudiantil Oficial
-          </div>
-
-          {/* La "D" icónica centrada ANTES del título */}
-          <div className="flex justify-center mb-6">
-            <DndMark size={80} />
-          </div>
-
-          <h1 className="font-display text-6xl md:text-8xl font-black leading-[0.95] mb-8 text-white tracking-tighter">
-            Defendamos<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/50">
-              Nuestro Derecho
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/75 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
-            La herramienta académica definitiva para estudiantes de la Facultad de Ciencias Jurídicas y Sociales de la UNLP.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-10">
-            <Button asChild size="xl" className="bg-accent text-white hover:bg-accent/90 shadow-accent transition-all hover:scale-105 active:scale-95 text-lg font-bold btn-app">
-              <Link to="/permutero">
-                Ir al Permutero <ArrowRight className="ml-2 h-6 w-6" strokeWidth={1.5} />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="xl" className="bg-white/5 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm text-lg btn-app">
-              <Link to="/auth">Ingreso Estudiantil</Link>
-            </Button>
-          </div>
-
-          {/* Ghost Button: Conocé nuestra historia */}
-          <div className="flex justify-center">
-            <Link 
-              to="/#quienes-somos" 
-              className="group relative inline-flex items-center text-white/70 hover:text-white transition-colors text-sm font-medium"
+          <h1 className="font-display text-7xl md:text-[9rem] font-black leading-[0.85] mb-10 text-white tracking-tighter">
+            <motion.span
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="block"
             >
-              Conocé nuestra historia 
-              <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
-              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-          </div>
-        </div>
-      </section>
+              Defendamos
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic"
+            >
+              Nuestro Derecho
+            </motion.span>
+          </h1>
 
-      {/* ════════════════════════════════════════════════════════════
-          HERO ACTIONS (Ingresantes + Permutas)
-          ════════════════════════════════════════════════════════════ */}
-      <HeroActions />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="text-xl md:text-2xl text-white/50 max-w-2xl mx-auto mb-16 font-medium leading-relaxed tracking-tight"
+          >
+            La experiencia académica definitiva para la comunidad de Ciencias Jurídicas y Sociales de la UNLP.
+          </motion.p>
 
-      {/* ════════════════════════════════════════════════════════════
-          INSTAGRAM — Comunidad y Novedades
-          ════════════════════════════════════════════════════════════ */}
-      <div className="container py-12">
-        <InstagramFeed />
-      </div>
-
-
-      {/* ════════════════════════════════════════════════════════════
-          FEATURES SECTION
-          ════════════════════════════════════════════════════════════ */}
-      <section className="relative container py-16 z-20">
-        <div className="bg-card/30 backdrop-blur-sm border border-white/5 rounded-3xl p-8 md:p-16 shadow-elegant">
-
-          {/* Header sección — con D mark pequeña */}
-          <div className="max-w-3xl mb-16 flex items-start gap-5">
-            <DndMark size={56} className="shrink-0 mt-1 hidden md:block" />
-            <div>
-              <div className="text-sm uppercase tracking-[0.3em] text-accent font-black mb-3">
-                Servicios Académicos
-              </div>
-              <h2 className="font-display text-4xl md:text-6xl font-bold mb-5 text-foreground tracking-tight">
-                Todo lo que necesitás<br/> para tu cursada
-              </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                Herramientas diseñadas para resolver las necesidades reales de los estudiantes, desde permutas hasta el seguimiento del plan de estudios.
-              </p>
-            </div>
-          </div>
-
-          {/* Grid de features */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-            {features.map((f) => (
-              <Link
-                key={f.to}
-                to={f.to}
-                className={cn(
-                  "group relative p-7 rounded-2xl border transition-all duration-500 btn-app",
-                  f.accent
-                    ? "bg-accent/5 border-accent/20 hover:bg-accent/10 hover:border-accent/40"
-                    : "bg-background/40 border-white/5 hover:bg-background/60 hover:border-white/15"
-                )}
-              >
-                {f.accent && (
-                  <div className="absolute -top-3 -right-2 px-3 py-1 rounded-full bg-accent text-white text-[10px] font-black uppercase tracking-widest shadow-accent animate-pulse">
-                    Popular
-                  </div>
-                )}
-                <div className={cn(
-                  "inline-flex p-3.5 rounded-xl mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3",
-                  f.accent ? "bg-accent text-white shadow-accent" : "bg-primary/15 text-white border border-white/10"
-                )}>
-                  <f.icon className="h-5 w-5" strokeWidth={1.5} />
-                </div>
-                <h3 className="font-display font-bold text-lg mb-2 text-foreground tracking-tight">{f.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-5">{f.desc}</p>
-                <div className="flex items-center text-xs font-bold uppercase tracking-wider text-primary group-hover:text-accent transition-colors">
-                  Explorar <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover:translate-x-1.5 transition-transform" strokeWidth={1.5} />
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          >
+            <Button asChild size="xl" className="h-16 px-10 bg-accent text-white hover:bg-accent/90 shadow-[0_15px_30px_rgba(220,38,38,0.25)] rounded-2xl text-lg font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
+              <Link to="/permutero">
+                Comenzar <ArrowRight className="ml-3 h-6 w-6" />
               </Link>
-            ))}
-          </div>
+            </Button>
+            <Button asChild variant="outline" size="xl" className="h-16 px-10 bg-white/5 text-white border-white/10 hover:bg-white/10 backdrop-blur-md rounded-2xl text-lg font-bold">
+              <Link to="/auth">Ingreso Alumnos</Link>
+            </Button>
+          </motion.div>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════════════════
-          CALENDARIO / FECHAS SECTION
+          HERO ACTIONS (Ingresantes + Permutas) — STAGGERED
           ════════════════════════════════════════════════════════════ */}
-      <section className="container pb-24">
-        <div className="grid lg:grid-cols-[400px_1fr] gap-12 items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-6">
-              <CalendarDays className="h-3 w-3" /> Agenda Estudiantil
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true, margin: "-100px" }}
+      >
+        <HeroActions />
+      </motion.div>
+
+      {/* ════════════════════════════════════════════════════════════
+          INSTAGRAM — SCROLL REVEAL
+          ════════════════════════════════════════════════════════════ */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1 }}
+        viewport={{ once: true }}
+        className="container py-24"
+      >
+        <div className="p-1 rounded-[3rem] bg-gradient-to-b from-white/5 to-transparent">
+          <div className="bg-[#0A0E1A]/40 backdrop-blur-3xl rounded-[2.9rem] p-8 md:p-12 shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
+            <InstagramFeed />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ════════════════════════════════════════════════════════════
+          FEATURES SECTION — STAGGERED GRID
+          ════════════════════════════════════════════════════════════ */}
+      <section className="container py-24 relative z-20">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="bg-[#0A0E1A]/60 backdrop-blur-2xl border border-white/5 rounded-[3.5rem] p-8 md:p-20 shadow-[0_50px_100px_rgba(0,0,0,0.5)]"
+        >
+          <div className="max-w-4xl mb-20">
+            <div className="text-[11px] uppercase tracking-[0.4em] text-accent font-black mb-6">
+              Servicios Digitales
             </div>
-            <h2 className="font-display text-4xl md:text-5xl font-black mb-6 text-foreground tracking-tight leading-tight">
-              Tu Carrera, <br/>
-              <span className="text-white/40">Día a Día.</span>
+            <h2 className="font-display text-5xl md:text-8xl font-black mb-8 text-white tracking-tighter leading-[0.9]">
+              Potenciamos tu <br/>
+              <span className="text-white/20">Trayectoria.</span>
             </h2>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-              No te pierdas ninguna inscripción ni mesa de examen. Guardá las fechas críticas directo en tu calendario o descargalas como archivo <code>.ics</code>.
+            <p className="text-white/40 text-xl max-w-2xl leading-relaxed font-medium tracking-tight">
+              Diseñamos herramientas específicas para resolver los desafíos cotidianos de cada estudiante de la UNLP.
             </p>
           </div>
 
-          <div className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-4 md:p-8">
-            <UpcomingDates />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {features.map((f, i) => (
+              <motion.div
+                key={f.to}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Link
+                  to={f.to}
+                  className={cn(
+                    "group relative h-full flex flex-col p-8 rounded-[2rem] border transition-all duration-500",
+                    f.accent
+                      ? "bg-accent/5 border-accent/20 hover:bg-accent/10 hover:border-accent/40"
+                      : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/20"
+                  )}
+                >
+                  <div className={cn(
+                    "inline-flex p-4 rounded-2xl mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6",
+                    f.accent ? "bg-accent text-white shadow-[0_10px_20px_rgba(220,38,38,0.3)]" : "bg-white/5 text-white/60 border border-white/10"
+                  )}>
+                    <f.icon className="h-6 w-6" strokeWidth={2} />
+                  </div>
+                  <h3 className="font-display font-bold text-xl mb-3 text-white tracking-tight">{f.title}</h3>
+                  <p className="text-sm text-white/30 leading-relaxed mb-8 font-medium">{f.desc}</p>
+                  <div className="mt-auto flex items-center text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-accent transition-colors">
+                    Explorar <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
           </div>
+        </motion.div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════
+          CALENDARIO / FECHAS — DEPTH EFFECT
+          ════════════════════════════════════════════════════════════ */}
+      <section className="container py-32">
+        <div className="grid lg:grid-cols-[450px_1fr] gap-20 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">
+              <CalendarDays className="h-4 w-4 text-accent" /> Agenda Inteligente
+            </div>
+            <h2 className="font-display text-5xl md:text-7xl font-black mb-8 text-white tracking-tighter leading-[0.9]">
+              Tu carrera, <br/>
+              <span className="text-white/20 italic font-medium">Sincronizada.</span>
+            </h2>
+            <p className="text-white/40 text-lg leading-relaxed mb-10 font-medium">
+              Gestionamos tus fechas críticas para que nunca pierdas una inscripción ni una mesa de examen. Tecnología al servicio de tu organización.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+            className="bg-[#0A0E1A]/40 border border-white/5 rounded-[3rem] p-6 md:p-10 shadow-[0_40px_100px_rgba(0,0,0,0.4)] backdrop-blur-xl"
+          >
+            <UpcomingDates />
+          </motion.div>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════════════════
-          ABOUT US — Quiénes Somos
+          ABOUT US
           ════════════════════════════════════════════════════════════ */}
-      <AboutUs />
-
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+        viewport={{ once: true }}
+      >
+        <AboutUs />
+      </motion.div>
     </div>
   );
 };
