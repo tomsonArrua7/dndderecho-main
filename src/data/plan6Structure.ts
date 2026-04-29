@@ -531,39 +531,3 @@ export function getEstadoVisual(
 
   return todas ? "habilitada" : "bloqueada";
 }
-
-// ── Conexiones automáticas generadas de los requisitos ──────────────
-export interface Conexion {
-  fromId: string;
-  toId: string;
-}
-
-export const CONEXIONES_PLAN6: Conexion[] = MATERIAS_PLAN6.flatMap(m =>
-  m.requisitos.map(req => ({ fromId: req.id, toId: m.id }))
-);
-
-// ── Layout constants (px) ────────────────────────────────────────────
-export const NODE_W   = 148;
-export const NODE_H   = 72;
-export const GAP_X    = 28;
-export const GAP_Y    = 72;
-export const PAD_X    = 40;
-export const PAD_Y    = 48;
-
-/** Posición top-left del nodo en el canvas */
-export function getNodePos(m: Materia) {
-  return {
-    x: PAD_X + m.col * (NODE_W + GAP_X),
-    y: PAD_Y + m.row * (NODE_H + GAP_Y),
-  };
-}
-
-/** Dimensiones totales del canvas */
-export function getCanvasSize() {
-  const maxCol = Math.max(...MATERIAS_PLAN6.map(m => m.col));
-  const maxRow = Math.max(...MATERIAS_PLAN6.map(m => m.row));
-  return {
-    width:  PAD_X * 2 + (maxCol + 1) * NODE_W + maxCol * GAP_X,
-    height: PAD_Y * 2 + (maxRow + 1) * NODE_H + maxRow * GAP_Y,
-  };
-}
