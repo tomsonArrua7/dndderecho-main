@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================
+   DND — Defendamos Nuestro Derecho
+   Light Mode Académico — Blanco papel + Azul UNLP + Rojo DND
+   =========================== */
+
+@layer base {
+  :root {
+    /* Base: Institucional Oscuro */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 10%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    /* === COLORES INSTITUCIONALES DND (REDISEÑO SOBRIO) === */
+    /* Azul Marino Profundo — Color dominante */
+    --primary: 222 80% 20%;
+    --primary-foreground: 210 40% 98%;
+    --primary-glow: 222 80% 30%;
+    --primary-deep: 222 90% 10%;
+
+    /* Rojo Puro — Únicamente para alertas y detalles críticos */
+    --accent: 0 100% 50%;
+    --accent-foreground: 210 40% 98%;
+    --accent-glow: 0 100% 60%;
+
+    --secondary: 222 47% 15%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 47% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    /* destructive = accent (Rojo Puro) */
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 65% 38%;
+    --warning: 35 92% 48%;
+
+    --border: 222 47% 18%;
+    --input: 222 47% 18%;
+    --ring: 222 80% 40%;
+
+    --radius: 0.25rem; /* Bordes más nítidos e institucionales */
+
+    /* === GRADIENTES === Ajustados para fondo oscuro */
+    --gradient-hero: linear-gradient(180deg, hsl(var(--primary-deep) / 0.95) 0%, hsl(var(--background)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-glow)) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+    --gradient-match: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent-glow)) 100%);
+    --gradient-overlay: linear-gradient(to bottom, transparent 0%, hsl(var(--background)) 100%);
+
+    /* Sombras sutiles y elegantes para modo oscuro */
+    --shadow-paper: 0 4px 12px hsl(0 0% 0% / 0.5);
+    --shadow-elegant: 0 12px 32px -4px hsl(0 0% 0% / 0.9), 0 2px 4px hsl(0 0% 0% / 0.4);
+    --shadow-accent: 0 0 20px -2px hsl(0 100% 50% / 0.6);
+    --shadow-card: 0 8px 24px -4px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 0 4px hsl(var(--primary) / 0.3);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 222 80% 20%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 222 47% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 18%;
+    --sidebar-ring: 222 80% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+    /* Textura sutil institucional */
+    background-color: hsl(var(--background));
+    background-image: 
+      radial-gradient(ellipse 60% 40% at 0% 0%, hsl(var(--primary) / 0.15), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 100% 100%, hsl(var(--accent) / 0.05), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer utilities {
+  /* Navbar — drawer slide animation */
+  .drawer-ease {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Navbar — drawer link subtle hover */
+  .hover\:bg-white\/8:hover {
+    background-color: hsl(0 0% 100% / 0.08);
+  }
+
+  /* Category tag backgrounds — /8 opacity variants */
+  .bg-sky-400\/8    { background-color: rgb(56 189 248 / 0.08); }
+  .bg-violet-400\/8 { background-color: rgb(167 139 250 / 0.08); }
+  .bg-amber-400\/8  { background-color: rgb(251 191 36  / 0.08); }
+  .bg-rose-400\/8   { background-color: rgb(251 113 133 / 0.08); }
+
+  /* Navbar — ghost Ingresar button fill animation */
+  .navbar-ghost-btn {
+    transition: background-color 0.2s ease-out, border-color 0.2s ease-out, color 0.2s ease-out;
+  }
+  .navbar-ghost-btn:hover {
+    background-color: hsl(var(--accent));
+    border-color: hsl(var(--accent));
+    color: white;
+  }
+
+  .text-gradient-primary {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .text-gradient-match {
+    background: var(--gradient-match);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bg-gradient-hero { background: var(--gradient-hero); }
+  .bg-gradient-primary { background: var(--gradient-primary); }
+  .bg-gradient-accent { background: var(--gradient-accent); }
+  .bg-gradient-card { background: var(--gradient-card); }
+  .bg-gradient-match { background: var(--gradient-match); }
+
+  .shadow-paper { box-shadow: var(--shadow-paper); }
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  .shadow-accent-glow { box-shadow: var(--shadow-accent); }
+  .shadow-card-dnd { box-shadow: var(--shadow-card); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+
+  .transition-smooth { transition: var(--transition-smooth); }
+  
+  .hero-mask {
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%);
+  }
+
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid hsl(var(--white) / 0.1);
+  }
+
+  .glass-premium {
+    @apply bg-background/60 backdrop-blur-md border border-white/10;
+  }
+
+  /* App-like Button scale effect */
+  .btn-app {
+    @apply transition-all duration-200 active:scale-95;
+  }
+
+  /* "Hoja de papel" — borde fino + sombra muy suave */
+  .paper {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-paper);
+  }
+
+  /* Scrollbar Hide Utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes match-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.45), var(--shadow-accent); }
+  50% { box-shadow: 0 0 0 10px hsl(var(--accent) / 0), var(--shadow-accent); }
+}
+.animate-match { animation: match-pulse 1.8s ease-in-out infinite; }
+
+@keyframes hero-fade-in {
+  from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.animate-hero-content { animation: hero-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-float-up { animation: float-up 0.5s ease-out both; }
