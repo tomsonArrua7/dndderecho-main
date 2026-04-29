@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { LogIn, LogOut, Menu, Scale, X } from "lucide-react";
+import { LogIn, LogOut, Menu, Scale, ShieldCheck, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
