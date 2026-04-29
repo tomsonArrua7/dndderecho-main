@@ -8,6 +8,7 @@ import { UpcomingDates } from "@/components/UpcomingDates";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
+import { AcademicLinks } from "@/components/AcademicLinks";
 import { HeroActions } from "@/components/HeroActions";
 import { AboutUs } from "@/components/AboutUs";
 
@@ -130,6 +131,11 @@ const Index = () => {
       <div className="container py-12">
         <InstagramFeed />
       </div>
+
+      {/* ════════════════════════════════════════════════════════════
+          SERVICIOS ACADÉMICOS — Enlaces Oficiales Jursoc
+          ════════════════════════════════════════════════════════════ */}
+      <AcademicLinks />
 
 
       {/* ════════════════════════════════════════════════════════════
