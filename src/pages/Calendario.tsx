@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2 } from "lucide-react";
+import { Calendar, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Evento {
@@ -64,6 +64,13 @@ const Calendario = () => {
     setEventos((e) => e.filter((x) => x.id !== id));
   };
 
+  const getGoogleCalendarLink = (e: Evento) => {
+    const start = new Date(e.fecha).toISOString().replace(/-|:|\.\d+/g, "");
+    const end = new Date(new Date(e.fecha).getTime() + 3600000).toISOString().replace(/-|:|\.\d+/g, ""); // +1 hour
+    const details = e.descripcion || "Evento de DND Derecho";
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.titulo)}&dates=${start}/${end}&details=${encodeURIComponent(details)}&location=Facultad+de+Derecho+UNLP&sf=true&output=xml`;
+  };
+
   const upcoming = eventos.filter((e) => new Date(e.fecha) >= new Date(Date.now() - 86400000));
   const past = eventos.filter((e) => new Date(e.fecha) < new Date(Date.now() - 86400000));
 
@@ -115,13 +122,13 @@ const Calendario = () => {
         </Dialog>
       </div>
 
-      <Section title="Próximos" eventos={upcoming} onRemove={remove} />
-      <Section title="Pasados" eventos={past} onRemove={remove} muted />
+      <Section title="Próximos" eventos={upcoming} onRemove={remove} onAddCalendar={getGoogleCalendarLink} />
+      <Section title="Pasados" eventos={past} onRemove={remove} onAddCalendar={getGoogleCalendarLink} muted />
     </div>
   );
 };
 
-const Section = ({ title, eventos, onRemove, muted }: { title: string; eventos: Evento[]; onRemove: (id: string) => void; muted?: boolean }) => (
+const Section = ({ title, eventos, onRemove, onAddCalendar, muted }: { title: string; eventos: Evento[]; onRemove: (id: string) => void; onAddCalendar: (e: Evento) => string; muted?: boolean }) => (
   <div className="mb-10">
     <h2 className="font-display text-xl font-semibold mb-3 text-foreground">{title}</h2>
     {eventos.length === 0 ? (
@@ -146,7 +153,16 @@ const Section = ({ title, eventos, onRemove, muted }: { title: string; eventos: 
                 <div className="font-semibold truncate text-foreground">{e.titulo}</div>
                 {e.descripcion && <div className="text-xs text-muted-foreground truncate">{e.descripcion}</div>}
               </div>
-              <Button size="icon" variant="ghost" onClick={() => onRemove(e.id)}><Trash2 className="h-4 w-4" /></Button>
+              <div className="flex items-center gap-1">
+                <Button size="icon" variant="ghost" asChild title="Agregar a Google Calendar">
+                  <a href={onAddCalendar(e)} target="_blank" rel="noopener noreferrer">
+                    <Calendar className="h-4 w-4 text-accent" />
+                  </a>
+                </Button>
+                <Button size="icon" variant="ghost" onClick={() => onRemove(e.id)} title="Eliminar">
+                  <Trash2 className="h-4 w-4 text-destructive/70" />
+                </Button>
+              </div>
             </div>
           );
         })}

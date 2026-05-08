@@ -14,6 +14,9 @@ export default function AdminPanel() {
   const [appSettings, setAppSettings] = useState<{ id: number; permutero_activo: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [mailSubject, setMailSubject] = useState("");
+  const [mailBody, setMailBody] = useState("");
+  const [sendingMail, setSendingMail] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -82,6 +85,33 @@ export default function AdminPanel() {
       setPermutas([]);
     }
     setUpdating(false);
+  };
+
+  const handleSendMassMail = async () => {
+    if (!mailSubject.trim() || !mailBody.trim()) {
+      toast.error("Por favor completá el asunto y el cuerpo del mensaje.");
+      return;
+    }
+
+    if (!confirm(`¿Estás seguro de enviar este mail a TODOS los inscriptos?`)) return;
+
+    setSendingMail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("mass-mailing", {
+        body: { subject: mailSubject, body: mailBody },
+      });
+
+      if (error) throw error;
+      
+      toast.success(`Mail enviado con éxito a ${data.sent} usuarios.`);
+      setMailSubject("");
+      setMailBody("");
+    } catch (err: any) {
+      console.error("Error sending mail:", err);
+      toast.error("Error al enviar el mail: " + (err.message || "Error desconocido"));
+    } finally {
+      setSendingMail(false);
+    }
   };
 
   if (authLoading || loading) {
@@ -165,6 +195,53 @@ export default function AdminPanel() {
                 )}
               </tbody>
             </table>
+          </div>
+        </section>
+
+        {/* Mailing Masivo */}
+        <section className="p-6 bg-card border rounded-xl shadow-sm">
+          <div className="flex items-center gap-2 mb-6 text-primary">
+            <h2 className="text-xl font-semibold text-foreground">Mailing Masivo</h2>
+          </div>
+          <p className="text-muted-foreground text-sm mb-6">
+            Enviá un correo electrónico a todos los usuarios registrados en la plataforma.
+          </p>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Asunto</label>
+              <input 
+                type="text" 
+                value={mailSubject}
+                onChange={(e) => setMailSubject(e.target.value)}
+                placeholder="Ej: Nuevas mesas de examen disponibles"
+                className="w-full p-2 rounded-md border bg-background focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Cuerpo del mensaje</label>
+              <textarea 
+                rows={6}
+                value={mailBody}
+                onChange={(e) => setMailBody(e.target.value)}
+                placeholder="Escribí aquí el contenido del correo..."
+                className="w-full p-3 rounded-md border bg-background focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+              />
+            </div>
+            <div className="flex justify-end">
+              <Button 
+                onClick={handleSendMassMail} 
+                disabled={sendingMail || !mailSubject || !mailBody}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[150px]"
+              >
+                {sendingMail ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : "Enviar a todos"}
+              </Button>
+            </div>
           </div>
         </section>
       </div>

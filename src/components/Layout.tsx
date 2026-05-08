@@ -4,6 +4,7 @@ import { Footer } from "./Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { LoadingBar } from "./LoadingBar";
 import { useApp } from "@/context/AppContext";
+import { CommunityButton } from "./CommunityButton";
 
 export const Layout = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ export const Layout = () => {
       </main>
 
       {!isFocusMode && <Footer />}
+      {!isFocusMode && <CommunityButton />}
     </div>
   );
 };
