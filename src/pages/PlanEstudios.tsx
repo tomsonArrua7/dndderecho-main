@@ -10,6 +10,13 @@ import {
   Materia,
 } from "@/data/plan6Structure";
 import {
+  MATERIAS_PLAN5,
+  TOTAL_MATERIAS_PLAN5,
+  calcularPorcentajePlan5,
+  getEstadoVisualPlan5,
+} from "@/data/plan5Structure";
+import { supabase } from "@/integrations/supabase/client";
+import {
   Loader2, ArrowLeft, GraduationCap, ChevronRight,
   CheckCircle2, Maximize2, Minimize2,
   Lock, Info, Check, AlertCircle
@@ -60,6 +67,18 @@ const PLANES_META: PlanMeta[] = [
       "Modo Foco para máxima concentración",
     ],
   },
+  {
+    id:            "plan5",
+    nombre:        "Plan de Estudios Nº 5",
+    descripcion:   "Plan histórico (Resolución anterior). Ideal para alumnos de años superiores.",
+    tag:           "Histórico",
+    totalMaterias: TOTAL_MATERIAS_PLAN5,
+    features: [
+      "Estructura clásica Jursoc",
+      "Habilitación por materias",
+      "Mismo diseño minimalista",
+    ],
+  },
 ];
 
 // ── Componentes de UI ────────────────────────────────────────────────
@@ -96,12 +115,14 @@ const MateriaCard = ({
   materia, 
   estado, 
   onToggle, 
-  allEstados 
+  allEstados,
+  planMaterias
 }: { 
   materia: Materia; 
   estado: string; 
   onToggle: (id: string) => void;
   allEstados: Record<string, EstadoMateria>;
+  planMaterias: Materia[];
 }) => {
   const isAprobada = estado === "aprobada";
   const isHabilitada = estado === "habilitada";
@@ -112,7 +133,7 @@ const MateriaCard = ({
     
     const missing = materia.requisitos
       .filter(r => allEstados[r.id] !== "aprobada")
-      .map(r => MATERIAS_PLAN6.find(m => m.id === r.id)?.nombreCorto || r.id);
+      .map(r => planMaterias.find(m => m.id === r.id)?.nombreCorto || r.id);
     
     if (missing.length > 0) {
       toast.error(`Requisito faltante: ${missing.join(", ")}`, {
@@ -204,38 +225,97 @@ const PlanEstudios = () => {
   const [estados, setEstados] = useState<Record<string, EstadoMateria>>({});
   const [loading, setLoading] = useState(true);
 
-  const uid = user?.id ?? "anon";
+  const uid = user?.id;
+
+  const currentMaterias = useMemo(() => planId === "plan6" ? MATERIAS_PLAN6 : MATERIAS_PLAN5, [planId]);
+  const currentTotal = useMemo(() => planId === "plan6" ? TOTAL_MATERIAS_PLAN6 : TOTAL_MATERIAS_PLAN5, [planId]);
+  const currentCalcPct = useMemo(() => planId === "plan6" ? calcularPorcentaje : calcularPorcentajePlan5, [planId]);
+  const currentGetEstado = useMemo(() => planId === "plan6" ? getEstadoVisual : getEstadoVisualPlan5, [planId]);
 
   useEffect(() => {
-    const saved = loadFromLS(uid, "plan6");
-    setEstados(saved);
-    setLoading(false);
-  }, [uid]);
+    if (!uid) return;
+    setLoading(true);
 
-  const handleToggle = useCallback((id: string) => {
-    setEstados(prev => {
-      const current: EstadoMateria = prev[id] || "pendiente";
-      const next: EstadoMateria = current === "aprobada" ? "pendiente" : "aprobada";
-      const updated = { ...prev, [id]: next };
-      saveToLS(uid, "plan6", updated);
-      
+    const fetchProgress = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("user_materias")
+          .select("materia_id, estado")
+          .eq("user_id", uid);
+
+        if (error) throw error;
+
+        const estadosMap: Record<string, EstadoMateria> = {};
+        data.forEach(item => {
+          estadosMap[item.materia_id] = item.estado as EstadoMateria;
+        });
+        setEstados(estadosMap);
+      } catch (err) {
+        console.error("Error fetching progress:", err);
+        toast.error("No se pudo cargar tu progreso de la nube.");
+        // Fallback to LS if needed, but the requirement is to fix persistence
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProgress();
+  }, [uid, planId]); // Re-fetch if plan changes just in case
+
+  const handleToggle = useCallback(async (id: string) => {
+    if (!uid) return;
+
+    const current: EstadoMateria = estados[id] || "pendiente";
+    const next: EstadoMateria = current === "aprobada" ? "pendiente" : "aprobada";
+
+    // Optimistic Update
+    setEstados(prev => ({ ...prev, [id]: next }));
+
+    try {
+      const { error } = await supabase
+        .from("user_materias")
+        .upsert({
+          user_id: uid,
+          materia_id: id,
+          estado: next,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id,materia_id' });
+
+      if (error) throw error;
+
       if (next === "aprobada") {
         toast.success("Materia aprobada", { 
           style: { background: "#0A0E1A", color: "#fff", border: "1px solid #dc2626" } 
         });
       }
-      return updated;
-    });
-  }, [uid]);
+    } catch (err) {
+      console.error("Error saving progress:", err);
+      toast.error("Error al sincronizar con la nube.");
+      // Rollback optimistic update
+      setEstados(prev => ({ ...prev, [id]: current }));
+    }
+  }, [uid, estados]);
 
   const stats = useMemo(() => {
-    const aprobadas = MATERIAS_PLAN6.filter(m => estados[m.id] === "aprobada").length;
-    const habilitadas = MATERIAS_PLAN6.filter(m => getEstadoVisual(m, estados) === "habilitada").length;
-    const pct = calcularPorcentaje(estados);
-    return { aprobadas, habilitadas, pct, total: TOTAL_MATERIAS_PLAN6 };
-  }, [estados]);
+    const aprobadas = currentMaterias.filter(m => estados[m.id] === "aprobada").length;
+    const habilitadas = currentMaterias.filter(m => currentGetEstado(m, estados) === "habilitada").length;
+    const pct = currentCalcPct(estados);
+    return { aprobadas, habilitadas, pct, total: currentTotal };
+  }, [estados, currentMaterias, currentGetEstado, currentCalcPct, currentTotal]);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <Loader2 className="h-16 w-16 text-accent animate-spin" />
+            <div className="absolute inset-0 h-16 w-16 border-4 border-white/5 rounded-full" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 animate-pulse">Sincronizando con Supabase</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!planId) {
     return (
@@ -295,7 +375,17 @@ const PlanEstudios = () => {
               </button>
             )}
             <div>
-              <div className="text-[10px] font-black uppercase tracking-[0.4em] text-accent mb-4">Plan de Estudios Nº 6</div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-accent">Plan de Estudios</div>
+                <select 
+                  value={planId}
+                  onChange={(e) => setPlanId(e.target.value as PlanId)}
+                  className="bg-white/5 border border-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest text-white/60 px-2 py-1 outline-none hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                  <option value="plan6" className="bg-[#0A0E1A]">Nº 6 (Vigente)</option>
+                  <option value="plan5" className="bg-[#0A0E1A]">Nº 5 (Histórico)</option>
+                </select>
+              </div>
               <h1 className="font-display text-6xl font-black text-white tracking-tighter leading-none">Abogacía</h1>
             </div>
           </div>
@@ -317,38 +407,14 @@ const PlanEstudios = () => {
         </div>
 
         {/* Columnar Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8 items-start mb-20">
-          {[1, 2, 3, 4, 5, 6].map(year => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 items-start mb-20">
+          {[1, 2, 3, 4, 5].map(year => {
             // Materias de este año
-            const materias = year === 6 
-              ? MATERIAS_PLAN6.filter(m => m.anio > 5 || ["10700", "10800", "10900"].some(id => m.id.startsWith(id.slice(0, 3))))
-              : MATERIAS_PLAN6.filter(m => m.anio === year && !["10700", "10800", "10900"].some(id => m.id.startsWith(id.slice(0, 3))));
+            const materias = currentMaterias.filter(m => m.anio === year && !["10700", "10800", "10900", "P5-"].some(id => m.id.startsWith(id.slice(0, 3))));
 
-            if (year === 6) {
-              // Special grouping for Idiomas, Prácticas, Seminarios in column 6
-              const special = MATERIAS_PLAN6.filter(m => ["10700", "10800", "10900"].some(id => m.id.startsWith(id.slice(0, 3))));
-              return (
-                <div key={year} className="space-y-6">
-                  <div className="flex items-center gap-3 mb-8">
-                    <div className="h-px flex-1 bg-white/5" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Extra</span>
-                    <div className-="h-px flex-1 bg-white/5" />
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    {special.sort((a,b) => a.id.localeCompare(b.id)).map(m => (
-                      <MateriaCard 
-                        key={m.id} 
-                        materia={m} 
-                        estado={getEstadoVisual(m, estados)} 
-                        allEstados={estados}
-                        onToggle={handleToggle}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
+            // Plan 6 specific grouping for column 6 if year 5
+            const isLastYear = year === 5;
+            
             return (
               <div key={year} className="space-y-6">
                 <div className="flex items-center gap-3 mb-8">
@@ -361,11 +427,33 @@ const PlanEstudios = () => {
                     <MateriaCard 
                       key={m.id} 
                       materia={m} 
-                      estado={getEstadoVisual(m, estados)} 
+                      estado={currentGetEstado(m, estados)} 
                       allEstados={estados}
                       onToggle={handleToggle} 
+                      planMaterias={currentMaterias}
                     />
                   ))}
+                  
+                  {/* Append extra subjects to year 5 or special column */}
+                  {isLastYear && planId === "plan6" && (
+                    <div className="mt-12 space-y-6">
+                      <div className="flex items-center gap-3 mb-8">
+                        <div className="h-px flex-1 bg-white/5" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Extras P6</span>
+                        <div className="h-px flex-1 bg-white/5" />
+                      </div>
+                      {currentMaterias.filter(m => ["10700", "10800", "10900"].some(id => m.id.startsWith(id.slice(0, 3)))).map(m => (
+                        <MateriaCard 
+                          key={m.id} 
+                          materia={m} 
+                          estado={currentGetEstado(m, estados)} 
+                          allEstados={estados}
+                          onToggle={handleToggle} 
+                          planMaterias={currentMaterias}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             );
