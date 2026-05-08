@@ -11,6 +11,7 @@ import { InstagramFeed } from "@/components/InstagramFeed";
 import { HeroActions } from "@/components/HeroActions";
 import { AboutUs } from "@/components/AboutUs";
 import { motion, AnimatePresence } from "framer-motion";
+import { YouTubeSection } from "@/components/YouTubeSection";
 
 const features = [
   { icon: Repeat2,      title: "Permutero de Comisiones", desc: "Encontrá tu match para cambiar de comisión en segundos.", to: "/permutero",       accent: true  },
@@ -149,6 +150,9 @@ const Index = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* YouTube Section */}
+      <YouTubeSection />
 
       {/* ════════════════════════════════════════════════════════════
           FEATURES SECTION — STAGGERED GRID

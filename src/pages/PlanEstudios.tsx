@@ -224,6 +224,7 @@ const PlanEstudios = () => {
   const [planId, setPlanId]   = useState<PlanId | null>(null);
   const [estados, setEstados] = useState<Record<string, EstadoMateria>>({});
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const uid = user?.id;
 
@@ -270,6 +271,7 @@ const PlanEstudios = () => {
 
     // Optimistic Update
     setEstados(prev => ({ ...prev, [id]: next }));
+    setSaving(true);
 
     try {
       const { error } = await supabase
@@ -279,10 +281,13 @@ const PlanEstudios = () => {
           materia_id: id,
           estado: next,
           updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id,materia_id' });
+        }, { 
+          onConflict: 'user_id,materia_id' 
+        });
 
       if (error) throw error;
 
+      setSaving(false);
       if (next === "aprobada") {
         toast.success("Materia aprobada", { 
           style: { background: "#0A0E1A", color: "#fff", border: "1px solid #dc2626" } 
@@ -293,6 +298,7 @@ const PlanEstudios = () => {
       toast.error("Error al sincronizar con la nube.");
       // Rollback optimistic update
       setEstados(prev => ({ ...prev, [id]: current }));
+      setSaving(false);
     }
   }, [uid, estados]);
 
@@ -405,6 +411,21 @@ const PlanEstudios = () => {
             </button>
           </div>
         </div>
+
+        {/* Global Saving Indicator */}
+        <AnimatePresence>
+          {saving && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[110] bg-accent px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10"
+            >
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white">Sincronizando con la nube...</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Columnar Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 items-start mb-20">
