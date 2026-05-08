@@ -19,93 +19,78 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Get auth user to verify admin
     const authHeader = req.headers.get("Authorization")!;
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(authHeader.replace("Bearer ", ""));
     
     if (authError || !user) throw new Error("No autorizado");
 
-    // Check if admin in profiles
     const { data: profile } = await supabaseClient
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    if (profile?.role !== "admin") throw new Error("Acceso denegado: Se requiere rol de administrador");
+    if (profile?.role !== "admin") throw new Error("Acceso denegado");
 
     const { subject, body } = await req.json();
 
-    if (!subject || !body) {
-      return new Response(JSON.stringify({ error: "Faltan datos: asunto o cuerpo" }), { status: 400 });
+    // Debug Log
+    console.log("Iniciando envío masivo...");
+
+    // Intentamos obtener usuarios desde auth.admin
+    const { data: { users }, error: listError } = await supabaseClient.auth.admin.listUsers();
+
+    if (listError) {
+      console.error("Error al listar usuarios de Auth:", listError);
+      throw listError;
     }
 
-    // Fetch all profiles with emails
-    // Note: If you have thousands of users, this should be paginated or use a queue.
-    // For a student project, fetching all is usually fine if < 1000.
-    const { data: profiles, error: fetchError } = await supabaseClient
-      .from("profiles")
-      .select("email")
-      .not("email", "is", null);
+    console.log(`Usuarios en Auth encontrados: ${users?.length || 0}`);
 
-    if (fetchError) throw fetchError;
+    const emails = users
+      .map(u => u.email)
+      .filter(email => email && email.includes("@")) as string[];
 
-    const emails = profiles.map(p => p.email);
+    console.log(`Emails válidos para enviar: ${emails.length}`);
 
     if (emails.length === 0) {
-      return new Response(JSON.stringify({ success: true, message: "No hay destinatarios" }), { status: 200 });
+      return new Response(JSON.stringify({ success: true, sent: 0, message: "No se encontraron emails" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
     }
 
-    let results = { sent: 0, failed: 0 };
+    let sentCount = 0;
 
     if (RESEND_API_KEY) {
-      // Send in chunks to avoid Resend limits if any, or just send all
-      // Resend allows sending to multiple recipients in one call or individual
-      // For personal messages, individual is better, but for mass mailing, 
-      // Resend has a "to" array limit of 50.
-      
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify({
-          from: "DND Derecho <novedades@dndderecho.com>",
-          to: emails, // Resend supports array of emails
-          subject: subject,
-          html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-              <h2 style="color: #FF0000; border-bottom: 2px solid #FF0000; padding-bottom: 10px;">DND Derecho - Aviso Importante</h2>
-              <div style="font-size: 16px; line-height: 1.6; color: #333; margin-top: 20px;">
-                ${body.replace(/\n/g, "<br>")}
-              </div>
-              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #777; text-align: center;">
-                Recibiste este correo porque estás registrado en dndderecho.com
-              </div>
-            </div>
-          `,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(`Error de Resend: ${JSON.stringify(errorData)}`);
+      const CHUNK_SIZE = 45;
+      for (let i = 0; i < emails.length; i += CHUNK_SIZE) {
+        const chunk = emails.slice(i, i + CHUNK_SIZE);
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+          },
+          body: JSON.stringify({
+            from: "DND Derecho <onboarding@resend.dev>",
+            to: chunk,
+            subject: subject,
+            html: `<div>${body.replace(/\n/g, "<br>")}</div>`,
+          }),
+        });
+        if (res.ok) sentCount += chunk.length;
+        else console.error("Error en chunk de Resend:", await res.text());
       }
-      
-      results.sent = emails.length;
-    } else {
-      console.log(`MOCK MASS MAILING: Subject: ${subject}`);
-      console.log(`To: ${emails.length} users`);
-      results.sent = emails.length;
     }
 
-    return new Response(JSON.stringify({ success: true, sent: results.sent }), {
+    return new Response(JSON.stringify({ success: true, sent: sentCount }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
 
   } catch (error) {
+    console.error("Error crítico en la función:", error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,

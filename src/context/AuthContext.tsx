@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface ProfileInfo {
   role: string;
   full_name: string | null;
+  is_banned: boolean;
 }
 
 interface AuthContextValue {
@@ -27,14 +28,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loadProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase.from("profiles").select("role, full_name").eq("id", userId).maybeSingle();
+      const { data, error } = await supabase.from("profiles").select("role, full_name, is_banned").eq("id", userId).maybeSingle();
       if (error) {
         console.error("Supabase profile error:", error);
       }
-      setProfile((data as ProfileInfo) || { role: "estudiante", full_name: null });
+      const prof = (data as ProfileInfo) || { role: "estudiante", full_name: null, is_banned: false };
+      
+      if (prof.is_banned) {
+        console.warn("User is banned. Signing out...");
+        await supabase.auth.signOut();
+        return;
+      }
+      
+      setProfile(prof);
     } catch (err) {
       console.error("Unexpected error in loadProfile:", err);
-      setProfile({ role: "estudiante", full_name: null });
+      setProfile({ role: "estudiante", full_name: null, is_banned: false });
     }
   };
 
