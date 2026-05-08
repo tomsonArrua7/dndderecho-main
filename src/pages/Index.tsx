@@ -64,41 +64,31 @@ const Index = () => {
         </motion.div>
 
         {/* Content */}
-        <div className="container relative z-10 py-32 flex flex-col items-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl text-[10px] font-black uppercase tracking-[0.3em] mb-12 text-white/60">
-              <Sparkles className="h-3 w-3 text-accent" />
-              Plataforma Estudiantil Premium
-            </div>
-          </motion.div>
+        <div className="container relative z-10 pt-20 pb-32 flex flex-col items-center text-center">
 
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-10"
+            className="mb-12"
           >
-            <DndMark size={100} className="drop-shadow-[0_0_30px_rgba(220,38,38,0.3)]" />
+            <DndMark size={140} className="drop-shadow-[0_0_40px_rgba(220,38,38,0.4)]" />
           </motion.div>
 
-          <h1 className="font-display text-7xl md:text-[9rem] font-black leading-[0.85] mb-10 text-white tracking-tighter">
+          <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-20 text-white tracking-tight max-w-2xl mx-auto">
             <motion.span
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
               className="block"
             >
               Defendamos
             </motion.span>
             <motion.span
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-white/80 to-white/40 italic"
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="block text-white/90"
             >
               Nuestro Derecho
             </motion.span>
