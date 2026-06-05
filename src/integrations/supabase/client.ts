@@ -2,14 +2,30 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+
+// Validate if URL is in a valid format to prevent createClient from throwing an error
+const isValidUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && isValidUrl(SUPABASE_URL));
+
+// Fallback values to prevent application crash during module initialization
+const fallbackUrl = isValidUrl(SUPABASE_URL) ? SUPABASE_URL : "https://placeholder-url-please-set-env-vars.supabase.co";
+const fallbackKey = SUPABASE_ANON_KEY || "placeholder-key";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+export const supabase = createClient<Database>(fallbackUrl, fallbackKey, {
   auth: {
     storage: localStorage,
     persistSession: true,

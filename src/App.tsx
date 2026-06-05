@@ -8,6 +8,9 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
 import { AppProvider } from "@/context/AppContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { isSupabaseConfigured } from "@/integrations/supabase/client";
+import { AlertCircle, ExternalLink, RefreshCw } from "lucide-react";
+import { DndMark } from "@/components/DndMark";
 
 import Index          from "./pages/Index";
 import Auth           from "./pages/Auth";
@@ -24,40 +27,126 @@ import Servicios      from "./pages/Servicios";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <AppProvider>
-              <Routes>
-                <Route element={<Layout />}>
-                <Route path="/"                element={<Index />} />
-                <Route path="/auth"            element={<Auth />} />
-                <Route path="/noticias"        element={<Noticias />} />
-                <Route path="/apuntes"         element={<Apuntes />} />
-                <Route path="/permutero"       element={<Permutero />} />
-                <Route path="/recomendaciones" element={<Recomendaciones />} />
-                <Route path="/servicios"       element={<Servicios />} />
+const SupabaseConfigWarning = () => {
+  const handleReload = () => {
+    window.location.reload();
+  };
 
-                {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
-                <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
-                <Route path="/mi-espacio"      element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
-                <Route path="/plan"            element={<ProtectedRoute><PlanEstudios /></ProtectedRoute>} />
-                <Route path="/calendario"      element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
-                <Route path="/admin"           element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
-                <Route path="*"               element={<NotFound />} />
-              </Route>
-            </Routes>
-          </AppProvider>
-        </AuthProvider>
-      </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-primary-deep relative overflow-hidden p-4">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-hero" />
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 pointer-events-none select-none opacity-[0.03]">
+        <DndMark size={520} />
+      </div>
+
+      <div className="max-w-xl w-full bg-card/60 backdrop-blur-lg border border-white/10 rounded-3xl p-8 shadow-elegant relative z-10 animate-hero-content">
+        <div className="flex justify-center mb-6">
+          <div className="p-4 rounded-full bg-accent/20 border border-accent/40 text-accent animate-pulse">
+            <AlertCircle className="h-10 w-10" />
+          </div>
+        </div>
+
+        <h1 className="font-display text-3xl md:text-4xl font-black text-center mb-4 text-white tracking-tight">
+          Configuración Requerida
+        </h1>
+        <p className="text-white/70 text-center text-sm md:text-base mb-6 leading-relaxed">
+          Para que la plataforma funcione en el servidor, necesitás vincular tu base de datos de <strong className="text-white">Supabase</strong>. Actualmente faltan las variables de entorno necesarias.
+        </p>
+
+        <div className="space-y-4 bg-background/50 border border-white/5 rounded-2xl p-5 mb-6 text-sm text-white/95">
+          <div className="flex items-start gap-3">
+            <div className="h-5 w-5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 text-accent">1</div>
+            <div>
+              <p className="font-bold mb-0.5">Ingresá a tu panel de Netlify</p>
+              <p className="text-xs text-white/60">Buscá este sitio web en tu lista de proyectos.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="h-5 w-5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 text-accent">2</div>
+            <div>
+              <p className="font-bold mb-0.5">Configurá las variables de entorno</p>
+              <p className="text-xs text-white/60">Ve a <strong>Site configuration</strong> &gt; <strong>Environment variables</strong> y agregá:</p>
+              <div className="mt-2 space-y-1.5 font-mono text-xs bg-black/40 p-2.5 rounded border border-white/5 select-all">
+                <p><span className="text-accent font-bold">VITE_SUPABASE_URL</span> = <span className="text-white/40">"tu_url_de_supabase"</span></p>
+                <p><span className="text-accent font-bold">VITE_SUPABASE_ANON_KEY</span> = <span className="text-white/40">"tu_anon_key_de_supabase"</span></p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="h-5 w-5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 text-accent">3</div>
+            <div>
+              <p className="font-bold mb-0.5">Dispará un nuevo deploy</p>
+              <p className="text-xs text-white/60">Bajo la pestaña <strong>Deploys</strong>, selecciona <strong>Trigger deploy</strong> &gt; <strong>Clear cache and deploy site</strong> para aplicar los cambios.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={handleReload}
+            className="flex-1 inline-flex items-center justify-center gap-2 bg-accent text-white hover:bg-accent/90 rounded-xl py-3 px-4 text-sm font-bold shadow-accent transition-all duration-200 active:scale-95"
+          >
+            <RefreshCw className="h-4 w-4" /> Probar de nuevo
+          </button>
+          <a
+            href="https://docs.netlify.com/configure-builds/environment-variables/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 inline-flex items-center justify-center gap-2 bg-white/5 text-white border border-white/10 hover:bg-white/10 rounded-xl py-3 px-4 text-sm font-semibold transition-all duration-200 active:scale-95"
+          >
+            Guía de Netlify <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const App = () => {
+  if (!isSupabaseConfigured) {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <SupabaseConfigWarning />
+      </ThemeProvider>
+    );
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <AppProvider>
+                <Routes>
+                  <Route element={<Layout />}>
+                    <Route path="/"                element={<Index />} />
+                    <Route path="/auth"            element={<Auth />} />
+                    <Route path="/noticias"        element={<Noticias />} />
+                    <Route path="/apuntes"         element={<Apuntes />} />
+                    <Route path="/permutero"       element={<Permutero />} />
+                    <Route path="/recomendaciones" element={<Recomendaciones />} />
+                    <Route path="/servicios"       element={<Servicios />} />
+
+                    {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
+                    <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
+                    <Route path="/mi-espacio"      element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
+                    <Route path="/plan"            element={<ProtectedRoute><PlanEstudios /></ProtectedRoute>} />
+                    <Route path="/calendario"      element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
+                    <Route path="/admin"           element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+                    <Route path="*"               element={<NotFound />} />
+                  </Route>
+                </Routes>
+              </AppProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
