@@ -36,8 +36,8 @@ jobs:
           server: ${{ secrets.DEPLOY_SERVER }} # IP o Host del VPS (ej. 200.58.102.187)
           username: ${{ secrets.DEPLOY_USERNAME }} # Usuario de la web (ej. dndjursoc)
           password: ${{ secrets.DEPLOY_PASSWORD }} # Contraseña del usuario
-          port: 21 # Usa 22 si configuras SFTP (SSH), o 21 si usas FTP
-          protocol: ftp # Cambiar a 'sftp' si usas puerto 22
+          port: 22 # Puerto SSH/SFTP estándar
+          protocol: sftp # Protocolo SFTP para evitar problemas de cortafuegos (puertos pasivos)
           local-dir: ./dist/ # Carpeta generada por el build de Vite
-          server-dir: / # Directorio destino (dentro del home de tu usuario, subirá los archivos a su raíz)
+          server-dir: htdocs/dndjursoc.com.ar/ # Carpeta del sitio dentro del home de dndjursoc
           dangerous-clean-slate: false # Cambiar a true si deseas borrar archivos viejos en el servidor al subir
