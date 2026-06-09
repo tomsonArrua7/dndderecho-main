@@ -1,0 +1,43 @@
+name: Deploy to DonWeb VPS
+
+on:
+  push:
+    branches:
+      - master # O el nombre de tu rama principal (ej. master)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+        env:
+          # Si necesitas inyectar variables de entorno en la compilación, colócalas aquí.
+          # NOTA: Supabase URL y ANON KEY deben estar accesibles para la app de Vite.
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Deploy via FTP/SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.DEPLOY_SERVER }} # IP o Host del VPS (ej. 200.58.102.187)
+          username: ${{ secrets.DEPLOY_USERNAME }} # Usuario de la web (ej. dndjursoc)
+          password: ${{ secrets.DEPLOY_PASSWORD }} # Contraseña del usuario
+          port: 21 # Usa 22 si configuras SFTP (SSH), o 21 si usas FTP
+          protocol: ftp # Cambiar a 'sftp' si usas puerto 22
+          local-dir: ./dist/ # Carpeta generada por el build de Vite
+          server-dir: / # Directorio destino (dentro del home de tu usuario, subirá los archivos a su raíz)
+          dangerous-clean-slate: false # Cambiar a true si deseas borrar archivos viejos en el servidor al subir
