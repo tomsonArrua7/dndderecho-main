@@ -21,6 +21,7 @@ import {
   CheckCircle2, Maximize2, Minimize2,
   Lock, BookOpen, Check, HelpCircle, FileText, Info
 } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/context/AppContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -63,6 +64,14 @@ const PLANES_META: PlanMeta[] = [
   },
 ];
 
+const getPPSHours = (estadoStr: string) => {
+  if (estadoStr === "aprobada") return 172;
+  if (estadoStr && estadoStr.startsWith("horas:")) {
+    return parseInt(estadoStr.split(":")[1]) || 0;
+  }
+  return 0;
+};
+
 // ── Componentes de UI Académicos ───────────────────────────────────────
 
 const StatPill = ({ value, label, colorClass }: { value: number | string; label: string; colorClass: string }) => (
@@ -78,14 +87,14 @@ const ProgressBar = ({ value, label }: { value: number; label: string }) => (
   <div className="w-full">
     <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-bold mb-2 px-1">
       <span className="text-white/40">{label}</span>
-      <span className="text-amber-500 font-serif font-bold">{value}%</span>
+      <span className="text-red-500 font-serif font-bold">{value}%</span>
     </div>
     <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden border border-white/5">
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${value}%` }}
         transition={{ duration: 1, ease: "easeOut" }}
-        className="h-full bg-gradient-to-r from-amber-600 to-amber-400"
+        className="h-full bg-gradient-to-r from-red-750 to-red-500"
       />
     </div>
   </div>
@@ -107,8 +116,11 @@ const MateriaCard = ({
   planMaterias: Materia[];
 }) => {
   const isAprobada = estado === "aprobada";
-  const isHabilitada = estado === "habilitada";
+  const isHabilitada = estado === "habilitada" || estado.startsWith("horas:");
   const isBloqueada = estado === "bloqueada";
+
+  const isPPS = materia.id === "10657";
+  const ppsHours = isPPS ? getPPSHours(estado) : 0;
 
   const showRequirements = () => {
     if (!isBloqueada) return;
@@ -119,17 +131,17 @@ const MateriaCard = ({
     
     if (missing.length > 0) {
       toast.error(`Requisitos faltantes: ${missing.join(", ")}`, {
-        icon: <Lock className="h-4 w-4 text-amber-500" />,
+        icon: <Lock className="h-4 w-4 text-red-550" />,
         style: { background: "#0a0e17", color: "#fefefe", border: "1px solid rgba(255,255,255,0.1)" }
       });
     } else if (materia.requisitosEspeciales?.primerAnioCompleto) {
       toast.error("Requiere tener todo 1º Año completo aprobado", {
-        icon: <Lock className="h-4 w-4 text-amber-500" />,
+        icon: <Lock className="h-4 w-4 text-red-550" />,
         style: { background: "#0a0e17", color: "#fefefe", border: "1px solid rgba(255,255,255,0.1)" }
       });
     } else if (materia.requisitosEspeciales?.porcentajeCarrera) {
       toast.error(`Requiere tener el ${materia.requisitosEspeciales.porcentajeCarrera}% de las materias aprobadas`, {
-        icon: <Lock className="h-4 w-4 text-amber-500" />,
+        icon: <Lock className="h-4 w-4 text-red-550" />,
         style: { background: "#0a0e17", color: "#fefefe", border: "1px solid rgba(255,255,255,0.1)" }
       });
     }
@@ -149,7 +161,7 @@ const MateriaCard = ({
       className={cn(
         "relative p-4 rounded-lg border transition-all duration-300 cursor-pointer overflow-hidden shadow-elegant",
         isAprobada ? "bg-emerald-950/15 border-emerald-800/40 hover:border-emerald-700/60" : 
-        isHabilitada ? "bg-amber-950/10 border-amber-800/30 hover:border-amber-600/60" : 
+        isHabilitada ? "bg-red-950/5 border-red-900/20 hover:border-red-700/50" : 
         "bg-slate-900/10 border-white/5 cursor-not-allowed"
       )}
     >
@@ -160,12 +172,12 @@ const MateriaCard = ({
           </span>
           {isBloqueada && <Lock size={11} className="text-white/20" />}
           {isAprobada && <Check size={13} className="text-emerald-400 font-bold" strokeWidth={3} />}
-          {isHabilitada && <BookOpen size={11} className="text-amber-500" />}
+          {isHabilitada && !isAprobada && <BookOpen size={11} className="text-red-500" />}
         </div>
         
         <h3 className={cn(
           "text-[12px] font-serif font-semibold leading-tight tracking-tight",
-          isAprobada ? "text-emerald-200" : isBloqueada ? "text-white/35" : "text-amber-100/90"
+          isAprobada ? "text-emerald-200" : isBloqueada ? "text-white/35" : "text-red-200/90"
         )}>
           {materia.nombre}
         </h3>
@@ -178,6 +190,21 @@ const MateriaCard = ({
             {materia.horas} hs
           </span>
         </div>
+
+        {isPPS && (
+          <div className="mt-2 pt-2 border-t border-white/5">
+            <div className="flex items-center justify-between text-[9px] text-white/50 mb-1 font-mono">
+              <span>Acreditado:</span>
+              <span className="font-bold text-red-400">{ppsHours} / 172 hs</span>
+            </div>
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+              <div 
+                className="h-full bg-red-650" 
+                style={{ width: `${(ppsHours / 172) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -194,6 +221,10 @@ const PlanEstudios = () => {
   const [estados, setEstados] = useState<Record<string, EstadoMateria>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // Modal PPS
+  const [isPPSDialogOpen, setIsPPSDialogOpen] = useState(false);
+  const [ppsInputHours, setPpsInputHours] = useState<number>(0);
 
   const uid = user?.id;
 
@@ -244,8 +275,51 @@ const PlanEstudios = () => {
     }
   };
 
+  const savePPSHours = async (hours: number) => {
+    if (!uid || !planId) return;
+
+    const nextState = hours === 172 ? "aprobada" : hours === 0 ? "pendiente" : `horas:${hours}`;
+    const current = estados["10657"] || "pendiente";
+
+    setEstados(prev => ({ ...prev, "10657": nextState }));
+    setSaving(true);
+
+    try {
+      const { error } = await supabase
+        .from("user_plan_progress")
+        .upsert(
+          {
+            user_id: uid,
+            plan_id: planId,
+            materia_id: "10657",
+            estado: nextState,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id,plan_id,materia_id' }
+        );
+
+      if (error) throw error;
+      setSaving(false);
+      toast.success("Horas de práctica actualizadas", {
+        style: { background: "#062f1c", color: "#34d399", border: "1px solid #10b981" }
+      });
+    } catch (err) {
+      console.error("Error saving PPS hours:", err);
+      toast.error("Error al guardar. Intenta de nuevo.");
+      setEstados(prev => ({ ...prev, "10657": current }));
+      setSaving(false);
+    }
+  };
+
   const handleToggle = useCallback(async (id: string) => {
     if (!uid || !planId) return;
+
+    if (id === "10657") {
+      const currentHours = getPPSHours(estados["10657"] || "pendiente");
+      setPpsInputHours(currentHours);
+      setIsPPSDialogOpen(true);
+      return;
+    }
 
     const current: EstadoMateria = estados[id] || "pendiente";
     const next: EstadoMateria = current === "aprobada" ? "pendiente" : "aprobada";
@@ -300,7 +374,7 @@ const PlanEstudios = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-6">
-          <Loader2 className="h-12 w-12 text-amber-500 animate-spin" />
+          <Loader2 className="h-12 w-12 text-red-500 animate-spin" />
           <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/30 animate-pulse">
             Sincronizando Historial Académico
           </p>
@@ -318,7 +392,7 @@ const PlanEstudios = () => {
           className="mb-16"
         >
           <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] bg-white/5 border border-white/10 text-white/40 mb-8">
-            <GraduationCap size={14} className="text-amber-500" /> Planificación Académica
+            <GraduationCap size={14} className="text-red-500" /> Planificación Académica
           </div>
           <h1 className="font-serif text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight">
             Programa de Estudios
@@ -332,17 +406,17 @@ const PlanEstudios = () => {
               <button
                 key={plan.id}
                 onClick={() => handlePlanChange(plan.id)}
-                className="group flex flex-col justify-between p-8 rounded-2xl bg-white/[0.01] border border-white/10 hover:border-amber-600/40 hover:bg-white/[0.02] transition-all text-left shadow-elegant min-h-[240px]"
+                className="group flex flex-col justify-between p-8 rounded-2xl bg-white/[0.01] border border-white/10 hover:border-red-650/40 hover:bg-white/[0.02] transition-all text-left shadow-elegant min-h-[240px]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500/80 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">{plan.tag}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-red-500/80 px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20">{plan.tag}</span>
                     <span className="text-xs text-white/30 font-mono">{plan.totalMaterias} Materias</span>
                   </div>
-                  <h2 className="text-xl font-serif font-bold text-white mb-3 group-hover:text-amber-400 transition-colors">{plan.nombre}</h2>
+                  <h2 className="text-xl font-serif font-bold text-white mb-3 group-hover:text-red-400 transition-colors">{plan.nombre}</h2>
                   <p className="text-white/45 text-xs leading-relaxed">{plan.descripcion}</p>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/50 group-hover:text-amber-400 mt-6 pt-4 border-t border-white/5 transition-colors">
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/50 group-hover:text-red-400 mt-6 pt-4 border-t border-white/5 transition-colors">
                   Ingresar al plan <ChevronRight size={12} />
                 </div>
               </button>
@@ -375,7 +449,7 @@ const PlanEstudios = () => {
               <div className="flex items-center gap-3 mb-2 flex-wrap">
                 <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/30">Universidad Nacional de La Plata</span>
                 <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-amber-500/80">Jursoc</span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-red-500/80">Jursoc</span>
               </div>
               <h1 className="font-serif text-4xl md:text-5xl font-bold text-white tracking-tight leading-none">
                 Abogacía <span className="text-white/20 font-sans text-xl md:text-2xl font-light">({planId === "plan6" ? "Plan 6" : "Plan 5"})</span>
@@ -385,7 +459,7 @@ const PlanEstudios = () => {
 
           <div className="flex flex-wrap items-center gap-6">
             <StatPill value={stats.aprobadas} label="Aprobadas" colorClass="text-emerald-400" />
-            <StatPill value={stats.habilitadas} label="Habilitadas" colorClass="text-amber-500" />
+            <StatPill value={stats.habilitadas} label="Habilitadas" colorClass="text-red-400" />
             <div className="w-56">
               <ProgressBar value={stats.pct} label="Plan Completado" />
             </div>
@@ -406,9 +480,9 @@ const PlanEstudios = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 15 }}
-              className="fixed bottom-8 right-8 z-[110] bg-slate-900 border border-amber-600/30 px-5 py-3 rounded-xl shadow-elegant flex items-center gap-3"
+              className="fixed bottom-8 right-8 z-[110] bg-slate-900 border border-red-600/30 px-5 py-3 rounded-xl shadow-elegant flex items-center gap-3"
             >
-              <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
+              <Loader2 className="h-4 w-4 animate-spin text-red-500" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">Guardando en la nube...</span>
             </motion.div>
           )}
@@ -466,8 +540,8 @@ const PlanEstudios = () => {
         {planId === "plan6" && currentMaterias.some(m => m.tipo === "practica") && (
           <div className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-8 shadow-card-dnd mb-20">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
-              <FileText size={18} className="text-amber-500" />
-              <h2 className="font-serif text-xl font-bold text-amber-100/90">Área de Formación Práctica</h2>
+              <FileText size={18} className="text-red-500" />
+              <h2 className="font-serif text-xl font-bold text-red-100/90">Área de Formación Práctica</h2>
               <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Trayecto de Adaptación Profesional</span>
             </div>
             
@@ -486,6 +560,48 @@ const PlanEstudios = () => {
           </div>
         )}
       </div>
+
+      {/* Modal Acreditación Horas PPS */}
+      <Dialog open={isPPSDialogOpen} onOpenChange={setIsPPSDialogOpen}>
+        <DialogContent className="max-w-md bg-slate-950 border border-white/10 text-white rounded-xl p-6">
+          <DialogTitle className="font-serif text-xl font-bold mb-2 text-red-200">
+            Acreditar Horas de Práctica
+          </DialogTitle>
+          <p className="text-white/50 text-xs mb-6">
+            Ingresá la cantidad de horas de Práctica Supervisada Pre-profesional (PPS) realizadas. El rango permitido es de 0 a 172 horas.
+          </p>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <input
+                type="number"
+                min="0"
+                max="172"
+                value={ppsInputHours}
+                onChange={(e) => setPpsInputHours(Math.min(172, Math.max(0, parseInt(e.target.value) || 0)))}
+                className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-center text-lg font-mono text-white outline-none focus:border-red-500"
+              />
+              <span className="text-white/40">/ 172 horas totales</span>
+            </div>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setIsPPSDialogOpen(false)}
+                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-white/50 hover:bg-white/10 hover:text-white"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  setIsPPSDialogOpen(false);
+                  await savePPSHours(ppsInputHours);
+                }}
+                className="px-6 py-2 rounded-lg bg-red-650 hover:bg-red-700 text-xs font-bold uppercase tracking-widest text-white"
+              >
+                Guardar Horas
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
