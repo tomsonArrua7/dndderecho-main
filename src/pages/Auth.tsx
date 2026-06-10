@@ -67,7 +67,6 @@ const Auth = () => {
       else toast.error(error.message);
       return;
     }
-    toast.success("Cuenta creada. ¡Ingresá!");
     setSignUpSuccess(true);
   };
 
@@ -127,7 +126,7 @@ const Auth = () => {
               <MailOpen className="h-8 w-8" />
             </div>
             <div className="space-y-2">
-              <h2 className="font-display text-2xl font-bold text-foreground">¡Cuenta creada con éxito!</h2>
+              <h2 className="font-display text-2xl font-bold text-foreground">¡Cuenta creada! Confirmá tu mail</h2>
               <p className="text-muted-foreground text-sm max-w-sm leading-relaxed">
                 Por favor, confirma tu mail para ingresar. Te enviamos un enlace de verificación a tu bandeja de entrada.
               </p>
