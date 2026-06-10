@@ -13,27 +13,16 @@ jobs:
       - name: Deploy via SSH (git pull + build en servidor)
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.DEPLOY_SERVER }}
+          host: 200.58.102.187
           username: root
           password: ${{ secrets.DEPLOY_ROOT_PASSWORD }}
           port: 22
           script: |
-            # Permitir git en el directorio del sitio
             git config --global --add safe.directory /home/dndjursoc/htdocs/dndjursoc.com.ar
-
             cd /home/dndjursoc/htdocs/dndjursoc.com.ar
-
-            # Traer últimos cambios
             git pull origin master
-
-            # Instalar deps si cambiaron
             npm ci --prefer-offline 2>/dev/null || npm install
-
-            # Compilar
             npm run build
-
-            # Desplegar al webroot
-            cp -r dist/* .
-
-            echo "✅ Deploy completado"
-            git log --oneline -1
+            cp -r dist/assets/* assets/
+            cp dist/index.html index.html
+            echo "Deploy completado: $(git log --oneline -1)"
