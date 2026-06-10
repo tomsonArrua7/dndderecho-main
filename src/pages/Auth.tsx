@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,18 @@ const signUpSchema = signInSchema.extend({
   fullName: z.string().trim().min(2, "Ingresá tu nombre").max(80),
 });
 
+// Detecta si la URL actual viene de un link de confirmación de Supabase
+function getConfirmationCode(): { type: "pkce"; code: string } | { type: "hash" } | null {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const hash = window.location.hash;
+  if (code) return { type: "pkce", code };
+  if (hash.includes("access_token") && (hash.includes("type=signup") || hash.includes("type=invite"))) {
+    return { type: "hash" };
+  }
+  return null;
+}
+
 const Auth = () => {
   const { user, signIn, signUp, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -30,18 +43,42 @@ const Auth = () => {
   const [fullName, setFullName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
-  const [mailConfirmed, setMailConfirmed] = useState(() => {
-    const hash = window.location.hash;
-    return hash.includes("access_token") && (hash.includes("type=signup") || hash.includes("type=invite"));
-  });
 
+  // "idle" | "loading" | "confirmed" | "error"
+  const [confirmState, setConfirmState] = useState<"idle" | "loading" | "confirmed" | "error">(
+    () => (getConfirmationCode() ? "loading" : "idle")
+  );
+
+  // Intercambia el código PKCE (o valida el hash) por una sesión real
   useEffect(() => {
-    if (mailConfirmed) {
-      window.history.replaceState(null, "", window.location.pathname);
-    }
-  }, [mailConfirmed]);
+    const info = getConfirmationCode();
+    if (!info) return;
 
-  if (!authLoading && user && !mailConfirmed) return <Navigate to={from} replace />;
+    // Limpiamos la URL del navegador
+    window.history.replaceState(null, "", window.location.pathname);
+
+    if (info.type === "hash") {
+      // supabase-js maneja el hash automáticamente; sólo marcamos confirmado
+      setConfirmState("confirmed");
+      return;
+    }
+
+    // Flujo PKCE: intercambiar code por sesión
+    supabase.auth.exchangeCodeForSession(info.code).then(({ error }) => {
+      if (error) {
+        console.error("PKCE exchange error:", error);
+        setConfirmState("error");
+      } else {
+        setConfirmState("confirmed");
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Si el usuario ya está logueado y no estamos confirmando un mail, redirigir
+  if (!authLoading && user && confirmState === "idle") {
+    return <Navigate to={from} replace />;
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +87,10 @@ const Auth = () => {
     setSubmitting(true);
     const { error } = await signIn(email, password);
     setSubmitting(false);
-    if (error) { toast.error(error.message === "Invalid login credentials" ? "Email o contraseña incorrectos" : error.message); return; }
+    if (error) {
+      toast.error(error.message === "Invalid login credentials" ? "Email o contraseña incorrectos" : error.message);
+      return;
+    }
     toast.success("¡Bienvenido/a!");
     navigate(from, { replace: true });
   };
@@ -72,35 +112,68 @@ const Auth = () => {
 
   const handleGoToSignIn = async () => {
     await signOut();
-    setMailConfirmed(false);
+    setConfirmState("idle");
     setTab("signin");
   };
 
-  if (mailConfirmed) {
+  // ── PANTALLA: verificando código ─────────────────────────────────────
+  if (confirmState === "loading") {
     return (
       <div className="container min-h-[70vh] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card border border-border rounded-3xl p-8 shadow-elegant text-center space-y-6 animate-hero-content">
-          <div className="mx-auto h-16 w-16 bg-green-500/10 border border-green-500/20 text-green-500 rounded-full flex items-center justify-center animate-bounce">
-            <CheckCircle className="h-10 w-10" />
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <p className="text-muted-foreground text-sm">Verificando tu cuenta...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── PANTALLA: mail confirmado ─────────────────────────────────────────
+  if (confirmState === "confirmed") {
+    return (
+      <div className="container min-h-[70vh] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card border border-border rounded-3xl p-10 shadow-elegant text-center space-y-6 animate-hero-content">
+          <div className="mx-auto h-20 w-20 bg-green-500/10 border-2 border-green-500/30 text-green-500 rounded-full flex items-center justify-center">
+            <CheckCircle className="h-10 w-10" strokeWidth={1.5} />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h1 className="font-display text-3xl font-black text-foreground">¡Mail confirmado!</h1>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Tu cuenta ya se encuentra activa. Ya podés ingresar a la plataforma.
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+              Tu cuenta ya se encuentra activa. Ya podés ingresar a la plataforma con tu email y contraseña.
             </p>
           </div>
-          <Button 
-            onClick={handleGoToSignIn} 
-            size="lg" 
-            className="w-full rounded-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 active:scale-95"
+          <Button
+            onClick={handleGoToSignIn}
+            size="lg"
+            className="w-full rounded-xl font-bold text-base h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 active:scale-95"
           >
-            Ir al ingreso de alumnos
+            Ingresar a la plataforma
           </Button>
         </div>
       </div>
     );
   }
 
+  // ── PANTALLA: link inválido o expirado ───────────────────────────────
+  if (confirmState === "error") {
+    return (
+      <div className="container min-h-[70vh] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card border border-destructive/30 rounded-3xl p-10 shadow-elegant text-center space-y-6">
+          <div className="space-y-3">
+            <h1 className="font-display text-2xl font-black text-foreground">Link inválido o expirado</h1>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              El enlace de confirmación ya fue usado o expiró. Intentá registrarte nuevamente.
+            </p>
+          </div>
+          <Button onClick={() => setConfirmState("idle")} variant="outline" className="w-full rounded-xl">
+            Volver al inicio
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── PANTALLA PRINCIPAL: formulario de login / registro ───────────────
   return (
     <div className="container py-12 md:py-20 grid md:grid-cols-2 gap-12 items-center">
       <div className="hidden md:block">
@@ -121,22 +194,25 @@ const Auth = () => {
 
       <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-elegant animate-hero-content">
         {signUpSuccess ? (
-          <div className="flex flex-col items-center text-center py-6 space-y-6 animate-fade-in">
-            <div className="mx-auto h-16 w-16 bg-green-500/10 border border-green-500/20 text-green-500 rounded-full flex items-center justify-center animate-bounce">
-              <MailOpen className="h-8 w-8" />
+          // ── Cuenta creada: pedimos confirmar mail ──
+          <div className="flex flex-col items-center text-center py-4 space-y-6">
+            <div className="mx-auto h-20 w-20 bg-green-500/10 border-2 border-green-500/30 text-green-500 rounded-full flex items-center justify-center">
+              <MailOpen className="h-10 w-10" strokeWidth={1.5} />
             </div>
-            <div className="space-y-2">
-              <h2 className="font-display text-2xl font-bold text-foreground">¡Cuenta creada! Confirmá tu mail</h2>
-              <p className="text-muted-foreground text-sm max-w-sm leading-relaxed">
-                Por favor, confirma tu mail para ingresar. Te enviamos un enlace de verificación a tu bandeja de entrada.
+            <div className="space-y-3">
+              <h2 className="font-display text-2xl font-bold text-foreground">
+                ¡Cuenta creada! Confirmá tu mail
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-xs mx-auto leading-relaxed">
+                Te enviamos un enlace de verificación a tu bandeja de entrada. Hacé clic en ese enlace para activar tu cuenta.
               </p>
             </div>
-            <Button 
-              onClick={() => { setSignUpSuccess(false); setTab("signin"); }} 
-              variant="outline" 
-              className="w-full rounded-xl font-semibold border-border hover:bg-muted"
+            <Button
+              onClick={() => { setSignUpSuccess(false); setTab("signin"); }}
+              variant="outline"
+              className="w-full rounded-xl font-semibold border-border hover:bg-muted h-11"
             >
-              Ir al Iniciar Sesión
+              Ya confirmé — Ir a Iniciar Sesión
             </Button>
           </div>
         ) : (
