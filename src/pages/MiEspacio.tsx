@@ -26,6 +26,15 @@ const MiEspacio = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  // Crop States
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [tempImage, setTempImage] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [imgRenderSize, setImgRenderSize] = useState({ w: 0, h: 0 });
+
   useEffect(() => {
     if (profile) {
       setEditName(profile.full_name || "");
@@ -85,7 +94,43 @@ const MiEspacio = () => {
     toast.success("Permuta eliminada");
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setDragging(true);
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!dragging) return;
+    setPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setDragging(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - position.x,
+        y: e.touches[0].clientY - position.y
+      });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!dragging || e.touches.length !== 1) return;
+    setPosition({
+      x: e.touches[0].clientX - dragStart.x,
+      y: e.touches[0].clientY - dragStart.y
+    });
+  };
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0 || !user) return;
     const file = e.target.files[0];
     
@@ -94,36 +139,98 @@ const MiEspacio = () => {
       return;
     }
 
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setTempImage(reader.result);
+        setIsCropModalOpen(true);
+      } else {
+        toast.error("Error al leer el archivo");
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleConfirmCrop = () => {
+    if (!tempImage || !user) return;
+
     setUploading(true);
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
-    try {
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
-
-      if (updateError) throw updateError;
-
-      toast.success("¡Foto de perfil actualizada!");
-      await reloadProfile();
-    } catch (error: any) {
-      console.error("Error al subir avatar:", error);
-      toast.error("Error al subir la imagen: " + (error.message || error));
-    } finally {
+    const canvas = document.createElement("canvas");
+    canvas.width = 300;
+    canvas.height = 300;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      toast.error("Error al procesar la imagen");
       setUploading(false);
+      return;
     }
+
+    const img = new Image();
+    img.src = tempImage;
+    img.onload = async () => {
+      ctx.clearRect(0, 0, 300, 300);
+      ctx.fillStyle = "#0A0E1A";
+      ctx.fillRect(0, 0, 300, 300);
+
+      const ratio = 300 / 280;
+      const canvasRenderW = imgRenderSize.w * ratio;
+      const canvasRenderH = imgRenderSize.h * ratio;
+      const canvasPosX = position.x * ratio;
+      const canvasPosY = position.y * ratio;
+
+      ctx.save();
+      ctx.translate(150, 150);
+      ctx.translate(canvasPosX, canvasPosY);
+      ctx.scale(zoom, zoom);
+      ctx.drawImage(img, -canvasRenderW / 2, -canvasRenderH / 2, canvasRenderW, canvasRenderH);
+      ctx.restore();
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          toast.error("Error al generar el recorte");
+          setUploading(false);
+          return;
+        }
+
+        const filePath = `${user.id}/${Date.now()}.jpg`;
+
+        try {
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, blob, { contentType: 'image/jpeg', upsert: true });
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ avatar_url: publicUrl })
+            .eq('id', user.id);
+
+          if (updateError) throw updateError;
+
+          toast.success("¡Foto de perfil actualizada!");
+          await reloadProfile();
+          setIsCropModalOpen(false);
+          setTempImage(null);
+        } catch (error: any) {
+          console.error("Error al subir avatar:", error);
+          toast.error("Error al subir la imagen: " + (error.message || error));
+        } finally {
+          setUploading(false);
+        }
+      }, "image/jpeg", 0.9);
+    };
+
+    img.onerror = () => {
+      toast.error("Error al cargar la imagen original");
+      setUploading(false);
+    };
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -425,6 +532,106 @@ const MiEspacio = () => {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para recortar foto de perfil */}
+      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+        <DialogContent className="max-w-md bg-slate-950 border border-white/10 text-white rounded-xl p-6 z-[200]">
+          <DialogTitle className="font-serif text-lg font-bold mb-1 text-red-200">
+            Ajustar foto de perfil
+          </DialogTitle>
+          <p className="text-white/50 text-xs mb-4">
+            Arrastrá la foto para moverla y usá la barra de abajo para hacer zoom para que calce bien en el círculo.
+          </p>
+          
+          <div className="flex flex-col items-center gap-6">
+            {/* Circular Preview Mask */}
+            <div 
+              className="relative w-[280px] h-[280px] overflow-hidden rounded-full border border-white/20 bg-slate-900 cursor-move"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleMouseUp}
+            >
+              {tempImage && (
+                <img
+                  src={tempImage}
+                  alt="Crop preview"
+                  draggable={false}
+                  onLoad={(e) => {
+                    const img = e.currentTarget;
+                    const imgAspectRatio = img.naturalWidth / img.naturalHeight;
+                    let w = 280;
+                    let h = 280;
+                    if (imgAspectRatio > 1) {
+                      w = 280 * imgAspectRatio;
+                    } else {
+                      h = 280 / imgAspectRatio;
+                    }
+                    setImgRenderSize({ w, h });
+                    setPosition({ x: 0, y: 0 });
+                    setZoom(1);
+                  }}
+                  style={{
+                    position: "absolute",
+                    left: "50%",
+                    top: "50%",
+                    width: imgRenderSize.w ? `${imgRenderSize.w}px` : "auto",
+                    height: imgRenderSize.h ? `${imgRenderSize.h}px` : "auto",
+                    marginLeft: imgRenderSize.w ? `${-imgRenderSize.w / 2}px` : 0,
+                    marginTop: imgRenderSize.h ? `${-imgRenderSize.h / 2}px` : 0,
+                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoom})`,
+                    maxWidth: "none",
+                    maxHeight: "none",
+                    pointerEvents: "none",
+                  }}
+                />
+              )}
+              <div className="absolute inset-0 rounded-full border-2 border-red-500/30 pointer-events-none" />
+            </div>
+
+            {/* Zoom Slider */}
+            <div className="w-full flex flex-col gap-2">
+              <div className="flex justify-between text-xs text-white/50">
+                <span>Zoom</span>
+                <span>{Math.round(zoom * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="3"
+                step="0.01"
+                value={zoom}
+                onChange={(e) => setZoom(parseFloat(e.target.value))}
+                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-red-500"
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-3 w-full mt-2">
+              <button
+                onClick={() => {
+                  setIsCropModalOpen(false);
+                  setTempImage(null);
+                }}
+                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-white/50 hover:bg-white/10 hover:text-white"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmCrop}
+                disabled={uploading}
+                className="px-6 py-2 rounded-lg bg-red-650 hover:bg-red-700 disabled:bg-red-800 disabled:opacity-50 text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2"
+              >
+                {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                Guardar Foto
+              </button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
