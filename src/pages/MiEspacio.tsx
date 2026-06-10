@@ -18,7 +18,7 @@ const MiEspacio = () => {
     (async () => {
       const [{ data: profile }, { data: ums }, { count: evCount }, { data: pData }, { count: mCount }] = await Promise.all([
         supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-        supabase.from("user_materias").select("estado").eq("user_id", user.id),
+        supabase.from("user_plan_progress").select("estado").eq("user_id", user.id),
         supabase.from("eventos").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("permutas").select("*, materias(nombre)").eq("user_id", user.id).or("status.eq.activa,status.is.null"),
         supabase.from("matches").select("*", { count: "exact", head: true }),

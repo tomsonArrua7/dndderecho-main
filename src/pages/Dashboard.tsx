@@ -15,7 +15,7 @@ const Dashboard = () => {
     (async () => {
       const [{ data: profile }, { data: ums }, { count: evCount }, { count: pCount }, { count: mCount }] = await Promise.all([
         supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-        supabase.from("user_materias").select("estado").eq("user_id", user.id),
+        supabase.from("user_plan_progress").select("estado").eq("user_id", user.id),
         supabase.from("eventos").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("permutas").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("activa", true),
         supabase.from("matches").select("*", { count: "exact", head: true }),
