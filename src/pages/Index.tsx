@@ -78,9 +78,17 @@ const Index = () => {
 
           <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-20 text-white tracking-tight max-w-2xl mx-auto">
             <motion.span
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="block text-xs uppercase tracking-[0.4em] text-accent font-black mb-6"
+            >
+              DND Jursoc · Facultad de Derecho
+            </motion.span>
+            <motion.span
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
               className="block"
             >
               Defendamos
@@ -88,7 +96,7 @@ const Index = () => {
             <motion.span
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
               className="block text-white/90"
             >
               Nuestro Derecho
@@ -101,7 +109,7 @@ const Index = () => {
             transition={{ duration: 1, delay: 1 }}
             className="text-xl md:text-2xl text-white/50 max-w-2xl mx-auto mb-16 font-medium leading-relaxed tracking-tight"
           >
-            La experiencia académica definitiva para la comunidad de Ciencias Jurídicas y Sociales de la UNLP.
+            La plataforma estudiantil definitiva de DND Jursoc para la comunidad de la Facultad de Ciencias Jurídicas y Sociales (UNLP).
           </motion.p>
 
           <motion.div
