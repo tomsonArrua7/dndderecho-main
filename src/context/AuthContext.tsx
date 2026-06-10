@@ -6,6 +6,8 @@ interface ProfileInfo {
   role: string;
   full_name: string | null;
   is_banned: boolean;
+  anio_ingreso?: number | null;
+  avatar_url?: string | null;
 }
 
 interface AuthContextValue {
@@ -14,8 +16,9 @@ interface AuthContextValue {
   profile: ProfileInfo | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, anioIngreso: number) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  reloadProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -28,11 +31,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loadProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase.from("profiles").select("role, full_name, is_banned").eq("id", userId).maybeSingle();
+      const { data, error } = await supabase.from("profiles").select("role, full_name, is_banned, anio_ingreso, avatar_url").eq("id", userId).maybeSingle();
       if (error) {
         console.error("Supabase profile error:", error);
       }
-      const prof = (data as ProfileInfo) || { role: "estudiante", full_name: null, is_banned: false };
+      const prof = (data as ProfileInfo) || { role: "estudiante", full_name: null, is_banned: false, anio_ingreso: null, avatar_url: null };
       
       if (prof.is_banned) {
         console.warn("User is banned. Signing out...");
@@ -43,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setProfile(prof);
     } catch (err) {
       console.error("Unexpected error in loadProfile:", err);
-      setProfile({ role: "estudiante", full_name: null, is_banned: false });
+      setProfile({ role: "estudiante", full_name: null, is_banned: false, anio_ingreso: null, avatar_url: null });
     }
   };
 
@@ -81,13 +84,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, anioIngreso: number) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth`,
-        data: { full_name: fullName },
+        data: { 
+          full_name: fullName,
+          anio_ingreso: anioIngreso
+        },
       },
     });
     return { error };
@@ -97,8 +103,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await supabase.auth.signOut();
   };
 
+  const reloadProfile = async () => {
+    if (user) await loadProfile(user.id);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, profile, loading, signIn, signUp, signOut, reloadProfile }}>
       {children}
     </AuthContext.Provider>
   );

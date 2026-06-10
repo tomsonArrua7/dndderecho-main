@@ -1,13 +1,13 @@
 import { Client } from 'ssh2';
 import fs from 'fs';
 
-const migrationSql = fs.readFileSync('supabase/migrations/20260610010000_match_notification_trigger.sql', 'utf8');
+const migrationSql = fs.readFileSync('supabase/migrations/20260610020000_writer_role_and_profile_additions.sql', 'utf8');
 
 const conn = new Client();
 conn.on('ready', () => {
   console.log('SSH Connection OK');
 
-  const cmd = `docker exec -i supabase-db psql -U postgres -d postgres << 'EOF'
+  const cmd = `docker exec -i supabase-db psql -U supabase_admin -d postgres << 'EOF'
 ${migrationSql}
 EOF
 `;

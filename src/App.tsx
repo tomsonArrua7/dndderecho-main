@@ -24,6 +24,7 @@ import Recomendaciones from "./pages/Recomendaciones";
 import NotFound       from "./pages/NotFound";
 import AdminPanel     from "./pages/AdminPanel";
 import Servicios      from "./pages/Servicios";
+import PanelEscritor   from "./pages/PanelEscritor";
 
 const queryClient = new QueryClient();
 
@@ -137,6 +138,7 @@ const App = () => {
                     <Route path="/plan"            element={<ProtectedRoute><PlanEstudios /></ProtectedRoute>} />
                     <Route path="/calendario"      element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
                     <Route path="/admin"           element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+                    <Route path="/panel-escritor"  element={<ProtectedRoute><PanelEscritor /></ProtectedRoute>} />
                     <Route path="*"               element={<NotFound />} />
                   </Route>
                 </Routes>

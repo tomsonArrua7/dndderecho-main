@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import {
@@ -211,6 +211,131 @@ const MateriaCard = ({
   );
 };
 
+// ── Red and White Confetti Component ──────────────────────────────────
+const RedWhiteConfetti = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const colors = ["#dc2626", "#ffffff", "#ef4444", "#f8fafc", "#b91c1c"];
+    const particles: Array<{
+      x: number;
+      y: number;
+      size: number;
+      color: string;
+      speedX: number;
+      speedY: number;
+      rotation: number;
+      rotationSpeed: number;
+      wobble: number;
+      wobbleSpeed: number;
+    }> = [];
+
+    const createBurst = (side: "left" | "right") => {
+      const count = 80;
+      const startX = side === "left" ? 0 : canvas.width;
+      const startY = canvas.height * 0.8;
+      
+      for (let i = 0; i < count; i++) {
+        const angle = side === "left" 
+          ? -Math.PI / 4 + (Math.random() - 0.5) * 0.4 
+          : -3 * Math.PI / 4 + (Math.random() - 0.5) * 0.4;
+        const speed = 15 + Math.random() * 20;
+
+        particles.push({
+          x: startX,
+          y: startY,
+          size: Math.random() * 8 + 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedX: Math.cos(angle) * speed,
+          speedY: Math.sin(angle) * speed,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 15,
+          wobble: Math.random() * 10,
+          wobbleSpeed: 0.05 + Math.random() * 0.05,
+        });
+      }
+    };
+
+    createBurst("left");
+    createBurst("right");
+
+    const interval = setInterval(() => {
+      if (particles.length < 150) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: -20,
+          size: Math.random() * 6 + 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedX: (Math.random() - 0.5) * 3,
+          speedY: 2 + Math.random() * 4,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 5,
+          wobble: Math.random() * 10,
+          wobbleSpeed: 0.02 + Math.random() * 0.03,
+        });
+      }
+    }, 100);
+
+    let animationId: number;
+    const update = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.speedY += 0.25;
+        p.speedX *= 0.98;
+        p.rotation += p.rotationSpeed;
+        p.wobble += p.wobbleSpeed;
+
+        p.x += Math.sin(p.wobble) * 0.5;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        ctx.restore();
+
+        if (p.y > canvas.height + 20 || p.x < -20 || p.x > canvas.width + 20) {
+          particles.splice(i, 1);
+        }
+      }
+
+      animationId = requestAnimationFrame(update);
+    };
+
+    update();
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      clearInterval(interval);
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-[9999] w-full h-full"
+    />
+  );
+};
+
 // ── Main Page ────────────────────────────────────────────────────────
 
 const PlanEstudios = () => {
@@ -226,6 +351,10 @@ const PlanEstudios = () => {
   // Modal PPS
   const [isPPSDialogOpen, setIsPPSDialogOpen] = useState(false);
   const [ppsInputHours, setPpsInputHours] = useState<number>(0);
+
+  // Celebration state
+  const [isCongratsOpen, setIsCongratsOpen] = useState(false);
+  const [hasCelebrated, setHasCelebrated] = useState(false);
 
   const uid = user?.id;
 
@@ -370,6 +499,17 @@ const PlanEstudios = () => {
     const pct = currentCalcPct(estados);
     return { aprobadas, habilitadas, pct, total: currentTotal };
   }, [estados, currentMaterias, currentGetEstado, currentCalcPct, currentTotal]);
+
+  useEffect(() => {
+    if (!loading && stats.pct === 100) {
+      if (!hasCelebrated) {
+        setHasCelebrated(true);
+        setIsCongratsOpen(true);
+      }
+    } else if (stats.pct < 100) {
+      setHasCelebrated(false);
+    }
+  }, [stats.pct, hasCelebrated, loading]);
 
   if (loading) {
     return (
@@ -600,6 +740,49 @@ const PlanEstudios = () => {
                 Guardar Horas
               </button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confetti Celebration */}
+      {isCongratsOpen && <RedWhiteConfetti />}
+
+      {/* Graduation/Congrats Dialog */}
+      <Dialog open={isCongratsOpen} onOpenChange={setIsCongratsOpen}>
+        <DialogContent className="max-w-lg bg-slate-950 border border-red-500/20 text-white rounded-2xl p-8 text-center shadow-[0_0_50px_rgba(220,38,38,0.15)] relative overflow-hidden">
+          <div className="absolute -top-40 -left-40 w-80 h-80 bg-red-650/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-red-650/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col items-center py-6">
+            <div className="h-20 w-20 bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center text-red-500 mb-6 animate-bounce">
+              <GraduationCap size={44} strokeWidth={1.5} />
+            </div>
+            
+            <DialogTitle className="font-serif text-3xl md:text-4xl font-bold mb-3 tracking-tight text-red-200">
+              ¡Felicitaciones!
+            </DialogTitle>
+            
+            <p className="text-xl md:text-2xl font-serif font-semibold text-white mb-6">
+              ¡Oficialmente sos Abogado/a!
+            </p>
+            
+            <div className="w-full max-w-sm mx-auto my-6 p-4 rounded-xl bg-white/[0.02] border border-white/5 font-serif italic text-xs leading-relaxed text-white/60">
+              "Iuris praecepta sunt haec: honeste vivere, alterum non laedere, suum cuique tribuere."
+              <span className="block mt-2 text-[10px] uppercase tracking-wider text-red-400/80 not-italic font-sans font-bold">
+                — Ulpiano (Preceptos del Derecho)
+              </span>
+            </div>
+            
+            <p className="text-sm text-white/50 max-w-sm mb-8">
+              Completaste el 100% de las materias de la carrera de Abogacía de la Facultad de Ciencias Jurídicas y Sociales de la Universidad Nacional de La Plata.
+            </p>
+            
+            <button
+              onClick={() => setIsCongratsOpen(false)}
+              className="w-full max-w-xs py-3 px-6 rounded-xl bg-gradient-to-r from-red-750 to-red-600 hover:from-red-700 hover:to-red-500 text-xs font-bold uppercase tracking-widest text-white transition-all shadow-[0_4px_20px_rgba(220,38,38,0.3)] hover:shadow-[0_4px_25px_rgba(220,38,38,0.5)] active:scale-95"
+            >
+              Comenzar a Ejercer
+            </button>
           </div>
         </DialogContent>
       </Dialog>

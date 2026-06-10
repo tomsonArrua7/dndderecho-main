@@ -153,7 +153,12 @@ export const Navbar = () => {
                         <Link to="/calendario" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
                           <CalendarDays size={16} strokeWidth={2}/> Calendario
                         </Link>
-                        {profile?.role?.toLowerCase()?.trim() === 'admin' && (
+                        {(profile?.role === 'admin' || profile?.role === 'escritor') && (
+                          <Link to="/panel-escritor" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
+                            <Newspaper size={16} strokeWidth={2}/> Panel Redacción
+                          </Link>
+                        )}
+                        {profile?.role === 'admin' && (
                           <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
                             <Settings size={16} strokeWidth={2}/> Panel Admin
                           </Link>

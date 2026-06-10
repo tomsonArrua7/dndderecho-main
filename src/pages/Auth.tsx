@@ -17,6 +17,12 @@ const signInSchema = z.object({
 });
 const signUpSchema = signInSchema.extend({
   fullName: z.string().trim().min(2, "Ingresá tu nombre").max(80),
+  anioIngreso: z.string()
+    .regex(/^\d{4}$/, "El año de ingreso debe ser un número de 4 dígitos")
+    .refine((val) => {
+      const yr = parseInt(val, 10);
+      return yr >= 1980 && yr <= 2026;
+    }, "El año debe estar entre 1980 y 2026"),
 });
 
 // Detecta si la URL actual viene de un link de confirmación de Supabase
@@ -41,6 +47,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [anioIngreso, setAnioIngreso] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
@@ -97,10 +104,10 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = signUpSchema.safeParse({ email, password, fullName });
+    const parsed = signUpSchema.safeParse({ email, password, fullName, anioIngreso });
     if (!parsed.success) { toast.error(parsed.error.errors[0].message); return; }
     setSubmitting(true);
-    const { error } = await signUp(email, password, fullName);
+    const { error } = await signUp(email, password, fullName, parseInt(anioIngreso, 10));
     setSubmitting(false);
     if (error) {
       if (error.message.includes("already")) toast.error("Ese email ya está registrado");
@@ -244,6 +251,18 @@ const Auth = () => {
                 <div>
                   <Label htmlFor="su-name">Nombre completo</Label>
                   <Input id="su-name" value={fullName} onChange={(e) => setFullName(e.target.value)} required maxLength={80} />
+                </div>
+                <div>
+                  <Label htmlFor="su-anio-ingreso">Año de ingreso a la facultad</Label>
+                  <Input 
+                    id="su-anio-ingreso" 
+                    type="text" 
+                    maxLength={4}
+                    placeholder="Ej: 2023"
+                    value={anioIngreso} 
+                    onChange={(e) => setAnioIngreso(e.target.value.replace(/\D/g, "").slice(0, 4))} 
+                    required 
+                  />
                 </div>
                 <div>
                   <Label htmlFor="su-email">Email</Label>
