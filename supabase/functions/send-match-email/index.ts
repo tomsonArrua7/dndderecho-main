@@ -50,13 +50,33 @@ serve(async (req) => {
       const waLink = `https://wa.me/${partnerPhone.replace(/\D/g, "")}`;
       
       const html = `
-        <h2>¡Felicidades ${recipientName}!</h2>
-        <p>Encontramos a alguien interesado en permutar la comisión de <strong>${materia}</strong>.</p>
-        <p>Tu match es <strong>${partnerName}</strong>.</p>
-        <p>Hacé clic en el siguiente enlace para contactar a tu match directamente por WhatsApp y arreglar los detalles:</p>
-        <a href="${waLink}" style="display:inline-block;padding:10px 20px;background-color:#25D366;color:white;text-decoration:none;border-radius:5px;">Contactar por WhatsApp</a>
-        <p>¡Gracias por usar el Permutero de DND!</p>
-      `;
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${subject}</title></head>
+<body style="margin:0;padding:0;background-color:#0d1b2a;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0d1b2a;padding:40px 20px;"><tr><td align="center">
+<table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+<tr><td align="center" style="padding-bottom:24px;"><img src="https://dndjursoc.com.ar/dnd-logo.png" width="140" alt="DND Derecho UNLP" style="display:block;max-width:140px;height:auto;"></td></tr>
+<tr><td style="background-color:#111827;border-radius:16px;border:1px solid #1e293b;overflow:hidden;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:linear-gradient(135deg,#be123c 0%,#9f1239 100%);padding:24px 32px;text-align:center;">
+<p style="margin:0 0 4px 0;color:#fecdd3;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:3px;">Permutero DND</p>
+<h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:800;">&#127881; Tenes un Match!</h1>
+</td></tr></table>
+<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:36px 32px;text-align:center;">
+<h2 style="margin:0 0 12px 0;color:#f1f5f9;font-size:18px;font-weight:700;">Hola ${recipientName}!</h2>
+<p style="margin:0 0 24px 0;color:#94a3b8;font-size:14px;line-height:1.7;">
+Encontramos a alguien interesado en permutar la comision de <strong style="color:#f1f5f9;">${materia}</strong>.
+Tu match es <strong style="color:#f1f5f9;">${partnerName}</strong>.
+</p>
+<table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 24px auto;"><tr><td bgcolor="#25D366" style="border-radius:10px;">
+<a href="${waLink}" target="_blank" style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:14px;font-weight:800;text-decoration:none;border-radius:10px;">
+Contactar por WhatsApp
+</a></td></tr></table>
+<p style="margin:0;color:#475569;font-size:12px;">Gracias por usar el Permutero de DND!</p>
+</td></tr></table>
+<table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#0f172a;padding:16px 32px;border-top:1px solid #1e293b;text-align:center;">
+<p style="margin:0;color:#475569;font-size:11px;">Agrupacion Estudiantil <strong>Defendamos Nuestro Derecho</strong></p>
+</td></tr></table>
+</td></tr></table></td></tr></table>
+</body></html>`;
 
       if (RESEND_API_KEY) {
         await fetch("https://api.resend.com/emails", {
@@ -66,7 +86,7 @@ serve(async (req) => {
             Authorization: `Bearer ${RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: "DND Permutero <permutas@tudominio.com>",
+            from: "DND Permutero <contacto@dndjursoc.com.ar>",
             to,
             subject,
             html,

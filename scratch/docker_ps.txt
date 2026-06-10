@@ -1,0 +1,13 @@
+=== ALL RUNNING CONTAINERS ===
+NAMES                            IMAGE                                    STATUS                    PORTS
+supabase-auth                    supabase/gotrue:v2.189.0                 Up 24 minutes (healthy)   
+supabase-storage                 supabase/storage-api:v1.60.4             Up 2 hours (healthy)      5000/tcp
+supabase-edge-functions          supabase/edge-runtime:v1.74.0            Up 2 hours (healthy)      
+supabase-pooler                  supabase/supavisor:2.9.5                 Up 2 hours (healthy)      0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp, 0.0.0.0:6543->6543/tcp, [::]:6543->6543/tcp
+supabase-meta                    supabase/postgres-meta:v0.96.6           Up 2 hours (healthy)      8080/tcp
+realtime-dev.supabase-realtime   supabase/realtime:v2.102.3               Up 2 hours (healthy)      
+supabase-rest                    postgrest/postgrest:v14.12               Up 2 hours                3000/tcp
+supabase-kong                    kong/kong:3.9.1                          Up 2 hours (healthy)      8001-8004/tcp, 0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp, 8444-8447/tcp, 0.0.0.0:8444->8443/tcp, [::]:8444->8443/tcp
+supabase-db                      supabase/postgres:15.8.1.085             Up 2 hours (healthy)      5432/tcp
+supabase-studio                  supabase/studio:2026.06.03-sha-0bca601   Up 2 hours (healthy)      3000/tcp
+supabase-imgproxy                darthsim/imgproxy:v3.30.1                Up 2 hours (healthy)      8080/tcp

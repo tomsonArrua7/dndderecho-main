@@ -234,37 +234,37 @@ const PlanEstudios = () => {
   const currentGetEstado = useMemo(() => planId === "plan6" ? getEstadoVisual : getEstadoVisualPlan5, [planId]);
 
   useEffect(() => {
-    if (!uid) return;
+    if (!uid || !planId) return;
     setLoading(true);
 
     const fetchProgress = async () => {
       try {
         const { data, error } = await supabase
-          .from("user_materias")
+          .from("user_plan_progress")
           .select("materia_id, estado")
-          .eq("user_id", uid);
+          .eq("user_id", uid)
+          .eq("plan_id", planId);
 
         if (error) throw error;
 
         const estadosMap: Record<string, EstadoMateria> = {};
-        data.forEach(item => {
+        (data ?? []).forEach(item => {
           estadosMap[item.materia_id] = item.estado as EstadoMateria;
         });
         setEstados(estadosMap);
       } catch (err) {
         console.error("Error fetching progress:", err);
-        toast.error("No se pudo cargar tu progreso de la nube.");
-        // Fallback to LS if needed, but the requirement is to fix persistence
+        toast.error("No se pudo cargar tu progreso.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProgress();
-  }, [uid, planId]); // Re-fetch if plan changes just in case
+  }, [uid, planId]);
 
   const handleToggle = useCallback(async (id: string) => {
-    if (!uid) return;
+    if (!uid || !planId) return;
 
     const current: EstadoMateria = estados[id] || "pendiente";
     const next: EstadoMateria = current === "aprobada" ? "pendiente" : "aprobada";
@@ -275,32 +275,38 @@ const PlanEstudios = () => {
 
     try {
       const { error } = await supabase
-        .from("user_materias")
-        .upsert({
-          user_id: uid,
-          materia_id: id,
-          estado: next,
-          updated_at: new Date().toISOString()
-        }, { 
-          onConflict: 'user_id,materia_id' 
-        });
+        .from("user_plan_progress")
+        .upsert(
+          {
+            user_id: uid,
+            plan_id: planId,
+            materia_id: id,
+            estado: next,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id,plan_id,materia_id' }
+        );
 
       if (error) throw error;
 
       setSaving(false);
       if (next === "aprobada") {
-        toast.success("Materia aprobada", { 
-          style: { background: "#0A0E1A", color: "#fff", border: "1px solid #dc2626" } 
+        toast.success("\u2713 Materia aprobada", {
+          style: { background: "#0A0E1A", color: "#fff", border: "1px solid #dc2626" }
+        });
+      } else {
+        toast("Materia desmarcada", {
+          style: { background: "#0A0E1A", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }
         });
       }
     } catch (err) {
       console.error("Error saving progress:", err);
-      toast.error("Error al sincronizar con la nube.");
+      toast.error("Error al guardar. Intenta de nuevo.");
       // Rollback optimistic update
       setEstados(prev => ({ ...prev, [id]: current }));
       setSaving(false);
     }
-  }, [uid, estados]);
+  }, [uid, planId, estados]);
 
   const stats = useMemo(() => {
     const aprobadas = currentMaterias.filter(m => estados[m.id] === "aprobada").length;

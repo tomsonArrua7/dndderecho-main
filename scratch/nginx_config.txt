@@ -1,0 +1,86 @@
+=== NGINX SITES ENABLED ===
+total 20
+drwxr-xr-x  2 root root 4096 Jun  9 17:16 .
+drwx------ 12 root root 4096 Apr  8 10:10 ..
+-rw-r--r--  1 root root 1722 Jun  9 17:16 api.dndjursoc.com.ar.conf
+-rw-r--r--  1 root root  293 Apr 28  2025 default.conf
+-rw-r--r--  1 root root 1832 Jun  9 11:25 dndjursoc.com.ar.conf
+
+=== FINDING CONFIG ===
+/etc/nginx/sites-enabled/api.dndjursoc.com.ar.conf
+/etc/nginx/sites-enabled/dndjursoc.com.ar.conf
+/etc/nginx/ssl-certificates/api.dndjursoc.com.ar.crt
+/etc/nginx/ssl-certificates/api.dndjursoc.com.ar.key
+/etc/nginx/ssl-certificates/dndjursoc.com.ar.key
+/etc/nginx/ssl-certificates/dndjursoc.com.ar.crt
+
+=== PRINTING CONFIG ===
+server {
+  listen 80;
+  listen [::]:80;
+  listen 443 quic;
+  listen 443 ssl;
+  listen [::]:443 quic;
+  listen [::]:443 ssl;
+  http2 on;
+  http3 off;
+  ssl_certificate_key /etc/nginx/ssl-certificates/dndjursoc.com.ar.key;
+  ssl_certificate /etc/nginx/ssl-certificates/dndjursoc.com.ar.crt;
+  server_name www.dndjursoc.com.ar;
+  return 301 https://dndjursoc.com.ar$request_uri;
+}
+
+server {
+  listen 80;
+  listen [::]:80;
+  listen 443 quic;
+  listen 443 ssl;
+  listen [::]:443 quic;
+  listen [::]:443 ssl;
+  http2 on;
+  http3 off;
+  ssl_certificate_key /etc/nginx/ssl-certificates/dndjursoc.com.ar.key;
+  ssl_certificate /etc/nginx/ssl-certificates/dndjursoc.com.ar.crt;
+  server_name dndjursoc.com.ar www1.dndjursoc.com.ar;
+  root /home/dndjursoc/htdocs/dndjursoc.com.ar;
+
+  access_log /home/dndjursoc/logs/nginx/access.log main;
+  error_log /home/dndjursoc/logs/nginx/error.log;
+
+  if ($scheme != "https") {
+    rewrite ^ https://$host$request_uri permanent;
+  }
+
+  location ~ /.well-known {
+    auth_basic off;
+    allow all;
+  }
+
+  
+
+  include /etc/nginx/global_settings;
+
+  index index.html;
+
+  location / {
+    proxy_pass http://127.0.0.1:3000/;
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Server $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_pass_request_headers on;
+    proxy_max_temp_file_size 0;
+    proxy_connect_timeout 900;
+    proxy_send_timeout 900;
+    proxy_read_timeout 900;
+    proxy_buffer_size 128k;
+    proxy_buffers 4 256k;
+    proxy_busy_buffers_size 256k;
+    proxy_temp_file_write_size 256k;
+  }
+}

@@ -1,0 +1,19 @@
+=== VERIFY FILE ON WEBROOT ===
+-rw-r--r-- 1 dndjursoc ftp-user 3885 Jun  9 22:35 /home/dndjursoc/htdocs/dndjursoc.com.ar/templates/confirmation.html
+=== TEST FETCH FROM HOST ===
+HTTP/2 301 
+server: nginx
+date: Wed, 10 Jun 2026 01:35:08 GMT
+location: /templates/confirmation
+x-frame-options: SAMEORIGIN
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+x-permitted-cross-domain-policies: master-only
+referrer-policy: same-origin
+alt-svc: h3=":443"; ma=86400
+=== TEST FETCH FROM AUTH CONTAINER ===
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/dnd-favicon.png" />
