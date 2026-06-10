@@ -13,8 +13,10 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { CardSkeleton } from "@/components/ui/skeleton";
+import { MATERIAS_PLAN6 } from "@/data/plan6Structure";
+import { MATERIAS_PLAN5 } from "@/data/plan5Structure";
 
-interface Materia { id: string; nombre: string; anio: number }
+interface Materia { id: string; nombre: string; anio: number; codigo: string }
 interface PermutaRow {
   id: string;
   user_id: string;
@@ -26,6 +28,7 @@ interface PermutaRow {
   notas: string | null;
   activa: boolean;
   status: "activa" | "realizada" | "cancelada";
+  plan_id: string;
   created_at: string;
   materias?: { nombre: string; anio: number };
 }
@@ -35,6 +38,8 @@ interface Match {
   permuta_b: string;
   user_a: string;
   user_b: string;
+  permuta_a_row?: PermutaRow;
+  permuta_b_row?: PermutaRow;
 }
 
 const phoneSchema = z.string().trim().min(8, "Teléfono inválido").max(20, "Teléfono inválido").regex(/^[+\d\s()-]+$/, "Teléfono inválido");
@@ -46,11 +51,13 @@ const Permutero = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [appSettings, setAppSettings] = useState<{ permutero_activo: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filterPlan, setFilterPlan] = useState<string>("all");
   const [filterMateria, setFilterMateria] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
   // form
+  const [formPlanId, setFormPlanId] = useState("plan6");
   const [materiaId, setMateriaId] = useState("");
   const [tiene, setTiene] = useState("");
   const [busca, setBusca] = useState("");
@@ -59,12 +66,22 @@ const Permutero = () => {
   const [notas, setNotas] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const filteredMateriasForForm = useMemo(() => {
+    const planMaterias = formPlanId === "plan5" ? MATERIAS_PLAN5 : MATERIAS_PLAN6;
+    const allowedCodes = new Set(planMaterias.map(m => m.id));
+    return materias.filter(m => allowedCodes.has(m.codigo || ""));
+  }, [materias, formPlanId]);
+
   const load = async () => {
     try {
       const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }] = await Promise.all([
-        supabase.from("materias").select("id,nombre,anio").order("anio").order("nombre"),
+        supabase.from("materias").select("id,nombre,anio,codigo").order("anio").order("nombre"),
         supabase.from("permutas").select("*, materias(nombre, anio)").or("status.eq.activa,status.is.null").order("created_at", { ascending: false }),
-        user ? supabase.from("matches").select("*") : Promise.resolve({ data: [] as Match[] }),
+        user
+          ? supabase
+              .from("matches")
+              .select("*, permuta_a_row:permutas!matches_permuta_a_fkey(*, materias(nombre)), permuta_b_row:permutas!matches_permuta_b_fkey(*, materias(nombre))")
+          : Promise.resolve({ data: [] as Match[] }),
         supabase.from("app_settings").select("permutero_activo").eq("id", 1).maybeSingle(),
       ]);
       setMaterias(mats || []);
@@ -141,6 +158,7 @@ const Permutero = () => {
     const { error } = await supabase.from("permutas").insert({
       user_id: user.id,
       materia_id: materiaId,
+      plan_id: formPlanId,
       comision_tiene: tieneNum,
       comisiones_busca: buscaArr,
       telefono: telefono.trim(),
@@ -170,13 +188,25 @@ const Permutero = () => {
 
   const filtered = useMemo(() => {
     return permutas.filter((p) => {
+      if (filterPlan !== "all" && p.plan_id !== filterPlan) return false;
       if (filterMateria !== "all" && p.materia_id !== filterMateria) return false;
       if (search && !(p.materias?.nombre || "").toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [permutas, filterMateria, search]);
+  }, [permutas, filterPlan, filterMateria, search]);
 
-  const myActiveMatches = user ? matches.filter((m) => m.user_a === user.id || m.user_b === user.id) : [];
+  const myMatches = useMemo(() => {
+    if (!user) return [];
+    return matches.filter((m) => m.user_a === user.id || m.user_b === user.id);
+  }, [matches, user]);
+
+  const myActiveMatches = useMemo(() => {
+    return myMatches.filter((m) => {
+      const isUserA = m.user_a === user?.id;
+      const other = isUserA ? m.permuta_b_row : m.permuta_a_row;
+      return other?.status === "activa";
+    });
+  }, [myMatches, user?.id]);
 
   return (
     <div className="container py-12 max-w-6xl">
@@ -214,11 +244,24 @@ const Permutero = () => {
             </DialogHeader>
             <form onSubmit={submit} className="space-y-4 pt-2">
               <div>
+                <Label className="text-foreground/80">Plan de Estudios *</Label>
+                <Select value={formPlanId} onValueChange={(val) => {
+                  setFormPlanId(val);
+                  setMateriaId("");
+                }}>
+                  <SelectTrigger><SelectValue placeholder="Elegí tu plan de estudios" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="plan6">Plan 6 (Vigente 2019)</SelectItem>
+                    <SelectItem value="plan5">Plan 5 (Histórico)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label className="text-foreground/80">Materia *</Label>
                 <Select value={materiaId} onValueChange={setMateriaId}>
-                  <SelectTrigger><SelectValue placeholder="Elegí una materia" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={formPlanId ? "Elegí una materia" : "Primero elegí un plan"} /></SelectTrigger>
                   <SelectContent className="max-h-72">
-                    {materias.map((m) => (
+                    {filteredMateriasForForm.map((m) => (
                       <SelectItem key={m.id} value={m.id}>{m.anio}° · {m.nombre}</SelectItem>
                     ))}
                   </SelectContent>
@@ -267,23 +310,139 @@ const Permutero = () => {
         </div>
       )}
 
-      {user && myActiveMatches.length > 0 && (
-        <div className="mb-8 p-4 rounded-xl bg-accent text-accent-foreground border border-accent shadow-accent-glow flex items-center gap-3">
-          <div className="p-2 rounded-full bg-white/20 animate-match"><Sparkles className="h-5 w-5" /></div>
-          <div className="font-display font-semibold">
-            ¡Tenés {myActiveMatches.length} match{myActiveMatches.length > 1 ? "es" : ""} activo{myActiveMatches.length > 1 ? "s" : ""}! Te resaltamos abajo las permutas con las que coincidís.
+      {user && myMatches.length > 0 && (
+        <div className="mb-10 p-6 rounded-2xl bg-slate-950/60 border border-accent/30 shadow-accent-glow">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 rounded-full bg-accent/20 text-accent animate-match">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="font-display font-semibold text-lg text-foreground">Mis Matches Coincidentes</h2>
+              <p className="text-xs text-muted-foreground">Revisá la disponibilidad de tus coincidencias y contactalos por WhatsApp.</p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {myMatches.map((m) => {
+              const isUserA = m.user_a === user.id;
+              const myPermuta = isUserA ? m.permuta_a_row : m.permuta_b_row;
+              const otherPermuta = isUserA ? m.permuta_b_row : m.permuta_a_row;
+
+              if (!myPermuta || !otherPermuta) return null;
+
+              const otherStatus = otherPermuta.status || "activa";
+              const isOtherActive = otherStatus === "activa";
+
+              // Count other matches this counterpart has
+              const otherMatchesCount = matches.filter(
+                (match) =>
+                  (match.permuta_a === otherPermuta.id || match.permuta_b === otherPermuta.id) &&
+                  match.id !== m.id
+              ).length;
+
+              return (
+                <div
+                  key={m.id}
+                  className={cn(
+                    "p-4 rounded-xl border flex flex-col justify-between transition-all bg-card/60",
+                    isOtherActive
+                      ? "border-accent/40 shadow-[0_0_15px_rgba(var(--accent),0.05)]"
+                      : "border-white/5 opacity-60"
+                  )}
+                >
+                  <div>
+                    <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground line-clamp-1 max-w-[200px]">
+                        {otherPermuta.materias?.nombre}
+                      </span>
+                      <span
+                        className={cn(
+                          "text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full border",
+                          isOtherActive
+                            ? "bg-emerald-950/20 border-emerald-800/40 text-emerald-400"
+                            : "bg-slate-900/40 border-white/10 text-white/40"
+                        )}
+                      >
+                        {isOtherActive ? "Disponible" : "Ya no disponible"}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-4 items-center my-3 bg-white/[0.02] p-2.5 rounded-lg border border-white/5 justify-center">
+                      <div className="text-center">
+                        <span className="text-[8px] uppercase tracking-wider text-white/30 block font-semibold">Ofrecés</span>
+                        <span className="font-display font-bold text-lg text-primary">C{myPermuta.comision_tiene}</span>
+                      </div>
+                      <Repeat2 className="h-4 w-4 text-white/20" />
+                      <div className="text-center">
+                        <span className="text-[8px] uppercase tracking-wider text-white/30 block font-semibold">Recibís</span>
+                        <span className="font-display font-bold text-lg text-accent">C{otherPermuta.comision_tiene}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 text-xs text-white/70">
+                      <p>
+                        <span className="text-white/40">Contacto:</span>{" "}
+                        <span className="font-semibold text-white">{otherPermuta.nombre_contacto}</span>
+                      </p>
+                      {otherPermuta.notas && (
+                        <p className="italic text-white/50 text-[11px] line-clamp-2">
+                          "{otherPermuta.notas}"
+                        </p>
+                      )}
+                    </div>
+
+                    {otherMatchesCount > 0 && isOtherActive && (
+                      <div className="mt-3 p-2 rounded bg-red-500/5 border border-red-500/10 text-[10px] text-red-400 flex items-center gap-1.5 leading-normal">
+                        <span>⚠️</span>
+                        <span>
+                          Este usuario también coincide con otros {otherMatchesCount} postulantes.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/5 flex justify-end">
+                    {isOtherActive ? (
+                      <Button asChild size="sm" variant="match" className="w-full sm:w-auto text-[10px] uppercase font-bold tracking-wider">
+                        <a
+                          href={`https://wa.me/${otherPermuta.telefono.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center justify-center gap-2"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          Contactar WhatsApp
+                        </a>
+                      </Button>
+                    ) : (
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-white/30 py-1.5 px-3 bg-white/5 rounded border border-white/5 block text-center w-full">
+                        Permuta Concretada
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* FILTROS */}
-      <div className="grid sm:grid-cols-[1fr_auto] gap-3 mb-6">
+      <div className="grid sm:grid-cols-[1fr_auto_auto] gap-3 mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Buscar materia..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-card" />
         </div>
+        <Select value={filterPlan} onValueChange={setFilterPlan}>
+          <SelectTrigger className="sm:w-40 bg-card"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los planes</SelectItem>
+            <SelectItem value="plan6">Plan 6</SelectItem>
+            <SelectItem value="plan5">Plan 5</SelectItem>
+          </SelectContent>
+        </Select>
         <Select value={filterMateria} onValueChange={setFilterMateria}>
-          <SelectTrigger className="sm:w-64 bg-card"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="sm:w-60 bg-card"><SelectValue /></SelectTrigger>
           <SelectContent className="max-h-72">
             <SelectItem value="all">Todas las materias</SelectItem>
             {materias.map((m) => (
@@ -332,8 +491,9 @@ const Permutero = () => {
                   </div>
                 )}
 
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1 font-semibold">
-                  {p.materias?.anio}° Año
+                <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-muted-foreground mb-1 font-semibold">
+                  <span>{p.materias?.anio}° Año</span>
+                  <span className="px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20 text-[9px] font-bold text-primary font-mono">{p.plan_id === "plan5" ? "Plan 5" : "Plan 6"}</span>
                 </div>
                 <h3 className="font-display font-semibold text-lg leading-tight mb-4 line-clamp-2 text-foreground">
                   {p.materias?.nombre}
