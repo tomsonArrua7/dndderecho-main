@@ -54,6 +54,7 @@ const Permutero = () => {
   const [filterPlan, setFilterPlan] = useState<string>("all");
   const [filterMateria, setFilterMateria] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [completedCount, setCompletedCount] = useState<number>(0);
   const [open, setOpen] = useState(false);
 
   // form
@@ -74,7 +75,7 @@ const Permutero = () => {
 
   const load = async () => {
     try {
-      const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }] = await Promise.all([
+      const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }, { data: countData }] = await Promise.all([
         supabase.from("materias").select("id,nombre,anio,codigo").order("anio").order("nombre"),
         supabase.from("permutas").select("*, materias(nombre, anio)").or("status.eq.activa,status.is.null").order("created_at", { ascending: false }),
         user
@@ -83,11 +84,13 @@ const Permutero = () => {
               .select("*, permuta_a_row:permutas!matches_permuta_a_fkey(*, materias(nombre)), permuta_b_row:permutas!matches_permuta_b_fkey(*, materias(nombre))")
           : Promise.resolve({ data: [] as Match[] }),
         supabase.from("app_settings").select("permutero_activo").eq("id", 1).maybeSingle(),
+        supabase.rpc("get_completed_permutas_count" as any),
       ]);
       setMaterias(mats || []);
       setPermutas((perms as PermutaRow[]) || []);
       setMatches((ms as Match[]) || []);
       setAppSettings(settings || { permutero_activo: true });
+      setCompletedCount(Number(countData) || 0);
     } catch (err) {
       console.error("Critical error in Permutero load:", err);
       toast.error("Error al cargar la base de datos.");
@@ -183,6 +186,7 @@ const Permutero = () => {
   const markAsDone = async (id: string) => {
     await supabase.from("permutas").update({ status: 'realizada' }).eq("id", id);
     setPermutas((p) => p.filter((x) => x.id !== id));
+    setCompletedCount((prev) => prev + 1);
     toast.success("¡Permuta marcada como realizada!");
   };
 
@@ -221,6 +225,15 @@ const Permutero = () => {
           <p className="text-muted-foreground mt-2 max-w-2xl">
             Publicá tu comisión, dejá las que buscás y dejá que el sistema encuentre tu match.
           </p>
+          <div className="flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold w-fit">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>
+              🎉 {completedCount === 1 ? "1 persona ya permutó" : `${completedCount} personas ya permutaron`}
+            </span>
+          </div>
         </div>
         
         {appSettings?.permutero_activo === false ? (
