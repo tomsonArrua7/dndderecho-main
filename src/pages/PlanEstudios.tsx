@@ -749,7 +749,7 @@ const PlanEstudios = () => {
 
       {/* Graduation/Congrats Dialog */}
       <Dialog open={isCongratsOpen} onOpenChange={setIsCongratsOpen}>
-        <DialogContent className="max-w-lg bg-slate-950 border border-red-500/20 text-white rounded-2xl p-8 text-center shadow-[0_0_50px_rgba(220,38,38,0.15)] relative overflow-hidden">
+        <DialogContent className="max-w-lg bg-slate-950 border border-red-500/20 text-white rounded-2xl p-8 text-center shadow-[0_0_50px_rgba(220,38,38,0.15)] overflow-hidden">
           <div className="absolute -top-40 -left-40 w-80 h-80 bg-red-650/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-red-650/10 rounded-full blur-3xl pointer-events-none" />
           
