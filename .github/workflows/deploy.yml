@@ -25,4 +25,5 @@ jobs:
             npm run build
             cp -r dist/assets/* assets/
             cp dist/index.html index.html
+            mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
             echo "Deploy completado: $(git log --oneline -1)"
