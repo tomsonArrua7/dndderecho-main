@@ -4,13 +4,13 @@ const conn = new Client();
 conn.on('ready', () => {
   console.log('SSH Connection OK');
 
-  const cmd = `stat /home/dndjursoc/htdocs/dndjursoc.com.ar/index.html && cd /home/dndjursoc/htdocs/dndjursoc.com.ar && git log -n 1 --oneline`;
+  const cmd = `stat /home/dndjursoc/htdocs/dndjursoc.com.ar/index.html && stat /root/supabase/docker/volumes/functions/mass-mailing/index.ts`;
 
   let out = '';
   conn.exec(cmd, (err, stream) => {
     if (err) throw err;
     stream.on('close', () => {
-      console.log('=== VPS STATUS ===');
+      console.log('=== FILES STAT ===');
       console.log(out);
       conn.end();
     }).on('data', (c) => {
