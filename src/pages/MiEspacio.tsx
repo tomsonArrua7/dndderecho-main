@@ -6,32 +6,49 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, GraduationCap, Repeat2, Sparkles, User, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { UpcomingDates } from "@/components/UpcomingDates";
+import { TOTAL_MATERIAS_PLAN6 } from "@/data/plan6Structure";
+import { TOTAL_MATERIAS_PLAN5 } from "@/data/plan5Structure";
 
 const MiEspacio = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState({ aprobadas: 0, eventos: 0, permutas: 0, matches: 0 });
+  const [stats, setStats] = useState({ aprobadas: 0, total: 44, planName: "Plan 6", eventos: 0, permutas: 0, matches: 0 });
   const [name, setName] = useState("");
   const [myPermutas, setMyPermutas] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: profile }, { data: ums }, { count: evCount }, { data: pData }, { count: mCount }] = await Promise.all([
-        supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-        supabase.from("user_plan_progress").select("estado").eq("user_id", user.id),
-        supabase.from("eventos").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("permutas").select("*, materias(nombre)").eq("user_id", user.id).or("status.eq.activa,status.is.null"),
-        supabase.from("matches").select("*", { count: "exact", head: true }),
-      ]);
-      const activePermutas = pData || [];
-      setName(profile?.full_name || user.email?.split("@")[0] || "");
-      setStats({
-        aprobadas: ums?.filter((u) => u.estado === "aprobada").length || 0,
-        eventos:   evCount || 0,
-        permutas:  activePermutas.length,
-        matches:   mCount  || 0,
-      });
-      setMyPermutas(activePermutas);
+      try {
+        const planId = (localStorage.getItem("dnd_selected_plan") as "plan5" | "plan6") || "plan6";
+        const total = planId === "plan5" ? TOTAL_MATERIAS_PLAN5 : TOTAL_MATERIAS_PLAN6;
+        const planName = planId === "plan5" ? "Plan 5" : "Plan 6";
+
+        const [{ data: profile }, { data: ums, error: umsErr }, { count: evCount }, { data: pData }, { count: mCount }] = await Promise.all([
+          supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+          supabase.from("user_plan_progress").select("estado").eq("user_id", user.id).eq("plan_id", planId),
+          supabase.from("eventos").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+          supabase.from("permutas").select("*, materias(nombre)").eq("user_id", user.id).or("status.eq.activa,status.is.null"),
+          supabase.from("matches").select("*", { count: "exact", head: true }),
+        ]);
+
+        if (umsErr) {
+          console.error("Error loading plan progress:", umsErr);
+        }
+
+        const activePermutas = pData || [];
+        setName(profile?.full_name || user.email?.split("@")[0] || "");
+        setStats({
+          aprobadas: ums?.filter((u) => u.estado === "aprobada").length || 0,
+          total,
+          planName,
+          eventos:   evCount || 0,
+          permutas:  activePermutas.length,
+          matches:   mCount  || 0,
+        });
+        setMyPermutas(activePermutas);
+      } catch (err) {
+        console.error("Error fetching Mi Espacio data:", err);
+      }
     })();
   }, [user?.id]);
 
@@ -107,7 +124,7 @@ const MiEspacio = () => {
                 </div>
                 <div>
                   <h3 className="font-display font-semibold text-xl text-foreground">Tu Progreso</h3>
-                  <p className="text-sm text-muted-foreground">{stats.aprobadas} materias aprobadas</p>
+                  <p className="text-sm text-muted-foreground">{stats.aprobadas} de {stats.total} materias aprobadas ({stats.planName})</p>
                 </div>
               </div>
               <Button asChild variant="outline" className="text-xs group hover:border-primary/50 transition-colors">
@@ -121,13 +138,13 @@ const MiEspacio = () => {
             <div className="w-full bg-secondary/50 rounded-full h-3 mb-2 overflow-hidden shadow-inner">
               <div 
                 className="bg-primary h-full rounded-full transition-all duration-1000 ease-out relative" 
-                style={{ width: `${Math.max(2, Math.min(100, (stats.aprobadas / 38) * 100))}%` }} 
+                style={{ width: `${Math.max(2, Math.min(100, (stats.aprobadas / stats.total) * 100))}%` }} 
               >
                 <div className="absolute inset-0 bg-white/20 w-full animate-shimmer" />
               </div>
             </div>
             <p className="text-[10px] text-right text-muted-foreground uppercase tracking-widest font-bold">
-              ~{Math.round((stats.aprobadas / 38) * 100)}% Completado
+              ~{Math.round((stats.aprobadas / stats.total) * 100)}% Completado
             </p>
           </div>
 

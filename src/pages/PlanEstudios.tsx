@@ -120,7 +120,8 @@ const MateriaCard = ({
   const isBloqueada = estado === "bloqueada";
 
   const isPPS = materia.id === "10657";
-  const ppsHours = isPPS ? getPPSHours(estado) : 0;
+  const rawEstado = allEstados[materia.id] || "pendiente";
+  const ppsHours = isPPS ? getPPSHours(rawEstado) : 0;
 
   const showRequirements = () => {
     if (!isBloqueada) return;
