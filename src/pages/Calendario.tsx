@@ -241,7 +241,7 @@ const Calendario = () => {
           {suscripto && (
             <>
               <a
-                href="https://www.google.com/calendar/render?cid=https://api.dndjursoc.com.ar/functions/v1/calendario-ics"
+                href="https://www.google.com/calendar/render?cid=webcal%3A%2F%2Fapi.dndjursoc.com.ar%2Ffunctions%2Fv1%2Fcalendario-ics"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Sincronizar con Google Calendar en 1 clic"
