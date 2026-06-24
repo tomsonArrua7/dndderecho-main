@@ -9,8 +9,10 @@ import { Layout } from "@/components/Layout";
 import { AppProvider } from "@/context/AppContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { isSupabaseConfigured } from "@/integrations/supabase/client";
-import { AlertCircle, ExternalLink, RefreshCw } from "lucide-react";
+import { AlertCircle, ExternalLink, RefreshCw, Loader2 } from "lucide-react";
 import { DndMark } from "@/components/DndMark";
+import Proximamente from "./pages/Proximamente";
+import { useAuth } from "@/context/AuthContext";
 
 import Index          from "./pages/Index";
 import Auth           from "./pages/Auth";
@@ -104,6 +106,56 @@ const SupabaseConfigWarning = () => {
   );
 };
 
+const AppContent = () => {
+  const { user, profile, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-primary-deep relative">
+        <div className="absolute inset-0 bg-gradient-hero" />
+        <div className="relative z-10 flex flex-col items-center gap-4">
+          <DndMark size={80} className="animate-pulse" />
+          <Loader2 className="h-6 w-6 animate-spin text-accent" />
+        </div>
+      </div>
+    );
+  }
+
+  const isAdmin = profile?.role === "admin";
+
+  if (!isAdmin) {
+    return (
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="*" element={<Proximamente />} />
+      </Routes>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/"                element={<Index />} />
+        <Route path="/auth"            element={<Auth />} />
+        <Route path="/noticias"        element={<Noticias />} />
+        <Route path="/apuntes"         element={<Apuntes />} />
+        <Route path="/permutero"       element={<Permutero />} />
+        <Route path="/recomendaciones" element={<Recomendaciones />} />
+        <Route path="/servicios"       element={<Servicios />} />
+
+        {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
+        <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
+        <Route path="/mi-espacio"      element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
+        <Route path="/plan"            element={<ProtectedRoute><PlanEstudios /></ProtectedRoute>} />
+        <Route path="/calendario"      element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
+        <Route path="/admin"           element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+        <Route path="/panel-escritor"  element={<ProtectedRoute><PanelEscritor /></ProtectedRoute>} />
+        <Route path="*"               element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+};
+
 const App = () => {
   if (!isSupabaseConfigured) {
     return (
@@ -122,26 +174,7 @@ const App = () => {
           <BrowserRouter>
             <AuthProvider>
               <AppProvider>
-                <Routes>
-                  <Route element={<Layout />}>
-                    <Route path="/"                element={<Index />} />
-                    <Route path="/auth"            element={<Auth />} />
-                    <Route path="/noticias"        element={<Noticias />} />
-                    <Route path="/apuntes"         element={<Apuntes />} />
-                    <Route path="/permutero"       element={<Permutero />} />
-                    <Route path="/recomendaciones" element={<Recomendaciones />} />
-                    <Route path="/servicios"       element={<Servicios />} />
-
-                    {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
-                    <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
-                    <Route path="/mi-espacio"      element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
-                    <Route path="/plan"            element={<ProtectedRoute><PlanEstudios /></ProtectedRoute>} />
-                    <Route path="/calendario"      element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
-                    <Route path="/admin"           element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
-                    <Route path="/panel-escritor"  element={<ProtectedRoute><PanelEscritor /></ProtectedRoute>} />
-                    <Route path="*"               element={<NotFound />} />
-                  </Route>
-                </Routes>
+                <AppContent />
               </AppProvider>
             </AuthProvider>
           </BrowserRouter>
