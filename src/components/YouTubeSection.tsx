@@ -5,24 +5,24 @@ import { Button } from "./ui/button";
 const VIDEOS = [
   { 
     id: "v1", 
-    title: "Principios del Derecho Civil", 
-    duration: "12:45",
-    thumbnail: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=800",
-    url: "https://www.youtube.com/@DerechoenMinutos"
+    title: "JUICIO POR JURADOS EN MINUTOS", 
+    duration: "8:04",
+    thumbnail: "https://img.youtube.com/vi/UhEXoPhafN4/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=UhEXoPhafN4"
   },
   { 
     id: "v2", 
-    title: "Teoría del Delito en 10 Minutos", 
-    duration: "10:20",
-    thumbnail: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&q=80&w=800",
-    url: "https://www.youtube.com/@DerechoenMinutos"
+    title: "INVESTIGACIÓN PENAL PREPARATORIA EN MINUTOS", 
+    duration: "8:41",
+    thumbnail: "https://img.youtube.com/vi/1gBysi28hAo/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=1gBysi28hAo"
   },
   { 
     id: "v3", 
-    title: "Derecho Procesal: La Demanda", 
-    duration: "15:30",
-    thumbnail: "https://images.unsplash.com/photo-1453948575359-447a55227847?auto=format&fit=crop&q=80&w=800",
-    url: "https://www.youtube.com/@DerechoenMinutos"
+    title: "CLASES DE TUTELA Y CURATELA EN MINUTOS", 
+    duration: "3:34",
+    thumbnail: "https://img.youtube.com/vi/JpPsQ1miLdQ/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=JpPsQ1miLdQ"
   },
 ];
 
