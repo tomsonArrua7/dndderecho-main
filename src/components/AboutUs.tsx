@@ -3,10 +3,10 @@ import useEmblaCarousel from "embla-carousel-react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 
 const images = [
-  "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80", // Universidad
-  "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80", // Alumnos
-  "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&q=80", // Biblioteca
-  "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80", // Grupo
+  "/IMG_7827.jpg",
+  "/IMG_7829.PNG",
+  "/IMG_7832.PNG",
+  "/IMG_7833.PNG",
 ];
 
 export const AboutUs = () => {
