@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Calendar, Plus, Trash2 } from "lucide-react";
+import { Calendar, Plus, Trash2, Bell, Download, Minimize2, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Evento {
@@ -16,6 +16,8 @@ interface Evento {
   descripcion: string | null;
   tipo: "parcial" | "final" | "entrega" | "clase" | "otro";
   fecha: string;
+  es_global: boolean;
+  user_id: string;
 }
 
 const tipoColor: Record<string, string> = {
@@ -27,21 +29,133 @@ const tipoColor: Record<string, string> = {
 };
 
 const Calendario = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [open, setOpen] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [tipo, setTipo] = useState<Evento["tipo"]>("parcial");
   const [fecha, setFecha] = useState("");
+  const [esGlobal, setEsGlobal] = useState(false);
+  const [suscripto, setSuscripto] = useState(false);
+
+  const isAdminOrWriter = profile?.role === "admin" || profile?.role === "escritor";
+
+  const fetchSubscription = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("suscripto_calendario")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error fetching subscription:", error);
+      return;
+    }
+    if (data) {
+      setSuscripto(data.suscripto_calendario);
+    }
+  };
 
   const fetchEventos = async () => {
     if (!user) return;
-    const { data } = await supabase.from("eventos").select("*").eq("user_id", user.id).order("fecha");
+    let query = supabase.from("eventos").select("*");
+
+    if (suscripto) {
+      query = query.or(`user_id.eq.${user.id},es_global.eq.true`);
+    } else {
+      query = query.eq("user_id", user.id).eq("es_global", false);
+    }
+
+    const { data } = await query.order("fecha");
     setEventos((data as Evento[]) || []);
   };
 
-  useEffect(() => { fetchEventos(); }, [user]);
+  useEffect(() => {
+    fetchSubscription();
+  }, [user]);
+
+  useEffect(() => {
+    fetchEventos();
+  }, [user, suscripto]);
+
+  const toggleSubscription = async () => {
+    if (!user) return;
+    const nextState = !suscripto;
+    setSuscripto(nextState);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ suscripto_calendario: nextState })
+      .eq("id", user.id);
+
+    if (error) {
+      toast.error("No se pudo actualizar la suscripción");
+      setSuscripto(!nextState);
+    } else {
+      toast.success(
+        nextState 
+          ? "Te suscribiste a los Avisos Fundamentales de DND" 
+          : "Te desuscribiste de los Avisos Fundamentales"
+      );
+      fetchEventos();
+    }
+  };
+
+  const exportCalendarToICS = () => {
+    const globalEvents = eventos.filter((e) => e.es_global);
+    if (globalEvents.length === 0) {
+      toast.info("No hay avisos fundamentales activos para exportar.");
+      return;
+    }
+
+    const icsContent = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//DND Jursoc//Calendario Academico//ES",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+    ];
+
+    globalEvents.forEach((e) => {
+      const start = new Date(e.fecha);
+      const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hour duration
+
+      const formatICSDate = (date: Date) => {
+        return date.toISOString().replace(/-|:|\.\d+/g, "");
+      };
+
+      const cleanText = (str: string | null) => {
+        if (!str) return "";
+        return str.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+      };
+
+      icsContent.push(
+        "BEGIN:VEVENT",
+        `UID:${e.id}@dndjursoc.com.ar`,
+        `DTSTAMP:${formatICSDate(new Date())}`,
+        `DTSTART:${formatICSDate(start)}`,
+        `DTEND:${formatICSDate(end)}`,
+        `SUMMARY:${cleanText(e.titulo)}`,
+        `DESCRIPTION:${cleanText(e.descripcion)}`,
+        "LOCATION:Facultad de Derecho UNLP",
+        "END:VEVENT"
+      );
+    });
+
+    icsContent.push("END:VCALENDAR");
+
+    const blob = new Blob([icsContent.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "avisos-dnd.ics";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Archivo de calendario .ics descargado. Impórtalo en Google Calendar.");
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,15 +166,28 @@ const Calendario = () => {
       descripcion: descripcion.trim().slice(0, 500) || null,
       tipo,
       fecha: new Date(fecha).toISOString(),
+      es_global: esGlobal && isAdminOrWriter,
     });
-    if (error) { toast.error("No se pudo guardar"); return; }
+    if (error) {
+      toast.error("No se pudo guardar");
+      return;
+    }
     toast.success("Evento agregado");
-    setTitulo(""); setDescripcion(""); setFecha(""); setTipo("parcial"); setOpen(false);
+    setTitulo("");
+    setDescripcion("");
+    setFecha("");
+    setTipo("parcial");
+    setEsGlobal(false);
+    setOpen(false);
     fetchEventos();
   };
 
   const remove = async (id: string) => {
-    await supabase.from("eventos").delete().eq("id", id);
+    const { error } = await supabase.from("eventos").delete().eq("id", id);
+    if (error) {
+      toast.error("No se pudo eliminar el evento");
+      return;
+    }
     setEventos((e) => e.filter((x) => x.id !== id));
   };
 
@@ -86,7 +213,7 @@ const Calendario = () => {
           <DialogTrigger asChild>
             <Button variant="hero" size="lg"><Plus className="mr-2 h-4 w-4" /> Nuevo evento</Button>
           </DialogTrigger>
-          <DialogContent className="bg-card">
+          <DialogContent className="bg-card border border-border">
             <DialogHeader><DialogTitle className="font-display text-2xl">Agregar evento</DialogTitle></DialogHeader>
             <form onSubmit={submit} className="space-y-4">
               <div>
@@ -112,6 +239,22 @@ const Calendario = () => {
                   <Input type="datetime-local" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
                 </div>
               </div>
+              
+              {isAdminOrWriter && (
+                <div className="flex items-center gap-2 py-2 border-t border-b border-border">
+                  <input
+                    type="checkbox"
+                    id="esGlobal"
+                    checked={esGlobal}
+                    onChange={(e) => setEsGlobal(e.target.checked)}
+                    className="h-4 w-4 rounded border-border text-accent focus:ring-accent accent-accent cursor-pointer"
+                  />
+                  <Label htmlFor="esGlobal" className="cursor-pointer font-bold text-accent text-xs">
+                    📢 Publicar como Aviso Fundamental (Aviso Global de DND)
+                  </Label>
+                </div>
+              )}
+
               <div>
                 <Label>Notas (opcional)</Label>
                 <Textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} maxLength={500} rows={3} />
@@ -122,17 +265,63 @@ const Calendario = () => {
         </Dialog>
       </div>
 
-      <Section title="Próximos" eventos={upcoming} onRemove={remove} onAddCalendar={getGoogleCalendarLink} />
-      <Section title="Pasados" eventos={past} onRemove={remove} onAddCalendar={getGoogleCalendarLink} muted />
+      {/* Subscription Card */}
+      <div className="mb-10 p-6 rounded-2xl bg-card/60 backdrop-blur-md border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-elegant transition-all">
+        <div className="space-y-1">
+          <h3 className="font-display font-bold text-base text-foreground flex items-center gap-2">
+            <Bell className={`h-4 w-4 ${suscripto ? "text-accent fill-accent/10" : "text-muted-foreground"}`} />
+            🔔 Avisos Fundamentales de DND
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-xl">
+            Suscribite para ver automáticamente en tu agenda los avisos oficiales de la agrupación (inscripción a cursadas, mesas de exámenes, clases de apoyo).
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <Button
+            variant={suscripto ? "outline" : "hero"}
+            onClick={toggleSubscription}
+            className="w-full sm:w-auto uppercase tracking-wider text-[10px] font-bold h-10 px-5"
+          >
+            {suscripto ? "Desuscribirse" : "Suscribirse"}
+          </Button>
+          {suscripto && (
+            <Button
+              variant="outline"
+              onClick={exportCalendarToICS}
+              title="Descargar agenda en .ics"
+              className="w-full sm:w-auto uppercase tracking-wider text-[10px] font-bold h-10 px-4 flex items-center gap-2"
+            >
+              <Download size={12} /> Sync (ICS)
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <Section title="Próximos" eventos={upcoming} onRemove={remove} onAddCalendar={getGoogleCalendarLink} isAdminOrWriter={isAdminOrWriter} />
+      <Section title="Pasados" eventos={past} onRemove={remove} onAddCalendar={getGoogleCalendarLink} muted isAdminOrWriter={isAdminOrWriter} />
     </div>
   );
 };
 
-const Section = ({ title, eventos, onRemove, onAddCalendar, muted }: { title: string; eventos: Evento[]; onRemove: (id: string) => void; onAddCalendar: (e: Evento) => string; muted?: boolean }) => (
+const Section = ({ 
+  title, 
+  eventos, 
+  onRemove, 
+  onAddCalendar, 
+  muted, 
+  isAdminOrWriter 
+}: { 
+  title: string; 
+  eventos: Evento[]; 
+  onRemove: (id: string) => void; 
+  onAddCalendar: (e: Evento) => string; 
+  muted?: boolean; 
+  isAdminOrWriter: boolean;
+}) => (
   <div className="mb-10">
     <h2 className="font-display text-xl font-semibold mb-3 text-foreground">{title}</h2>
     {eventos.length === 0 ? (
-      <div className="p-8 rounded-xl border border-dashed border-border bg-card text-center text-muted-foreground text-sm">
+      <div className="p-8 rounded-xl border border-dashed border-border bg-card/40 text-center text-muted-foreground text-sm">
         Sin eventos {title.toLowerCase()}
       </div>
     ) : (
@@ -140,14 +329,19 @@ const Section = ({ title, eventos, onRemove, onAddCalendar, muted }: { title: st
         {eventos.map((e) => {
           const d = new Date(e.fecha);
           return (
-            <div key={e.id} className={`p-4 rounded-xl bg-card border border-border shadow-paper flex items-center gap-4 ${muted ? "opacity-60" : ""}`}>
+            <div key={e.id} className={`p-4 rounded-xl bg-card border border-border shadow-paper flex items-center gap-4 ${muted ? "opacity-60" : ""} transition-all`}>
               <div className="text-center min-w-[60px] border-r border-border pr-4">
                 <div className="text-2xl font-display font-bold text-primary">{d.getDate()}</div>
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{d.toLocaleString("es", { month: "short" })}</div>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold uppercase tracking-wider ${tipoColor[e.tipo]}`}>{e.tipo}</span>
+                  {e.es_global && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full border bg-accent/20 border-accent/40 text-accent font-bold uppercase tracking-wider">
+                      Aviso DND
+                    </span>
+                  )}
                   <span className="text-xs text-muted-foreground">{d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" })}</span>
                 </div>
                 <div className="font-semibold truncate text-foreground">{e.titulo}</div>
@@ -159,9 +353,11 @@ const Section = ({ title, eventos, onRemove, onAddCalendar, muted }: { title: st
                     <Calendar className="h-4 w-4 text-accent" />
                   </a>
                 </Button>
-                <Button size="icon" variant="ghost" onClick={() => onRemove(e.id)} title="Eliminar">
-                  <Trash2 className="h-4 w-4 text-destructive/70" />
-                </Button>
+                {(!e.es_global || isAdminOrWriter) && (
+                  <Button size="icon" variant="ghost" onClick={() => onRemove(e.id)} title="Eliminar">
+                    <Trash2 className="h-4 w-4 text-destructive/70" />
+                  </Button>
+                )}
               </div>
             </div>
           );

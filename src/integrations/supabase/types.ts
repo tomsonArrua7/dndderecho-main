@@ -36,6 +36,7 @@ export type Database = {
         Row: {
           created_at: string
           descripcion: string | null
+          es_global: boolean
           fecha: string
           id: string
           materia_id: string | null
@@ -46,6 +47,7 @@ export type Database = {
         Insert: {
           created_at?: string
           descripcion?: string | null
+          es_global?: boolean
           fecha: string
           id?: string
           materia_id?: string | null
@@ -56,6 +58,7 @@ export type Database = {
         Update: {
           created_at?: string
           descripcion?: string | null
+          es_global?: boolean
           fecha?: string
           id?: string
           materia_id?: string | null
@@ -204,6 +207,7 @@ export type Database = {
           telefono: string | null
           updated_at: string
           role: Database["public"]["Enums"]["user_role"]
+          suscripto_calendario: boolean
         }
         Insert: {
           anio_cursada?: number | null
@@ -213,6 +217,7 @@ export type Database = {
           telefono?: string | null
           updated_at?: string
           role?: Database["public"]["Enums"]["user_role"]
+          suscripto_calendario?: boolean
         }
         Update: {
           anio_cursada?: number | null
@@ -222,6 +227,7 @@ export type Database = {
           telefono?: string | null
           updated_at?: string
           role?: Database["public"]["Enums"]["user_role"]
+          suscripto_calendario?: boolean
         }
         Relationships: []
       }
