@@ -269,23 +269,52 @@
    Modo Día (Light Mode) overrides for hardcoded dark utility colors
    ========================================================================== */
 
-/* Overriding white text utilities in light mode (excluding buttons, solid badges, status indicators, and alerts) */
-.light .text-white:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow):not(.bg-sky-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-destructive) {
+/* Overriding white text utilities in light mode (excluding solid color backgrounds) */
+.light .text-white {
   color: hsl(var(--foreground)) !important;
 }
-.light .text-white\/95:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.95) !important; }
-.light .text-white\/90:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.9) !important; }
-.light .text-white\/80:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.8) !important; }
-.light .text-white\/75:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.75) !important; }
-.light .text-white\/70:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.7) !important; }
-.light .text-white\/65:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.65) !important; }
-.light .text-white\/60:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.6) !important; }
-.light .text-white\/50:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.5) !important; }
-.light .text-white\/40:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.4) !important; }
-.light .text-white\/30:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.3) !important; }
-.light .text-white\/25:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.25) !important; }
-.light .text-white\/20:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.2) !important; }
-.light .text-white\/10:not(button):not(.btn):not(.bg-accent):not(.bg-red-600):not(.bg-primary):not(.bg-primary-glow) { color: hsl(var(--foreground) / 0.1) !important; }
+.light .text-white\/95 { color: hsl(var(--foreground) / 0.95) !important; }
+.light .text-white\/90 { color: hsl(var(--foreground) / 0.9) !important; }
+.light .text-white\/80 { color: hsl(var(--foreground) / 0.8) !important; }
+.light .text-white\/75 { color: hsl(var(--foreground) / 0.75) !important; }
+.light .text-white\/70 { color: hsl(var(--foreground) / 0.7) !important; }
+.light .text-white\/65 { color: hsl(var(--foreground) / 0.65) !important; }
+.light .text-white\/60 { color: hsl(var(--foreground) / 0.6) !important; }
+.light .text-white\/50 { color: hsl(var(--foreground) / 0.5) !important; }
+.light .text-white\/40 { color: hsl(var(--foreground) / 0.4) !important; }
+.light .text-white\/30 { color: hsl(var(--foreground) / 0.3) !important; }
+.light .text-white\/25 { color: hsl(var(--foreground) / 0.25) !important; }
+.light .text-white\/20 { color: hsl(var(--foreground) / 0.2) !important; }
+.light .text-white\/10 { color: hsl(var(--foreground) / 0.1) !important; }
+
+/* Keep text white inside solid colorful/dark elements in light mode */
+.light .bg-accent .text-white, .light .bg-accent * .text-white,
+.light .bg-red-500 .text-white, .light .bg-red-500 * .text-white,
+.light .bg-red-600 .text-white, .light .bg-red-600 * .text-white,
+.light .bg-red-650 .text-white, .light .bg-red-650 * .text-white,
+.light .bg-primary .text-white, .light .bg-primary * .text-white,
+.light .bg-emerald-600 .text-white, .light .bg-emerald-600 * .text-white,
+.light .bg-emerald-950 .text-white, .light .bg-emerald-950 * .text-white,
+.light .bg-success .text-white, .light .bg-success * .text-white,
+.light .bg-slate-900 .text-white, .light .bg-slate-900 * .text-white,
+.light .bg-slate-950 .text-white, .light .bg-slate-950 * .text-white,
+.light .bg-black .text-white, .light .bg-black * .text-white {
+  color: rgb(255 255 255) !important;
+}
+
+.light .bg-accent .text-white\/90, .light .bg-accent * .text-white\/90,
+.light .bg-red-500 .text-white\/90, .light .bg-red-500 * .text-white\/90,
+.light .bg-red-600 .text-white\/90, .light .bg-red-600 * .text-white\/90,
+.light .bg-red-650 .text-white\/90, .light .bg-red-650 * .text-white\/90,
+.light .bg-primary .text-white\/90, .light .bg-primary * .text-white\/90,
+.light .bg-emerald-600 .text-white\/90, .light .bg-emerald-600 * .text-white\/90,
+.light .bg-emerald-950 .text-white\/90, .light .bg-emerald-950 * .text-white\/90,
+.light .bg-success .text-white\/90, .light .bg-success * .text-white\/90,
+.light .bg-slate-900 .text-white\/90, .light .bg-slate-900 * .text-white\/90,
+.light .bg-slate-950 .text-white\/90, .light .bg-slate-950 * .text-white\/90,
+.light .bg-black .text-white\/90, .light .bg-black * .text-white\/90 {
+  color: rgb(255 255 255 / 0.9) !important;
+}
 
 /* Overriding white border utilities in light mode */
 .light .border-white\/5 { border-color: hsl(var(--foreground) / 0.05) !important; }
