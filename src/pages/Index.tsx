@@ -234,14 +234,14 @@ const Index = () => {
             viewport={{ once: true }}
           >
             <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">
-              <CalendarDays className="h-4 w-4 text-accent" /> Agenda Inteligente
+              <CalendarDays className="h-4 w-4 text-accent" /> Agenda Inteligente & Sync
             </div>
             <h2 className="font-display text-5xl md:text-7xl font-black mb-8 text-white tracking-tighter leading-[0.9]">
-              Tu carrera, <br/>
+              Tu agenda, <br/>
               <span className="text-white/20 italic font-medium">Sincronizada.</span>
             </h2>
             <p className="text-white/40 text-lg leading-relaxed mb-10 font-medium">
-              Gestionamos tus fechas críticas para que nunca pierdas una inscripción ni una mesa de examen. Tecnología al servicio de tu organización.
+              Suscribite a los avisos de la facultad y sincronizalos directamente con Google Calendar. Llevá las fechas clave de inscripciones, parciales, finales y eventos directo en tu celular.
             </p>
           </motion.div>
 

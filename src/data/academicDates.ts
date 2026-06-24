@@ -53,24 +53,27 @@ export const academicDates: AcademicDate[] = [
     link: "https://guarani.unlp.edu.ar",
   },
 
-  // ── Inicio de cuatrimestre ───────────────────────────────
+  // ── Inscripción a cursadas ───────────────────────────────
   {
-    id: "inicio-2do-cuatrimestre-2026",
-    category: "cuatrimestre",
-    title: "Inicio 2° Cuatrimestre 2026",
-    description: "Comienzo oficial de las clases del segundo cuatrimestre según el calendario académico de la Facultad.",
-    date: "2026-08-03",
-    location: "Facultad de Ciencias Jurídicas y Sociales — UNLP",
+    id: "inscripcion-cursadas-2do-cuatrimestre-2026",
+    category: "inscripcion",
+    title: "Inscripción a Cursadas — 2° Cuatrimestre",
+    description: "Inscripción a materias del segundo cuatrimestre a través del SIU Guaraní por franjas horarias.",
+    date: "2026-07-27",
+    dateEnd: "2026-07-31",
+    location: "SIU Guaraní UNLP",
+    link: "https://guarani.unlp.edu.ar",
   },
 
-  // ── Feria judicial ──────────────────────────────────────
+  // ── Mesas de exámenes de Julio ───────────────────────────
   {
-    id: "feria-invierno-2026",
-    category: "feria",
-    title: "Feria Judicial de Invierno",
-    description: "Período de feria judicial. Los tribunales no tienen actividad ordinaria. Controlá plazos procesales.",
-    date: "2026-07-13",
-    dateEnd: "2026-07-24",
+    id: "mesas-examenes-julio-2026",
+    category: "examen",
+    title: "Mesas de Exámenes Finales (Turno Julio)",
+    description: "Turno oficial de exámenes finales de Julio. Recordá chequear las aulas asignadas en cartelera.",
+    date: "2026-07-06",
+    dateEnd: "2026-07-11",
+    location: "Facultad de Ciencias Jurídicas y Sociales — UNLP",
   },
 
   // ── Mesas de examen ─────────────────────────────────────
