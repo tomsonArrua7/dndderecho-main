@@ -15,11 +15,13 @@ DROP POLICY IF EXISTS "Own eventos insert" ON public.eventos;
 CREATE POLICY "Own and global eventos insert" ON public.eventos
   FOR INSERT TO authenticated
   WITH CHECK (
-    auth.uid() = user_id OR 
-    (es_global = true AND EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND (role = 'admin' OR role = 'escritor')
-    ))
+    auth.uid() = user_id AND (
+      es_global = false OR 
+      EXISTS (
+        SELECT 1 FROM public.profiles
+        WHERE id = auth.uid() AND (role = 'admin' OR role = 'escritor')
+      )
+    )
   );
 
 -- 5. Update update policy for eventos
@@ -32,6 +34,15 @@ CREATE POLICY "Own and global eventos update" ON public.eventos
       SELECT 1 FROM public.profiles
       WHERE id = auth.uid() AND (role = 'admin' OR role = 'escritor')
     ))
+  )
+  WITH CHECK (
+    auth.uid() = user_id AND (
+      es_global = false OR 
+      EXISTS (
+        SELECT 1 FROM public.profiles
+        WHERE id = auth.uid() AND (role = 'admin' OR role = 'escritor')
+      )
+    )
   );
 
 -- 6. Update delete policy for eventos
