@@ -73,7 +73,6 @@ serve(async (req) => {
     return new Response(responseBody, {
       headers: {
         "Content-Type": "text/calendar; charset=utf-8",
-        "Content-Disposition": 'attachment; filename="avisos-dnd.ics"',
         "Cache-Control": "no-cache, no-store, must-revalidate",
         ...corsHeaders,
       },
