@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Calendar, Plus, Trash2, Bell, Download, Minimize2, Maximize2, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,6 +38,7 @@ const Calendario = () => {
   const [fecha, setFecha] = useState("");
   const [esGlobal, setEsGlobal] = useState(false);
   const [suscripto, setSuscripto] = useState(false);
+  const [showSyncDialog, setShowSyncDialog] = useState(false);
 
   const isAdminOrWriter = profile?.role === "admin" || profile?.role === "escritor";
 
@@ -99,6 +100,9 @@ const Calendario = () => {
           ? "Te suscribiste a los Avisos Fundamentales de DND" 
           : "Te desuscribiste de los Avisos Fundamentales"
       );
+      if (nextState) {
+        setShowSyncDialog(true);
+      }
       fetchEventos();
     }
   };
@@ -215,6 +219,44 @@ const Calendario = () => {
               </div>
               <Button type="submit" variant="hero" className="w-full">Guardar</Button>
             </form>
+          </DialogContent>
+        </Dialog>
+        <Dialog open={showSyncDialog} onOpenChange={setShowSyncDialog}>
+          <DialogContent className="max-w-md bg-card border border-border">
+            <DialogHeader>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-accent font-bold mb-1">
+                Suscripción Activa
+              </div>
+              <DialogTitle className="font-display text-2xl flex items-center gap-2">
+                ¡Te suscribiste con éxito! 🎉
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground mt-2">
+                Para ver los avisos fundamentales y fechas importantes de la Facultad directamente en tu celular o computadora, sincronizá el calendario con Google Calendar.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 pt-4">
+              <Button
+                asChild
+                variant="hero"
+                className="w-full text-xs uppercase tracking-wider font-bold h-11"
+                onClick={() => setShowSyncDialog(false)}
+              >
+                <a
+                  href="https://www.google.com/calendar/render?cid=webcal%3A%2F%2Fapi.dndjursoc.com.ar%2Ffunctions%2Fv1%2Fcalendario-ics"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" /> Sincronizar con Google Calendar
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full text-xs uppercase tracking-wider font-semibold text-muted-foreground hover:text-foreground"
+                onClick={() => setShowSyncDialog(false)}
+              >
+                Hacerlo más tarde
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
