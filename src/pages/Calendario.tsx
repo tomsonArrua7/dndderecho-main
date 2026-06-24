@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Calendar, Plus, Trash2, Bell, Download, Minimize2, Maximize2 } from "lucide-react";
+import { Calendar, Plus, Trash2, Bell, Download, Minimize2, Maximize2, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 interface Evento {
@@ -103,59 +103,10 @@ const Calendario = () => {
     }
   };
 
-  const exportCalendarToICS = () => {
-    const globalEvents = eventos.filter((e) => e.es_global);
-    if (globalEvents.length === 0) {
-      toast.info("No hay avisos fundamentales activos para exportar.");
-      return;
-    }
-
-    const icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//DND Jursoc//Calendario Academico//ES",
-      "CALSCALE:GREGORIAN",
-      "METHOD:PUBLISH",
-    ];
-
-    globalEvents.forEach((e) => {
-      const start = new Date(e.fecha);
-      const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hour duration
-
-      const formatICSDate = (date: Date) => {
-        return date.toISOString().replace(/-|:|\.\d+/g, "");
-      };
-
-      const cleanText = (str: string | null) => {
-        if (!str) return "";
-        return str.replace(/\\/g, "\\\\").replace(/,/g, "\\,").replace(/\n/g, "\\n");
-      };
-
-      icsContent.push(
-        "BEGIN:VEVENT",
-        `UID:${e.id}@dndjursoc.com.ar`,
-        `DTSTAMP:${formatICSDate(new Date())}`,
-        `DTSTART:${formatICSDate(start)}`,
-        `DTEND:${formatICSDate(end)}`,
-        `SUMMARY:${cleanText(e.titulo)}`,
-        `DESCRIPTION:${cleanText(e.descripcion)}`,
-        "LOCATION:Facultad de Derecho UNLP",
-        "END:VEVENT"
-      );
-    });
-
-    icsContent.push("END:VCALENDAR");
-
-    const blob = new Blob([icsContent.join("\r\n")], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "avisos-dnd.ics";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    toast.success("Archivo de calendario .ics descargado. Impórtalo en Google Calendar.");
+  const copySyncLink = () => {
+    const link = "https://api.dndjursoc.com.ar/functions/v1/calendario-ics";
+    navigator.clipboard.writeText(link);
+    toast.success("Enlace de calendario copiado al portapapeles. Pégalo en tu aplicación de calendario preferida.");
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -288,14 +239,25 @@ const Calendario = () => {
             {suscripto ? "Desuscribirse" : "Suscribirse"}
           </Button>
           {suscripto && (
-            <Button
-              variant="outline"
-              onClick={exportCalendarToICS}
-              title="Descargar agenda en .ics"
-              className="w-full sm:w-auto uppercase tracking-wider text-[10px] font-bold h-10 px-4 flex items-center gap-2"
-            >
-              <Download size={12} /> Sync (ICS)
-            </Button>
+            <>
+              <a
+                href="https://www.google.com/calendar/render?cid=https://api.dndjursoc.com.ar/functions/v1/calendario-ics"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Sincronizar con Google Calendar en 1 clic"
+                className="w-full sm:w-auto uppercase tracking-wider text-[10px] font-bold h-10 px-4 flex items-center justify-center gap-2 bg-background border border-border hover:bg-accent/10 hover:border-accent/40 rounded-lg text-foreground hover:text-accent transition-all cursor-pointer text-center"
+              >
+                <ExternalLink size={12} /> Sync Google Calendar
+              </a>
+              <Button
+                variant="outline"
+                onClick={copySyncLink}
+                title="Copiar dirección pública del calendario"
+                className="w-full sm:w-auto uppercase tracking-wider text-[10px] font-bold h-10 px-4 flex items-center gap-2"
+              >
+                <Copy size={12} /> Copiar enlace sync
+              </Button>
+            </>
           )}
         </div>
       </div>

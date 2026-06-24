@@ -26,4 +26,5 @@ jobs:
             mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
             cp -r supabase/functions/mass-mailing /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/send-match-email /root/supabase/docker/volumes/functions/
+            cp -r supabase/functions/calendario-ics /root/supabase/docker/volumes/functions/
             echo "Deploy completado: $(git log --oneline -1)"
