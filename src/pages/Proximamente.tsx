@@ -120,7 +120,7 @@ const Proximamente = () => {
         ) : (
           <div className="w-full space-y-8">
             <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-md mx-auto">
-              Estamos desarrollando la plataforma digital definitiva para potenciar tu vida académica. Muy pronto vas a poder consultar el permutero de comisiones, ver tu avance de plan de estudios y organizar tus exámenes en un solo lugar.
+              Estamos diseñando el espacio digital definitivo para los estudiantes de Derecho. Muy pronto vas a descubrir una nueva forma de transitar tu carrera. Mantenete atento.
             </p>
 
             <div className="pt-2">
