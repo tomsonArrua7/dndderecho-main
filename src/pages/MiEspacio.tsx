@@ -345,7 +345,10 @@ const MiEspacio = () => {
         <div className="lg:col-span-2 flex flex-col gap-6">
           
           {/* Plan de Estudios Progress Card */}
-          <div className="p-6 rounded-2xl bg-card border shadow-paper relative overflow-hidden group">
+          <Link
+            to="/plan"
+            className="p-6 rounded-2xl bg-card border border-border shadow-paper relative overflow-hidden group block hover:border-primary/45 transition-all duration-300"
+          >
             <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-[0.03] bg-primary -translate-y-8 translate-x-8" />
             <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
               <div className="flex items-center gap-3">
@@ -357,11 +360,9 @@ const MiEspacio = () => {
                   <p className="text-sm text-muted-foreground">{stats.aprobadas} de {stats.total} materias aprobadas ({stats.planName})</p>
                 </div>
               </div>
-              <Button asChild variant="outline" className="text-xs group hover:border-primary/50 transition-colors">
-                <Link to="/plan" className="flex items-center gap-1.5">
-                  Abrir Plan <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-              </Button>
+              <div className="inline-flex items-center justify-center rounded-xl text-xs font-bold transition-colors border border-input bg-background/50 h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground group-hover:border-primary/50">
+                Abrir Plan <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform ml-1.5" />
+              </div>
             </div>
             
             {/* Simple progress bar representation */}
@@ -376,7 +377,7 @@ const MiEspacio = () => {
             <p className="text-[10px] text-right text-muted-foreground uppercase tracking-widest font-bold">
               ~{Math.round((stats.aprobadas / stats.total) * 100)}% Completado
             </p>
-          </div>
+          </Link>
 
           {/* Action Cards */}
           <div className="grid sm:grid-cols-2 gap-4">
