@@ -6,6 +6,7 @@
  */
 
 import React from "react";
+import { useTheme } from "next-themes";
 import dndMarkOnDark from "@/assets/dnd-mark.png";    // rojo + blanco (fondo azul)
 
 interface DndMarkProps {
@@ -15,22 +16,27 @@ interface DndMarkProps {
   alt?: string;
 }
 
-/** Marca DND — roja + blanca, ideal para fondos azules o muy oscuros */
+/** Marca DND — se adapta automáticamente al modo claro (usando la imagen invertida) o al oscuro */
 export const DndMark: React.FC<DndMarkProps> = ({
   size = 48,
   className = "",
   style,
   alt = "DND",
-}) => (
-  <img
-    src={dndMarkOnDark}
-    alt={alt}
-    width={size}
-    height={size}
-    className={className}
-    style={{ objectFit: "contain", display: "block", ...style }}
-    draggable={false}
-  />
-);
+}) => {
+  const { resolvedTheme } = useTheme();
+  const imgSrc = resolvedTheme === "light" ? "/DD colores invertidos.png" : dndMarkOnDark;
+
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      width={size}
+      height={size}
+      className={className}
+      style={{ objectFit: "contain", display: "block", ...style }}
+      draggable={false}
+    />
+  );
+};
 
 export default DndMark;

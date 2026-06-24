@@ -1,10 +1,11 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { LogIn, LogOut, Menu, Scale, ShieldCheck, X } from "lucide-react";
+import { LogIn, LogOut, Menu, Scale, ShieldCheck, Sun, Moon, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 
 import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User } from "lucide-react";
 
@@ -18,6 +19,7 @@ const publicLinks = [
 
 export const Navbar = () => {
   const { user, profile, signOut } = useAuth();
+  const { resolvedTheme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -116,6 +118,21 @@ export const Navbar = () => {
 
           {/* ── Actions ── */}
           <div className="flex items-center gap-4 shrink-0">
+            {/* Theme Toggle */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/5 border border-white/5 transition-all duration-300 flex items-center justify-center cursor-pointer"
+              aria-label="Cambiar tema"
+            >
+              {resolvedTheme === "light" ? (
+                <Moon className="h-4.5 w-4.5 text-indigo-500 fill-indigo-500/10" strokeWidth={2} />
+              ) : (
+                <Sun className="h-4.5 w-4.5 text-amber-400 fill-amber-400/10" strokeWidth={2} />
+              )}
+            </motion.button>
+
             {/* Auth button / User Menu */}
             {user ? (
               <div className="relative hidden sm:block" onMouseLeave={() => setDropdownOpen(false)}>
