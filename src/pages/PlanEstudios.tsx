@@ -570,7 +570,7 @@ const PlanEstudios = () => {
 
   return (
     <div className={cn(
-      "min-h-screen bg-background transition-all duration-700",
+      "min-h-screen bg-background transition-colors duration-200",
       isFocusMode ? "fixed inset-0 z-[100] overflow-y-auto py-12 px-8" : "py-12 px-8"
     )}>
       <div className="max-w-[1800px] mx-auto">

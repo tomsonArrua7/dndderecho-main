@@ -345,6 +345,49 @@
   color: hsl(var(--foreground)) !important;
 }
 
+/* Light mode overrides for subject card states in PlanEstudios */
+.light .bg-emerald-950\/15 {
+  background-color: rgb(16 185 129 / 0.12) !important; /* soft light green */
+}
+.light .border-emerald-800\/40 {
+  border-color: rgb(16 185 129 / 0.3) !important;
+}
+.light .text-emerald-200 {
+  color: rgb(6 95 70) !important; /* dark green text for readability */
+}
+.light .text-emerald-400 {
+  color: rgb(5 150 105) !important;
+}
+
+.light .bg-red-950\/5 {
+  background-color: rgb(239 68 68 / 0.08) !important; /* soft light red */
+}
+.light .border-red-900\/20 {
+  border-color: rgb(239 68 68 / 0.25) !important;
+}
+.light .text-red-200\/90 {
+  color: rgb(153 27 27) !important; /* dark red text for readability */
+}
+
+.light .bg-slate-900\/10 {
+  background-color: hsl(var(--foreground) / 0.03) !important; /* soft light gray */
+}
+.light .border-white\/5 {
+  border-color: hsl(var(--foreground) / 0.08) !important;
+}
+.light .text-white\/35 {
+  color: hsl(var(--foreground) / 0.45) !important; /* readable muted locked text */
+}
+.light .text-white\/30 {
+  color: hsl(var(--foreground) / 0.4) !important;
+}
+.light .text-white\/20 {
+  color: hsl(var(--foreground) / 0.3) !important;
+}
+.light .text-white\/50 {
+  color: hsl(var(--foreground) / 0.6) !important;
+}
+
 /* Red / Destructive links in dropdowns */
 .light .text-red-400 {
   color: hsl(var(--accent)) !important;
