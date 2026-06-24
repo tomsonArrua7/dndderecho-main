@@ -90,6 +90,7 @@ const Calendario = () => {
       .eq("id", user.id);
 
     if (error) {
+      console.error("Error updating subscription:", error);
       toast.error("No se pudo actualizar la suscripción");
       setSuscripto(!nextState);
     } else {
@@ -169,6 +170,7 @@ const Calendario = () => {
       es_global: esGlobal && isAdminOrWriter,
     });
     if (error) {
+      console.error("Error saving event:", error);
       toast.error("No se pudo guardar");
       return;
     }
@@ -185,6 +187,7 @@ const Calendario = () => {
   const remove = async (id: string) => {
     const { error } = await supabase.from("eventos").delete().eq("id", id);
     if (error) {
+      console.error("Error removing event:", error);
       toast.error("No se pudo eliminar el evento");
       return;
     }
