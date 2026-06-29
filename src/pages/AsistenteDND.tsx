@@ -127,6 +127,16 @@ export default function AsistenteDND() {
       ]);
     } catch (err: any) {
       console.error("Error al obtener respuesta del asistente:", err);
+      // Intentar extraer el error JSON/texto detallado devuelto por la Edge Function
+      if (err.context && typeof err.context.json === "function") {
+        err.context.json().then((details: any) => {
+          console.error("Detalles del error devuelto por la Edge Function:", details);
+        }).catch(() => {});
+      } else if (err.context && typeof err.context.text === "function") {
+        err.context.text().then((text: string) => {
+          console.error("Texto del error devuelto por la Edge Function:", text);
+        }).catch(() => {});
+      }
       toast.error("No se pudo obtener respuesta del Asistente DND.");
       setMessages(prev => [
         ...prev,
