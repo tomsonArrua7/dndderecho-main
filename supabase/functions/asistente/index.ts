@@ -141,6 +141,10 @@ serve(async (req) => {
       }
     }
 
+    if (geminiApiKey) {
+      geminiApiKey = geminiApiKey.trim();
+    }
+
     if (!geminiApiKey) {
       return new Response(
         JSON.stringify({
