@@ -54,6 +54,7 @@ const Auth = () => {
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const isRecoveryFlow = useRef(false);
+  const hasExchanged = useRef(false);
 
   // "idle" | "loading" | "confirmed" | "error"
   const [confirmState, setConfirmState] = useState<"idle" | "loading" | "confirmed" | "error">(
@@ -79,6 +80,9 @@ const Auth = () => {
   useEffect(() => {
     const info = getConfirmationCode();
     if (!info) return;
+
+    if (hasExchanged.current) return;
+    hasExchanged.current = true;
 
     // Limpiamos la URL del navegador
     window.history.replaceState(null, "", window.location.pathname);
@@ -374,17 +378,17 @@ const Auth = () => {
                   <Input id="si-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <Label htmlFor="si-pass">Contraseña</Label>
+                  <Label htmlFor="si-pass">Contraseña</Label>
+                  <Input id="si-pass" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                  <div className="flex justify-end mt-2">
                     <button
                       type="button"
                       onClick={() => setTab("forgot")}
-                      className="text-xs text-primary hover:underline font-medium"
+                      className="text-sm text-primary hover:text-primary/80 hover:underline font-bold transition-all"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
                   </div>
-                  <Input id="si-pass" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
                 <Button type="submit" variant="hero" className="w-full" size="lg" disabled={submitting}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
