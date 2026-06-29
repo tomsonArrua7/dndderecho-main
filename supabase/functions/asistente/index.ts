@@ -195,13 +195,14 @@ INSTRUCCIONES IMPORTANTES PARA LA RESPUESTA:
 6. Si corresponde, sugiere que pueden verificar los archivos originales en la carpeta de Drive de la materia: https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF
 `;
 
-    // Llamada a la API de Gemini usando Native Fetch (evita problemas de dependencias en Deno self-hosted)
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+    // Llamada a la API de Gemini usando Native Fetch con header x-goog-api-key (soporta el nuevo formato de claves AQ. de Google)
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
     const apiResponse = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-goog-api-key": geminiApiKey,
       },
       body: JSON.stringify({
         contents: [
