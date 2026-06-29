@@ -106,26 +106,17 @@ export default function AsistenteDND() {
     setIsLoadingResponse(true);
 
     try {
-      // Petición al backend Express
-      const response = await fetch("/api/asistente", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      // Petición a la Edge Function de Supabase
+      const { data, error } = await supabase.functions.invoke("asistente", {
+        body: {
           pregunta: userMessage.content,
           materia: userMessage.materia,
           catedra: userMessage.catedra || "",
           comision: userMessage.comision || ""
-        }),
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Error en el servidor");
-      }
-
-      const data = await response.json();
+      if (error) throw error;
       
       setMessages(prev => [
         ...prev,
@@ -141,12 +132,17 @@ export default function AsistenteDND() {
         ...prev,
         {
           role: "assistant",
-          content: `❌ **Error de conexión con el backend:**
+          content: `❌ **Error al invocar la Edge Function:**
           
-No pudimos conectarnos con el servidor del Asistente DND. 
-Asegúrate de que el servidor Express esté corriendo localmente o de haber configurado y desplegado correctamente el servidor en producción.
+No pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.
 
-*Detalles del error: ${err.message}*`
+**Pasos para solucionarlo:**
+1. Asegúrate de haber desplegado la función en producción ejecutando en tu terminal local:
+   \`supabase functions deploy asistente\`
+2. Configura tu \`GEMINI_API_KEY\` en Supabase con:
+   \`supabase secrets set GEMINI_API_KEY="tu_clave_api"\`
+
+*Detalles del error: ${err.message || JSON.stringify(err)}*`
         }
       ]);
     } finally {
