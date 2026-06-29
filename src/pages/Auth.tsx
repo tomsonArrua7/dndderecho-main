@@ -28,7 +28,9 @@ const signUpSchema = signInSchema.extend({
 // Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña
 function isRecoveryUrl(): boolean {
   const params = new URLSearchParams(window.location.search);
-  return params.get("type") === "recovery" || window.location.hash.includes("type=recovery");
+  return window.location.pathname === "/auth/recovery" ||
+         params.get("type") === "recovery" ||
+         window.location.hash.includes("type=recovery");
 }
 
 // Detecta si la URL actual viene de un link de confirmación de Supabase
@@ -93,14 +95,14 @@ const Auth = () => {
     if (hasExchanged.current) return;
     hasExchanged.current = true;
 
-    // Limpiamos la URL del navegador
-    window.history.replaceState(null, "", window.location.pathname);
+    // Limpiamos la URL del navegador a /auth limpia
+    window.history.replaceState(null, "", "/auth");
 
     if (info.type === "hash") {
-      // Si el hash indica recovery (aunque normalmente es manejado por onAuthStateChange),
-      // evitamos marcarlo como confirmado genérico si es recovery
+      // Si el hash indica recovery, marcamos el flujo de recuperación y terminamos cargando
       if (window.location.hash.includes("type=recovery")) {
         isRecoveryFlow.current = true;
+        setConfirmState("idle");
         return;
       }
       setConfirmState("confirmed");
@@ -115,6 +117,8 @@ const Auth = () => {
       } else {
         if (!isRecoveryFlow.current) {
           setConfirmState("confirmed");
+        } else {
+          setConfirmState("idle");
         }
       }
     });

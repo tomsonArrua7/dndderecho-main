@@ -127,6 +127,7 @@ const AppContent = () => {
     return (
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/recovery" element={<Auth />} />
         <Route path="*" element={<Proximamente />} />
       </Routes>
     );
@@ -137,6 +138,7 @@ const AppContent = () => {
       <Route element={<Layout />}>
         <Route path="/"                element={<Index />} />
         <Route path="/auth"            element={<Auth />} />
+        <Route path="/auth/recovery"            element={<Auth />} />
         <Route path="/noticias"        element={<Noticias />} />
         <Route path="/apuntes"         element={<Apuntes />} />
         <Route path="/permutero"       element={<Permutero />} />

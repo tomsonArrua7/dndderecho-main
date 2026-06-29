@@ -33,7 +33,7 @@ serve(async (req) => {
       type: "recovery",
       email: email,
       options: {
-        redirectTo: `${origin || "https://dndjursoc.com.ar"}/auth?type=recovery`,
+        redirectTo: `${origin || "https://dndjursoc.com.ar"}/auth/recovery`,
       },
     });
 
