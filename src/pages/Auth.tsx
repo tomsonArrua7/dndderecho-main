@@ -169,15 +169,33 @@ const Auth = () => {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/auth?type=recovery`,
-    });
-    setSubmitting(false);
-    if (error) {
-      toast.error(error.message === "User not found" ? "No existe un usuario registrado con ese correo" : error.message);
-      return;
+    try {
+      const { data, error } = await supabase.functions.invoke("send-recovery-email", {
+        body: { 
+          email: email.trim(),
+          origin: window.location.origin
+        }
+      });
+      setSubmitting(false);
+
+      if (error) {
+        throw error;
+      }
+
+      if (data && data.error) {
+        const msg = data.error === "User not found" || data.error.includes("User not found")
+          ? "No existe un usuario registrado con ese correo" 
+          : data.error;
+        toast.error(msg);
+        return;
+      }
+
+      setTab("forgot-success");
+    } catch (err: any) {
+      setSubmitting(false);
+      console.error("Error sending recovery email:", err);
+      toast.error(err.message || "Error al enviar el correo de recuperación");
     }
-    setTab("forgot-success");
   };
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
