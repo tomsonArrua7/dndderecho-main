@@ -63,6 +63,7 @@ const Auth = () => {
   const [anioIngreso, setAnioIngreso] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [recoveryToken, setRecoveryToken] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
@@ -112,16 +113,10 @@ const Auth = () => {
     }
 
     if (info.type === "token_hash") {
-      // Flujo de Verificación directa de OTP/Token hash para recuperación
-      supabase.auth.verifyOtp({ token_hash: info.token, type: "recovery" }).then(({ error }) => {
-        if (error) {
-          console.error("Token verification error:", error);
-          setConfirmState("error");
-        } else {
-          isRecoveryFlow.current = true;
-          setConfirmState("idle");
-        }
-      });
+      // Guardamos el token en el estado para verificarlo recién cuando envíe el formulario
+      setRecoveryToken(info.token);
+      isRecoveryFlow.current = true;
+      setConfirmState("idle");
       return;
     }
 
@@ -230,12 +225,30 @@ const Auth = () => {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+    // 1. Si tenemos el token de recuperación, iniciamos sesión primero verificando el OTP
+    if (recoveryToken) {
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        token_hash: recoveryToken,
+        type: "recovery"
+      });
+      if (verifyError) {
+        setSubmitting(false);
+        console.error("Token verification error:", verifyError);
+        toast.error("El enlace de recuperación es inválido o ha expirado");
+        return;
+      }
+    }
+
+    // 2. Ahora que el usuario tiene sesión activa, actualizamos su contraseña
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
     setSubmitting(false);
-    if (error) {
-      toast.error(error.message);
+    
+    if (updateError) {
+      toast.error(updateError.message);
       return;
     }
+    
     toast.success("Contraseña restablecida con éxito");
     isRecoveryFlow.current = false;
     navigate(from, { replace: true });
