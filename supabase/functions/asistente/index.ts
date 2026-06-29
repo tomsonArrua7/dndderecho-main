@@ -30,8 +30,17 @@ serve(async (req) => {
       - Pregunta: "${pregunta}"`);
 
     // Inicializar cliente de Supabase interno de la función
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "http://kong:8000";
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_ANON_KEY") || "";
+    
+    if (!supabaseKey) {
+      console.error("[Asistente DND] ERROR: No se encontró SUPABASE_SERVICE_ROLE_KEY ni SUPABASE_ANON_KEY en Deno.env.");
+      return new Response(
+        JSON.stringify({ error: "Error de configuración de red/entorno en el servidor de Deno." }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     let contextoRecuperado = "";
