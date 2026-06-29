@@ -39,15 +39,14 @@ serve(async (req) => {
 
     if (error) {
       console.error("Error generating recovery link:", error);
-      // Evitar dar pistas de si un email existe o no si querés privacidad,
-      // pero aquí devolvemos el error amigable.
       return new Response(JSON.stringify({ error: error.message }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const actionLink = data.properties.action_link;
+    // Apuntar directamente a la web del frontend con el hash del token
+    const actionLink = `${origin || "https://dndjursoc.com.ar"}/auth/recovery?token=${data.properties.hashed_token}`;
 
     const htmlContent = `
 <!DOCTYPE html>

@@ -39,10 +39,12 @@ function isRecoveryUrl(): boolean {
 }
 
 // Detecta si la URL actual viene de un link de confirmación de Supabase
-function getConfirmationCode(): { type: "pkce"; code: string } | { type: "hash" } | null {
+function getConfirmationCode(): { type: "pkce"; code: string } | { type: "hash" } | { type: "token_hash"; token: string } | null {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
   const hash = window.location.hash;
+  const token = params.get("token");
+  if (token) return { type: "token_hash", token };
   if (code) return { type: "pkce", code };
   if (hash.includes("access_token") && (hash.includes("type=signup") || hash.includes("type=invite") || hash.includes("type=recovery"))) {
     return { type: "hash" };
@@ -92,7 +94,7 @@ const Auth = () => {
     };
   }, []);
 
-  // Intercambia el código PKCE (o valida el hash) por una sesión real
+  // Intercambia el código PKCE (o valida el hash / token) por una sesión real
   useEffect(() => {
     const info = getConfirmationCode();
     if (!info) return;
@@ -111,6 +113,20 @@ const Auth = () => {
         return;
       }
       setConfirmState("confirmed");
+      return;
+    }
+
+    if (info.type === "token_hash") {
+      // Flujo de Verificación directa de OTP/Token hash para recuperación
+      supabase.auth.verifyOtp({ token_hash: info.token, type: "recovery" }).then(({ error }) => {
+        if (error) {
+          console.error("Token verification error:", error);
+          setConfirmState("error");
+        } else {
+          isRecoveryFlow.current = true;
+          setConfirmState("idle");
+        }
+      });
       return;
     }
 
