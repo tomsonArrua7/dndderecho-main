@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Repeat2, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Repeat2, ShieldCheck, Sparkles, Bot } from "lucide-react";
 import { DndMark } from "@/components/DndMark";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,6 +89,32 @@ export const HeroActions = () => {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+
+        {/* Tarjeta C: Asistente DND (Ancho Completo) */}
+        <div className="md:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 p-8 md:p-12 shadow-elegant border border-white/5 group transition-all duration-300 hover:scale-[1.02] hover:shadow-indigo-glow mt-6">
+          <div className="absolute -top-24 -left-24 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-4 max-w-2xl text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 font-black text-[10px] uppercase tracking-[0.2em] border border-indigo-500/30">
+                <Sparkles className="h-3.5 w-3.5 text-indigo-400" /> Inteligencia Artificial
+              </div>
+              <h3 className="font-display text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
+                Tutor Virtual: Asistente DND
+              </h3>
+              <p className="text-white/70 text-base leading-relaxed font-medium">
+                ¿Tenés dudas sobre alguna materia, cátedra o comisión? Nuestro asistente con IA lee tus apuntes y te responde en tiempo real con directrices específicas de tu cursada.
+              </p>
+            </div>
+            
+            <Button asChild size="lg" className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_10px_20px_rgba(99,102,241,0.2)] transition-all duration-300 rounded-full px-8 shrink-0">
+              <Link to="/asistente" className="flex items-center gap-2">
+                Consultar Asistente <Bot className="h-5 w-5" />
+              </Link>
+            </Button>
           </div>
         </div>
 

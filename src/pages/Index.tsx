@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookMarked, CalendarDays, GraduationCap, Repeat2, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { ArrowRight, BookMarked, CalendarDays, GraduationCap, Repeat2, ShieldCheck, Sparkles, Star, Bot } from "lucide-react";
 import facultad from "@/assets/facultad_unlp_optimized.png";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ const features = [
   { icon: CalendarDays, title: "Calendario Académico",    desc: "Anotá parciales, finales y entregas en tu agenda.",   to: "/calendario"       },
   { icon: BookMarked,   title: "Apuntes y Noticias",      desc: "Material de cátedra y novedades de la facultad.",     to: "/apuntes"          },
   { icon: Star,         title: "Recomendaciones",         desc: "Opiniones de estudiantes sobre cátedras y docentes.", to: "/recomendaciones"  },
+  { icon: Bot,          title: "Asistente DND (IA)",      desc: "Tutor virtual inteligente que resuelve tus dudas con tus apuntes.", to: "/asistente", accent: true },
 ];
 
 const Index = () => {

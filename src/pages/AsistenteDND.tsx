@@ -31,6 +31,81 @@ interface Message {
   comision?: string;
 }
 
+function MarkdownRenderer({ content }: { content: string }) {
+  const lines = content.split("\n");
+
+  return (
+    <div className="space-y-2 text-[13px] md:text-sm leading-relaxed text-white/95">
+      {lines.map((line, idx) => {
+        let trimmed = line.trim();
+        const isBullet = line.trim().startsWith("* ") || line.trim().startsWith("- ");
+        if (isBullet) {
+          trimmed = trimmed.substring(2);
+        }
+
+        // Expresión regular para detectar **negrita**, [texto](enlace) y URLs puras
+        const tokenRegex = /(\*\*.*?\*\*|\[.*?\]\(.*?\)|https?:\/\/[^\s\)]+)/g;
+        const tokens = trimmed.split(tokenRegex);
+        const parts: React.ReactNode[] = [];
+
+        tokens.forEach((token, tIdx) => {
+          if (token.startsWith("**") && token.endsWith("**")) {
+            parts.push(
+              <strong key={tIdx} className="font-extrabold text-[#E5E7EB] text-[14px] md:text-[15px] tracking-wide">
+                {token.slice(2, -2)}
+              </strong>
+            );
+          } else if (token.startsWith("[") && token.includes("](")) {
+            const closingBracket = token.indexOf("]");
+            const text = token.substring(1, closingBracket);
+            const url = token.substring(closingBracket + 2, token.length - 1);
+            parts.push(
+              <a
+                key={tIdx}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:underline font-bold inline-flex items-center gap-1 bg-accent/10 px-2 py-0.5 rounded-lg border border-accent/20 transition-all duration-200 hover:bg-accent/20"
+              >
+                {text} <ExternalLink className="h-3 w-3 inline shrink-0" />
+              </a>
+            );
+          } else if (token.startsWith("http://") || token.startsWith("https://")) {
+            parts.push(
+              <a
+                key={tIdx}
+                href={token}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:underline font-bold inline-flex items-center gap-1 bg-accent/10 px-2 py-0.5 rounded-lg border border-accent/20 transition-all duration-200 hover:bg-accent/20"
+              >
+                Ver Enlace <ExternalLink className="h-3 w-3 inline shrink-0" />
+              </a>
+            );
+          } else {
+            parts.push(token);
+          }
+        });
+
+        if (isBullet) {
+          return (
+            <div key={idx} className="flex items-start gap-2.5 pl-2 my-1">
+              <span className="text-accent mt-2 shrink-0 block w-1.5 h-1.5 rounded-full bg-accent" />
+              <span className="text-white/80">{parts}</span>
+            </div>
+          );
+        }
+
+        if (trimmed === "") {
+          return <div key={idx} className="h-2" />;
+        }
+
+        return <p key={idx} className="text-white/95">{parts}</p>;
+      })}
+    </div>
+  );
+}
+
 export default function AsistenteDND() {
   const [materias, setMaterias] = useState<Materia[]>([]);
   const [loadingMaterias, setLoadingMaterias] = useState(true);
@@ -231,6 +306,9 @@ No pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.
                   className="w-full bg-background/50 border border-white/10 text-white rounded-xl py-2.5 px-3 text-sm focus:ring-2 focus:ring-accent/50 outline-none transition-all cursor-pointer"
                 >
                   <option value="" className="bg-[#0A0E1A]">Cátedra General / No sé</option>
+                  <option value="1" className="bg-[#0A0E1A]">Cátedra 1</option>
+                  <option value="2" className="bg-[#0A0E1A]">Cátedra 2</option>
+                  <option value="3" className="bg-[#0A0E1A]">Cátedra 3</option>
                   <option value="A" className="bg-[#0A0E1A]">Cátedra A</option>
                   <option value="B" className="bg-[#0A0E1A]">Cátedra B</option>
                   <option value="C" className="bg-[#0A0E1A]">Cátedra C</option>
@@ -310,10 +388,13 @@ No pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.
                       ? "bg-accent/20 border border-accent/20 text-white rounded-tr-none" 
                       : "bg-[#10162B] border border-white/5 text-white/90 rounded-tl-none"
                   }`}>
-                    {/* Renderización Markdown simplificada */}
-                    <div className="space-y-2 whitespace-pre-wrap">
-                      {msg.content}
-                    </div>
+                    {msg.role === "user" ? (
+                      <div className="space-y-2 whitespace-pre-wrap">
+                        {msg.content}
+                      </div>
+                    ) : (
+                      <MarkdownRenderer content={msg.content} />
+                    )}
                   </div>
                 </div>
               ))
