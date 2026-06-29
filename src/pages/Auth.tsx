@@ -28,14 +28,9 @@ const signUpSchema = signInSchema.extend({
 // Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña
 function isRecoveryUrl(): boolean {
   const params = new URLSearchParams(window.location.search);
-  const active = window.location.pathname === "/auth/recovery" ||
+  return window.location.pathname === "/auth/recovery" ||
          params.get("type") === "recovery" ||
-         window.location.hash.includes("type=recovery") ||
-         sessionStorage.getItem("is_recovering") === "true";
-  if (active) {
-    sessionStorage.setItem("is_recovering", "true");
-  }
-  return active;
+         window.location.hash.includes("type=recovery");
 }
 
 // Detecta si la URL actual viene de un link de confirmación de Supabase
@@ -102,8 +97,8 @@ const Auth = () => {
     if (hasExchanged.current) return;
     hasExchanged.current = true;
 
-    // Limpiamos la URL del navegador a /auth limpia
-    window.history.replaceState(null, "", "/auth");
+    // Limpiamos la URL del navegador manteniendo la ruta /auth/recovery
+    window.history.replaceState(null, "", "/auth/recovery");
 
     if (info.type === "hash") {
       // Si el hash indica recovery, marcamos el flujo de recuperación y terminamos cargando
@@ -184,8 +179,8 @@ const Auth = () => {
   const handleGoToSignIn = async () => {
     await signOut();
     setConfirmState("idle");
-    sessionStorage.removeItem("is_recovering");
     setTab("signin");
+    navigate("/auth");
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -243,7 +238,6 @@ const Auth = () => {
     }
     toast.success("Contraseña restablecida con éxito");
     isRecoveryFlow.current = false;
-    sessionStorage.removeItem("is_recovering");
     navigate(from, { replace: true });
   };
 
