@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import { GoogleGenAI } from "npm:@google/genai";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -157,8 +156,6 @@ Sin embargo, falta configurar tu clave de la API de Gemini. Al usar **Supabase S
       );
     }
 
-    const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-
     const prompt = `
 Eres "Asistente DND", un tutor virtual académico experto y especializado para estudiantes de la Facultad de Derecho de la UNLP.
 Tu objetivo es responder de forma rigurosa, amigable y muy estructurada las dudas sobre la materia "${materia}".
@@ -185,13 +182,38 @@ INSTRUCCIONES IMPORTANTES PARA LA RESPUESTA:
 6. Si corresponde, sugiere que pueden verificar los archivos originales en la carpeta de Drive de la materia: https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF
 `;
 
-    // Llamada a la API de Gemini usando el modelo gemini-1.5-flash
-    const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
-      contents: prompt,
+    // Llamada a la API de Gemini usando Native Fetch (evita problemas de dependencias en Deno self-hosted)
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+
+    const apiResponse = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+      }),
     });
 
-    const respuestaTexto = response.text;
+    if (!apiResponse.ok) {
+      const errorDetail = await apiResponse.text();
+      throw new Error(`Gemini API error: ${apiResponse.status} - ${errorDetail}`);
+    }
+
+    const apiData = await apiResponse.json();
+    const respuestaTexto = apiData.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!respuestaTexto) {
+      throw new Error("No se obtuvo texto de respuesta de la API de Gemini.");
+    }
 
     return new Response(
       JSON.stringify({
