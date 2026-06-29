@@ -28,9 +28,14 @@ const signUpSchema = signInSchema.extend({
 // Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña
 function isRecoveryUrl(): boolean {
   const params = new URLSearchParams(window.location.search);
-  return window.location.pathname === "/auth/recovery" ||
+  const active = window.location.pathname === "/auth/recovery" ||
          params.get("type") === "recovery" ||
-         window.location.hash.includes("type=recovery");
+         window.location.hash.includes("type=recovery") ||
+         sessionStorage.getItem("is_recovering") === "true";
+  if (active) {
+    sessionStorage.setItem("is_recovering", "true");
+  }
+  return active;
 }
 
 // Detecta si la URL actual viene de un link de confirmación de Supabase
@@ -163,6 +168,7 @@ const Auth = () => {
   const handleGoToSignIn = async () => {
     await signOut();
     setConfirmState("idle");
+    sessionStorage.removeItem("is_recovering");
     setTab("signin");
   };
 
@@ -221,6 +227,7 @@ const Auth = () => {
     }
     toast.success("Contraseña restablecida con éxito");
     isRecoveryFlow.current = false;
+    sessionStorage.removeItem("is_recovering");
     navigate(from, { replace: true });
   };
 
