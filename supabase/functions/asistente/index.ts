@@ -142,7 +142,7 @@ serve(async (req) => {
     }
 
     if (geminiApiKey) {
-      geminiApiKey = geminiApiKey.trim();
+      geminiApiKey = geminiApiKey.replace(/\s+/g, "");
     }
 
     if (!geminiApiKey) {
