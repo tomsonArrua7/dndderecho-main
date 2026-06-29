@@ -201,7 +201,7 @@ INSTRUCCIONES IMPORTANTES PARA LA RESPUESTA:
 `;
 
     // Llamada a la API de Gemini usando Native Fetch con header x-goog-api-key (soporta el nuevo formato de claves AQ. de Google)
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
     const apiResponse = await fetch(url, {
       method: "POST",
