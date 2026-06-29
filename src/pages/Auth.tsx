@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, Scale, MailOpen, CheckCircle } from "lucide-react";
+import { Loader2, Scale, MailOpen, CheckCircle, KeyRound, Lock } from "lucide-react";
 import logo from "@/assets/dnd-logo.png";
 import { z } from "zod";
 
@@ -43,18 +43,37 @@ const Auth = () => {
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from || "/dashboard";
 
-  const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const [tab, setTab] = useState<"signin" | "signup" | "forgot" | "forgot-success" | "update-password">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [anioIngreso, setAnioIngreso] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
+
+  const isRecoveryFlow = useRef(false);
 
   // "idle" | "loading" | "confirmed" | "error"
   const [confirmState, setConfirmState] = useState<"idle" | "loading" | "confirmed" | "error">(
     () => (getConfirmationCode() ? "loading" : "idle")
   );
+
+  // Escuchar evento PASSWORD_RECOVERY de Supabase
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        isRecoveryFlow.current = true;
+        setConfirmState("idle");
+        setTab("update-password");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Intercambia el código PKCE (o valida el hash) por una sesión real
   useEffect(() => {
@@ -65,7 +84,12 @@ const Auth = () => {
     window.history.replaceState(null, "", window.location.pathname);
 
     if (info.type === "hash") {
-      // supabase-js maneja el hash automáticamente; sólo marcamos confirmado
+      // Si el hash indica recovery (aunque normalmente es manejado por onAuthStateChange),
+      // evitamos marcarlo como confirmado genérico si es recovery
+      if (window.location.hash.includes("type=recovery")) {
+        isRecoveryFlow.current = true;
+        return;
+      }
       setConfirmState("confirmed");
       return;
     }
@@ -76,14 +100,16 @@ const Auth = () => {
         console.error("PKCE exchange error:", error);
         setConfirmState("error");
       } else {
-        setConfirmState("confirmed");
+        if (!isRecoveryFlow.current) {
+          setConfirmState("confirmed");
+        }
       }
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Si el usuario ya está logueado y no estamos confirmando un mail, redirigir
-  if (!authLoading && user && confirmState === "idle") {
+  // Si el usuario ya está logueado y no estamos confirmando un mail ni actualizando contraseña, redirigir
+  if (!authLoading && user && confirmState === "idle" && tab !== "update-password") {
     return <Navigate to={from} replace />;
   }
 
@@ -121,6 +147,46 @@ const Auth = () => {
     await signOut();
     setConfirmState("idle");
     setTab("signin");
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Ingresá tu correo electrónico");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message === "User not found" ? "No existe un usuario registrado con ese correo" : error.message);
+      return;
+    }
+    setTab("forgot-success");
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      toast.error("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      toast.error("Las contraseñas no coinciden");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Contraseña restablecida con éxito");
+    isRecoveryFlow.current = false;
+    navigate(from, { replace: true });
   };
 
   // ── PANTALLA: verificando código ─────────────────────────────────────
@@ -222,8 +288,80 @@ const Auth = () => {
               Ya confirmé — Ir a Iniciar Sesión
             </Button>
           </div>
+        ) : tab === "forgot" ? (
+          // ── Solicitar Recuperación ──
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="font-display text-2xl font-bold text-foreground">Recuperar contraseña</h2>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Ingresá tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña.
+              </p>
+            </div>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <Label htmlFor="forgot-email">Email</Label>
+                <Input id="forgot-email" type="email" placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </div>
+              <Button type="submit" variant="hero" className="w-full" size="lg" disabled={submitting}>
+                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Enviar instrucciones
+              </Button>
+            </form>
+            <Button onClick={() => setTab("signin")} variant="ghost" className="w-full rounded-xl">
+              Volver a Iniciar sesión
+            </Button>
+          </div>
+        ) : tab === "forgot-success" ? (
+          // ── Éxito al solicitar recuperación ──
+          <div className="flex flex-col items-center text-center py-4 space-y-6">
+            <div className="mx-auto h-20 w-20 bg-primary/10 border-2 border-primary/30 text-primary rounded-full flex items-center justify-center">
+              <MailOpen className="h-10 w-10" strokeWidth={1.5} />
+            </div>
+            <div className="space-y-3">
+              <h2 className="font-display text-2xl font-bold text-foreground">
+                ¡Email enviado!
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-xs mx-auto leading-relaxed">
+                Te enviamos las instrucciones de restablecimiento de contraseña a tu correo. Revisá tu carpeta de entrada y spam.
+              </p>
+            </div>
+            <Button
+              onClick={() => setTab("signin")}
+              variant="outline"
+              className="w-full rounded-xl font-semibold border-border hover:bg-muted h-11"
+            >
+              Volver al Inicio
+            </Button>
+          </div>
+        ) : tab === "update-password" ? (
+          // ── Cambiar Contraseña ──
+          <div className="space-y-6">
+            <div className="space-y-2 flex flex-col items-center text-center">
+              <div className="h-12 w-12 bg-primary/10 border border-primary/20 text-primary rounded-full flex items-center justify-center mb-2">
+                <Lock className="h-6 w-6" />
+              </div>
+              <h2 className="font-display text-2xl font-bold text-foreground">Nueva contraseña</h2>
+              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+                Ingresá tu nueva contraseña a continuación. Debe tener un mínimo de 6 caracteres.
+              </p>
+            </div>
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div>
+                <Label htmlFor="new-pass">Nueva contraseña</Label>
+                <Input id="new-pass" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} />
+              </div>
+              <div>
+                <Label htmlFor="confirm-new-pass">Confirmar nueva contraseña</Label>
+                <Input id="confirm-new-pass" type="password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} required minLength={6} />
+              </div>
+              <Button type="submit" variant="hero" className="w-full" size="lg" disabled={submitting}>
+                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Guardar contraseña
+              </Button>
+            </form>
+          </div>
         ) : (
-          <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")}>
+          <Tabs value={tab === "signin" || tab === "signup" ? tab : "signin"} onValueChange={(v) => setTab(v as "signin" | "signup")}>
             <TabsList className="grid grid-cols-2 mb-6 w-full">
               <TabsTrigger value="signin">Iniciar sesión</TabsTrigger>
               <TabsTrigger value="signup">Crear cuenta</TabsTrigger>
@@ -236,7 +374,16 @@ const Auth = () => {
                   <Input id="si-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div>
-                  <Label htmlFor="si-pass">Contraseña</Label>
+                  <div className="flex justify-between items-center mb-1">
+                    <Label htmlFor="si-pass">Contraseña</Label>
+                    <button
+                      type="button"
+                      onClick={() => setTab("forgot")}
+                      className="text-xs text-primary hover:underline font-medium"
+                    >
+                      ¿Olvidaste tu contraseña?
+                    </button>
+                  </div>
                   <Input id="si-pass" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
                 <Button type="submit" variant="hero" className="w-full" size="lg" disabled={submitting}>
@@ -281,6 +428,7 @@ const Auth = () => {
           </Tabs>
         )}
       </div>
+
     </div>
   );
 };
