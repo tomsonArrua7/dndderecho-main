@@ -122,7 +122,11 @@ serve(async (req) => {
     // =========================================================================
     // INTEGRACIÓN CON LA API DE GEMINI (SDK @google/genai)
     // =========================================================================
+    let origenClave = "ninguno";
     let geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+    if (geminiApiKey) {
+      origenClave = "Deno.env";
+    }
 
     // Fallback para Supabase Self-hosted: leemos la key desde tu tabla 'app_settings'
     if (!geminiApiKey) {
@@ -135,6 +139,7 @@ serve(async (req) => {
 
         if (settings?.gemini_api_key) {
           geminiApiKey = settings.gemini_api_key;
+          origenClave = "base_de_datos";
         }
       } catch (err: any) {
         console.warn("No se pudo leer gemini_api_key de app_settings:", err.message);
@@ -219,7 +224,11 @@ INSTRUCCIONES IMPORTANTES PARA LA RESPUESTA:
 
     if (!apiResponse.ok) {
       const errorDetail = await apiResponse.text();
-      throw new Error(`Gemini API error: ${apiResponse.status} - ${errorDetail}`);
+      const keyLength = geminiApiKey ? geminiApiKey.length : 0;
+      const keyPreview = geminiApiKey 
+        ? `${geminiApiKey.substring(0, 10)}...${geminiApiKey.substring(geminiApiKey.length - 6)} (largo: ${keyLength})`
+        : "vacía";
+      throw new Error(`Gemini API error: ${apiResponse.status} - ${errorDetail} | Origen Clave: ${origenClave} | Preview Clave: ${keyPreview}`);
     }
 
     const apiData = await apiResponse.json();
