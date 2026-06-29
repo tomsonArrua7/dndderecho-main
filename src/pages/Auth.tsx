@@ -25,13 +25,19 @@ const signUpSchema = signInSchema.extend({
     }, "El año debe estar entre 1980 y 2026"),
 });
 
+// Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña
+function isRecoveryUrl(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("type") === "recovery" || window.location.hash.includes("type=recovery");
+}
+
 // Detecta si la URL actual viene de un link de confirmación de Supabase
 function getConfirmationCode(): { type: "pkce"; code: string } | { type: "hash" } | null {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
   const hash = window.location.hash;
   if (code) return { type: "pkce", code };
-  if (hash.includes("access_token") && (hash.includes("type=signup") || hash.includes("type=invite"))) {
+  if (hash.includes("access_token") && (hash.includes("type=signup") || hash.includes("type=invite") || hash.includes("type=recovery"))) {
     return { type: "hash" };
   }
   return null;
@@ -43,7 +49,10 @@ const Auth = () => {
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from || "/dashboard";
 
-  const [tab, setTab] = useState<"signin" | "signup" | "forgot" | "forgot-success" | "update-password">("signin");
+  const recoveryActive = isRecoveryUrl();
+  const [tab, setTab] = useState<"signin" | "signup" | "forgot" | "forgot-success" | "update-password">(
+    recoveryActive ? "update-password" : "signin"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -53,7 +62,7 @@ const Auth = () => {
   const [submitting, setSubmitting] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
-  const isRecoveryFlow = useRef(false);
+  const isRecoveryFlow = useRef(recoveryActive);
   const hasExchanged = useRef(false);
 
   // "idle" | "loading" | "confirmed" | "error"
@@ -161,7 +170,7 @@ const Auth = () => {
     }
     setSubmitting(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/auth`,
+      redirectTo: `${window.location.origin}/auth?type=recovery`,
     });
     setSubmitting(false);
     if (error) {
