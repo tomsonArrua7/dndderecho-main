@@ -114,15 +114,37 @@ serve(async (req) => {
     // =========================================================================
     // INTEGRACIÓN CON LA API DE GEMINI (SDK @google/genai)
     // =========================================================================
-    const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+    let geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+
+    // Fallback para Supabase Self-hosted: leemos la key desde tu tabla 'app_settings'
+    if (!geminiApiKey) {
+      try {
+        const { data: settings } = await supabase
+          .from("app_settings")
+          .select("gemini_api_key")
+          .limit(1)
+          .maybeSingle();
+
+        if (settings?.gemini_api_key) {
+          geminiApiKey = settings.gemini_api_key;
+        }
+      } catch (err: any) {
+        console.warn("No se pudo leer gemini_api_key de app_settings:", err.message);
+      }
+    }
+
     if (!geminiApiKey) {
       return new Response(
         JSON.stringify({
           respuesta: `⚠️ **¡La Edge Function del Asistente DND está activa!**
           
-Sin embargo, falta configurar la clave de la API de Gemini en tu proyecto.
-Para resolverlo, ejecuta este comando en tu consola local:
-\`supabase secrets set GEMINI_API_KEY="tu_clave_api_de_gemini"\`
+Sin embargo, falta configurar tu clave de la API de Gemini. Al usar **Supabase Self-hosted**, puedes agregarla fácilmente sin usar la terminal:
+
+**Desde tu Panel Web (Súper Fácil):**
+1. Ve al **Table Editor** en el menú izquierdo de tu Supabase Dashboard.
+2. Abre la tabla \`app_settings\`.
+3. Haz clic en **Insert** o añade una nueva columna llamada \`gemini_api_key\` de tipo \`text\`.
+4. Pega tu API Key (\`AQ.Ab8RN...8rA\`) en esa celda para la fila activa (ID 1).
 
 **Detalles de la consulta recibida:**
 * **Materia:** ${materia}
