@@ -27,6 +27,7 @@ import NotFound       from "./pages/NotFound";
 import AdminPanel     from "./pages/AdminPanel";
 import Servicios      from "./pages/Servicios";
 import PanelEscritor   from "./pages/PanelEscritor";
+import AsistenteDND   from "./pages/AsistenteDND";
 
 const queryClient = new QueryClient();
 
@@ -144,6 +145,7 @@ const AppContent = () => {
         <Route path="/permutero"       element={<Permutero />} />
         <Route path="/recomendaciones" element={<Recomendaciones />} />
         <Route path="/servicios"       element={<Servicios />} />
+        <Route path="/asistente"       element={<AsistenteDND />} />
 
         {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
         <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
