@@ -28,4 +28,5 @@ jobs:
             cp -r supabase/functions/send-match-email /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/calendario-ics /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/send-recovery-email /root/supabase/docker/volumes/functions/
+            cp -r supabase/functions/asistente /root/supabase/docker/volumes/functions/
             echo "Deploy completado: $(git log --oneline -1)"
