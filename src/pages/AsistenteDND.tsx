@@ -394,7 +394,7 @@ export default function AsistenteDND() {
                   }`}>
                     {msg.role === "user" ? "U" : <Bot className="h-4 w-4" />}
                   </div>
-                  <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
+                  <div className={`p-4 rounded-2xl text-sm leading-relaxed w-full overflow-hidden break-words ${
                     msg.role === "user" 
                       ? "bg-accent/20 border border-accent/20 text-white rounded-tr-none" 
                       : "bg-[#10162B] border border-white/5 text-white/90 rounded-tl-none"
@@ -415,9 +415,14 @@ export default function AsistenteDND() {
                           .filter(s => s.length > 0);
                         const isLastMessage = idx === messages.length - 1;
 
+                        // Limpiamos posibles espacios o comillas invertidas que la IA coloque por error en el formato Markdown de los links
+                        const sanitizedContent = cleanContent
+                          .replace(/\]\s+\(/g, '](')
+                          .replace(/`\[(.*?)\]\((.*?)\)`/g, '[$1]($2)');
+
                         return (
                           <div className="space-y-3">
-                            <MarkdownRenderer content={cleanContent} />
+                            <MarkdownRenderer content={sanitizedContent} />
                             
                             {isLastMessage && sugerencias.length > 0 && (
                               <div className="pt-3 border-t border-white/5 space-y-2">
