@@ -157,9 +157,15 @@ export default function AsistenteDND() {
     fetchMaterias();
   }, []);
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom of message list container only (prevents page kicking/scrolling down)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesEndRef.current?.parentElement;
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth"
+      });
+    }
   }, [messages, isLoadingResponse]);
   const enviarPregunta = async (texto: string) => {
     if (!selectedMateria) {
