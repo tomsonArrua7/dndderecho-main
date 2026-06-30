@@ -179,13 +179,15 @@ Sin embargo, falta configurar tu clave de la API de Gemini. Al usar **Supabase S
     if (authHeader) {
       try {
         const token = authHeader.replace("Bearer ", "");
-        const { data: { user } } = await supabase.auth.getUser(token);
+        const authResponse = await supabase.auth.getUser(token);
+        const user = authResponse?.data?.user;
         if (user) {
-          const { data: profile } = await supabase
+          const profileResponse = await supabase
             .from("profiles")
             .select("full_name")
             .eq("id", user.id)
-            .single();
+            .maybeSingle();
+          const profile = profileResponse?.data;
           if (profile?.full_name) {
             nombreEstudiante = profile.full_name.split(" ")[0]; // Primer nombre
           }
