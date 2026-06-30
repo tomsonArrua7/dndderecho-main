@@ -409,7 +409,25 @@ PREGUNTA DEL ESTUDIANTE:
 
       const responseText = await apiResponse.text();
       if (!apiResponse.ok) {
-        throw new Error(`Anthropic API error: ${apiResponse.status} - ${responseText}`);
+        let availableModelsList = "No se pudieron listar";
+        try {
+          const modelsRes = await fetch("https://api.anthropic.com/v1/models", {
+            method: "GET",
+            headers: {
+              "x-api-key": anthropicApiKey,
+              "anthropic-version": "2023-06-01"
+            }
+          });
+          if (modelsRes.ok) {
+            const modelsData = await modelsRes.json();
+            availableModelsList = (modelsData.data || []).map((m: any) => m.id).join(", ");
+          } else {
+            availableModelsList = `Error ${modelsRes.status}: ${await modelsRes.text()}`;
+          }
+        } catch (e: any) {
+          availableModelsList = `Error al consultar: ${e.message}`;
+        }
+        throw new Error(`Anthropic API error: ${apiResponse.status} - ${responseText} | Modelos habilitados en tu cuenta: [${availableModelsList}]`);
       }
 
       let apiData;
