@@ -141,6 +141,7 @@ serve(async (req) => {
 
     let anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") || dbSettings?.anthropic_api_key || "";
     let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL") || dbSettings?.local_ollama_url || "";
+    let anthropicModel = dbSettings?.anthropic_model || "claude-3-5-sonnet-20240620";
     let geminiApiKey = Deno.env.get("GEMINI_API_KEY") || dbSettings?.gemini_api_key || "";
 
     if (anthropicApiKey) {
@@ -372,7 +373,7 @@ PREGUNTA DEL ESTUDIANTE:
           "content-type": "application/json"
         },
         body: JSON.stringify({
-          model: "claude-3-5-sonnet-20241022",
+          model: anthropicModel,
           max_tokens: 1500,
           system: systemInstructionText,
           messages: simpleMessages
