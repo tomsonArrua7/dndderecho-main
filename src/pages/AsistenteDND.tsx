@@ -206,25 +206,30 @@ export default function AsistenteDND() {
       ]);
     } catch (err: any) {
       console.error("Error al obtener respuesta del asistente:", err);
+      let errorMsgToShow = `❌ **Error de conexión:**\n\nNo pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.\n\n*Detalles: ${err.message || "Error desconocido"}*`;
+
       if (err.context && typeof err.context.json === "function") {
-        err.context.json().then((details: any) => {
-          console.error("Detalles del error devuelto por la Edge Function:", details);
-        }).catch(() => {});
+        try {
+          const details = await err.context.json();
+          if (details && details.error) {
+            errorMsgToShow = details.error;
+          }
+        } catch (e) {
+          console.error("No se pudo extraer el JSON de error:", e);
+        }
       } else if (err.context && typeof err.context.text === "function") {
-        err.context.text().then((text: string) => {
+        try {
+          const text = await err.context.text();
           console.error("Texto del error devuelto por la Edge Function:", text);
-        }).catch(() => {});
+        } catch (e) {}
       }
-      toast.error("No se pudo obtener respuesta del Asistente DND.");
+
+      toast.error("Ocurrió un error en la consulta.");
       setMessages(prev => [
         ...prev,
         {
           role: "assistant",
-          content: `❌ **Error al invocar la Edge Function:**
-          
-No pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.
-
-*Detalles del error: ${err.message || JSON.stringify(err)}*`
+          content: errorMsgToShow
         }
       ]);
     } finally {

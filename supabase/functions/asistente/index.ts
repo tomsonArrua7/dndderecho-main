@@ -213,7 +213,9 @@ INSTRUCCIONES DE RESPUESTA:
 3. Adapta tu explicación al enfoque pedagógico de la cátedra seleccionada. Si hay directrices específicas en el contexto de esa cátedra, dales prioridad absoluta.
 4. Si la respuesta exacta no está en el contexto recuperado, utiliza tus conocimientos generales del Derecho aplicados a la currícula de la UNLP, pero adviértele amablemente: *"Esta explicación se basa en doctrina general de la materia, ya que no se encuentra detallada de esta forma específica en los apuntes de la Cátedra/Comisión seleccionada."*
 5. Mantén un tono de compañero de estudio empático pero sumamente formal y preciso con los términos jurídicos y legales.
-6. Si corresponde, sugiere verificar la carpeta de Drive oficial: https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF
+6. ENLACES Y CITAS EXACTAS:
+   - Cuando cites bibliografía, resúmenes o programas, si el contexto RAG contiene enlaces o nombres de archivos concretos en la fuente, escríbelos como enlaces Markdown para que el alumno pueda acceder (por ejemplo: `[Nombre del material](URL)`).
+   - Si no tienes la URL directa del archivo exacto de la bibliografía o el programa, no inventes URLs. En su lugar, escribe el nombre del archivo y haz un hipervínculo a la carpeta oficial de Drive (`https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF`) para que el estudiante haga clic y pueda buscar el archivo allí mismo. Ej: `[Programa de la Materia - Cátedra 1](https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF)`.
 
 IMPORTANTE - PREGUNTAS SUGERIDAS (GUÍA DE ESTUDIO):
 Al final de toda tu respuesta, debes incluir una línea especial con exactamente 3 preguntas sugeridas de seguimiento que le sirvan al estudiante para continuar estudiando este tema.
@@ -267,12 +269,16 @@ PREGUNTA DEL ESTUDIANTE:
     });
 
     if (!apiResponse.ok) {
+      const status = apiResponse.status;
       const errorDetail = await apiResponse.text();
+      if (status === 429) {
+        throw new Error("LIMITE_CUOTA_EXCEDIDO");
+      }
       const keyLength = geminiApiKey ? geminiApiKey.length : 0;
       const keyPreview = geminiApiKey 
         ? `${geminiApiKey.substring(0, 10)}...${geminiApiKey.substring(geminiApiKey.length - 6)} (largo: ${keyLength})`
         : "vacía";
-      throw new Error(`Gemini API error: ${apiResponse.status} - ${errorDetail} | Origen Clave: ${origenClave} | Preview Clave: ${keyPreview}`);
+      throw new Error(`Gemini API error: ${status} - ${errorDetail} | Origen Clave: ${origenClave} | Preview Clave: ${keyPreview}`);
     }
 
     const apiData = await apiResponse.json();
@@ -295,9 +301,15 @@ PREGUNTA DEL ESTUDIANTE:
 
   } catch (err) {
     console.error("Error crítico en la Edge Function del asistente:", err);
+    let errorMsg = "Ocurrió un error inesperado al procesar tu consulta con el Asistente DND.";
+    if (err.message === "LIMITE_CUOTA_EXCEDIDO") {
+      errorMsg = "⚠️ **Límite de velocidad/consultas excedido en la cuenta gratuita de Gemini.** Por favor, aguarda 15 segundos y vuelve a hacer clic en tu pregunta (tu historial y pregunta no se perderán).";
+    } else {
+      errorMsg = `❌ **Error del servidor:** ${err.message}`;
+    }
     return new Response(
       JSON.stringify({
-        error: "Ocurrió un error inesperado al procesar tu consulta con el Asistente DND.",
+        error: errorMsg,
         detalles: err.message
       }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
