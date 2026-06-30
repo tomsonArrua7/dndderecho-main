@@ -225,14 +225,27 @@ Sigue este formato exacto al final (usa una nueva línea sin nada más antes ni 
 
     const contents: any[] = [];
     
-    // Añadimos el historial de chat previo si existe
+    // Añadimos el historial de chat previo de forma robusta
     if (historial && Array.isArray(historial)) {
       historial.forEach((msg: any) => {
-        contents.push({
-          role: msg.role === "assistant" ? "model" : "user",
-          parts: [{ text: msg.content }]
-        });
+        if (!msg.content) return;
+        const role = msg.role === "assistant" ? "model" : "user";
+        
+        // Si el rol es igual al del turno anterior, combinamos los textos para mantener la alternancia estricta del API de Gemini
+        if (contents.length > 0 && contents[contents.length - 1].role === role) {
+          contents[contents.length - 1].parts[0].text += "\n\n" + msg.content;
+        } else {
+          contents.push({
+            role,
+            parts: [{ text: msg.content }]
+          });
+        }
       });
+    }
+
+    // Gemini requiere obligatoriamente que la conversación comience con un mensaje de 'user'
+    while (contents.length > 0 && contents[0].role === "model") {
+      contents.shift();
     }
 
     // Añadimos la consulta actual enriquecida con el contexto RAG
@@ -246,10 +259,15 @@ PREGUNTA DEL ESTUDIANTE:
 "${pregunta}"
 `;
 
-    contents.push({
-      role: "user",
-      parts: [{ text: currentPrompt }]
-    });
+    // Si el último mensaje del historial también era del usuario (user), los combinamos en un único turno
+    if (contents.length > 0 && contents[contents.length - 1].role === "user") {
+      contents[contents.length - 1].parts[0].text += "\n\n" + currentPrompt;
+    } else {
+      contents.push({
+        role: "user",
+        parts: [{ text: currentPrompt }]
+      });
+    }
 
     // Llamada a la API de Gemini usando Native Fetch con header x-goog-api-key (soporta el nuevo formato de claves AQ. de Google)
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
