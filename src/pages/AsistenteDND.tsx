@@ -10,9 +10,12 @@ import {
   Sparkles, 
   Loader2, 
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Lock
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
 
 interface Materia {
   id: string;
@@ -104,6 +107,7 @@ function MarkdownRenderer({ content }: { content: string }) {
 }
 
 export default function AsistenteDND() {
+  const { user } = useAuth();
   const [materias, setMaterias] = useState<Materia[]>([]);
   const [loadingMaterias, setLoadingMaterias] = useState(true);
   
@@ -243,6 +247,10 @@ export default function AsistenteDND() {
   };
 
   const handleSugerenciaClick = (sug: string) => {
+    if (!user) {
+      toast.error("Debes iniciar sesión para usar el Asistente.");
+      return;
+    }
     enviarPregunta(sug);
   };
 
@@ -370,142 +378,164 @@ export default function AsistenteDND() {
             </div>
           </div>
 
-          {/* Historial de Mensajes */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50/50 dark:bg-black/10">
-            {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-5">
-                <div className="h-14 w-14 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5 flex items-center justify-center">
-                  <Bot className="h-7 w-7 text-accent/80" />
-                </div>
-                <div className="max-w-md space-y-1.5 font-medium">
-                  <p className="text-slate-800 dark:text-white font-black text-sm">¡Pregúntale al Tutor IA!</p>
-                  <p className="text-slate-500 dark:text-white/40 text-xs leading-relaxed max-w-sm mx-auto">
-                    Haz consultas sobre apuntes de estudio, bibliografía o sobre cualquier herramienta de esta web.
-                  </p>
-                </div>
-
-                {/* Preguntas sugeridas de la página */}
-                <div className="pt-2 max-w-md w-full">
-                  <p className="text-[10px] uppercase tracking-wider text-accent font-black mb-3">Preguntas sugeridas sobre la web:</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
-                    {[
-                      "¿Cómo funciona el Permutero para cambiar de comisión?",
-                      "¿Dónde busco y descargo los apuntes y programas?",
-                      "¿Cómo sincronizo el calendario con mi celular?",
-                      "¿Qué herramientas y secciones tiene esta página?"
-                    ].map((sug, sIdx) => (
-                      <button
-                        key={sIdx}
-                        onClick={() => handleSugerenciaClick(sug)}
-                        className="text-xs bg-slate-100 hover:bg-accent/15 dark:bg-white/5 dark:hover:bg-accent/20 border border-slate-200 dark:border-white/10 hover:border-accent/30 text-slate-700 dark:text-white/80 hover:text-accent dark:hover:text-white p-3 rounded-xl transition-all duration-200 text-left font-medium active:scale-[0.98] shadow-sm flex items-start gap-2 cursor-pointer"
-                      >
-                        <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-accent shrink-0" />
-                        <span>{sug}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          {/* Si el usuario NO está registrado, se bloquea el chat */}
+          {!user ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-6 bg-slate-50/50 dark:bg-black/10">
+              <div className="h-16 w-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                <Lock className="h-8 w-8 text-accent animate-pulse" />
               </div>
-            ) : (
-              messages.map((msg, idx) => (
-                <div 
-                  key={idx} 
-                  className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
-                >
-                  <div className={`h-8 w-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold ${
-                    msg.role === "user" ? "bg-accent text-white" : "bg-slate-200 dark:bg-[#181F3B] border border-slate-300 dark:border-white/10 text-accent"
-                  }`}>
-                    {msg.role === "user" ? "U" : <Bot className="h-4 w-4" />}
-                  </div>
-                  <div className={`p-4 rounded-2xl text-sm leading-relaxed w-full overflow-hidden break-words ${
-                    msg.role === "user" 
-                      ? "bg-accent/10 dark:bg-accent/20 border border-accent/20 text-slate-900 dark:text-white rounded-tr-none" 
-                      : "bg-slate-100 dark:bg-[#10162B] border border-slate-200 dark:border-white/5 text-slate-800 dark:text-white/90 rounded-tl-none"
-                  }`}>
-                    {msg.role === "user" ? (
-                      <div className="space-y-2 whitespace-pre-wrap font-medium">
-                        {msg.content}
+              <div className="max-w-md space-y-2">
+                <h3 className="text-slate-800 dark:text-white font-black text-lg">Área Protegida</h3>
+                <p className="text-slate-550 dark:text-white/50 text-sm leading-relaxed font-semibold">
+                  Para conversar con el **Tutor Virtual DND** e interactuar con la Inteligencia Artificial académica de la web, necesitas registrarte o iniciar sesión con tu cuenta de alumno.
+                </p>
+              </div>
+              <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-white rounded-full font-bold shadow-lg shadow-accent/25 cursor-pointer transition-all hover:scale-105 active:scale-95">
+                <Link to="/auth?redirect=/asistente">
+                  Registrarse / Iniciar Sesión
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* Historial de Mensajes */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50/50 dark:bg-black/10">
+                {messages.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-5">
+                    <div className="h-14 w-14 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5 flex items-center justify-center">
+                      <Bot className="h-7 w-7 text-accent/80" />
+                    </div>
+                    <div className="max-w-md space-y-1.5 font-medium">
+                      <p className="text-slate-800 dark:text-white font-black text-sm">¡Pregúntale al Tutor IA!</p>
+                      <p className="text-slate-550 dark:text-white/40 text-xs leading-relaxed max-w-sm mx-auto">
+                        Haz consultas sobre apuntes de estudio, bibliografía o sobre cualquier herramienta de esta web.
+                      </p>
+                    </div>
+
+                    {/* Preguntas sugeridas de la página */}
+                    <div className="pt-2 max-w-md w-full">
+                      <p className="text-[10px] uppercase tracking-wider text-accent font-black mb-3">Preguntas sugeridas sobre la web:</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                        {[
+                          "¿Cómo funciona el Permutero para cambiar de comisión?",
+                          "¿Dónde busco y descargo los apuntes y programas?",
+                          "¿Cómo sincronizo el calendario con mi celular?",
+                          "¿Qué herramientas y secciones tiene esta página?"
+                        ].map((sug, sIdx) => (
+                          <button
+                            key={sIdx}
+                            onClick={() => handleSugerenciaClick(sug)}
+                            className="text-xs bg-slate-100 hover:bg-accent/15 dark:bg-white/5 dark:hover:bg-accent/20 border border-slate-200 dark:border-white/10 hover:border-accent/30 text-slate-700 dark:text-white/80 hover:text-accent dark:hover:text-white p-3 rounded-xl transition-all duration-200 text-left font-medium active:scale-[0.98] shadow-sm flex items-start gap-2 cursor-pointer"
+                          >
+                            <ChevronRight className="h-3.5 w-3.5 mt-0.5 text-accent shrink-0" />
+                            <span>{sug}</span>
+                          </button>
+                        ))}
                       </div>
-                    ) : (
-                      (() => {
-                        // Función auxiliar local para extraer sugerencias
-                        const index = msg.content.indexOf("[SUGERENCIAS]:");
-                        const cleanContent = index === -1 ? msg.content.trim() : msg.content.substring(0, index).trim();
-                        const sugerenciasRaw = index === -1 ? "" : msg.content.substring(index + "[SUGERENCIAS]:".length).trim();
-                        const sugerencias = sugerenciasRaw
-                          .split("|")
-                          .map(s => s.trim())
-                          .filter(s => s.length > 0);
-                        const isLastMessage = idx === messages.length - 1;
-
-                        // Limpiamos posibles espacios o comillas invertidas que la IA coloque por error en el formato Markdown de los links
-                        const sanitizedContent = cleanContent
-                          .replace(/\]\s+\(/g, '](')
-                          .replace(/`\[(.*?)\]\((.*?)\)`/g, '[$1]($2)');
-
-                        return (
-                          <div className="space-y-3">
-                            <MarkdownRenderer content={sanitizedContent} />
-                            
-                            {isLastMessage && sugerencias.length > 0 && (
-                              <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
-                                <p className="text-[10px] uppercase tracking-wider text-accent font-black flex items-center gap-1.5">
-                                  <Sparkles className="h-3 w-3 text-accent animate-pulse" /> Preguntas de seguimiento sugeridas:
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {sugerencias.map((sug, sIdx) => (
-                                    <button
-                                      key={sIdx}
-                                      onClick={() => handleSugerenciaClick(sug)}
-                                      className="text-xs bg-slate-200/60 hover:bg-accent/10 dark:bg-white/5 dark:hover:bg-accent/20 border border-slate-300/60 dark:border-white/10 hover:border-accent/30 text-slate-700 dark:text-white/80 hover:text-accent dark:hover:text-white px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer text-left font-medium active:scale-95"
-                                    >
-                                      {sug}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })()
-                    )}
+                    </div>
                   </div>
-                </div>
-              ))
-            )}
-            
-            {/* Animación de Pensando / Cargando */}
-            {isLoadingResponse && (
-              <div className="flex gap-3 max-w-[80%]">
-                <div className="h-8 w-8 rounded-full shrink-0 bg-slate-200 dark:bg-[#181F3B] border border-slate-300 dark:border-white/10 flex items-center justify-center text-accent">
-                  <Loader2 className="h-4 w-4 animate-spin text-accent" />
-                </div>
-                <div className="p-4 rounded-2xl bg-slate-100 dark:bg-[#10162B] border border-slate-200 dark:border-white/5 text-slate-500 dark:text-white/40 text-xs flex items-center gap-2 rounded-tl-none font-medium">
-                  El Asistente DND está pensando su respuesta...
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+                ) : (
+                  messages.map((msg, idx) => (
+                    <div 
+                      key={idx} 
+                      className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
+                    >
+                      <div className={`h-8 w-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold ${
+                        msg.role === "user" ? "bg-accent text-white" : "bg-slate-200 dark:bg-[#181F3B] border border-slate-300 dark:border-white/10 text-accent"
+                      }`}>
+                        {msg.role === "user" ? "U" : <Bot className="h-4 w-4" />}
+                      </div>
+                      <div className={`p-4 rounded-2xl text-sm leading-relaxed w-full overflow-hidden break-words ${
+                        msg.role === "user" 
+                          ? "bg-accent/10 dark:bg-accent/20 border border-accent/20 text-slate-900 dark:text-white rounded-tr-none" 
+                          : "bg-slate-100 dark:bg-[#10162B] border border-slate-200 dark:border-white/5 text-slate-800 dark:text-white/90 rounded-tl-none"
+                      }`}>
+                        {msg.role === "user" ? (
+                          <div className="space-y-2 whitespace-pre-wrap font-medium">
+                            {msg.content}
+                          </div>
+                        ) : (
+                          (() => {
+                            // Función auxiliar local para extraer sugerencias
+                            const index = msg.content.indexOf("[SUGERENCIAS]:");
+                            const cleanContent = index === -1 ? msg.content.trim() : msg.content.substring(0, index).trim();
+                            const sugerenciasRaw = index === -1 ? "" : msg.content.substring(index + "[SUGERENCIAS]:".length).trim();
+                            const sugerencias = sugerenciasRaw
+                              .split("|")
+                              .map(s => s.trim())
+                              .filter(s => s.length > 0);
+                            const isLastMessage = idx === messages.length - 1;
 
-          {/* Formulario de Envío */}
-          <form onSubmit={handleSubmit} className="p-4 border-t border-slate-200 dark:border-white/5 bg-slate-50/80 dark:bg-[#10162D]/60 shrink-0 flex gap-2">
-            <input
-              type="text"
-              placeholder={selectedMateria ? `Escribe tu pregunta sobre ${selectedMateria}...` : "Escribe tu pregunta sobre la web o materias..."}
-              disabled={isLoadingResponse}
-              value={pregunta}
-              onChange={(e) => setPregunta(e.target.value)}
-              className="flex-1 bg-white dark:bg-background/50 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
-            />
-            <Button 
-              type="submit" 
-              disabled={!pregunta.trim() || isLoadingResponse}
-              className="bg-accent hover:bg-accent/90 text-white rounded-xl p-3 shrink-0 flex items-center justify-center transition-all disabled:opacity-50 cursor-pointer shadow-sm"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
+                            // Limpiamos posibles espacios o comillas invertidas que la IA coloque por error en el formato Markdown de los links
+                            const sanitizedContent = cleanContent
+                              .replace(/\]\s+\(/g, '](')
+                              .replace(/`\[(.*?)\]\((.*?)\)`/g, '[$1]($2)');
+
+                            return (
+                              <div className="space-y-3">
+                                <MarkdownRenderer content={sanitizedContent} />
+                                
+                                {isLastMessage && sugerencias.length > 0 && (
+                                  <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
+                                    <p className="text-[10px] uppercase tracking-wider text-accent font-black flex items-center gap-1.5">
+                                      <Sparkles className="h-3 w-3 text-accent animate-pulse" /> Preguntas de seguimiento sugeridas:
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {sugerencias.map((sug, sIdx) => (
+                                        <button
+                                          key={sIdx}
+                                          onClick={() => handleSugerenciaClick(sug)}
+                                          className="text-xs bg-slate-200/60 hover:bg-accent/10 dark:bg-white/5 dark:hover:bg-accent/20 border border-slate-300/60 dark:border-white/10 hover:border-accent/30 text-slate-700 dark:text-white/80 hover:text-accent dark:hover:text-white px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer text-left font-medium active:scale-95"
+                                        >
+                                          {sug}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+                
+                {/* Animación de Pensando / Cargando */}
+                {isLoadingResponse && (
+                  <div className="flex gap-3 max-w-[80%]">
+                    <div className="h-8 w-8 rounded-full shrink-0 bg-slate-200 dark:bg-[#181F3B] border border-slate-300 dark:border-white/10 flex items-center justify-center text-accent">
+                      <Loader2 className="h-4 w-4 animate-spin text-accent" />
+                    </div>
+                    <div className="p-4 rounded-2xl bg-slate-100 dark:bg-[#10162B] border border-slate-200 dark:border-white/5 text-slate-500 dark:text-white/40 text-xs flex items-center gap-2 rounded-tl-none font-medium">
+                      El Asistente DND está pensando su respuesta...
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Formulario de Envío */}
+              <form onSubmit={handleSubmit} className="p-4 border-t border-slate-200 dark:border-white/5 bg-slate-50/80 dark:bg-[#10162D]/60 shrink-0 flex gap-2">
+                <input
+                  type="text"
+                  placeholder={selectedMateria ? `Escribe tu pregunta sobre ${selectedMateria}...` : "Escribe tu pregunta sobre la web o materias..."}
+                  disabled={isLoadingResponse}
+                  value={pregunta}
+                  onChange={(e) => setPregunta(e.target.value)}
+                  className="flex-1 bg-white dark:bg-background/50 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white rounded-xl py-3 px-4 text-sm outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 transition-all placeholder:text-slate-400 dark:placeholder:text-white/20"
+                />
+                <Button 
+                  type="submit" 
+                  disabled={!pregunta.trim() || isLoadingResponse}
+                  className="bg-accent hover:bg-accent/90 text-white rounded-xl p-3 shrink-0 flex items-center justify-center transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </form>
+            </>
+          )}
 
         </Card>
       </div>
