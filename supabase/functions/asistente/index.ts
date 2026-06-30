@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { pregunta, materia, catedra, comision } = await req.json();
+    const { pregunta, materia, catedra, comision, historial } = await req.json();
 
     // Validación
     if (!pregunta || !materia) {
@@ -174,15 +174,67 @@ Sin embargo, falta configurar tu clave de la API de Gemini. Al usar **Supabase S
       );
     }
 
-    const prompt = `
+    let nombreEstudiante = "Estudiante";
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader) {
+      try {
+        const token = authHeader.replace("Bearer ", "");
+        const { data: { user } } = await supabase.auth.getUser(token);
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", user.id)
+            .single();
+          if (profile?.full_name) {
+            nombreEstudiante = profile.full_name.split(" ")[0]; // Primer nombre
+          }
+        }
+      } catch (e) {
+        console.warn("No se pudo obtener el nombre del estudiante:", e.message);
+      }
+    }
+
+    const systemInstructionText = `
 Eres "Asistente DND", un tutor virtual académico experto y especializado para estudiantes de la Facultad de Derecho de la UNLP.
-Tu objetivo es responder de forma rigurosa, amigable y muy estructurada las dudas sobre la materia "${materia}".
+Tu objetivo es guiar al estudiante de manera clara, rigurosa y amigable.
 
-INFORMACIÓN ESPECÍFICA DE CURSADA SELECCIONADA POR EL ESTUDIANTE:
+DATOS DEL ESTUDIANTE:
+- Nombre: ${nombreEstudiante}
+
+CONFIGURACIÓN DE LA MATERIA:
 - Materia: ${materia}
-- Cátedra: ${catedra || "Cátedra General / No especificada"}
-- Comisión: ${comision || "Comisión General / No especificada"}
+- Cátedra: ${catedra || "General / No especificada"}
+- Comisión: ${comision || "General / No especificada"}
 
+INSTRUCCIONES DE RESPUESTA:
+1. Dirígete al estudiante por su nombre (${nombreEstudiante}) al inicio o de manera natural durante la explicación para hacerlo cercano y personalizado.
+2. Responde de forma clara, amigable y estructurada utilizando formato Markdown (negritas, listas, saltos de línea).
+3. Adapta tu explicación al enfoque pedagógico de la cátedra seleccionada. Si hay directrices específicas en el contexto de esa cátedra, dales prioridad absoluta.
+4. Si la respuesta exacta no está en el contexto recuperado, utiliza tus conocimientos generales del Derecho aplicados a la currícula de la UNLP, pero adviértele amablemente: *"Esta explicación se basa en doctrina general de la materia, ya que no se encuentra detallada de esta forma específica en los apuntes de la Cátedra/Comisión seleccionada."*
+5. Mantén un tono de compañero de estudio empático pero sumamente formal y preciso con los términos jurídicos y legales.
+6. Si corresponde, sugiere verificar la carpeta de Drive oficial: https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF
+
+IMPORTANTE - PREGUNTAS SUGERIDAS (GUÍA DE ESTUDIO):
+Al final de toda tu respuesta, debes incluir una línea especial con exactamente 3 preguntas sugeridas de seguimiento que le sirvan al estudiante para continuar estudiando este tema.
+Sigue este formato exacto al final (usa una nueva línea sin nada más antes ni después):
+[SUGERENCIAS]: ¿Pregunta sugerida 1? | ¿Pregunta sugerida 2? | ¿Pregunta sugerida 3?
+`;
+
+    const contents: any[] = [];
+    
+    // Añadimos el historial de chat previo si existe
+    if (historial && Array.isArray(historial)) {
+      historial.forEach((msg: any) => {
+        contents.push({
+          role: msg.role === "assistant" ? "model" : "user",
+          parts: [{ text: msg.content }]
+        });
+      });
+    }
+
+    // Añadimos la consulta actual enriquecida con el contexto RAG
+    const currentPrompt = `
 CONTEXTO DE ESTUDIO RECUPERADO (Base de Datos de Apuntes / Drive):
 """
 ${contextoRecuperado}
@@ -190,15 +242,12 @@ ${contextoRecuperado}
 
 PREGUNTA DEL ESTUDIANTE:
 "${pregunta}"
-
-INSTRUCCIONES IMPORTANTES PARA LA RESPUESTA:
-1. Responde de forma clara, amigable y estructurada utilizando formato Markdown (usa negritas, listas y espaciados).
-2. Prioriza el contexto recuperado arriba, el cual proviene de la carpeta de Drive oficial de apuntes de DND.
-3. ADAPTACIÓN AL PROFESOR/CÁTEDRA: Como cada cátedra y comisión tiene contenidos y exigencias distintas (los profesores suelen ponderar ciertos temas más que otros), analiza el contexto para ver si hay directrices de lo que suele pedir esta cátedra/comisión específica. Si la información del contexto es sobre la cátedra del estudiante, dale prioridad absoluta a ese enfoque pedagógico.
-4. Si la respuesta exacta no está en el contexto recuperado, utiliza tus conocimientos de Derecho aplicados a la currícula de la UNLP, pero adviértele amablemente al estudiante: *"Esta explicación se basa en doctrina general de la materia, ya que no se encuentra detallada de esta forma específica en los apuntes de la Cátedra/Comisión seleccionada."*
-5. Mantén un tono empático de compañero de estudio que quiere ayudar, pero sumamente formal y preciso con los términos jurídicos y legales.
-6. Si corresponde, sugiere que pueden verificar los archivos originales en la carpeta de Drive de la materia: https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF
 `;
+
+    contents.push({
+      role: "user",
+      parts: [{ text: currentPrompt }]
+    });
 
     // Llamada a la API de Gemini usando Native Fetch con header x-goog-api-key (soporta el nuevo formato de claves AQ. de Google)
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
@@ -210,15 +259,10 @@ INSTRUCCIONES IMPORTANTES PARA LA RESPUESTA:
         "x-goog-api-key": geminiApiKey,
       },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
-          },
-        ],
+        contents,
+        systemInstruction: {
+          parts: [{ text: systemInstructionText }]
+        }
       }),
     });
 

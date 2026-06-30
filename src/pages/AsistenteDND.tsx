@@ -155,39 +155,43 @@ export default function AsistenteDND() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoadingResponse]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const enviarPregunta = async (texto: string) => {
     if (!selectedMateria) {
       toast.error("Por favor, selecciona una materia antes de consultar.");
       return;
     }
-    if (!pregunta.trim()) {
+    if (!texto.trim()) {
       toast.error("Por favor, ingresa tu pregunta.");
       return;
     }
 
     const userMessage: Message = {
       role: "user",
-      content: pregunta,
+      content: texto,
       materia: selectedMateria,
       catedra: selectedCatedra || undefined,
       comision: selectedComision || undefined
     };
+
+    // Obtenemos el historial excluyendo mensajes vacíos o temporales
+    const historialValido = messages.map(m => ({
+      role: m.role,
+      content: m.content
+    }));
 
     setMessages(prev => [...prev, userMessage]);
     setPregunta("");
     setIsLoadingResponse(true);
 
     try {
-      // Petición a la Edge Function de Supabase
+      // Petición a la Edge Function de Supabase pasando el historial completo
       const { data, error } = await supabase.functions.invoke("asistente", {
         body: {
           pregunta: userMessage.content,
           materia: userMessage.materia,
           catedra: userMessage.catedra || "",
-          comision: userMessage.comision || ""
+          comision: userMessage.comision || "",
+          historial: historialValido
         },
       });
 
@@ -202,7 +206,6 @@ export default function AsistenteDND() {
       ]);
     } catch (err: any) {
       console.error("Error al obtener respuesta del asistente:", err);
-      // Intentar extraer el error JSON/texto detallado devuelto por la Edge Function
       if (err.context && typeof err.context.json === "function") {
         err.context.json().then((details: any) => {
           console.error("Detalles del error devuelto por la Edge Function:", details);
@@ -221,18 +224,21 @@ export default function AsistenteDND() {
           
 No pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.
 
-**Pasos para solucionarlo:**
-1. Asegúrate de haber desplegado la función en producción ejecutando en tu terminal local:
-   \`supabase functions deploy asistente\`
-2. Configura tu \`GEMINI_API_KEY\` en Supabase con:
-   \`supabase secrets set GEMINI_API_KEY="tu_clave_api"\`
-
 *Detalles del error: ${err.message || JSON.stringify(err)}*`
         }
       ]);
     } finally {
       setIsLoadingResponse(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    enviarPregunta(pregunta);
+  };
+
+  const handleSugerenciaClick = (sug: string) => {
+    enviarPregunta(sug);
   };
 
   return (
@@ -393,7 +399,42 @@ No pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.
                         {msg.content}
                       </div>
                     ) : (
-                      <MarkdownRenderer content={msg.content} />
+                      (() => {
+                        // Función auxiliar local para extraer sugerencias
+                        const index = msg.content.indexOf("[SUGERENCIAS]:");
+                        const cleanContent = index === -1 ? msg.content.trim() : msg.content.substring(0, index).trim();
+                        const sugerenciasRaw = index === -1 ? "" : msg.content.substring(index + "[SUGERENCIAS]:".length).trim();
+                        const sugerencias = sugerenciasRaw
+                          .split("|")
+                          .map(s => s.trim())
+                          .filter(s => s.length > 0);
+                        const isLastMessage = idx === messages.length - 1;
+
+                        return (
+                          <div className="space-y-3">
+                            <MarkdownRenderer content={cleanContent} />
+                            
+                            {isLastMessage && sugerencias.length > 0 && (
+                              <div className="pt-3 border-t border-white/5 space-y-2">
+                                <p className="text-[10px] uppercase tracking-wider text-accent font-black flex items-center gap-1.5">
+                                  <Sparkles className="h-3 w-3 text-accent animate-pulse" /> Preguntas de seguimiento sugeridas:
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {sugerencias.map((sug, sIdx) => (
+                                    <button
+                                      key={sIdx}
+                                      onClick={() => handleSugerenciaClick(sug)}
+                                      className="text-xs bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/30 text-white/80 hover:text-white px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer text-left font-medium active:scale-95"
+                                    >
+                                      {sug}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()
                     )}
                   </div>
                 </div>
