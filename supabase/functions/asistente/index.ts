@@ -337,7 +337,22 @@ PREGUNTA DEL ESTUDIANTE:
     }
 
     // --- INTEGRACIÓN DE OLLAMA LOCAL (OPCIONAL) ---
-    const localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL");
+    let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL");
+    if (!localOllamaUrl) {
+      try {
+        const { data: settings } = await supabase
+          .from("app_settings")
+          .select("*")
+          .limit(1)
+          .maybeSingle();
+        if (settings && (settings as any).local_ollama_url) {
+          localOllamaUrl = (settings as any).local_ollama_url;
+        }
+      } catch (err: any) {
+        console.warn("No se pudo leer local_ollama_url de app_settings:", err.message);
+      }
+    }
+
     if (localOllamaUrl) {
       const messages = [
         { role: "system", content: systemInstructionText }
