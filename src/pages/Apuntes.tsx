@@ -57,14 +57,23 @@ const Apuntes = () => {
     if (!selectedMateria) return null;
     const cleanMateria = selectedMateria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
     
+    console.log("foldersMateria matching start:", { selectedMateria, cleanMateria });
+
     for (const [key, val] of Object.entries(MAPA_LINKS_MATERIAS)) {
       const normKey = key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-      if (normKey === cleanMateria) return val;
+      if (normKey === cleanMateria) {
+        console.log("foldersMateria exact match found key:", key);
+        return val;
+      }
     }
     for (const [key, val] of Object.entries(MAPA_LINKS_MATERIAS)) {
       const normKey = key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-      if (normKey.includes(cleanMateria) || cleanMateria.includes(normKey)) return val;
+      if (normKey.includes(cleanMateria) || cleanMateria.includes(normKey)) {
+        console.log("foldersMateria partial match found key:", key);
+        return val;
+      }
     }
+    console.warn("foldersMateria mismatch! No match for:", selectedMateria);
     return null;
   }, [selectedMateria]);
 
