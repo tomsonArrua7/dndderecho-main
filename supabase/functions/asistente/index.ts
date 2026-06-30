@@ -336,6 +336,74 @@ PREGUNTA DEL ESTUDIANTE:
       });
     }
 
+    // --- INTEGRACIÓN DE OLLAMA LOCAL (OPCIONAL) ---
+    const localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL");
+    if (localOllamaUrl) {
+      const messages = [
+        { role: "system", content: systemInstructionText }
+      ];
+
+      // Convertimos el historial al formato simple de OpenAI/Ollama
+      if (historial && Array.isArray(historial)) {
+        historial.forEach((msg: any) => {
+          if (!msg.content) return;
+          // Ignoramos la sugerencia al final del mensaje de la IA para que Ollama no se confunda
+          let content = msg.content;
+          const index = content.indexOf("[SUGERENCIAS]:");
+          if (index !== -1) {
+            content = content.substring(0, index).trim();
+          }
+
+          messages.push({
+            role: msg.role === "assistant" ? "assistant" : "user",
+            content: content
+          });
+        });
+      }
+
+      // Añadimos la consulta actual enriquecida con el contexto RAG
+      messages.push({
+        role: "user",
+        content: currentPrompt
+      });
+
+      // Llamada a la API local de Ollama (a través de ngrok con el header bypass)
+      const apiResponse = await fetch(`${localOllamaUrl.replace(/\/$/, "")}/v1/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true"
+        },
+        body: JSON.stringify({
+          model: "llama3.2",
+          messages,
+          stream: false
+        })
+      });
+
+      if (!apiResponse.ok) {
+        throw new Error(`Ollama API error: ${apiResponse.status} - ${await apiResponse.text()}`);
+      }
+
+      const apiData = await apiResponse.json();
+      const respuestaTexto = apiData.choices?.[0]?.message?.content;
+      if (!respuestaTexto) {
+        throw new Error("No se obtuvo respuesta de texto de Ollama.");
+      }
+
+      return new Response(
+        JSON.stringify({
+          respuesta: respuestaTexto,
+          origenContexto,
+          materia,
+          catedra: catedra || null,
+          comision: comision || null
+        }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // --- FLUJO ESTÁNDAR: GOOGLE GEMINI ---
     // Llamada a la API de Gemini usando Native Fetch con header x-goog-api-key (soporta el nuevo formato de claves AQ. de Google)
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
