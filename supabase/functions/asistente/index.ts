@@ -365,26 +365,60 @@ PREGUNTA DEL ESTUDIANTE:
 
     // --- OPCIÓN 1: INTEGRACIÓN CON ANTHROPIC CLAUDE (MÁXIMA PRIORIDAD) ---
     if (anthropicApiKey) {
-      const apiResponse = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": anthropicApiKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({
-          model: anthropicModel,
-          max_tokens: 1500,
-          system: systemInstructionText,
-          messages: simpleMessages
-        })
-      });
+      let apiResponse;
+      let usedModel = anthropicModel;
 
-      if (!apiResponse.ok) {
-        throw new Error(`Anthropic API error: ${apiResponse.status} - ${await apiResponse.text()}`);
+      try {
+        apiResponse = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "x-api-key": anthropicApiKey,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: usedModel,
+            max_tokens: 1500,
+            system: systemInstructionText,
+            messages: simpleMessages
+          })
+        });
+
+        // Si devuelve 404 (modelo no permitido/encontrado en esta cuenta), intentamos el fallback a Claude 3 Haiku
+        if (!apiResponse.ok && apiResponse.status === 404 && usedModel !== "claude-3-haiku-20240307") {
+          console.warn(`[Asistente DND] Modelo ${usedModel} no disponible (404). Intentando fallback a Claude 3 Haiku...`);
+          usedModel = "claude-3-haiku-20240307";
+          apiResponse = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+              "x-api-key": anthropicApiKey,
+              "anthropic-version": "2023-06-01",
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              model: usedModel,
+              max_tokens: 1500,
+              system: systemInstructionText,
+              messages: simpleMessages
+            })
+          });
+        }
+      } catch (err: any) {
+        throw new Error(`Error de conexión con Anthropic: ${err.message}`);
       }
 
-      const apiData = await apiResponse.json();
+      const responseText = await apiResponse.text();
+      if (!apiResponse.ok) {
+        throw new Error(`Anthropic API error: ${apiResponse.status} - ${responseText}`);
+      }
+
+      let apiData;
+      try {
+        apiData = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`La respuesta de Anthropic no es JSON válido. Status: ${apiResponse.status}. Body: ${responseText}`);
+      }
+
       const respuestaTexto = apiData.content?.[0]?.text;
       if (!respuestaTexto) {
         throw new Error("No se obtuvo respuesta de texto de Claude.");
@@ -423,11 +457,18 @@ PREGUNTA DEL ESTUDIANTE:
         })
       });
 
+      const responseText = await apiResponse.text();
       if (!apiResponse.ok) {
-        throw new Error(`Ollama API error: ${apiResponse.status} - ${await apiResponse.text()}`);
+        throw new Error(`Ollama API error: ${apiResponse.status} - ${responseText}`);
       }
 
-      const apiData = await apiResponse.json();
+      let apiData;
+      try {
+        apiData = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`La respuesta de Ollama no es JSON válido. Status: ${apiResponse.status}. Body: ${responseText}`);
+      }
+
       const respuestaTexto = apiData.choices?.[0]?.message?.content;
       if (!respuestaTexto) {
         throw new Error("No se obtuvo respuesta de texto de Ollama.");
@@ -463,9 +504,9 @@ PREGUNTA DEL ESTUDIANTE:
       }),
     });
 
+    const responseText = await apiResponse.text();
     if (!apiResponse.ok) {
       const status = apiResponse.status;
-      const errorDetail = await apiResponse.text();
       if (status === 429) {
         throw new Error("LIMITE_CUOTA_EXCEDIDO");
       }
@@ -473,12 +514,17 @@ PREGUNTA DEL ESTUDIANTE:
       const keyPreview = geminiApiKey 
         ? `${geminiApiKey.substring(0, 10)}...${geminiApiKey.substring(geminiApiKey.length - 6)} (largo: ${keyLength})`
         : "vacía";
-      throw new Error(`Gemini API error: ${status} - ${errorDetail} | Origen Clave: ${origenClave} | Preview Clave: ${keyPreview}`);
+      throw new Error(`Gemini API error: ${status} - ${responseText} | Origen Clave: ${origenClave} | Preview Clave: ${keyPreview}`);
     }
 
-    const apiData = await apiResponse.json();
-    const respuestaTexto = apiData.candidates?.[0]?.content?.parts?.[0]?.text;
+    let apiData;
+    try {
+      apiData = JSON.parse(responseText);
+    } catch (e) {
+      throw new Error(`La respuesta de Gemini no es JSON válido. Status: ${apiResponse.status}. Body: ${responseText}`);
+    }
 
+    const respuestaTexto = apiData.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!respuestaTexto) {
       throw new Error("No se obtuvo texto de respuesta de la API de Gemini.");
     }
@@ -493,7 +539,6 @@ PREGUNTA DEL ESTUDIANTE:
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
-
   } catch (err) {
     console.error("Error crítico en la Edge Function del asistente:", err);
     let errorMsg = "Ocurrió un error inesperado al procesar tu consulta con el Asistente DND.";
