@@ -141,7 +141,7 @@ serve(async (req) => {
 
     let anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") || dbSettings?.anthropic_api_key || "";
     let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL") || dbSettings?.local_ollama_url || "";
-    let anthropicModel = dbSettings?.anthropic_model || "claude-3-5-sonnet-20240620";
+    let anthropicModel = dbSettings?.anthropic_model || "claude-sonnet-4-6";
     let geminiApiKey = Deno.env.get("GEMINI_API_KEY") || dbSettings?.gemini_api_key || "";
 
     if (anthropicApiKey) {
@@ -384,10 +384,10 @@ PREGUNTA DEL ESTUDIANTE:
           })
         });
 
-        // Si devuelve 404 (modelo no permitido/encontrado en esta cuenta), intentamos el fallback a Claude 3 Haiku
-        if (!apiResponse.ok && apiResponse.status === 404 && usedModel !== "claude-3-haiku-20240307") {
-          console.warn(`[Asistente DND] Modelo ${usedModel} no disponible (404). Intentando fallback a Claude 3 Haiku...`);
-          usedModel = "claude-3-haiku-20240307";
+        // Si devuelve 404 (modelo no permitido/encontrado en esta cuenta), intentamos el fallback a Claude Haiku
+        if (!apiResponse.ok && apiResponse.status === 404 && usedModel !== "claude-haiku-4-5-20251001") {
+          console.warn(`[Asistente DND] Modelo ${usedModel} no disponible (404). Intentando fallback a Claude Haiku...`);
+          usedModel = "claude-haiku-4-5-20251001";
           apiResponse = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
             headers: {
