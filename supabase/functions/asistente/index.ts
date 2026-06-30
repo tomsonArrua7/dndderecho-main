@@ -125,52 +125,51 @@ serve(async (req) => {
     // =========================================================================
     // INTEGRACIÓN CON LA API DE GEMINI (SDK @google/genai)
     // =========================================================================
+    // Cargamos configuraciones desde la tabla 'app_settings'
+    let dbSettings: any = null;
     let origenClave = "ninguno";
-    let geminiApiKey = Deno.env.get("GEMINI_API_KEY");
-    if (geminiApiKey) {
-      origenClave = "Deno.env";
+    try {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+      dbSettings = data;
+    } catch (err: any) {
+      console.warn("No se pudo leer la tabla app_settings:", err.message);
     }
 
-    // Fallback para Supabase Self-hosted: leemos la key desde tu tabla 'app_settings'
-    if (!geminiApiKey) {
-      try {
-        const { data: settings } = await supabase
-          .from("app_settings")
-          .select("gemini_api_key")
-          .limit(1)
-          .maybeSingle();
+    let anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") || dbSettings?.anthropic_api_key || "";
+    let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL") || dbSettings?.local_ollama_url || "";
+    let geminiApiKey = Deno.env.get("GEMINI_API_KEY") || dbSettings?.gemini_api_key || "";
 
-        if (settings?.gemini_api_key) {
-          geminiApiKey = settings.gemini_api_key;
-          origenClave = "base_de_datos";
-        }
-      } catch (err: any) {
-        console.warn("No se pudo leer gemini_api_key de app_settings:", err.message);
+    if (anthropicApiKey) {
+      anthropicApiKey = anthropicApiKey.replace(/\s+/g, "");
+      origenClave = Deno.env.get("ANTHROPIC_API_KEY") ? "Deno.env (Claude)" : "base_de_datos (Claude)";
+    }
+    if (geminiApiKey) {
+      geminiApiKey = geminiApiKey.replace(/\s+/g, "");
+      if (origenClave === "ninguno") {
+        origenClave = Deno.env.get("GEMINI_API_KEY") ? "Deno.env (Gemini)" : "base_de_datos (Gemini)";
       }
     }
 
-    if (geminiApiKey) {
-      geminiApiKey = geminiApiKey.replace(/\s+/g, "");
-    }
-
-    if (!geminiApiKey) {
+    // Si no hay ninguna clave o URL configurada, informamos al usuario para que la agregue
+    if (!anthropicApiKey && !localOllamaUrl && !geminiApiKey) {
       return new Response(
         JSON.stringify({
           respuesta: `⚠️ **¡La Edge Function del Asistente DND está activa!**
           
-Sin embargo, falta configurar tu clave de la API de Gemini. Al usar **Supabase Self-hosted**, puedes agregarla fácilmente sin usar la terminal:
+Sin embargo, no se ha configurado ninguna clave de Inteligencia Artificial (Claude, Gemini u Ollama). Al usar **Supabase Self-hosted**, puedes agregarla fácilmente en tu base de datos:
 
 **Desde tu Panel Web (Súper Fácil):**
 1. Ve al **Table Editor** en el menú izquierdo de tu Supabase Dashboard.
 2. Abre la tabla \`app_settings\`.
-3. Haz clic en **Insert** o añade una nueva columna llamada \`gemini_api_key\` de tipo \`text\`.
-4. Pega tu API Key (\`AQ.Ab8RN...8rA\`) en esa celda para la fila activa (ID 1).
-
-**Detalles de la consulta recibida:**
-* **Materia:** ${materia}
-* **Cátedra:** ${catedra || "No especificada"}
-* **Comisión:** ${comision || "No especificada"}
-* **Pregunta:** "${pregunta}"`,
+3. Haz clic en el botón de agregar columna \`+\` y crea alguna de las siguientes columnas de tipo \`text\`:
+   - \`anthropic_api_key\` (para usar **Claude 3.5 Sonnet**, altamente recomendado).
+   - \`gemini_api_key\` (para usar **Gemini**).
+   - \`local_ollama_url\` (para usar **Ollama local**).
+4. Pega tu API Key correspondiente en esa celda para la fila activa (ID 1).`,
           origenContexto
         }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -338,51 +337,76 @@ PREGUNTA DEL ESTUDIANTE:
       });
     }
 
-    // --- INTEGRACIÓN DE OLLAMA LOCAL (OPCIONAL) ---
-    let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL");
-    if (!localOllamaUrl) {
-      try {
-        const { data: settings } = await supabase
-          .from("app_settings")
-          .select("*")
-          .limit(1)
-          .maybeSingle();
-        if (settings && (settings as any).local_ollama_url) {
-          localOllamaUrl = (settings as any).local_ollama_url;
+    // Convertimos el historial al formato simple para OpenAI/Anthropic/Ollama
+    const simpleMessages = [];
+    if (historial && Array.isArray(historial)) {
+      historial.forEach((msg: any) => {
+        if (!msg.content) return;
+        // Ignoramos la sugerencia al final del mensaje de la IA
+        let content = msg.content;
+        const index = content.indexOf("[SUGERENCIAS]:");
+        if (index !== -1) {
+          content = content.substring(0, index).trim();
         }
-      } catch (err: any) {
-        console.warn("No se pudo leer local_ollama_url de app_settings:", err.message);
-      }
+
+        simpleMessages.push({
+          role: msg.role === "assistant" ? "assistant" : "user",
+          content: content
+        });
+      });
     }
 
-    if (localOllamaUrl) {
-      const messages = [
-        { role: "system", content: systemInstructionText }
-      ];
+    // Añadimos la consulta actual enriquecida con el contexto RAG
+    simpleMessages.push({
+      role: "user",
+      content: currentPrompt
+    });
 
-      // Convertimos el historial al formato simple de OpenAI/Ollama
-      if (historial && Array.isArray(historial)) {
-        historial.forEach((msg: any) => {
-          if (!msg.content) return;
-          // Ignoramos la sugerencia al final del mensaje de la IA para que Ollama no se confunda
-          let content = msg.content;
-          const index = content.indexOf("[SUGERENCIAS]:");
-          if (index !== -1) {
-            content = content.substring(0, index).trim();
-          }
+    // --- OPCIÓN 1: INTEGRACIÓN CON ANTHROPIC CLAUDE (MÁXIMA PRIORIDAD) ---
+    if (anthropicApiKey) {
+      const apiResponse = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": anthropicApiKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "claude-3-5-sonnet-20241022",
+          max_tokens: 1500,
+          system: systemInstructionText,
+          messages: simpleMessages
+        })
+      });
 
-          messages.push({
-            role: msg.role === "assistant" ? "assistant" : "user",
-            content: content
-          });
-        });
+      if (!apiResponse.ok) {
+        throw new Error(`Anthropic API error: ${apiResponse.status} - ${await apiResponse.text()}`);
       }
 
-      // Añadimos la consulta actual enriquecida con el contexto RAG
-      messages.push({
-        role: "user",
-        content: currentPrompt
-      });
+      const apiData = await apiResponse.json();
+      const respuestaTexto = apiData.content?.[0]?.text;
+      if (!respuestaTexto) {
+        throw new Error("No se obtuvo respuesta de texto de Claude.");
+      }
+
+      return new Response(
+        JSON.stringify({
+          respuesta: respuestaTexto,
+          origenContexto,
+          materia,
+          catedra: catedra || null,
+          comision: comision || null
+        }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // --- OPCIÓN 2: INTEGRACIÓN CON OLLAMA LOCAL ---
+    if (localOllamaUrl) {
+      const messages = [
+        { role: "system", content: systemInstructionText },
+        ...simpleMessages
+      ];
 
       // Llamada a la API local de Ollama (a través de ngrok con el header bypass)
       const apiResponse = await fetch(`${localOllamaUrl.replace(/\/$/, "")}/v1/chat/completions`, {
@@ -420,8 +444,8 @@ PREGUNTA DEL ESTUDIANTE:
       );
     }
 
-    // --- FLUJO ESTÁNDAR: GOOGLE GEMINI ---
-    // Llamada a la API de Gemini usando Native Fetch con header x-goog-api-key (soporta el nuevo formato de claves AQ. de Google)
+    // --- OPCIÓN 3: GOOGLE GEMINI ---
+    // Llamada a la API de Gemini usando Native Fetch con header x-goog-api-key
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
     const apiResponse = await fetch(url, {
