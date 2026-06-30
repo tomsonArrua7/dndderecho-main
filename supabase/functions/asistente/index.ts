@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import { MAPA_LINKS_MATERIAS } from "./links_carpetas.ts";
+import { LISTA_ARCHIVOS_LINKS } from "./links_todos.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -197,6 +200,57 @@ Sin embargo, falta configurar tu clave de la API de Gemini. Al usar **Supabase S
       }
     }
 
+    // Función auxiliar local para normalizar textos
+    const normalizarTexto = (texto: string): string => {
+      return (texto || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // Remueve acentos
+        .replace(/\(.*?\)/g, "") // Remueve textos entre paréntesis como "(Plan 6)"
+        .replace(/[^a-z0-9]/g, " ") // Conserva solo letras y números
+        .replace(/\s+/g, " ") // Colapsa espacios
+        .trim();
+    };
+
+    const normMateria = normalizarTexto(materia);
+
+    // 1. Obtener enlaces a las carpetas oficiales de la materia
+    let linksMateria = { apuntes: "", bibliografia: "", programas: "" };
+    for (const [key, val] of Object.entries(MAPA_LINKS_MATERIAS)) {
+      if (normalizarTexto(key) === normMateria) {
+        linksMateria = val;
+        break;
+      }
+    }
+    // Si no hubo coincidencia exacta, intentamos coincidencia parcial
+    if (!linksMateria.apuntes && !linksMateria.programas) {
+      for (const [key, val] of Object.entries(MAPA_LINKS_MATERIAS)) {
+        const normKey = normalizarTexto(key);
+        if (normKey.includes(normMateria) || normMateria.includes(normKey)) {
+          linksMateria = val;
+          break;
+        }
+      }
+    }
+
+    // 2. Obtener lista de archivos individuales específicos para la materia
+    let archivosMateria = LISTA_ARCHIVOS_LINKS.filter(a => normalizarTexto(a.materia) === normMateria);
+    if (archivosMateria.length === 0) {
+      archivosMateria = LISTA_ARCHIVOS_LINKS.filter(a => {
+        const normKey = normalizarTexto(a.materia);
+        return normKey.includes(normMateria) || normMateria.includes(normKey);
+      });
+    }
+
+    let textoArchivosDisponibles = "";
+    if (archivosMateria.length > 0) {
+      textoArchivosDisponibles = archivosMateria
+        .map(a => `- [${a.categoria}] "${a.nombre}": ${a.url}`)
+        .join("\n");
+    } else {
+      textoArchivosDisponibles = "No se encontraron archivos individuales específicos cargados para esta materia en la biblioteca digital.";
+    }
+
     const systemInstructionText = `
 Eres "Asistente DND", un tutor virtual académico experto y especializado para estudiantes de la Facultad de Derecho de la UNLP.
 Tu objetivo es guiar al estudiante de manera clara, rigurosa y amigable.
@@ -209,15 +263,24 @@ CONFIGURACIÓN DE LA MATERIA:
 - Cátedra: ${catedra || "General / No especificada"}
 - Comisión: ${comision || "General / No especificada"}
 
+CARPETAS PRINCIPALES DE DRIVE PARA ESTA MATERIA:
+- Apuntes y Resúmenes: ${linksMateria.apuntes || "https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF"}
+- Bibliografía y Libros: ${linksMateria.bibliografia || "https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF"}
+- Programas de Estudio: ${linksMateria.programas || "https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF"}
+
+ARCHIVOS INDIVIDUALES CON LINK DIRECTO PARA ESTA MATERIA (Usa estos enlaces para responder con precisión):
+${textoArchivosDisponibles}
+
 INSTRUCCIONES DE RESPUESTA:
 1. Dirígete al estudiante por su nombre (${nombreEstudiante}) al inicio o de manera natural durante la explicación para hacerlo cercano y personalizado.
 2. Responde de forma clara, amigable y estructurada utilizando formato Markdown (negritas, listas, saltos de línea).
 3. Adapta tu explicación al enfoque pedagógico de la cátedra seleccionada. Si hay directrices específicas en el contexto de esa cátedra, dales prioridad absoluta.
 4. Si la respuesta exacta no está en el contexto recuperado, utiliza tus conocimientos generales del Derecho aplicados a la currícula de la UNLP, pero adviértele amablemente: *"Esta explicación se basa en doctrina general de la materia, ya que no se encuentra detallada de esta forma específica en los apuntes de la Cátedra/Comisión seleccionada."*
 5. Mantén un tono de compañero de estudio empático pero sumamente formal y preciso con los términos jurídicos y legales.
-6. ENLACES Y CITAS EXACTAS:
-   - Cuando cites bibliografía, resúmenes o programas, si el contexto RAG contiene enlaces o nombres de archivos concretos en la fuente, escríbelos como enlaces Markdown para que el alumno pueda acceder (por ejemplo: \`[Nombre del material](URL)\`).
-   - Si no tienes la URL directa del archivo exacto de la bibliografía o el programa, no inventes URLs. En su lugar, escribe el nombre del archivo y haz un hipervínculo a la carpeta oficial de Drive (\`https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF\`) para que el estudiante haga clic y pueda buscar el archivo allí mismo. Ej: \`[Programa de la Materia - Cátedra 1](https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF)\`.
+6. ENLACES Y CITAS EXACTAS (CRÍTICO):
+   - Si el estudiante te pide el "programa" de la materia o de alguna cátedra, busca en la lista "ARCHIVOS INDIVIDUALES CON LINK DIRECTO PARA ESTA MATERIA" si hay algún archivo de tipo "Programa" o "Programas". Si existe, enlázalo directamente usando su URL exacta: \`[Programa de la Materia](URL_del_archivo)\`. Si no lo encuentras, enlázalo a la carpeta de Programas de Estudio: \`[Carpeta de Programas](${linksMateria.programas || "https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF"})\`.
+   - Si pide resúmenes, apuntes o libros de la bibliografía, busca si hay archivos individuales correspondientes en la lista para darle el enlace directo. Si no los hay, enlázalo a la carpeta de Apuntes y Resúmenes: \`[Carpeta de Apuntes y Resúmenes](${linksMateria.apuntes || "https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF"})\`, o a la de Bibliografía: \`[Carpeta de Bibliografía](${linksMateria.bibliografia || "https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF"})\`.
+   - NUNCA inventes URLs. Si no tienes un enlace en la lista o carpetas, usa como fallback general la carpeta raíz de Drive: \`https://drive.google.com/drive/folders/1wNSxLX3w0ArXhxhvPa1iaqkZrj2mxJUF\`.
 
 IMPORTANTE - PREGUNTAS SUGERIDAS (GUÍA DE ESTUDIO):
 Al final de toda tu respuesta, debes incluir una línea especial con exactamente 3 preguntas sugeridas de seguimiento que le sirvan al estudiante para continuar estudiando este tema.
