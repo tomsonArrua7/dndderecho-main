@@ -29,14 +29,6 @@ jobs:
             cp -r supabase/functions/calendario-ics /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/send-recovery-email /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/asistente /root/supabase/docker/volumes/functions/
-            # Inyectar variables de Turnstile en el .env de Docker y reiniciar Supabase
-            if ! grep -q "GOTRUE_SECURITY_CAPTCHA_ENABLED" /root/supabase/docker/.env; then
-              echo "" >> /root/supabase/docker/.env
-              echo "GOTRUE_SECURITY_CAPTCHA_ENABLED=true" >> /root/supabase/docker/.env
-              echo "GOTRUE_SECURITY_CAPTCHA_PROVIDER=turnstile" >> /root/supabase/docker/.env
-              echo "GOTRUE_SECURITY_CAPTCHA_SECRET=0x4AAAAAAADunhjFYONmspy5u3gqck2cBCo" >> /root/supabase/docker/.env
-              echo "GOTRUE_RATE_LIMIT_HEADER=CF-Connecting-IP" >> /root/supabase/docker/.env
-              cd /root/supabase/docker && (docker compose down && docker compose up -d || docker-compose down && docker-compose up -d)
-            fi
             echo "Deploy completado: $(git log --oneline -1)"
+
 
