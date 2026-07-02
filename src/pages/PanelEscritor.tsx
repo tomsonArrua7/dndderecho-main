@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Newspaper, Trash2, PlusCircle, Calendar } from "lucide-react";
+import { Loader2, Newspaper, Trash2, PlusCircle, Calendar, Image as ImageIcon } from "lucide-react";
 
 interface Noticia {
   id: string;
   title: string;
   desc_content: string;
   tag: string;
+  image_url?: string | null;
+  image_align?: string | null;
   created_at: string;
   profiles?: {
     full_name: string | null;
@@ -26,6 +28,8 @@ const PanelEscritor = () => {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [tag, setTag] = useState("Novedades");
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageAlign, setImageAlign] = useState("center");
   const [submitting, setSubmitting] = useState(false);
 
   // Access check: only writer or admin
@@ -39,7 +43,7 @@ const PanelEscritor = () => {
       try {
         const { data, error } = await supabase
           .from("noticias")
-          .select("id, title, desc_content, tag, created_at, profiles(full_name)")
+          .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles(full_name)")
           .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -83,9 +87,11 @@ const PanelEscritor = () => {
           title: title.trim(),
           desc_content: desc.trim(),
           tag: tag.trim(),
+          image_url: imageUrl.trim() || null,
+          image_align: imageAlign,
           author_id: user.id
         })
-        .select("id, title, desc_content, tag, created_at, profiles(full_name)")
+        .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles(full_name)")
         .single();
 
       if (error) throw error;
@@ -95,6 +101,8 @@ const PanelEscritor = () => {
       setTitle("");
       setDesc("");
       setTag("Novedades");
+      setImageUrl("");
+      setImageAlign("center");
     } catch (err: any) {
       console.error("Error creating news:", err);
       toast.error("Error al publicar la noticia: " + err.message);
@@ -184,6 +192,33 @@ const PanelEscritor = () => {
                 />
               </div>
 
+              <div>
+                <Label htmlFor="imageUrl" className="text-white/70 text-xs">URL de la Imagen (opcional)</Label>
+                <Input
+                  id="imageUrl"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                  className="bg-white/5 border-white/10 text-white focus:border-red-500 mt-1"
+                />
+              </div>
+
+              {imageUrl && (
+                <div>
+                  <Label htmlFor="imageAlign" className="text-white/70 text-xs">Alineación de la Imagen</Label>
+                  <select
+                    id="imageAlign"
+                    value={imageAlign}
+                    onChange={(e) => setImageAlign(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-red-500 mt-1"
+                  >
+                    <option value="center" className="bg-slate-950 text-white">Centrado / Ancho Completo</option>
+                    <option value="left" className="bg-slate-950 text-white">Izquierda (Ajuste estrecho)</option>
+                    <option value="right" className="bg-slate-950 text-white">Derecha (Ajuste estrecho)</option>
+                  </select>
+                </div>
+              )}
+
               <Button
                 type="submit"
                 className="w-full bg-red-650 hover:bg-red-700 text-xs font-bold uppercase tracking-widest text-white h-11"
@@ -215,7 +250,7 @@ const PanelEscritor = () => {
                   key={n.id}
                   className="p-4 rounded-xl bg-white/[0.01] border border-white/5 flex items-start justify-between gap-4 hover:border-white/10 transition-colors"
                 >
-                  <div className="space-y-1 min-w-0">
+                  <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[9px] font-bold uppercase tracking-widest bg-red-500/10 border border-red-500/20 text-red-400 px-2 py-0.5 rounded">
                         {n.tag}
@@ -227,6 +262,11 @@ const PanelEscritor = () => {
                       <span className="text-[10px] text-white/30">
                         · Por {n.profiles?.full_name || "Agrupación"}
                       </span>
+                      {n.image_url && (
+                        <span className="text-[9px] font-semibold flex items-center gap-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded uppercase">
+                          <ImageIcon className="h-2.5 w-2.5" /> {n.image_align === "left" ? "Izq" : n.image_align === "right" ? "Der" : "Centrado"}
+                        </span>
+                      )}
                     </div>
                     <h3 className="font-semibold text-white text-sm line-clamp-1">{n.title}</h3>
                     <p className="text-xs text-white/50 line-clamp-2 leading-relaxed">{n.desc_content}</p>
