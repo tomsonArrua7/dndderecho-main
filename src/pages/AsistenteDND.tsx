@@ -121,7 +121,39 @@ export default function AsistenteDND() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   
+  // Estados para el cargador dinámico
+  const [loadingTime, setLoadingTime] = useState(0);
+  const [loadingStage, setLoadingStage] = useState("Buscando apuntes oficiales en la biblioteca...");
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Efecto para manejar el cronómetro de carga y las etapas
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isLoadingResponse) {
+      setLoadingTime(0);
+      setLoadingStage("Buscando en la base de datos de apuntes...");
+      interval = setInterval(() => {
+        setLoadingTime(prev => {
+          const nextTime = prev + 1;
+          if (nextTime === 3) {
+            setLoadingStage("Analizando programas oficiales y bibliografía...");
+          } else if (nextTime === 6) {
+            setLoadingStage("Procesando consulta con Inteligencia Artificial...");
+          } else if (nextTime === 9) {
+            setLoadingStage("Redactando respuesta estructurada...");
+          } else if (nextTime === 13) {
+            setLoadingStage("Finalizando síntesis...");
+          }
+          return nextTime;
+        });
+      }, 1000);
+    } else {
+      setLoadingTime(0);
+    }
+    return () => clearInterval(interval);
+  }, [isLoadingResponse]);
+
 
   // Fetch materias from database
   useEffect(() => {
@@ -508,11 +540,17 @@ export default function AsistenteDND() {
                     <div className="h-8 w-8 rounded-full shrink-0 bg-slate-200 dark:bg-[#181F3B] border border-slate-300 dark:border-white/10 flex items-center justify-center text-accent">
                       <Loader2 className="h-4 w-4 animate-spin text-accent" />
                     </div>
-                    <div className="p-4 rounded-2xl bg-slate-100 dark:bg-[#10162B] border border-slate-200 dark:border-white/5 text-slate-500 dark:text-white/40 text-xs flex items-center gap-2 rounded-tl-none font-medium">
-                      El Asistente DND está pensando su respuesta...
+                    <div className="p-4 rounded-2xl bg-slate-100 dark:bg-[#10162B] border border-slate-200 dark:border-white/5 text-slate-500 dark:text-white/40 text-xs flex flex-col gap-1.5 rounded-tl-none font-medium">
+                      <span className="text-slate-800 dark:text-white font-bold flex items-center gap-1.5">
+                        Tutor DND IA
+                      </span>
+                      <span className="text-slate-555 dark:text-white/50 flex items-center gap-1.5 leading-relaxed">
+                        {loadingStage} <span className="font-bold text-accent">({loadingTime}s)</span>
+                      </span>
                     </div>
                   </div>
                 )}
+
                 <div ref={messagesEndRef} />
               </div>
 

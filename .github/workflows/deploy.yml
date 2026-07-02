@@ -29,6 +29,12 @@ jobs:
             cp -r supabase/functions/calendario-ics /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/send-recovery-email /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/asistente /root/supabase/docker/volumes/functions/
+            # Corregir clave secreta en Docker .env (cambiando 7 A's por 6 A's) y reiniciar Supabase
+            if [ -f /root/supabase/docker/.env ] && grep -q "0x4AAAAAAADunhjFYONmspy5u3gqck2cBCo" /root/supabase/docker/.env; then
+              sed -i 's/0x4AAAAAAADunhjFYONmspy5u3gqck2cBCo/0x4AAAAAADunhjFYONmspy5u3gqck2cBCo/g' /root/supabase/docker/.env
+              cd /root/supabase/docker && (docker compose down && docker compose up -d || docker-compose down && docker-compose up -d)
+            fi
             echo "Deploy completado: $(git log --oneline -1)"
+
 
 
