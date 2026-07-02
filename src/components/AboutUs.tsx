@@ -28,9 +28,15 @@ export const AboutUs = () => {
               <span className="text-white/40">Somos?</span>
             </h2>
             
-            <div className="relative pl-6 border-l-2 border-accent">
-              <p className="text-white/70 text-lg md:text-xl leading-relaxed font-serif italic">
-                "Somos la Agrupación DND, un espacio formado por y para estudiantes de la Facultad de Ciencias Jurídicas y Sociales de la UNLP. Creemos en una facultad moderna, con herramientas digitales al servicio del alumno y una defensa constante de nuestros derechos académicos."
+            <div className="relative pl-6 border-l-2 border-accent space-y-4 text-white/80 text-sm md:text-base leading-relaxed">
+              <p>
+                Somos DND: la segunda fuerza en la Facultad de Ciencias Jurídicas y Sociales. Una agrupación estudiantil comprometida con acompañar a los estudiantes durante su paso por la vida universitaria.
+              </p>
+              <p>
+                Nacimos en el 2016 y trabajamos todos los días para brindar información útil, buscar soluciones reales a los problemas de la comunidad estudiantil y construir una Facultad más participativa, democrática y cercana a quienes verdaderamente la transitan.
+              </p>
+              <p className="font-bold text-accent">
+                Hoy, además, somos la voz de los estudiantes en el Consejo Directivo.
               </p>
             </div>
           </div>
