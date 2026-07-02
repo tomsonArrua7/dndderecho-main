@@ -20,7 +20,7 @@ export const CommunityButton = () => {
             initial={{ opacity: 0, x: 20, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ delay: 1, duration: 0.5 }}
-            className="absolute right-full mr-3 bg-[#0D1224]/95 dark:bg-white text-white dark:text-slate-900 border border-accent/30 dark:border-slate-200 px-3 py-2 rounded-2xl shadow-2xl flex items-center gap-2 text-[11px] md:text-xs font-black tracking-wide whitespace-nowrap"
+            className="absolute right-full mr-3 bg-white dark:bg-[#0D1224]/95 text-slate-900 dark:text-white border border-slate-200 dark:border-accent/30 px-3 py-2 rounded-2xl shadow-2xl flex items-center gap-2 text-[11px] md:text-xs font-black tracking-wide whitespace-nowrap"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
@@ -29,7 +29,7 @@ export const CommunityButton = () => {
             <span>¿Dudas? Preguntale al Tutor IA 🤖</span>
             <button 
               onClick={() => setShowSpeechBubble(false)} 
-              className="ml-1 text-white/40 dark:text-slate-400 hover:text-white dark:hover:text-slate-900 transition-colors cursor-pointer"
+              className="ml-1 text-slate-400 dark:text-white/40 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
             >
               <X className="h-3 w-3" />
             </button>

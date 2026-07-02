@@ -346,7 +346,9 @@ const Auth = () => {
   return (
     <div className="container py-12 md:py-20 grid md:grid-cols-2 gap-12 items-center">
       <div className="hidden md:block">
-        <img src={logo} alt="DND" className="w-48 mb-6" />
+        <div className="p-3 bg-[#0D1224] dark:bg-transparent rounded-2xl w-fit mb-6 shadow-md border border-[#1E293B] dark:border-transparent">
+          <img src={logo} alt="DND" className="w-48" />
+        </div>
         <h1 className="font-display text-4xl font-bold mb-4 text-foreground">Ingreso Estudiantil</h1>
         <p className="text-muted-foreground text-lg max-w-md">
           Accedé a tu plan de estudios, calendario académico y publicá permutas de comisión.
@@ -476,7 +478,7 @@ const Auth = () => {
                     <button
                       type="button"
                       onClick={() => setTab("forgot")}
-                      className="text-sm text-primary hover:text-primary/80 hover:underline font-bold transition-all"
+                      className="text-sm text-primary dark:text-slate-200 hover:text-primary/80 dark:hover:text-white hover:underline font-bold transition-all"
                     >
                       ¿Olvidaste tu contraseña?
                     </button>
