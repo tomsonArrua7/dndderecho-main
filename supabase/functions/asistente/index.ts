@@ -179,26 +179,40 @@ Sin embargo, no se ha configurado ninguna clave de Inteligencia Artificial (Clau
 
     let nombreEstudiante = "Estudiante";
     const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      try {
-        const token = authHeader.replace("Bearer ", "");
-        const authResponse = await supabase.auth.getUser(token);
-        const user = authResponse?.data?.user;
-        if (user) {
-          const profileResponse = await supabase
-            .from("profiles")
-            .select("full_name")
-            .eq("id", user.id)
-            .maybeSingle();
-          const profile = profileResponse?.data;
-          if (profile?.full_name) {
-            nombreEstudiante = profile.full_name.split(" ")[0]; // Primer nombre
-          }
-        }
-      } catch (e) {
-        console.warn("No se pudo obtener el nombre del estudiante:", e.message);
-      }
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Acceso no autorizado. Se requiere iniciar sesión para usar el asistente." }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
+
+    try {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+      if (authError || !user) {
+        return new Response(
+          JSON.stringify({ error: "Sesión inválida o expirada. Por favor, inicia sesión nuevamente." }),
+          { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      const profileResponse = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .maybeSingle();
+      const profile = profileResponse?.data;
+      if (profile?.full_name) {
+        nombreEstudiante = profile.full_name.split(" ")[0]; // Primer nombre
+      }
+    } catch (e) {
+      console.warn("Fallo al validar sesión del estudiante:", e.message);
+      return new Response(
+        JSON.stringify({ error: "Error de servidor al validar sesión de usuario." }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
 
     // Función auxiliar local para normalizar textos
     const normalizarTexto = (texto: string): string => {

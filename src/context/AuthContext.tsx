@@ -15,8 +15,8 @@ interface AuthContextValue {
   session: Session | null;
   profile: ProfileInfo | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string, anioIngreso: number) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string, captchaToken?: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, anioIngreso: number, captchaToken?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   reloadProfile: () => Promise<void>;
 }
@@ -79,17 +79,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const signIn = async (email: string, password: string, captchaToken?: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: captchaToken ? { captchaToken } : undefined,
+    });
     return { error };
   };
 
-  const signUp = async (email: string, password: string, fullName: string, anioIngreso: number) => {
+  const signUp = async (email: string, password: string, fullName: string, anioIngreso: number, captchaToken?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth`,
+        captchaToken,
         data: { 
           full_name: fullName,
           anio_ingreso: anioIngreso
@@ -98,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     return { error };
   };
+
 
   const signOut = async () => {
     await supabase.auth.signOut();

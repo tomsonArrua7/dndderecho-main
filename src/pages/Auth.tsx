@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Loader2, Scale, MailOpen, CheckCircle, KeyRound, Lock } from "lucide-react";
 import logo from "@/assets/dnd-logo.png";
 import { z } from "zod";
+import { Turnstile } from "@/components/Turnstile";
 
 const signInSchema = z.object({
   email: z.string().trim().email("Email inválido").max(255),
@@ -24,6 +25,8 @@ const signUpSchema = signInSchema.extend({
       return yr >= 1980 && yr <= 2026;
     }, "El año debe estar entre 1980 y 2026"),
 });
+
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
 
 // Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña
 function isRecoveryUrl(): boolean {
@@ -67,13 +70,24 @@ const Auth = () => {
   const [submitting, setSubmitting] = useState(false);
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
+  // Estados de captcha
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
+
   const isRecoveryFlow = useRef(recoveryActive);
   const hasExchanged = useRef(false);
+
+  // Resetear captcha cuando cambie de pestaña
+  useEffect(() => {
+    setCaptchaToken(null);
+    setCaptchaKey(prev => prev + 1);
+  }, [tab]);
 
   // "idle" | "loading" | "confirmed" | "error"
   const [confirmState, setConfirmState] = useState<"idle" | "loading" | "confirmed" | "error">(
     () => (getConfirmationCode() ? "loading" : "idle")
   );
+
 
   // Escuchar evento PASSWORD_RECOVERY de Supabase
   useEffect(() => {
@@ -145,11 +159,19 @@ const Auth = () => {
     e.preventDefault();
     const parsed = signInSchema.safeParse({ email, password });
     if (!parsed.success) { toast.error(parsed.error.errors[0].message); return; }
+
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      toast.error("Por favor, completá el captcha.");
+      return;
+    }
+
     setSubmitting(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(email, password, captchaToken || undefined);
     setSubmitting(false);
     if (error) {
       toast.error(error.message === "Invalid login credentials" ? "Email o contraseña incorrectos" : error.message);
+      setCaptchaToken(null);
+      setCaptchaKey(prev => prev + 1);
       return;
     }
     toast.success("¡Bienvenido/a!");
@@ -160,16 +182,25 @@ const Auth = () => {
     e.preventDefault();
     const parsed = signUpSchema.safeParse({ email, password, fullName, anioIngreso });
     if (!parsed.success) { toast.error(parsed.error.errors[0].message); return; }
+
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      toast.error("Por favor, completá el captcha.");
+      return;
+    }
+
     setSubmitting(true);
-    const { error } = await signUp(email, password, fullName, parseInt(anioIngreso, 10));
+    const { error } = await signUp(email, password, fullName, parseInt(anioIngreso, 10), captchaToken || undefined);
     setSubmitting(false);
     if (error) {
       if (error.message.includes("already")) toast.error("Ese email ya está registrado");
       else toast.error(error.message);
+      setCaptchaToken(null);
+      setCaptchaKey(prev => prev + 1);
       return;
     }
     setSignUpSuccess(true);
   };
+
 
   const handleGoToSignIn = async () => {
     await signOut();
@@ -451,6 +482,13 @@ const Auth = () => {
                     </button>
                   </div>
                 </div>
+                {TURNSTILE_SITE_KEY && (
+                  <Turnstile
+                    key={`signin-${captchaKey}`}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    onVerify={setCaptchaToken}
+                  />
+                )}
                 <Button type="submit" variant="hero" className="w-full" size="lg" disabled={submitting}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Ingresar
@@ -484,6 +522,13 @@ const Auth = () => {
                   <Label htmlFor="su-pass">Contraseña</Label>
                   <Input id="su-pass" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
                 </div>
+                {TURNSTILE_SITE_KEY && (
+                  <Turnstile
+                    key={`signup-${captchaKey}`}
+                    siteKey={TURNSTILE_SITE_KEY}
+                    onVerify={setCaptchaToken}
+                  />
+                )}
                 <Button type="submit" variant="hero" className="w-full" size="lg" disabled={submitting}>
                   {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Crear cuenta
