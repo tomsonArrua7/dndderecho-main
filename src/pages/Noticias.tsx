@@ -31,7 +31,7 @@ const Noticias = () => {
       try {
         const { data, error } = await supabase
           .from("noticias")
-          .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles(full_name, avatar_url), noticias_likes(user_id)")
+          .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles!noticias_author_id_fkey(full_name, avatar_url), noticias_likes(user_id)")
           .order("created_at", { ascending: false });
 
         if (error) throw error;

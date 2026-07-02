@@ -43,7 +43,7 @@ const PanelEscritor = () => {
       try {
         const { data, error } = await supabase
           .from("noticias")
-          .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles(full_name)")
+          .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles!noticias_author_id_fkey(full_name)")
           .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -91,7 +91,7 @@ const PanelEscritor = () => {
           image_align: imageAlign,
           author_id: user.id
         })
-        .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles(full_name)")
+        .select("id, title, desc_content, tag, image_url, image_align, created_at, profiles!noticias_author_id_fkey(full_name)")
         .single();
 
       if (error) throw error;
