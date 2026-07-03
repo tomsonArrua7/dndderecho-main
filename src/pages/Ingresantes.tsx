@@ -147,7 +147,7 @@ const Ingresantes = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Reel 1 */}
             <div className="relative overflow-hidden rounded-2xl aspect-[9/16] md:aspect-[3/4] border border-white/5 group shadow-lg">
@@ -203,6 +203,25 @@ const Ingresantes = () => {
                 </span>
                 <h4 className="text-white font-bold text-base md:text-lg leading-tight">Sesiones de Estudio</h4>
                 <p className="text-white/50 text-[10px] md:text-xs mt-1 leading-relaxed">Te acompañamos en la primera materia y a lo largo de todo tu primer año.</p>
+              </div>
+            </div>
+
+            {/* Reel 4 */}
+            <div className="relative overflow-hidden rounded-2xl aspect-[9/16] md:aspect-[3/4] border border-white/5 group shadow-lg">
+              <video
+                src="/IMG_4329.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent flex flex-col justify-end p-6 z-10">
+                <span className="text-[9px] font-bold text-accent uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <GraduationCap className="h-3 w-3 text-accent" /> Acompañamiento
+                </span>
+                <h4 className="text-white font-bold text-base md:text-lg leading-tight">Talleres de Apoyo</h4>
+                <p className="text-white/50 text-[10px] md:text-xs mt-1 leading-relaxed">Acompañamiento personalizado para resolver dudas del inicio de la carrera.</p>
               </div>
             </div>
 
