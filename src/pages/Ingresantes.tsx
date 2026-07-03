@@ -152,7 +152,7 @@ const Ingresantes = () => {
             {/* Reel 1 */}
             <div className="relative overflow-hidden rounded-2xl aspect-[9/16] md:aspect-[3/4] border border-white/5 group shadow-lg">
               <video
-                src="/IMG_5646.MOV"
+                src="/IMG_5646.mp4"
                 autoPlay
                 loop
                 muted
@@ -171,7 +171,7 @@ const Ingresantes = () => {
             {/* Reel 2 */}
             <div className="relative overflow-hidden rounded-2xl aspect-[9/16] md:aspect-[3/4] border border-white/5 group shadow-lg">
               <video
-                src="/IMG_6025.MOV"
+                src="/IMG_6025.mp4"
                 autoPlay
                 loop
                 muted
@@ -190,7 +190,7 @@ const Ingresantes = () => {
             {/* Reel 3 */}
             <div className="relative overflow-hidden rounded-2xl aspect-[9/16] md:aspect-[3/4] border border-white/5 group shadow-lg">
               <video
-                src="/IMG_7062.MOV"
+                src="/IMG_7062.mp4"
                 autoPlay
                 loop
                 muted

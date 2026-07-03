@@ -58,7 +58,7 @@ export const CommunityButton = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <motion.a
-                href="https://chat.whatsapp.com/EXAMPLE_LINK" // Placeholder link
+                href="https://chat.whatsapp.com/BooxpAKePHHIc467D9NKit?mode=gi_t"
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ scale: 0, opacity: 0 }}
@@ -67,7 +67,7 @@ export const CommunityButton = () => {
                 whileTap={{ scale: 0.9 }}
                 onHoverStart={() => setIsHovered(true)}
                 onHoverEnd={() => setIsHovered(false)}
-                className="flex items-center justify-center w-14 h-14 bg-[#FF0000] text-white rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300 group border border-red-500/20"
+                className="flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)] transition-all duration-300 group border border-[#25D366]/20 cursor-pointer"
                 aria-label="Sumate al grupo de avisos"
               >
                 <svg 
