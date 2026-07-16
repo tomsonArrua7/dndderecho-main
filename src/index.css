@@ -345,35 +345,7 @@
 .light .bg-\[\#0A0E1A\]\/50 { background-color: hsl(var(--muted) / 0.5) !important; }
 .light .bg-\[\#0A0E1A\]\/40 { background-color: hsl(var(--muted) / 0.4) !important; }
 
-/* Card gradient adaptation for Light Mode */
-.light .from-primary.via-primary-deep.to-black {
-  background: hsl(var(--card)) !important;
-  background-image: linear-gradient(135deg, hsl(var(--primary-deep)) 0%, hsl(var(--card)) 100%) !important;
-  border-color: hsl(var(--border)) !important;
-}
-.light .from-primary.via-primary-deep.to-black h3 {
-  color: hsl(var(--foreground)) !important;
-}
-.light .from-primary.via-primary-deep.to-black p {
-  color: hsl(var(--foreground) / 0.7) !important;
-}
-.light .from-primary.via-primary-deep.to-black .bg-white\/10 {
-  background-color: hsl(var(--foreground) / 0.08) !important;
-  border-color: hsl(var(--foreground) / 0.1) !important;
-  color: hsl(var(--foreground)) !important;
-}
-.light .from-primary.via-primary-deep.to-black .bg-white {
-  background: linear-gradient(135deg, #0b1528 0%, #dc2626 100%) !important;
-  color: #ffffff !important;
-  border: none !important;
-}
-.light .from-primary.via-primary-deep.to-black .bg-white:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #0b1528 100%) !important;
-  color: #ffffff !important;
-}
-.light .from-primary.via-primary-deep.to-black .text-white {
-  color: hsl(var(--foreground)) !important;
-}
+
 
 /* Light mode overrides for subject card states in PlanEstudios */
 .light .bg-emerald-950\/15 {
