@@ -1,25 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookMarked, CalendarDays, GraduationCap, Repeat2, ShieldCheck, Sparkles, Star, Bot } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import facultad from "@/assets/facultad_unlp_optimized.png";
 import { DndMark } from "@/components/DndMark";
-import { cn } from "@/lib/utils";
-import { UpcomingDates } from "@/components/UpcomingDates";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { HeroActions } from "@/components/HeroActions";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { YouTubeSection } from "@/components/YouTubeSection";
-
-const features = [
-  { icon: Repeat2,      title: "Permutero de Comisiones", desc: "Encontrá tu match para cambiar de comisión en segundos.", to: "/permutero",       accent: true  },
-  { icon: GraduationCap,title: "Plan de Estudios",        desc: "Marcá tus materias aprobadas y seguí tu progreso.",   to: "/plan"             },
-  { icon: CalendarDays, title: "Calendario Académico",    desc: "Anotá parciales, finales y entregas en tu agenda.",   to: "/calendario"       },
-  { icon: BookMarked,   title: "Biblioteca y Noticias",      desc: "Material de cátedra y novedades de la facultad.",     to: "/apuntes"          },
-  { icon: Star,         title: "Recomendaciones",         desc: "Opiniones de estudiantes sobre cátedras y docentes.", to: "/recomendaciones"  },
-  { icon: Bot,          title: "Asistente DND (IA)",      desc: "Tutor virtual inteligente que resuelve tus dudas con tus apuntes.", to: "/asistente", accent: true },
-];
 
 const Index = () => {
   const [realizadasCount, setRealizadasCount] = useState(0);
@@ -161,101 +150,6 @@ const Index = () => {
 
       {/* YouTube Section */}
       <YouTubeSection />
-
-      {/* ════════════════════════════════════════════════════════════
-          FEATURES SECTION — STAGGERED GRID
-          ════════════════════════════════════════════════════════════ */}
-      <section className="container py-24 relative z-20">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="bg-[#0A0E1A]/60 backdrop-blur-2xl border border-white/5 rounded-[3.5rem] p-8 md:p-20 shadow-[0_50px_100px_rgba(0,0,0,0.5)]"
-        >
-          <div className="max-w-4xl mb-20">
-            <div className="text-[11px] uppercase tracking-[0.4em] text-accent font-black mb-6">
-              Servicios Digitales
-            </div>
-            <h2 className="font-display text-5xl md:text-8xl font-black mb-8 text-white tracking-tighter leading-[0.9]">
-              Potenciamos tu <br/>
-              <span className="text-white/20">Trayectoria.</span>
-            </h2>
-            <p className="text-white/40 text-xl max-w-2xl leading-relaxed font-medium tracking-tight">
-              Diseñamos herramientas específicas para resolver los desafíos cotidianos de cada estudiante de la UNLP.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {features.map((f, i) => (
-              <motion.div
-                key={f.to}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Link
-                  to={f.to}
-                  className={cn(
-                    "group relative h-full flex flex-col p-8 rounded-[2rem] border transition-all duration-500",
-                    f.accent
-                      ? "bg-accent/5 border-accent/20 hover:bg-accent/10 hover:border-accent/40"
-                      : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/20"
-                  )}
-                >
-                  <div className={cn(
-                    "inline-flex p-4 rounded-2xl mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6",
-                    f.accent ? "bg-accent text-white shadow-[0_10px_20px_rgba(220,38,38,0.3)]" : "bg-white/5 text-white/60 border border-white/10"
-                  )}>
-                    <f.icon className="h-6 w-6" strokeWidth={2} />
-                  </div>
-                  <h3 className="font-display font-bold text-xl mb-3 text-white tracking-tight">{f.title}</h3>
-                  <p className="text-sm text-white/30 leading-relaxed mb-8 font-medium">{f.desc}</p>
-                  <div className="mt-auto flex items-center text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-accent transition-colors">
-                    Explorar <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-2 transition-transform" />
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════
-          CALENDARIO / FECHAS — DEPTH EFFECT
-          ════════════════════════════════════════════════════════════ */}
-      <section className="container py-32">
-        <div className="grid lg:grid-cols-[450px_1fr] gap-20 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-8">
-              <CalendarDays className="h-4 w-4 text-accent" /> Agenda Inteligente & Sync
-            </div>
-            <h2 className="font-display text-5xl md:text-7xl font-black mb-8 text-white tracking-tighter leading-[0.9]">
-              Tu agenda, <br/>
-              <span className="text-white/20 italic font-medium">Sincronizada.</span>
-            </h2>
-            <p className="text-white/40 text-lg leading-relaxed mb-10 font-medium">
-              Suscribite a los avisos de la facultad y sincronizalos directamente con Google Calendar. Llevá las fechas clave de inscripciones, parciales, finales y eventos directo en tu celular.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true }}
-            className="bg-[#0A0E1A]/40 border border-white/5 rounded-[3rem] p-6 md:p-10 shadow-[0_40px_100px_rgba(0,0,0,0.4)] backdrop-blur-xl"
-          >
-            <UpcomingDates />
-          </motion.div>
-        </div>
-      </section>
 
     </div>
   );

@@ -146,15 +146,8 @@ export const Footer = () => (
         <p className="text-sm text-muted-foreground leading-relaxed mb-5">
           Consultas académicas, comunicados o sumarte a la agrupación.
         </p>
-        <a
-          href="mailto:contacto@dndderecho.com.ar"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 text-sm text-white/80 hover:text-white hover:bg-white/10 hover:border-white/25 transition-all duration-200"
-        >
-          <Mail className="h-4 w-4 text-accent" />
-          contacto@dndderecho.com.ar
-        </a>
 
-        <div className="mt-6 flex gap-2">
+        <div className="flex gap-2">
           {REDES.slice(0, 4).map(({ label, href, icon: Icon }) => (
             <a
               key={label}
