@@ -363,12 +363,13 @@
   color: hsl(var(--foreground)) !important;
 }
 .light .from-primary.via-primary-deep.to-black .bg-white {
-  background-color: hsl(var(--primary)) !important;
-  color: hsl(var(--primary-foreground)) !important;
+  background: linear-gradient(135deg, #0b1528 0%, #dc2626 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
 }
 .light .from-primary.via-primary-deep.to-black .bg-white:hover {
-  background-color: hsl(var(--accent)) !important;
-  color: hsl(var(--accent-foreground)) !important;
+  background: linear-gradient(135deg, #dc2626 0%, #0b1528 100%) !important;
+  color: #ffffff !important;
 }
 .light .from-primary.via-primary-deep.to-black .text-white {
   color: hsl(var(--foreground)) !important;
