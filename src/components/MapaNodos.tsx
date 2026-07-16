@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState, useMemo } from "react";
 import { MateriaNode, EstadoMateria, PlanData, TIPO_CONFIG } from "@/data/planEstudiosData";
 import { cn } from "@/lib/utils";
 import { Check, BookOpen, Clock, Maximize2, X } from "lucide-react";

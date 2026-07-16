@@ -46,7 +46,7 @@ const REDES = [
 const NAV_LINKS = [
   { href: "/",                label: "Inicio" },
   { href: "/noticias",        label: "Noticias" },
-  { href: "/apuntes",         label: "Apuntes" },
+  { href: "/apuntes",         label: "Biblioteca" },
   { href: "/permutero",       label: "Permutero" },
   { href: "/recomendaciones", label: "Recomendaciones" },
   { href: "/quienes-somos",  label: "¿Quiénes Somos?" },

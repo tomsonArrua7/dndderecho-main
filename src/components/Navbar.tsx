@@ -13,7 +13,7 @@ const publicLinks = [
   { to: "/",                label: "Inicio",    icon: Home },
   { to: "/quienes-somos",   label: "Quiénes Somos", icon: Users },
   { to: "/noticias",        label: "Noticias",  icon: Newspaper },
-  { to: "/apuntes",         label: "Apuntes",   icon: BookOpen },
+  { to: "/apuntes",         label: "Biblioteca",   icon: BookOpen },
   { to: "/asistente",       label: "Asistente DND", icon: Bot },
   { to: "/permutero",       label: "Permutero", icon: Repeat2 },
   { to: "/servicios",       label: "Información útil", icon: ShieldCheck },
@@ -108,7 +108,7 @@ export const Navbar = () => {
                           "absolute bottom-0 left-0 h-[2px] rounded-full transition-all duration-500 ease-out",
                           isActive
                             ? "w-full bg-accent shadow-[0_0_10px_rgba(220,38,38,0.5)]"
-                            : "w-0 bg-white/20 group-hover:w-1/2 group-hover:left-1/4"
+                            : "w-0 bg-accent group-hover:w-1/2 group-hover:left-1/4"
                         )}
                       />
                     </>

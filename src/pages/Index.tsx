@@ -16,7 +16,7 @@ const features = [
   { icon: Repeat2,      title: "Permutero de Comisiones", desc: "Encontrá tu match para cambiar de comisión en segundos.", to: "/permutero",       accent: true  },
   { icon: GraduationCap,title: "Plan de Estudios",        desc: "Marcá tus materias aprobadas y seguí tu progreso.",   to: "/plan"             },
   { icon: CalendarDays, title: "Calendario Académico",    desc: "Anotá parciales, finales y entregas en tu agenda.",   to: "/calendario"       },
-  { icon: BookMarked,   title: "Apuntes y Noticias",      desc: "Material de cátedra y novedades de la facultad.",     to: "/apuntes"          },
+  { icon: BookMarked,   title: "Biblioteca y Noticias",      desc: "Material de cátedra y novedades de la facultad.",     to: "/apuntes"          },
   { icon: Star,         title: "Recomendaciones",         desc: "Opiniones de estudiantes sobre cátedras y docentes.", to: "/recomendaciones"  },
   { icon: Bot,          title: "Asistente DND (IA)",      desc: "Tutor virtual inteligente que resuelve tus dudas con tus apuntes.", to: "/asistente", accent: true },
 ];
