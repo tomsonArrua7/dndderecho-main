@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -38,106 +36,137 @@ serve(async (req) => {
     });
 
     if (error) {
-      console.error("Error generating recovery link:", error);
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      throw error;
     }
 
-    // Apuntar directamente a la web del frontend con el hash del token
-    const actionLink = `${origin || "https://dndjursoc.com.ar"}/auth/recovery?token=${data.properties.hashed_token}`;
+    const actionLink = data.properties?.action_link;
+
+    if (!actionLink) {
+      throw new Error("No se pudo generar el enlace de recuperación.");
+    }
+
+    // 1. Obtener API Key de Resend (entorno o app_settings)
+    let resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.log("send-recovery-email: Buscando resend_api_key en app_settings...");
+      try {
+        const { data: settings } = await supabaseClient
+          .from("app_settings")
+          .select("resend_api_key")
+          .limit(1)
+          .maybeSingle();
+        if (settings?.resend_api_key) {
+          resendApiKey = settings.resend_api_key;
+        }
+      } catch (err: any) {
+        console.warn("send-recovery-email: Error al leer app_settings:", err.message);
+      }
+    }
 
     const htmlContent = `
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Restablecer tu contraseña</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restablecer Contraseña - DND Derecho</title>
 </head>
-<body style="margin:0;padding:0;background-color:#0d1b2a;font-family:Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0d1b2a;padding:40px 20px;">
-<tr><td align="center">
-<table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+<body style="margin: 0; padding: 0; background-color: #050b14; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #050b14; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width: 560px; width: 100%;">
+          
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding-bottom: 24px;">
+              <img src="https://dndjursoc.com.ar/dnd-logo.png" width="140" alt="DND Derecho UNLP" style="display: block; max-width: 140px; height: auto;">
+            </td>
+          </tr>
 
-<tr><td align="center" style="padding-bottom:24px;">
-<img src="https://dndjursoc.com.ar/dnd-logo.png" width="140" alt="DND Derecho UNLP" style="display:block;max-width:140px;height:auto;">
-</td></tr>
+          <!-- Box Principal -->
+          <tr>
+            <td style="background-color: #0d1224; border-radius: 20px; border: 1px solid rgba(255,255,255,0.06); overflow: hidden; padding: 40px 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+              
+              <!-- Tag y Título -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="padding-bottom: 24px;">
+                    <span style="background-color: rgba(190, 18, 60, 0.15); border: 1px solid rgba(190, 18, 60, 0.3); color: #be123c; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; padding: 4px 12px; border-radius: 9999px; display: inline-block;">
+                      Seguridad de la Cuenta
+                    </span>
+                    <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin: 16px 0 0 0; tracking: -0.025em;">
+                      Restablecer tu Contraseña
+                    </h1>
+                  </td>
+                </tr>
 
-<tr><td style="background-color:#111827;border-radius:16px;border:1px solid #1e293b;overflow:hidden;">
+                <!-- Separador -->
+                <tr>
+                  <td style="padding-bottom: 24px;">
+                    <div style="height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);"></div>
+                  </td>
+                </tr>
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr><td style="background:linear-gradient(135deg,#be123c 0%,#9f1239 100%);padding:28px 36px;text-align:center;">
-<p style="margin:0 0 6px 0;color:#fecdd3;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:3px;">Plataforma Estudiantil</p>
-<h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;letter-spacing:0.5px;">DND DERECHO UNLP</h1>
-</td></tr>
-</table>
+                <!-- Mensaje -->
+                <tr>
+                  <td style="color: #94a3b8; font-size: 14px; line-height: 1.6; padding-bottom: 32px; text-align: center;">
+                    Recibimos una solicitud para restablecer la contraseña de tu cuenta en la plataforma estudiantil de DND Derecho. Para proceder, presioná el botón de abajo:
+                  </td>
+                </tr>
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr><td style="padding:40px 36px;text-align:center;">
+                <!-- Botón de Acción -->
+                <tr>
+                  <td align="center" style="padding-bottom: 32px;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="border-radius: 12px; background: linear-gradient(135deg, #be123c 0%, #9f1239 100%); box-shadow: 0 4px 12px rgba(190, 18, 60, 0.3);">
+                          <a href="${actionLink}" target="_blank" style="display: inline-block; padding: 14px 32px; color: #ffffff; font-size: 13px; font-weight: bold; text-decoration: none; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            Restablecer Contraseña
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
 
-<table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 28px auto;">
-<tr><td width="64" height="64" style="background-color:#1e3a5f;border-radius:50%;text-align:center;vertical-align:middle;font-size:28px;line-height:64px;">&#128274;</td></tr>
-</table>
+                <!-- Enlace alternativo -->
+                <tr>
+                  <td style="color: #475569; font-size: 11px; line-height: 1.5; text-align: center;">
+                    Si el botón no funciona, podés copiar y pegar el siguiente enlace en tu navegador:
+                    <div style="margin-top: 10px; word-break: break-all; color: #be123c; font-family: monospace; font-size: 11px; padding: 10px; background-color: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; select-all: all;">
+                      ${actionLink}
+                    </div>
+                  </td>
+                </tr>
+              </table>
 
-<h2 style="margin:0 0 14px 0;color:#f1f5f9;font-size:20px;font-weight:700;">Restablecer tu contraseña</h2>
-<p style="margin:0 0 32px 0;color:#94a3b8;font-size:14px;line-height:1.7;">
-Para restablecer tu contraseña y acceder nuevamente a tu cuenta de alumno, hace clic en el boton de abajo.
-</p>
+            </td>
+          </tr>
 
-<table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 32px auto;">
-<tr><td bgcolor="#be123c" style="border-radius:10px;">
-<a href="${actionLink}" target="_blank" style="display:inline-block;padding:15px 40px;color:#ffffff;font-size:15px;font-weight:800;text-decoration:none;border-radius:10px;">
-Restablecer Contraseña
-</a>
-</td></tr>
-</table>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 20px 0; text-align: center;">
+              <p style="margin: 0; color: #334155; font-size: 11px;">Agrupación Estudiantil <strong style="color: #475569;">Defendamos Nuestro Derecho</strong></p>
+              <p style="margin: 6px 0 0 0; color: #334155; font-size: 11px;">Si no solicitaste este cambio, podés ignorar este correo de forma segura.</p>
+            </td>
+          </tr>
 
-<p style="margin:0 0 8px 0;color:#475569;font-size:11px;">Si el boton no funciona, copia y pega este enlace en tu navegador:</p>
-<p style="margin:0;"><a href="${actionLink}" style="color:#60a5fa;font-size:11px;word-break:break-all;">${actionLink}</a></p>
-
-</td></tr>
-</table>
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr><td style="background-color:#0f172a;padding:20px 36px;border-top:1px solid #1e293b;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td width="50%" style="vertical-align:top;padding-right:12px;">
-<p style="margin:0 0 4px 0;color:#64748b;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">Acceso a</p>
-<p style="margin:0;color:#94a3b8;font-size:12px;">Plan de estudios, Apuntes, Permutas, Calendario</p>
-</td>
-<td width="50%" style="vertical-align:top;padding-left:12px;border-left:1px solid #1e293b;">
-<p style="margin:0 0 4px 0;color:#64748b;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">Facultad</p>
-<p style="margin:0;color:#94a3b8;font-size:12px;">Cs. Juridicas y Sociales, UNLP</p>
-</td>
-</tr>
-</table>
-</td></tr>
-</table>
-
-</td></tr>
-
-<tr><td style="padding:20px 0;text-align:center;">
-<p style="margin:0;color:#334155;font-size:11px;">Agrupacion Estudiantil <strong style="color:#475569;">Defendamos Nuestro Derecho</strong></p>
-<p style="margin:6px 0 0 0;color:#334155;font-size:11px;">Si no solicitaste este cambio, podes ignorar este correo de forma segura.</p>
-</td></tr>
-
-</table>
-</td></tr>
-</table>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
     `;
 
     // Enviar el correo usando la API de Resend
-    if (RESEND_API_KEY) {
+    if (resendApiKey) {
       const resendRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${RESEND_API_KEY}`,
+          Authorization: `Bearer ${resendApiKey}`,
         },
         body: JSON.stringify({
           from: "DND Derecho <contacto@dndjursoc.com.ar>",
@@ -152,7 +181,8 @@ Restablecer Contraseña
         throw new Error(`Resend error: ${errorText}`);
       }
     } else {
-      console.log("MOCK RESET EMAIL SENT (No RESEND_API_KEY):", actionLink);
+      console.warn("send-recovery-email: RESEND_API_KEY no configurada. MOCK Link generado:");
+      console.log(actionLink);
     }
 
     return new Response(JSON.stringify({ success: true }), {

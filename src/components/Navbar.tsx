@@ -7,10 +7,11 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 
-import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot } from "lucide-react";
+import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users } from "lucide-react";
 
 const publicLinks = [
   { to: "/",                label: "Inicio",    icon: Home },
+  { to: "/quienes-somos",   label: "Quiénes Somos", icon: Users },
   { to: "/noticias",        label: "Noticias",  icon: Newspaper },
   { to: "/apuntes",         label: "Apuntes",   icon: BookOpen },
   { to: "/asistente",       label: "Asistente DND", icon: Bot },

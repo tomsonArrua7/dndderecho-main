@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 
-// Asume el uso de un proveedor de emails transaccionales como Resend, SendGrid, etc.
-// En este ejemplo usamos un mock o una llamada fetch a una API tipo Resend.
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -46,6 +42,24 @@ serve(async (req) => {
 
     const subject = `¡Hay un Match para tu permuta de ${permutaA.materias.nombre}! 🎉`;
 
+    // 1. Obtener API Key de Resend (entorno o app_settings)
+    let resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.log("send-match-email: Buscando resend_api_key en app_settings...");
+      try {
+        const { data: settings } = await supabaseClient
+          .from("app_settings")
+          .select("resend_api_key")
+          .limit(1)
+          .maybeSingle();
+        if (settings?.resend_api_key) {
+          resendApiKey = settings.resend_api_key;
+        }
+      } catch (err: any) {
+        console.warn("send-match-email: Error al leer app_settings:", err.message);
+      }
+    }
+
     const sendEmail = async (to: string, recipientName: string, partnerName: string, partnerPhone: string, materia: string) => {
       const waLink = `https://wa.me/${partnerPhone.replace(/\D/g, "")}`;
       
@@ -78,12 +92,12 @@ Contactar por WhatsApp
 </td></tr></table></td></tr></table>
 </body></html>`;
 
-      if (RESEND_API_KEY) {
-        await fetch("https://api.resend.com/emails", {
+      if (resendApiKey) {
+        const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${RESEND_API_KEY}`,
+            Authorization: `Bearer ${resendApiKey}`,
           },
           body: JSON.stringify({
             from: "DND Permutero <contacto@dndjursoc.com.ar>",
@@ -92,8 +106,14 @@ Contactar por WhatsApp
             html,
           }),
         });
+
+        if (!res.ok) {
+          console.error(`send-match-email: Error de Resend al enviar a ${to}:`, await res.text());
+        } else {
+          console.log(`send-match-email: Correo de Match enviado exitosamente a ${to}`);
+        }
       } else {
-        console.log(`MOCK EMAIL SENT TO: ${to}`);
+        console.warn(`send-match-email: RESEND_API_KEY no configurada. MOCK email no enviado a ${to}:`);
         console.log(html);
       }
     };
@@ -109,6 +129,7 @@ Contactar por WhatsApp
       status: 200,
     });
   } catch (error) {
+    console.error("send-match-email: Error fatal:", error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,

@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { HeroActions } from "@/components/HeroActions";
-import { AboutUs } from "@/components/AboutUs";
 import { motion, AnimatePresence } from "framer-motion";
 import { YouTubeSection } from "@/components/YouTubeSection";
 
@@ -258,17 +257,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════
-          ABOUT US
-          ════════════════════════════════════════════════════════════ */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 1.5 }}
-        viewport={{ once: true }}
-      >
-        <AboutUs />
-      </motion.div>
     </div>
   );
 };

@@ -29,6 +29,7 @@ import Servicios      from "./pages/Servicios";
 import PanelEscritor   from "./pages/PanelEscritor";
 import AsistenteDND   from "./pages/AsistenteDND";
 import Ingresantes   from "./pages/Ingresantes";
+import QuienesSomos   from "./pages/QuienesSomos";
 
 const queryClient = new QueryClient();
 
@@ -132,6 +133,7 @@ const AppContent = () => {
         <Route path="/auth/recovery" element={<Auth />} />
         <Route element={<Layout />}>
           <Route path="/ingresantes" element={<Ingresantes />} />
+          <Route path="/quienes-somos" element={<QuienesSomos />} />
         </Route>
         <Route path="*" element={<Proximamente />} />
       </Routes>
@@ -151,6 +153,7 @@ const AppContent = () => {
         <Route path="/servicios"       element={<Servicios />} />
         <Route path="/asistente"       element={<AsistenteDND />} />
         <Route path="/ingresantes"     element={<Ingresantes />} />
+        <Route path="/quienes-somos"   element={<QuienesSomos />} />
 
         {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
         <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />

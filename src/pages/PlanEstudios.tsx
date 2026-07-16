@@ -25,6 +25,8 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/context/AppContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { PLANES } from "@/data/planEstudiosData";
+import { MapaNodos } from "@/components/MapaNodos";
 
 type PlanId = "plan5" | "plan6";
 
@@ -347,6 +349,7 @@ const PlanEstudios = () => {
   const [estados, setEstados] = useState<Record<string, EstadoMateria>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<"grid" | "map">("grid");
 
   // Modal PPS
   const [isPPSDialogOpen, setIsPPSDialogOpen] = useState(false);
@@ -362,6 +365,32 @@ const PlanEstudios = () => {
   const currentTotal = useMemo(() => planId === "plan6" ? TOTAL_MATERIAS_PLAN6 : TOTAL_MATERIAS_PLAN5, [planId]);
   const currentCalcPct = useMemo(() => planId === "plan6" ? calcularPorcentaje : calcularPorcentajePlan5, [planId]);
   const currentGetEstado = useMemo(() => planId === "plan6" ? getEstadoVisual : getEstadoVisualPlan5, [planId]);
+
+  // Mapa de Nodos / Correlativas
+  const selectedPlanData = useMemo(() => {
+    if (!planId) return null;
+    return PLANES.find(p => p.id === planId) || null;
+  }, [planId]);
+
+  const nodosEstados = useMemo(() => {
+    const result: Record<string, any> = {};
+    if (!planId || !selectedPlanData) return result;
+    
+    selectedPlanData.materias.forEach(nodeMateria => {
+      const officialMateria = currentMaterias.find(m => {
+        const normNodeName = nodeMateria.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+        const normOfficialName = m.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+        return normOfficialName.includes(normNodeName) || normNodeName.includes(normOfficialName);
+      });
+      if (officialMateria) {
+        const dbState = estados[officialMateria.id] || "pendiente";
+        result[nodeMateria.id] = dbState;
+      } else {
+        result[nodeMateria.id] = "pendiente";
+      }
+    });
+    return result;
+  }, [planId, selectedPlanData, currentMaterias, estados]);
 
   useEffect(() => {
     if (!uid || !planId) {
@@ -492,6 +521,25 @@ const PlanEstudios = () => {
       setSaving(false);
     }
   }, [uid, planId, estados]);
+
+  const handleToggleMapaEstado = useCallback((nodeMateriaId: string) => {
+    if (!planId || !selectedPlanData) return;
+    
+    const nodeMateria = selectedPlanData.materias.find(m => m.id === nodeMateriaId);
+    if (!nodeMateria) return;
+    
+    const officialMateria = currentMaterias.find(m => {
+      const normNodeName = nodeMateria.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+      const normOfficialName = m.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+      return normOfficialName.includes(normNodeName) || normNodeName.includes(normOfficialName);
+    });
+    
+    if (officialMateria) {
+      handleToggle(officialMateria.id);
+    } else {
+      toast.error(`No se pudo sincronizar la materia: ${nodeMateria.nombre}`);
+    }
+  }, [planId, selectedPlanData, currentMaterias, handleToggle]);
 
   const stats = useMemo(() => {
     const aprobadas = currentMaterias.filter(m => estados[m.id] === "aprobada").length;
@@ -629,37 +677,51 @@ const PlanEstudios = () => {
           )}
         </AnimatePresence>
 
-        {/* Columnar Grid por Años */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 items-start mb-16">
-          {[1, 2, 3, 4, 5].map(year => {
-            // Materias regulares de este año
-            const regularMaterias = currentMaterias.filter(m => m.anio === year && m.tipo === "regular");
-            // Materias especiales de este año (idiomas, seminarios)
-            const extraMaterias = currentMaterias.filter(m => m.anio === year && (m.tipo === "idioma" || m.tipo === "seminario"));
+        {/* Switch Vista de Cuadrícula / Mapa de Correlativas */}
+        <div className="flex items-center gap-2 mb-8 bg-white/5 border border-white/10 p-1 rounded-xl w-fit">
+          <button
+            onClick={() => setActiveTab("grid")}
+            className={cn(
+              "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
+              activeTab === "grid" 
+                ? "bg-accent text-white shadow-md shadow-accent-glow" 
+                : "text-white/40 hover:text-white/80"
+            )}
+          >
+            Vista Cuadrícula
+          </button>
+          <button
+            onClick={() => setActiveTab("map")}
+            className={cn(
+              "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer",
+              activeTab === "map" 
+                ? "bg-accent text-white shadow-md shadow-accent-glow" 
+                : "text-white/40 hover:text-white/80"
+            )}
+          >
+            Mapa de Correlativas (Interactivo)
+          </button>
+        </div>
 
-            return (
-              <div key={year} className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-5 space-y-6 shadow-card-dnd">
-                <div className="flex items-center gap-2 mb-2 pb-4 border-b border-white/5">
-                  <span className="font-serif text-lg font-bold text-white/50">{year}º</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Año de Cursada</span>
-                </div>
-                
-                <div className="flex flex-col gap-4">
-                  {regularMaterias.map(m => (
-                    <MateriaCard 
-                      key={m.id} 
-                      materia={m} 
-                      estado={currentGetEstado(m, estados)} 
-                      allEstados={estados}
-                      onToggle={handleToggle} 
-                      planMaterias={currentMaterias}
-                    />
-                  ))}
+        {activeTab === "grid" ? (
+          <>
+            {/* Columnar Grid por Años */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 items-start mb-16">
+              {[1, 2, 3, 4, 5].map(year => {
+                // Materias regulares de este año
+                const regularMaterias = currentMaterias.filter(m => m.anio === year && m.tipo === "regular");
+                // Materias especiales de este año (idiomas, seminarios)
+                const extraMaterias = currentMaterias.filter(m => m.anio === year && (m.tipo === "idioma" || m.tipo === "seminario"));
 
-                  {extraMaterias.length > 0 && (
-                    <div className="pt-4 mt-2 border-t border-white/5 space-y-4">
-                      <div className="text-[8px] font-bold uppercase tracking-widest text-white/20 mb-2">Talleres & Seminarios</div>
-                      {extraMaterias.map(m => (
+                return (
+                  <div key={year} className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-5 space-y-6 shadow-card-dnd">
+                    <div className="flex items-center gap-2 mb-2 pb-4 border-b border-white/5">
+                      <span className="font-serif text-lg font-bold text-white/50">{year}º</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Año de Cursada</span>
+                    </div>
+                    
+                    <div className="flex flex-col gap-4">
+                      {regularMaterias.map(m => (
                         <MateriaCard 
                           key={m.id} 
                           materia={m} 
@@ -669,36 +731,63 @@ const PlanEstudios = () => {
                           planMaterias={currentMaterias}
                         />
                       ))}
+
+                      {extraMaterias.length > 0 && (
+                        <div className="pt-4 mt-2 border-t border-white/5 space-y-4">
+                          <div className="text-[8px] font-bold uppercase tracking-widest text-white/20 mb-2">Talleres & Seminarios</div>
+                          {extraMaterias.map(m => (
+                            <MateriaCard 
+                              key={m.id} 
+                              materia={m} 
+                              estado={currentGetEstado(m, estados)} 
+                              allEstados={estados}
+                              onToggle={handleToggle} 
+                              planMaterias={currentMaterias}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Sección Especial: Formación Práctica (PPS y Adaptaciones) */}
+            {planId === "plan6" && currentMaterias.some(m => m.tipo === "practica") && (
+              <div className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-8 shadow-card-dnd mb-20">
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+                  <FileText size={18} className="text-red-500" />
+                  <h2 className="font-serif text-xl font-bold text-red-100/90">Área de Formación Práctica</h2>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Trayecto de Adaptación Profesional</span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {currentMaterias.filter(m => m.tipo === "practica").map(m => (
+                    <MateriaCard 
+                      key={m.id} 
+                      materia={m} 
+                      estado={currentGetEstado(m, estados)} 
+                      allEstados={estados}
+                      onToggle={handleToggle} 
+                      planMaterias={currentMaterias}
+                    />
+                  ))}
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Sección Especial: Formación Práctica (PPS y Adaptaciones) */}
-        {planId === "plan6" && currentMaterias.some(m => m.tipo === "practica") && (
-          <div className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-8 shadow-card-dnd mb-20">
-            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
-              <FileText size={18} className="text-red-500" />
-              <h2 className="font-serif text-xl font-bold text-red-100/90">Área de Formación Práctica</h2>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Trayecto de Adaptación Profesional</span>
+            )}
+          </>
+        ) : (
+          selectedPlanData && (
+            <div className="mb-20">
+              <MapaNodos 
+                plan={selectedPlanData} 
+                estados={nodosEstados} 
+                onCycleEstado={handleToggleMapaEstado} 
+                saving={saving} 
+              />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {currentMaterias.filter(m => m.tipo === "practica").map(m => (
-                <MateriaCard 
-                  key={m.id} 
-                  materia={m} 
-                  estado={currentGetEstado(m, estados)} 
-                  allEstados={estados}
-                  onToggle={handleToggle} 
-                  planMaterias={currentMaterias}
-                />
-              ))}
-            </div>
-          </div>
+          )
         )}
       </div>
 

@@ -1,15 +1,15 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { MateriaNode, EstadoMateria, PlanData, TIPO_CONFIG } from "@/data/planEstudiosData";
 import { cn } from "@/lib/utils";
-import { Check, BookOpen, Clock, Maximize2, Minimize2 } from "lucide-react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { Check, BookOpen, Clock, Maximize2, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 // ── Layout constants ──────────────────────────────────────────────────
-const NODE_W = 160;
-const NODE_H = 72;
-const GAP_X  = 52;
-const GAP_Y  = 64;
-const PAD    = 24;
+const NODE_W = 180;
+const NODE_H = 76;
+const GAP_X  = 64;
+const GAP_Y  = 68;
+const PAD    = 32;
 
 function getGridSize(materias: MateriaNode[]) {
   const maxCol = Math.max(...materias.map(m => m.col));
@@ -41,41 +41,14 @@ function buildArrowPath(from: MateriaNode, to: MateriaNode): string {
   const fy = f.y + NODE_H / 2;
   const tx = t.x;
   const ty = t.y - NODE_H / 2;
+  
+  // Curva bezier suave de arriba a abajo
   const cy1 = fy + (ty - fy) * 0.4;
   const cy2 = ty - (ty - fy) * 0.4;
   return `M ${fx} ${fy} C ${fx} ${cy1}, ${tx} ${cy2}, ${tx} ${ty}`;
 }
 
-type ArrowState = "inactive" | "unlocked" | "active";
-
-function arrowColour(state: ArrowState): string {
-  switch (state) {
-    case "active":   return "#22d3ee";
-    case "unlocked": return "#1d4ed8";
-    default:         return "hsl(222 47% 22%)";
-  }
-}
-
-function nodeBg(estado: EstadoMateria, habilitada: boolean): string {
-  if (estado === "aprobada")  return "#0f2c5e";
-  if (estado === "cursando")  return "#1a0a0a";
-  if (habilitada)             return "#0c1f44";
-  return "#0c1627";
-}
-
-function nodeBorder(estado: EstadoMateria, habilitada: boolean): string {
-  if (estado === "aprobada")  return "#22d3ee";
-  if (estado === "cursando")  return "#ef4444";
-  if (habilitada)             return "#3b82f6";
-  return "hsl(222 47% 22%)";
-}
-
-function nodeTextColor(estado: EstadoMateria, habilitada: boolean): string {
-  if (estado === "aprobada")  return "#7dd3fc";
-  if (estado === "cursando")  return "#fca5a5";
-  if (habilitada)             return "#e0f2fe";
-  return "hsl(215 20% 45%)";
-}
+type ConnectionState = "normal" | "previa" | "posterior" | "hidden";
 
 interface MapaNodosProps {
   plan: PlanData;
@@ -91,6 +64,9 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
   const [scale, setScale] = useState(1);
   const constraintsRef = useRef(null);
 
+  // Hover states for interactive highlighting
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+
   useLayoutEffect(() => {
     const update = () => {
       if (!containerRef.current) return;
@@ -104,6 +80,7 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
     return () => obs.disconnect();
   }, [width]);
 
+  // Habilitada logic
   const habilitadaMap = useCallback((): Record<string, boolean> => {
     const result: Record<string, boolean> = {};
     materias.forEach(m => {
@@ -112,18 +89,32 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
     return result;
   }, [materias, estados])();
 
-  const arrowStateMap = useCallback((): Record<string, ArrowState> => {
-    const result: Record<string, ArrowState> = {};
-    conexiones.forEach(c => {
-      const key = `${c.from}→${c.to}`;
-      const fromAprobada = estados[c.from] === "aprobada";
-      const toHabilitada = habilitadaMap[c.to];
-      if (fromAprobada && toHabilitada) result[key] = "active";
-      else if (fromAprobada)            result[key] = "unlocked";
-      else                              result[key] = "inactive";
-    });
-    return result;
-  }, [conexiones, estados, habilitadaMap])();
+  // Highlight relationships for hovered node
+  const preReqsOfHovered = useMemo(() => {
+    if (!hoveredNodeId) return new Set<string>();
+    const node = materias.find(m => m.id === hoveredNodeId);
+    return new Set<string>(node?.prereqs || []);
+  }, [hoveredNodeId, materias]);
+
+  const postReqsOfHovered = useMemo(() => {
+    if (!hoveredNodeId) return new Set<string>();
+    const posts = conexiones
+      .filter(c => c.from === hoveredNodeId)
+      .map(c => c.to);
+    return new Set<string>(posts);
+  }, [hoveredNodeId, conexiones]);
+
+  const isNodeRelated = useCallback((id: string): boolean => {
+    if (!hoveredNodeId) return true;
+    return id === hoveredNodeId || preReqsOfHovered.has(id) || postReqsOfHovered.has(id);
+  }, [hoveredNodeId, preReqsOfHovered, postReqsOfHovered]);
+
+  const getConnectionState = useCallback((fromId: string, toId: string): ConnectionState => {
+    if (!hoveredNodeId) return "normal";
+    if (hoveredNodeId === fromId && postReqsOfHovered.has(toId)) return "posterior";
+    if (hoveredNodeId === toId && preReqsOfHovered.has(fromId)) return "previa";
+    return "hidden";
+  }, [hoveredNodeId, preReqsOfHovered, postReqsOfHovered]);
 
   const handleClick = (id: string) => {
     if (saving) return;
@@ -135,7 +126,7 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
   return (
     <div 
       ref={containerRef} 
-      className="w-full h-full min-h-[600px] overflow-hidden cursor-grab active:cursor-grabbing relative bg-[hsl(222_47%_4%)] rounded-2xl border border-white/5"
+      className="w-full h-[620px] overflow-hidden cursor-grab active:cursor-grabbing relative bg-slate-950 dark:bg-[hsl(222_47%_4%)] rounded-3xl border border-slate-200 dark:border-white/5 shadow-inner"
     >
       <div ref={constraintsRef} className="absolute inset-0 pointer-events-none" />
       
@@ -148,10 +139,11 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
           width,
           height,
           transformOrigin: "top left",
+          scale,
         }}
         className="relative"
       >
-        {/* Year labels */}
+        {/* Year dividers & Labels */}
         {anioLabels.map(anio => {
           const anioMats = materias.filter(m => m.anio === anio);
           const minRow = Math.min(...anioMats.map(m => m.row));
@@ -164,38 +156,45 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
                 left: 0,
                 top: y,
                 width: "100%",
-                borderTop: "1px solid hsl(222 47% 12%)",
-                paddingTop: 4,
-                paddingLeft: 4,
+                borderTop: "1px dashed rgba(226, 232, 240, 0.1)",
+                paddingTop: 6,
+                paddingLeft: 8,
                 pointerEvents: "none",
                 zIndex: 0,
               }}
             >
-              <span className="text-[10px] font-bold tracking-widest text-white/20 uppercase">
-                {anio}º Año
+              <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 dark:text-white/20 uppercase">
+                {anio}º Año de Cursada
               </span>
             </div>
           );
         })}
 
-        {/* Arrows */}
+        {/* Connections SVG */}
         <svg
           width={width}
           height={height}
           style={{ position: "absolute", top: 0, left: 0, zIndex: 1, pointerEvents: "none" }}
         >
           <defs>
-            <marker id="arrow-inactive" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L8,3 z" fill="hsl(222 47% 22%)" />
+            {/* Markers for Arrowheads */}
+            <marker id="arrow-normal" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="rgba(148, 163, 184, 0.15)" />
             </marker>
-            <marker id="arrow-unlocked" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L8,3 z" fill="#1d4ed8" />
+            <marker id="arrow-previa" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L7,3.5 z" fill="#f59e0b" />
             </marker>
-            <marker id="arrow-active" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L8,3 z" fill="#22d3ee" />
+            <marker id="arrow-posterior" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L7,3.5 z" fill="#10b981" />
             </marker>
-            <filter id="glow-cyan">
-              <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+
+            {/* Glow filters */}
+            <filter id="glow-previa">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+              <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+            <filter id="glow-posterior">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
               <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
             </filter>
           </defs>
@@ -205,42 +204,105 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
             const toM   = materias.find(m => m.id === c.to);
             if (!fromM || !toM) return null;
             const key   = `${c.from}→${c.to}`;
-            const state = arrowStateMap[key] || "inactive";
-            const color = arrowColour(state);
-            const path  = buildArrowPath(fromM, toM);
+            const connState = getConnectionState(c.from, c.to);
+
+            let strokeColor = "rgba(148, 163, 184, 0.12)";
+            let strokeWidth = 1.5;
+            let filter = undefined;
+            let opacity = 0.5;
+
+            if (hoveredNodeId) {
+              if (connState === "previa") {
+                strokeColor = "#f59e0b"; // Orange (requires)
+                strokeWidth = 3;
+                filter = "url(#glow-previa)";
+                opacity = 1.0;
+              } else if (connState === "posterior") {
+                strokeColor = "#10b981"; // Green (unlocks)
+                strokeWidth = 3;
+                filter = "url(#glow-posterior)";
+                opacity = 1.0;
+              } else {
+                opacity = 0.05; // Hidden/unrelated
+              }
+            } else {
+              // Normal state connections
+              const fromAprobada = estados[c.from] === "aprobada";
+              if (fromAprobada) {
+                strokeColor = "rgba(59, 130, 246, 0.4)";
+                strokeWidth = 1.8;
+                opacity = 0.8;
+              }
+            }
+
+            const path = buildArrowPath(fromM, toM);
 
             return (
               <path
                 key={key}
                 d={path}
                 fill="none"
-                stroke={color}
-                strokeWidth={state === "active" ? 2.5 : 1.5}
-                strokeDasharray={state === "inactive" ? "5,4" : undefined}
-                markerEnd={`url(#arrow-${state})`}
-                filter={state === "active" ? "url(#glow-cyan)" : undefined}
-                opacity={state === "inactive" ? 0.4 : 1}
-                className="transition-colors duration-300"
+                stroke={strokeColor}
+                strokeWidth={strokeWidth}
+                markerEnd={`url(#arrow-${connState})`}
+                filter={filter}
+                opacity={opacity}
+                className="transition-all duration-300"
               />
             );
           })}
         </svg>
 
-        {/* Nodes */}
+        {/* Subject Node Cards */}
         {materias.map(m => {
           const { x, y } = nodeTopLeft(m);
           const estado   = estados[m.id] || "pendiente";
           const hab      = habilitadaMap[m.id];
-          const bg       = nodeBg(estado, hab);
-          const border   = nodeBorder(estado, hab);
-          const textCol  = nodeTextColor(estado, hab);
           const tipoConf = TIPO_CONFIG[m.tipo];
           const isBlocked = !hab && estado === "pendiente";
+          
+          const isHovered = hoveredNodeId === m.id;
+          const isRelated = isNodeRelated(m.id);
+
+          // Interactive border color based on relationship
+          let borderStyle = "border-slate-200 dark:border-white/10";
+          let nodeOpacity = 1.0;
+          let shadow = "0 4px 6px -1px rgba(0,0,0,0.1)";
+
+          if (hoveredNodeId) {
+            if (!isRelated) {
+              nodeOpacity = 0.15;
+            } else if (isHovered) {
+              borderStyle = "border-accent dark:border-accent ring-2 ring-accent/50 scale-[1.04]";
+              shadow = "0 10px 15px -3px rgba(190,18,60,0.3)";
+            } else if (preReqsOfHovered.has(m.id)) {
+              borderStyle = "border-amber-500 ring-2 ring-amber-500/30"; // Amber glow for prerequisites
+              shadow = "0 10px 15px -3px rgba(245,158,11,0.2)";
+            } else if (postReqsOfHovered.has(m.id)) {
+              borderStyle = "border-emerald-500 ring-2 ring-emerald-500/30"; // Emerald glow for unlocked subjects
+              shadow = "0 10px 15px -3px rgba(16,185,129,0.2)";
+            }
+          } else {
+            // Normal styling
+            if (estado === "aprobada") {
+              borderStyle = "border-emerald-500 dark:border-emerald-500/60 bg-emerald-50/10 dark:bg-emerald-950/20";
+              shadow = "0 0 12px 1px rgba(16,185,129,0.15)";
+            } else if (estado === "cursando") {
+              borderStyle = "border-blue-500 dark:border-blue-500/60 bg-blue-50/10 dark:bg-blue-950/20";
+              shadow = "0 0 12px 1px rgba(59,130,246,0.15)";
+            } else if (hab) {
+              borderStyle = "border-slate-300 dark:border-white/20";
+            } else {
+              borderStyle = "border-slate-200 dark:border-white/5 opacity-40";
+            }
+          }
 
           return (
             <motion.button
               key={m.id}
-              whileTap={{ scale: 0.96 }}
+              whileTap={{ scale: 0.97 }}
+              onMouseEnter={() => setHoveredNodeId(m.id)}
+              onMouseLeave={() => setHoveredNodeId(null)}
               onClick={() => handleClick(m.id)}
               style={{
                 position:      "absolute",
@@ -248,49 +310,48 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
                 top:           y,
                 width:         NODE_W,
                 height:        NODE_H,
-                background:    bg,
-                border:        `2px solid ${border}`,
-                borderRadius:  12,
-                padding:       "8px 12px",
-                cursor:        isBlocked ? "not-allowed" : "pointer",
-                display:       "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems:    "flex-start",
-                zIndex:        2,
-                boxShadow: estado === "aprobada"
-                  ? `0 0 15px 2px rgba(34,211,238,0.2), 0 4px 12px rgba(0,0,0,0.5)`
-                  : estado === "cursando"
-                  ? `0 0 15px 2px rgba(239,68,68,0.25), 0 4px 12px rgba(0,0,0,0.5)`
-                  : hab
-                  ? `0 0 10px 1px rgba(59,130,246,0.15), 0 4px 12px rgba(0,0,0,0.5)`
-                  : `0 2px 8px rgba(0,0,0,0.3)`,
-                opacity: isBlocked ? 0.5 : 1,
+                opacity:       nodeOpacity,
+                zIndex:        isHovered ? 10 : 2,
               }}
-              className="group select-none"
+              className={cn(
+                "rounded-2xl p-3 flex flex-col justify-between items-start text-left transition-all duration-300 shadow-md cursor-pointer bg-white dark:bg-slate-900 border",
+                borderStyle
+              )}
             >
-              <div className="flex w-full justify-between items-center">
-                <span style={{
-                  fontSize: 8,
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  color: tipoConf.border,
-                  background: `${tipoConf.color}20`,
-                  border: `1px solid ${tipoConf.border}40`,
-                  borderRadius: 4,
-                  padding: "1px 4px",
-                }}>
+              {/* Top Row: Type & Status Badge */}
+              <div className="flex w-full justify-between items-center text-[8px] font-black uppercase tracking-wider">
+                <span 
+                  style={{
+                    color: tipoConf.border,
+                    background: `${tipoConf.color}15`,
+                    border: `1px solid ${tipoConf.border}25`,
+                  }}
+                  className="px-1.5 py-0.5 rounded"
+                >
                   {tipoConf.label}
                 </span>
 
-                <span className="flex items-center gap-1">
-                  {estado === "aprobada" && <Check size={12} strokeWidth={4} className="text-cyan-400" />}
-                  {estado === "cursando" && <BookOpen size={12} className="text-red-500" />}
-                  {estado === "pendiente" && hab && <Clock size={10} className="text-blue-400" />}
+                <span className="flex items-center gap-1.5 text-slate-400">
+                  {estado === "aprobada" && (
+                    <span className="flex items-center gap-0.5 text-emerald-500 font-bold">
+                      <Check size={11} strokeWidth={4} /> APROBADA
+                    </span>
+                  )}
+                  {estado === "cursando" && (
+                    <span className="flex items-center gap-0.5 text-blue-500 font-bold animate-pulse">
+                      <BookOpen size={11} /> CURSANDO
+                    </span>
+                  )}
+                  {estado === "pendiente" && hab && (
+                    <span className="flex items-center gap-0.5 text-indigo-500 dark:text-indigo-400 font-bold">
+                      <Clock size={10} /> HABILITADA
+                    </span>
+                  )}
                 </span>
               </div>
 
-              <span className="text-[11px] font-bold text-left leading-tight line-clamp-2" style={{ color: textCol }}>
+              {/* Subject Title */}
+              <span className="text-[10.5px] font-bold text-slate-800 dark:text-slate-100 leading-snug line-clamp-2 w-full mt-1.5">
                 {m.nombre}
               </span>
             </motion.button>
@@ -298,14 +359,38 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
         })}
       </motion.div>
 
-      {/* Instructions Overlay */}
-      <div className="absolute bottom-4 left-4 p-3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 pointer-events-none">
-        <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] flex items-center gap-2">
-          <Maximize2 size={10} /> Arrastrá para navegar el mapa
+      {/* Interactive Legend Overlays */}
+      <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-white/70 dark:bg-black/60 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-white/10 pointer-events-none">
+        
+        {/* Legends */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-wider text-slate-650 dark:text-white/60">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Aprobada
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Cursando
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" /> Habilitada
+          </div>
+          {hoveredNodeId && (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-0.5 bg-amber-500 block" /> Requisito Previo (Necesitás)
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-0.5 bg-emerald-500 block" /> Habilita Posterior (Abre)
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Navigation Note */}
+        <p className="text-[9px] font-black uppercase tracking-[0.25em] text-accent animate-pulse">
+          🔍 Arrastrá el panel para navegar • Pasa el mouse para correlativas
         </p>
       </div>
     </div>
   );
 };
-
 export default MapaNodos;
