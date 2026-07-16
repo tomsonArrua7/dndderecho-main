@@ -366,31 +366,45 @@ const PlanEstudios = () => {
   const currentCalcPct = useMemo(() => planId === "plan6" ? calcularPorcentaje : calcularPorcentajePlan5, [planId]);
   const currentGetEstado = useMemo(() => planId === "plan6" ? getEstadoVisual : getEstadoVisualPlan5, [planId]);
 
-  // Mapa de Nodos / Correlativas
+  // Mapa de Nodos / Correlativas construído dinámicamente con códigos oficiales y correlatividades exactas
   const selectedPlanData = useMemo(() => {
     if (!planId) return null;
-    return PLANES.find(p => p.id === planId) || null;
-  }, [planId]);
-
-  const nodosEstados = useMemo(() => {
-    const result: Record<string, any> = {};
-    if (!planId || !selectedPlanData) return result;
     
-    selectedPlanData.materias.forEach(nodeMateria => {
-      const officialMateria = currentMaterias.find(m => {
-        const normNodeName = nodeMateria.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
-        const normOfficialName = m.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
-        return normOfficialName.includes(normNodeName) || normNodeName.includes(normOfficialName);
-      });
-      if (officialMateria) {
-        const dbState = estados[officialMateria.id] || "pendiente";
-        result[nodeMateria.id] = dbState;
-      } else {
-        result[nodeMateria.id] = "pendiente";
+    // Agrupar materias por año y asignar columnas dinámicamente
+    const yearCounters: Record<number, number> = {};
+    const nodeMaterias = currentMaterias.map(m => {
+      const year = m.anio;
+      if (yearCounters[year] === undefined) {
+        yearCounters[year] = 0;
       }
+      const col = yearCounters[year];
+      yearCounters[year]++;
+      
+      return {
+        id: m.id,
+        nombre: m.nombreCorto || m.nombre,
+        anio: m.anio,
+        tipo: m.tipo === "idioma" ? "idioma" as any : m.duracion === "anual" ? "anual" as any : "cuatrimestral" as any,
+        col: col,
+        row: m.anio - 1,
+        prereqs: m.requisitos.map(r => r.id)
+      };
     });
-    return result;
-  }, [planId, selectedPlanData, currentMaterias, estados]);
+
+    const connections = currentMaterias.flatMap(m => 
+      m.requisitos.map(r => ({ from: r.id, to: m.id }))
+    );
+
+    return {
+      id: planId,
+      nombre: planId === "plan6" ? "Plan de Estudios Nº 6" : "Plan de Estudios Nº 5",
+      descripcion: "",
+      materias: nodeMaterias,
+      conexiones: connections
+    };
+  }, [planId, currentMaterias]);
+
+  const nodosEstados = estados;
 
   useEffect(() => {
     if (!uid || !planId) {
@@ -523,23 +537,8 @@ const PlanEstudios = () => {
   }, [uid, planId, estados]);
 
   const handleToggleMapaEstado = useCallback((nodeMateriaId: string) => {
-    if (!planId || !selectedPlanData) return;
-    
-    const nodeMateria = selectedPlanData.materias.find(m => m.id === nodeMateriaId);
-    if (!nodeMateria) return;
-    
-    const officialMateria = currentMaterias.find(m => {
-      const normNodeName = nodeMateria.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
-      const normOfficialName = m.nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
-      return normOfficialName.includes(normNodeName) || normNodeName.includes(normOfficialName);
-    });
-    
-    if (officialMateria) {
-      handleToggle(officialMateria.id);
-    } else {
-      toast.error(`No se pudo sincronizar la materia: ${nodeMateria.nombre}`);
-    }
-  }, [planId, selectedPlanData, currentMaterias, handleToggle]);
+    handleToggle(nodeMateriaId);
+  }, [handleToggle]);
 
   const stats = useMemo(() => {
     const aprobadas = currentMaterias.filter(m => estados[m.id] === "aprobada").length;
