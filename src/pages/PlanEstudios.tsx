@@ -384,7 +384,7 @@ const PlanEstudios = () => {
         id: m.id,
         nombre: m.nombreCorto || m.nombre,
         anio: m.anio,
-        tipo: m.tipo === "idioma" ? "idioma" as any : m.duracion === "anual" ? "anual" as any : "cuatrimestral" as any,
+        tipo: m.duracion || "cuatrimestral",
         col: col,
         row: m.anio - 1,
         prereqs: m.requisitos.map(r => r.id)
