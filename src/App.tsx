@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
@@ -8,7 +9,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
 import { AppProvider } from "@/context/AppContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { isSupabaseConfigured } from "@/integrations/supabase/client";
+import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { AlertCircle, ExternalLink, RefreshCw, Loader2 } from "lucide-react";
 import { DndMark } from "@/components/DndMark";
 import Proximamente from "./pages/Proximamente";
@@ -111,8 +112,55 @@ const SupabaseConfigWarning = () => {
 
 const AppContent = () => {
   const { user, profile, loading } = useAuth();
+  const [modoMantenimiento, setModoMantenimiento] = useState(false);
+  const [settingsLoading, setSettingsLoading] = useState(true);
 
-  if (loading) {
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setSettingsLoading(false);
+      return;
+    }
+
+    const fetchSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("app_settings")
+          .select("modo_mantenimiento")
+          .eq("id", 1)
+          .maybeSingle();
+
+        if (data) {
+          setModoMantenimiento(data.modo_mantenimiento);
+        }
+      } catch (err) {
+        console.error("Error loading app settings:", err);
+      } finally {
+        setSettingsLoading(false);
+      }
+    };
+
+    fetchSettings();
+
+    // Subscribe to realtime updates on settings change
+    const channel = supabase
+      .channel("app_settings_realtime")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "app_settings", filter: "id=eq.1" },
+        (payload) => {
+          if (payload.new && typeof payload.new.modo_mantenimiento !== "undefined") {
+            setModoMantenimiento(payload.new.modo_mantenimiento);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  if (loading || settingsLoading) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-primary-deep relative">
         <div className="absolute inset-0 bg-gradient-hero" />
@@ -126,7 +174,8 @@ const AppContent = () => {
 
   const isAdmin = profile?.role === "admin";
 
-  if (!isAdmin) {
+  // Si el modo mantenimiento está activado y el usuario NO es admin, se restringe la navegación.
+  if (modoMantenimiento && !isAdmin) {
     return (
       <Routes>
         <Route path="/auth" element={<Auth />} />
@@ -140,12 +189,13 @@ const AppContent = () => {
     );
   }
 
+  // Si no está en mantenimiento o es admin, acceso completo.
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route path="/"                element={<Index />} />
         <Route path="/auth"            element={<Auth />} />
-        <Route path="/auth/recovery"            element={<Auth />} />
+        <Route path="/auth/recovery"   element={<Auth />} />
         <Route path="/noticias"        element={<Noticias />} />
         <Route path="/apuntes"         element={<Apuntes />} />
         <Route path="/permutero"       element={<Permutero />} />

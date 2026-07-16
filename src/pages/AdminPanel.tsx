@@ -13,7 +13,7 @@ export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
   const [permutas, setPermutas] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
-  const [appSettings, setAppSettings] = useState<{ id: number; permutero_activo: boolean } | null>(null);
+  const [appSettings, setAppSettings] = useState<{ id: number; permutero_activo: boolean; modo_mantenimiento: boolean } | null>(null);
   
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -50,7 +50,7 @@ export default function AdminPanel() {
 
       setPermutas(perms || []);
       setProfiles(profs || []);
-      setAppSettings(settings || { id: 1, permutero_activo: true });
+      setAppSettings(settings || { id: 1, permutero_activo: true, modo_mantenimiento: false });
     } catch (err) {
       console.error("Error loading admin data:", err);
       toast.error("Error al cargar datos del panel.");
@@ -69,6 +69,20 @@ export default function AdminPanel() {
     else {
       setAppSettings({ ...appSettings, permutero_activo: newValue });
       toast.success(newValue ? "Permutero habilitado" : "Permutero deshabilitado");
+    }
+    setUpdating(false);
+  };
+
+  const toggleMantenimiento = async () => {
+    if (!appSettings) return;
+    setUpdating(true);
+    const newValue = !appSettings.modo_mantenimiento;
+    const { error } = await supabase.from("app_settings").update({ modo_mantenimiento: newValue }).eq("id", 1);
+    
+    if (error) toast.error("Error al actualizar modo mantenimiento");
+    else {
+      setAppSettings({ ...appSettings, modo_mantenimiento: newValue });
+      toast.success(newValue ? "Modo Solo Administradores activado" : "Acceso público de estudiantes habilitado");
     }
     setUpdating(false);
   };
@@ -185,6 +199,19 @@ export default function AdminPanel() {
                 {appSettings?.permutero_activo ? "Activo" : "Pausado"}
               </span>
               <Switch checked={appSettings?.permutero_activo} onCheckedChange={togglePermutero} disabled={updating} />
+            </div>
+          </section>
+
+          <section className="p-8 bg-card border rounded-2xl shadow-sm flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold">Modo Solo Administradores (Mantenimiento)</h2>
+              <p className="text-muted-foreground text-sm">Cuando está activo, los estudiantes solo verán la pantalla de próximamente/mantenimiento.</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className={`text-xs font-bold uppercase tracking-widest ${appSettings?.modo_mantenimiento ? "text-amber-500 font-extrabold" : "text-green-500"}`}>
+                {appSettings?.modo_mantenimiento ? "Solo Administradores" : "Acceso Público"}
+              </span>
+              <Switch checked={Boolean(appSettings?.modo_mantenimiento)} onCheckedChange={toggleMantenimiento} disabled={updating} />
             </div>
           </section>
 
