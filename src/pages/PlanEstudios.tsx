@@ -109,13 +109,17 @@ const MateriaCard = ({
   estado, 
   onToggle, 
   allEstados,
-  planMaterias
+  planMaterias,
+  notas,
+  onChangeNota
 }: { 
   materia: Materia; 
   estado: string; 
   onToggle: (id: string) => void;
   allEstados: Record<string, EstadoMateria>;
   planMaterias: Materia[];
+  notas: Record<string, number | null>;
+  onChangeNota: (id: string, value: number | null) => Promise<void>;
 }) => {
   const isAprobada = estado === "aprobada";
   const isHabilitada = estado === "habilitada" || estado.startsWith("horas:");
@@ -193,6 +197,28 @@ const MateriaCard = ({
             {materia.horas} hs
           </span>
         </div>
+
+        {isAprobada && (
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="mt-2 flex items-center justify-between gap-2 pt-2 border-t border-white/5"
+          >
+            <span className="text-[8px] uppercase tracking-wider text-white/40 font-mono">Calificación:</span>
+            <select
+              value={notas[materia.id] || ""}
+              onChange={async (e) => {
+                const val = e.target.value ? parseInt(e.target.value) : null;
+                await onChangeNota(materia.id, val);
+              }}
+              className="bg-white/5 border border-white/10 text-white text-[10px] rounded px-1.5 py-0.5 outline-none focus:border-emerald-500 cursor-pointer font-sans"
+            >
+              <option value="" className="bg-slate-950 text-white/50">-</option>
+              {[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map(num => (
+                <option key={num} value={num} className="bg-slate-950 text-white">{num}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {isPPS && (
           <div className="mt-2 pt-2 border-t border-white/5">
@@ -347,6 +373,7 @@ const PlanEstudios = () => {
     return (localStorage.getItem("dnd_selected_plan") as PlanId | null);
   });
   const [estados, setEstados] = useState<Record<string, EstadoMateria>>({});
+  const [notas, setNotas] = useState<Record<string, number | null>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<"grid" | "map">("grid");
@@ -365,6 +392,18 @@ const PlanEstudios = () => {
   const currentTotal = useMemo(() => planId === "plan6" ? TOTAL_MATERIAS_PLAN6 : TOTAL_MATERIAS_PLAN5, [planId]);
   const currentCalcPct = useMemo(() => planId === "plan6" ? calcularPorcentaje : calcularPorcentajePlan5, [planId]);
   const currentGetEstado = useMemo(() => planId === "plan6" ? getEstadoVisual : getEstadoVisualPlan5, [planId]);
+
+  const average = useMemo(() => {
+    const aprobadasConNota = currentMaterias.filter(m => 
+      estados[m.id] === "aprobada" && 
+      notas[m.id] !== undefined && 
+      notas[m.id] !== null && 
+      notas[m.id] > 0
+    );
+    if (aprobadasConNota.length === 0) return "0.00";
+    const sum = aprobadasConNota.reduce((acc, m) => acc + (notas[m.id] || 0), 0);
+    return (sum / aprobadasConNota.length).toFixed(2);
+  }, [estados, notas, currentMaterias]);
 
   // Mapa de Nodos / Correlativas construído dinámicamente con códigos oficiales y correlatividades exactas
   const selectedPlanData = useMemo(() => {
@@ -417,17 +456,20 @@ const PlanEstudios = () => {
       try {
         const { data, error } = await supabase
           .from("user_plan_progress")
-          .select("materia_id, estado")
+          .select("materia_id, estado, nota")
           .eq("user_id", uid)
           .eq("plan_id", planId);
 
         if (error) throw error;
 
         const estadosMap: Record<string, EstadoMateria> = {};
+        const notasMap: Record<string, number | null> = {};
         (data ?? []).forEach(item => {
           estadosMap[item.materia_id] = item.estado as EstadoMateria;
+          notasMap[item.materia_id] = (item as any).nota !== null ? Number((item as any).nota) : null;
         });
         setEstados(estadosMap);
+        setNotas(notasMap);
       } catch (err) {
         console.error("Error fetching progress:", err);
         toast.error("No se pudo cargar tu progreso de materias.");
@@ -499,6 +541,9 @@ const PlanEstudios = () => {
 
     // Optimistic Update
     setEstados(prev => ({ ...prev, [id]: next }));
+    if (next !== "aprobada") {
+      setNotas(prev => ({ ...prev, [id]: null }));
+    }
     setSaving(true);
 
     try {
@@ -510,6 +555,7 @@ const PlanEstudios = () => {
             plan_id: planId,
             materia_id: id,
             estado: next,
+            nota: next === "aprobada" ? notas[id] || null : null,
             updated_at: new Date().toISOString()
           },
           { onConflict: 'user_id,plan_id,materia_id' }
@@ -534,7 +580,44 @@ const PlanEstudios = () => {
       setEstados(prev => ({ ...prev, [id]: current }));
       setSaving(false);
     }
-  }, [uid, planId, estados]);
+  }, [uid, planId, estados, notas]);
+
+  const handleUpdateNota = useCallback(async (materiaId: string, value: number | null) => {
+    if (!uid || !planId) return;
+
+    const current = notas[materiaId];
+
+    // Optimistic Update
+    setNotas(prev => ({ ...prev, [materiaId]: value }));
+    setSaving(true);
+
+    try {
+      const { error } = await supabase
+        .from("user_plan_progress")
+        .upsert(
+          {
+            user_id: uid,
+            plan_id: planId,
+            materia_id: materiaId,
+            estado: estados[materiaId] || "aprobada",
+            nota: value,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id,plan_id,materia_id' }
+        );
+
+      if (error) throw error;
+      setSaving(false);
+      toast.success("Nota guardada", {
+        style: { background: "#062f1c", color: "#34d399", border: "1px solid #10b981" }
+      });
+    } catch (err) {
+      console.error("Error saving grade:", err);
+      toast.error("Error al guardar la nota. Intenta de nuevo.");
+      setNotas(prev => ({ ...prev, [materiaId]: current }));
+      setSaving(false);
+    }
+  }, [uid, planId, estados, notas]);
 
   const handleToggleMapaEstado = useCallback((nodeMateriaId: string) => {
     handleToggle(nodeMateriaId);
@@ -646,6 +729,7 @@ const PlanEstudios = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-6">
+            <StatPill value={parseFloat(average) > 0 ? average : "-"} label="Promedio" colorClass="text-amber-400" />
             <StatPill value={stats.aprobadas} label="Aprobadas" colorClass="text-emerald-400" />
             <StatPill value={stats.habilitadas} label="Habilitadas" colorClass="text-red-400" />
             <div className="w-56">
@@ -728,6 +812,8 @@ const PlanEstudios = () => {
                           allEstados={estados}
                           onToggle={handleToggle} 
                           planMaterias={currentMaterias}
+                          notas={notas}
+                          onChangeNota={handleUpdateNota}
                         />
                       ))}
 
@@ -742,6 +828,8 @@ const PlanEstudios = () => {
                               allEstados={estados}
                               onToggle={handleToggle} 
                               planMaterias={currentMaterias}
+                              notas={notas}
+                              onChangeNota={handleUpdateNota}
                             />
                           ))}
                         </div>
@@ -770,6 +858,8 @@ const PlanEstudios = () => {
                       allEstados={estados}
                       onToggle={handleToggle} 
                       planMaterias={currentMaterias}
+                      notas={notas}
+                      onChangeNota={handleUpdateNota}
                     />
                   ))}
                 </div>
@@ -782,7 +872,9 @@ const PlanEstudios = () => {
               <MapaNodos 
                 plan={selectedPlanData} 
                 estados={nodosEstados} 
+                notas={notas}
                 onCycleEstado={handleToggleMapaEstado} 
+                onUpdateNota={handleUpdateNota}
                 saving={saving} 
               />
             </div>

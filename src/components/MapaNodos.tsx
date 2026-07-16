@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 // ── Layout constants ──────────────────────────────────────────────────
 const NODE_W = 180;
-const NODE_H = 76;
+const NODE_H = 88;
 const GAP_X  = 64;
 const GAP_Y  = 36;
 const PAD    = 32;
@@ -53,11 +53,13 @@ type ConnectionState = "normal" | "previa" | "posterior" | "hidden";
 interface MapaNodosProps {
   plan: PlanData;
   estados: Record<string, EstadoMateria>;
+  notas: Record<string, number | null>;
   onCycleEstado: (id: string) => void;
+  onUpdateNota: (id: string, value: number | null) => void;
   saving: boolean;
 }
 
-export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEstado, saving }) => {
+export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, notas, onCycleEstado, onUpdateNota, saving }) => {
   const { materias, conexiones } = plan;
   const { width, height } = getGridSize(materias);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -377,6 +379,28 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
               <span className="text-[10.5px] font-bold text-slate-800 dark:text-slate-100 leading-snug line-clamp-2 w-full mt-1.5">
                 {m.nombre}
               </span>
+
+              {estado === "aprobada" && (
+                <div 
+                  onClick={(e) => e.stopPropagation()} 
+                  className="mt-1.5 flex items-center justify-between gap-2 w-full pt-1 border-t border-slate-100 dark:border-white/5"
+                >
+                  <span className="text-[8px] text-slate-400 font-bold uppercase">Nota:</span>
+                  <select
+                    value={notas[m.id] || ""}
+                    onChange={(e) => {
+                      const val = e.target.value ? parseInt(e.target.value) : null;
+                      onUpdateNota(m.id, val);
+                    }}
+                    className="bg-slate-100 dark:bg-white/5 border border-slate-250 dark:border-white/10 text-slate-800 dark:text-white text-[9px] font-bold rounded px-1 py-0 cursor-pointer outline-none font-sans"
+                  >
+                    <option value="" className="bg-slate-950 text-white/50">-</option>
+                    {[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map(num => (
+                      <option key={num} value={num} className="bg-slate-950 text-white">{num}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </motion.button>
           );
         })}
