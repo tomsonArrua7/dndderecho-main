@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 const NODE_W = 180;
 const NODE_H = 76;
 const GAP_X  = 64;
-const GAP_Y  = 68;
+const GAP_Y  = 36;
 const PAD    = 32;
 
 function getGridSize(materias: MateriaNode[]) {
@@ -37,15 +37,15 @@ function nodeTopLeft(m: MateriaNode) {
 function buildArrowPath(from: MateriaNode, to: MateriaNode): string {
   const f = nodeCenter(from);
   const t = nodeCenter(to);
-  const fx = f.x;
-  const fy = f.y + NODE_H / 2;
-  const tx = t.x;
-  const ty = t.y - NODE_H / 2;
+  const fx = f.x + NODE_W / 2;
+  const fy = f.y;
+  const tx = t.x - NODE_W / 2 - 4;
+  const ty = t.y;
   
-  // Curva bezier suave de arriba a abajo
-  const cy1 = fy + (ty - fy) * 0.4;
-  const cy2 = ty - (ty - fy) * 0.4;
-  return `M ${fx} ${fy} C ${fx} ${cy1}, ${tx} ${cy2}, ${tx} ${ty}`;
+  // Curva bezier suave de izquierda a derecha
+  const cx1 = fx + (tx - fx) * 0.4;
+  const cx2 = tx - (tx - fx) * 0.4;
+  return `M ${fx} ${fy} C ${cx1} ${fy}, ${cx2} ${ty}, ${tx} ${ty}`;
 }
 
 type ConnectionState = "normal" | "previa" | "posterior" | "hidden";
@@ -61,7 +61,11 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
   const { materias, conexiones } = plan;
   const { width, height } = getGridSize(materias);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  
+  const [zoomFactor, setZoomFactor] = useState(1.0);
+  const [autoScale, setAutoScale] = useState(1.0);
+  const scale = autoScale * zoomFactor;
+
   const constraintsRef = useRef(null);
 
   // Hover states for interactive highlighting
@@ -71,8 +75,8 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
     const update = () => {
       if (!containerRef.current) return;
       const cw = containerRef.current.clientWidth;
-      if (cw < width) setScale(cw / width);
-      else setScale(1);
+      if (cw < width) setAutoScale(cw / width);
+      else setAutoScale(1);
     };
     update();
     const obs = new ResizeObserver(update);
@@ -128,6 +132,34 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
       ref={containerRef} 
       className="w-full h-[620px] overflow-hidden cursor-grab active:cursor-grabbing relative bg-slate-950 dark:bg-[hsl(222_47%_4%)] rounded-3xl border border-slate-200 dark:border-white/5 shadow-inner"
     >
+      {/* Zoom Controls */}
+      <div className="absolute top-4 right-4 flex items-center gap-1.5 p-1.5 bg-white/70 dark:bg-black/60 backdrop-blur-md rounded-xl border border-slate-200 dark:border-white/10 z-10 shadow-elegant">
+        <button
+          onClick={(e) => { e.stopPropagation(); setZoomFactor(z => Math.max(0.4, z - 0.15)); }}
+          className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-colors text-xs font-bold cursor-pointer"
+          title="Alejar"
+        >
+          -
+        </button>
+        <span className="text-[9px] font-mono font-bold tracking-wider px-2 text-slate-500 dark:text-slate-400 min-w-10 text-center select-none">
+          {Math.round(scale * 100)}%
+        </span>
+        <button
+          onClick={(e) => { e.stopPropagation(); setZoomFactor(z => Math.min(2.5, z + 0.15)); }}
+          className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-colors text-xs font-bold cursor-pointer"
+          title="Acercar"
+        >
+          +
+        </button>
+        <div className="h-4 w-[1px] bg-slate-200 dark:bg-white/15 mx-1" />
+        <button
+          onClick={(e) => { e.stopPropagation(); setZoomFactor(1.0); }}
+          className="px-2.5 h-7 flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-[9px] font-bold uppercase tracking-wider text-slate-650 dark:text-slate-300 transition-colors cursor-pointer"
+        >
+          Reset
+        </button>
+      </div>
+
       <div ref={constraintsRef} className="absolute inset-0 pointer-events-none" />
       
       <motion.div
@@ -143,28 +175,24 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
         }}
         className="relative"
       >
-        {/* Year dividers & Labels */}
+        {/* Year dividers & Labels (Left to Right Columns) */}
         {anioLabels.map(anio => {
-          const anioMats = materias.filter(m => m.anio === anio);
-          const minRow = Math.min(...anioMats.map(m => m.row));
-          const y = PAD + minRow * (NODE_H + GAP_Y);
+          const x = PAD + (anio - 1) * (NODE_W + GAP_X);
           return (
             <div
               key={anio}
               style={{
                 position: "absolute",
-                left: 0,
-                top: y,
-                width: "100%",
-                borderTop: "1px dashed rgba(226, 232, 240, 0.1)",
-                paddingTop: 6,
-                paddingLeft: 8,
+                left: x,
+                top: PAD - 20,
+                width: NODE_W,
+                textAlign: "center",
                 pointerEvents: "none",
                 zIndex: 0,
               }}
             >
-              <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 dark:text-white/20 uppercase">
-                {anio}º Año de Cursada
+              <span className="text-[10px] font-black tracking-[0.25em] text-slate-400 dark:text-white/20 uppercase">
+                {anio}º Año
               </span>
             </div>
           );
@@ -209,7 +237,7 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
             let strokeColor = "rgba(148, 163, 184, 0.12)";
             let strokeWidth = 1.5;
             let filter = undefined;
-            let opacity = 0.5;
+            let opacity = 0.0; // Hidden by default!
 
             if (hoveredNodeId) {
               if (connState === "previa") {
@@ -223,16 +251,11 @@ export const MapaNodos: React.FC<MapaNodosProps> = ({ plan, estados, onCycleEsta
                 filter = "url(#glow-posterior)";
                 opacity = 1.0;
               } else {
-                opacity = 0.05; // Hidden/unrelated
+                opacity = 0.05; // Dim/unrelated
               }
             } else {
-              // Normal state connections
-              const fromAprobada = estados[c.from] === "aprobada";
-              if (fromAprobada) {
-                strokeColor = "rgba(59, 130, 246, 0.4)";
-                strokeWidth = 1.8;
-                opacity = 0.8;
-              }
+              // Hide completely when no node is hovered
+              opacity = 0.0;
             }
 
             const path = buildArrowPath(fromM, toM);

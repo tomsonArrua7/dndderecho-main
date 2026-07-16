@@ -377,7 +377,7 @@ const PlanEstudios = () => {
       if (yearCounters[year] === undefined) {
         yearCounters[year] = 0;
       }
-      const col = yearCounters[year];
+      const row = yearCounters[year];
       yearCounters[year]++;
       
       return {
@@ -385,8 +385,8 @@ const PlanEstudios = () => {
         nombre: m.nombreCorto || m.nombre,
         anio: m.anio,
         tipo: m.duracion || "cuatrimestral",
-        col: col,
-        row: m.anio - 1,
+        col: m.anio - 1,
+        row: row,
         prereqs: m.requisitos.map(r => r.id)
       };
     });
