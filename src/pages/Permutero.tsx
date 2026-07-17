@@ -14,7 +14,6 @@ import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { CardSkeleton } from "@/components/ui/skeleton";
 import { MATERIAS_PLAN6 } from "@/data/plan6Structure";
-import { MATERIAS_PLAN5 } from "@/data/plan5Structure";
 
 interface Materia { id: string; nombre: string; anio: number; codigo: string }
 interface PermutaRow {
@@ -68,10 +67,10 @@ const Permutero = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const filteredMateriasForForm = useMemo(() => {
-    const planMaterias = formPlanId === "plan5" ? MATERIAS_PLAN5 : MATERIAS_PLAN6;
+    const planMaterias = MATERIAS_PLAN6;
     const allowedCodes = new Set(planMaterias.map(m => m.id));
     return materias.filter(m => allowedCodes.has(m.codigo || ""));
-  }, [materias, formPlanId]);
+  }, [materias]);
 
   const load = async () => {
     try {
@@ -257,22 +256,9 @@ const Permutero = () => {
             </DialogHeader>
             <form onSubmit={submit} className="space-y-4 pt-2">
               <div>
-                <Label className="text-foreground/80">Plan de Estudios *</Label>
-                <Select value={formPlanId} onValueChange={(val) => {
-                  setFormPlanId(val);
-                  setMateriaId("");
-                }}>
-                  <SelectTrigger><SelectValue placeholder="Elegí tu plan de estudios" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="plan6">Plan 6 (Vigente 2019)</SelectItem>
-                    <SelectItem value="plan5">Plan 5 (Histórico)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
                 <Label className="text-foreground/80">Materia *</Label>
                 <Select value={materiaId} onValueChange={setMateriaId}>
-                  <SelectTrigger><SelectValue placeholder={formPlanId ? "Elegí una materia" : "Primero elegí un plan"} /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Elegí una materia" /></SelectTrigger>
                   <SelectContent className="max-h-72">
                     {filteredMateriasForForm.map((m) => (
                       <SelectItem key={m.id} value={m.id}>{m.anio}° · {m.nombre}</SelectItem>
@@ -441,19 +427,11 @@ const Permutero = () => {
       )}
 
       {/* FILTROS */}
-      <div className="grid sm:grid-cols-[1fr_auto_auto] gap-3 mb-6">
+      <div className="grid sm:grid-cols-[1fr_auto] gap-3 mb-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Buscar materia..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-card" />
         </div>
-        <Select value={filterPlan} onValueChange={setFilterPlan}>
-          <SelectTrigger className="sm:w-40 bg-card"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos los planes</SelectItem>
-            <SelectItem value="plan6">Plan 6</SelectItem>
-            <SelectItem value="plan5">Plan 5</SelectItem>
-          </SelectContent>
-        </Select>
         <Select value={filterMateria} onValueChange={setFilterMateria}>
           <SelectTrigger className="sm:w-60 bg-card"><SelectValue /></SelectTrigger>
           <SelectContent className="max-h-72">
@@ -506,7 +484,6 @@ const Permutero = () => {
 
                 <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-muted-foreground mb-1 font-semibold">
                   <span>{p.materias?.anio}° Año</span>
-                  <span className="px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20 text-[9px] font-bold text-primary font-mono">{p.plan_id === "plan5" ? "Plan 5" : "Plan 6"}</span>
                 </div>
                 <h3 className="font-display font-semibold text-lg leading-tight mb-4 line-clamp-2 text-foreground">
                   {p.materias?.nombre}
