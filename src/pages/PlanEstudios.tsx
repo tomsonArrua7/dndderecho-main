@@ -87,17 +87,24 @@ const StatPill = ({ value, label, colorClass }: { value: number | string; label:
 
 const ProgressBar = ({ value, label }: { value: number; label: string }) => (
   <div className="w-full">
-    <div className="flex items-center justify-between text-[10px] uppercase tracking-widest font-bold mb-2 px-1">
-      <span className="text-white/40">{label}</span>
-      <span className="text-red-500 font-serif font-bold">{value}%</span>
+    <div className="flex items-end justify-between mb-2.5 px-1">
+      <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+        {label}
+      </span>
+      <span className="text-lg md:text-2xl font-display font-black text-accent drop-shadow-[0_0_10px_rgba(220,38,38,0.45)]">
+        {value}%
+      </span>
     </div>
-    <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden border border-white/5">
+    <div className="h-3.5 w-full rounded-full bg-slate-200/60 dark:bg-black/40 border border-slate-300 dark:border-white/15 p-[3px] overflow-hidden shadow-inner">
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${value}%` }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="h-full bg-gradient-to-r from-red-750 to-red-500"
-      />
+        transition={{ type: "spring", stiffness: 60, damping: 15 }}
+        className="h-full rounded-full bg-gradient-to-r from-blue-600 to-accent shadow-[0_0_12px_rgba(220,38,38,0.6)] relative overflow-hidden"
+      >
+        {/* Shine effect overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-[pulse_2s_infinite] pointer-events-none" />
+      </motion.div>
     </div>
   </div>
 );
