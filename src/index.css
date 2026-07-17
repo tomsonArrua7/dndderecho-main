@@ -440,6 +440,8 @@
 header nav {
   min-width: 0 !important;
   overflow: hidden !important;
+  justify-content: center !important;
+  justify-content: safe center !important;
 }
 
 @media (min-width: 1024px) and (max-width: 1535px) {
