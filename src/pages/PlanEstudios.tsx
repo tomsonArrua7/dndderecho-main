@@ -388,7 +388,16 @@ const PlanEstudios = () => {
 
   const uid = user?.id;
 
-  const currentMaterias = useMemo(() => planId === "plan6" ? MATERIAS_PLAN6 : MATERIAS_PLAN5, [planId]);
+  const currentMaterias = useMemo(() => {
+    const raw = planId === "plan6" ? MATERIAS_PLAN6 : MATERIAS_PLAN5;
+    return raw.map(m => ({
+      ...m,
+      duracion: (m.horas === 32 ? "bimestral" :
+                 m.horas === 64 ? "trimestral" :
+                 m.horas === 96 ? "cuatrimestral" :
+                 m.horas === 120 ? "semestral" : m.duracion) as any
+    }));
+  }, [planId]);
   const currentTotal = useMemo(() => planId === "plan6" ? TOTAL_MATERIAS_PLAN6 : TOTAL_MATERIAS_PLAN5, [planId]);
   const currentCalcPct = useMemo(() => planId === "plan6" ? calcularPorcentaje : calcularPorcentajePlan5, [planId]);
   const currentGetEstado = useMemo(() => planId === "plan6" ? getEstadoVisual : getEstadoVisualPlan5, [planId]);
@@ -619,9 +628,7 @@ const PlanEstudios = () => {
     }
   }, [uid, planId, estados, notas]);
 
-  const handleToggleMapaEstado = useCallback((nodeMateriaId: string) => {
-    handleToggle(nodeMateriaId);
-  }, [handleToggle]);
+
 
   const stats = useMemo(() => {
     const aprobadas = currentMaterias.filter(m => estados[m.id] === "aprobada").length;
@@ -868,13 +875,35 @@ const PlanEstudios = () => {
           </>
         ) : (
           selectedPlanData && (
-            <div className="mb-20">
+            <div className="mb-20 flex flex-col gap-6">
+              {/* Cartel Explicativo del Mapa */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-950/30 via-slate-900/20 to-black/20 border border-white/5 text-sm leading-relaxed shadow-lg backdrop-blur-md">
+                <div className="flex items-start gap-3.5">
+                  <div className="text-xl shrink-0 mt-0.5">💡</div>
+                  <div>
+                    <h4 className="font-display font-bold text-white mb-1.5 tracking-tight text-base">
+                      Mapa Interactivo de Correlativas
+                    </h4>
+                    <p className="text-white/60 mb-2.5 text-xs md:text-sm">
+                      Este mapa te permite visualizar de forma gráfica cómo se estructuran las correlatividades de la carrera.
+                    </p>
+                    <ul className="list-disc pl-5 space-y-2 text-xs text-white/50">
+                      <li>Haz clic sobre cualquier materia para fijar sus conexiones.</li>
+                      <li>En <strong className="text-amber-400 font-bold">amarillo</strong> se destacan las correlativas previas que necesitás tener aprobadas.</li>
+                      <li>En <strong className="text-emerald-400 font-bold">verde</strong> se destacan las materias posteriores que se te habilitarán al aprobarla.</li>
+                      <li>Los estados de cursada y aprobación se sincronizan automáticamente con lo que cargues.</li>
+                    </ul>
+                    <p className="text-xs text-accent font-semibold mt-3.5 italic border-t border-white/5 pt-2.5">
+                      * Nota: Para marcar materias como cursadas, aprobadas o registrar tus notas, utilizá la pestaña de "Vista Cuadrícula".
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <MapaNodos 
                 plan={selectedPlanData} 
                 estados={nodosEstados} 
                 notas={notas}
-                onCycleEstado={handleToggleMapaEstado} 
-                onUpdateNota={handleUpdateNota}
                 saving={saving} 
               />
             </div>

@@ -4,7 +4,7 @@
 // Resolución HCA vigente desde 2019
 // ====================================================================
 
-export type Duracion = "bimestral" | "cuatrimestral" | "semestral" | "anual";
+export type Duracion = "bimestral" | "trimestral" | "cuatrimestral" | "semestral" | "anual";
 export type EstadoMateria = "pendiente" | "aprobada";
 export type TipoRequisito = "aprobada";
 export type TipoMateria = "regular" | "idioma" | "seminario" | "practica";

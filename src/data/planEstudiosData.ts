@@ -4,7 +4,7 @@
 // y prereqs (ids de materias previas requeridas para habilitarla)
 // =====================================================================
 
-export type TipoMateria = "bimestral" | "cuatrimestral" | "semestral" | "anual";
+export type TipoMateria = "bimestral" | "trimestral" | "cuatrimestral" | "semestral" | "anual";
 export type EstadoMateria = "pendiente" | "cursando" | "aprobada";
 
 export interface MateriaNode {
@@ -144,6 +144,7 @@ export const PLANES: PlanData[] = [
 
 export const TIPO_CONFIG: Record<TipoMateria, { label: string; color: string; border: string }> = {
   bimestral:      { label: "Bimestral",     color: "#7c3aed", border: "#9f67ff" },
+  trimestral:     { label: "Trimestral",    color: "#d97706", border: "#f59e0b" },
   cuatrimestral:  { label: "Cuatrimestral", color: "#1d4ed8", border: "#3b82f6" },
   semestral:      { label: "Semestral",     color: "#0f766e", border: "#14b8a6" },
   anual:          { label: "Anual",         color: "#0a2463", border: "#1e40af" },
