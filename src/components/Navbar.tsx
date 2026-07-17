@@ -57,7 +57,7 @@ export const Navbar = () => {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="sticky top-0 z-50 border-b border-white/5 backdrop-blur-[12px] bg-[#0A0E1A]/80 selection:bg-accent/30"
       >
-        <div className="container flex h-14 items-center justify-between gap-4">
+        <div className="container flex h-14 items-center justify-between gap-2 xl:gap-4">
 
           {/* ── Logo ── */}
           <Link
@@ -66,7 +66,7 @@ export const Navbar = () => {
             onClick={() => setOpen(false)}
           >
             <DndMark size={38} />
-            <div className="leading-tight hidden sm:block">
+            <div className="leading-tight hidden sm:block lg:hidden xl:block">
               <div className="font-display font-black text-base tracking-tighter text-white group-hover:text-accent transition-colors">DND</div>
               <div className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-bold">
                 Derecho UNLP
@@ -75,7 +75,7 @@ export const Navbar = () => {
           </Link>
 
           {/* ── Nav desktop ── */}
-          <nav className="hidden lg:flex items-center gap-2 flex-1 justify-center">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 flex-1 justify-center">
             {links.map((l, i) => (
               <motion.div
                 key={l.to}
@@ -88,8 +88,8 @@ export const Navbar = () => {
                   end={l.to === "/"}
                   className={({ isActive }) =>
                     cn(
-                      "relative px-4 py-2 flex flex-col items-center group",
-                      "text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap",
+                      "relative px-2 xl:px-3 2xl:px-4 py-2 flex flex-col items-center group",
+                      "text-[10px] xl:text-[11px] font-bold uppercase tracking-[0.1em] xl:tracking-[0.15em] 2xl:tracking-[0.2em] whitespace-nowrap",
                       "transition-all duration-400 ease-out",
                       isActive ? "text-white" : "text-white/40 hover:text-white"
                     )
@@ -97,7 +97,7 @@ export const Navbar = () => {
                 >
                   {({ isActive }) => (
                     <>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 xl:gap-2">
                         <l.icon className={cn("h-3.5 w-3.5 transition-all duration-500", isActive ? "text-accent scale-110" : "opacity-40 group-hover:opacity-100 group-hover:rotate-12")} strokeWidth={2} />
                         <span>{l.label}</span>
                       </div>
@@ -119,7 +119,7 @@ export const Navbar = () => {
           </nav>
 
           {/* ── Actions ── */}
-          <div className="flex items-center gap-4 shrink-0">
+          <div className="flex items-center gap-2 xl:gap-4 shrink-0">
             {/* Theme Toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -144,7 +144,7 @@ export const Navbar = () => {
                   onMouseEnter={() => setDropdownOpen(true)}
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className={cn(
-                    "inline-flex items-center gap-2 h-9 px-4 rounded-xl text-[11px] font-bold uppercase tracking-widest",
+                    "inline-flex items-center gap-1.5 xl:gap-2 h-9 px-2.5 xl:px-4 rounded-xl text-[10px] xl:text-[11px] font-bold uppercase tracking-widest",
                     "bg-white/5 border border-white/10 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-400"
                   )}
                 >
@@ -198,8 +198,8 @@ export const Navbar = () => {
                 transition={{ duration: 0.5, delay: 0.8 }}
                 onClick={() => navigate("/auth")}
                 className={cn(
-                  "hidden sm:inline-flex items-center gap-2 h-9 px-6 rounded-xl",
-                  "text-[11px] font-black uppercase tracking-[0.2em]",
+                  "hidden sm:inline-flex items-center gap-1.5 xl:gap-2 h-9 px-3 xl:px-6 rounded-xl",
+                  "text-[10px] xl:text-[11px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em]",
                   "bg-accent text-white shadow-lg shadow-accent/20 hover:bg-accent/90",
                   "transition-all duration-400 ease-out hover:scale-105 active:scale-95"
                 )}
