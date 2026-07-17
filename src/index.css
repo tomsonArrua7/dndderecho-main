@@ -445,6 +445,15 @@ header nav {
 }
 
 @media (min-width: 1024px) and (max-width: 1535px) {
+  header nav {
+    gap: 0.25rem !important;
+  }
+  header nav a {
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0.02em !important;
+  }
   header nav svg {
     display: none !important;
   }
