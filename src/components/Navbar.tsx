@@ -66,7 +66,7 @@ export const Navbar = () => {
             onClick={() => setOpen(false)}
           >
             <DndMark size={38} />
-            <div className="leading-tight hidden sm:block lg:hidden xl:block">
+            <div className="leading-tight hidden sm:block lg:hidden 2xl:block">
               <div className="font-display font-black text-base tracking-tighter text-white group-hover:text-accent transition-colors">DND</div>
               <div className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-bold">
                 Derecho UNLP
@@ -97,8 +97,8 @@ export const Navbar = () => {
                 >
                   {({ isActive }) => (
                     <>
-                      <div className="flex items-center gap-1.5 xl:gap-2">
-                        <l.icon className={cn("h-3.5 w-3.5 transition-all duration-500", isActive ? "text-accent scale-110" : "opacity-40 group-hover:opacity-100 group-hover:rotate-12")} strokeWidth={2} />
+                      <div className="flex items-center gap-0 2xl:gap-2">
+                        <l.icon className={cn("hidden 2xl:block h-3.5 w-3.5 transition-all duration-500", isActive ? "text-accent scale-110" : "opacity-40 group-hover:opacity-100 group-hover:rotate-12")} strokeWidth={2} />
                         <span>{l.label}</span>
                       </div>
 
