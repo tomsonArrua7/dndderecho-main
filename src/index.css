@@ -436,3 +436,18 @@
   color-scheme: light;
 }
 
+/* Responsive Navbar layout overrides to prevent horizontal overflow and cut-off buttons */
+header nav {
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+@media (min-width: 1024px) and (max-width: 1535px) {
+  header nav svg {
+    display: none !important;
+  }
+  header a.group > div.leading-tight {
+    display: none !important;
+  }
+}
+
