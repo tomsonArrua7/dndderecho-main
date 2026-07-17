@@ -312,7 +312,10 @@ export default function AsistenteDND() {
           className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white/80 py-2.5 px-4 rounded-xl transition-all self-start md:self-center"
         >
           Ver Drive Oficial <ExternalLink className="h-3.5 w-3.5" />
-        </a>      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 items-stretch">
+        </a>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 items-stretch">
         
         {/* Sidebar de Configuración */}
         <Card className={`lg:col-span-4 p-5 bg-white dark:bg-[#0D1224]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col justify-between h-fit gap-6 shadow-xl ${showConfig ? "block" : "hidden lg:flex"}`}>
