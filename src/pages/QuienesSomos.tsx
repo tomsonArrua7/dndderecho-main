@@ -22,19 +22,19 @@ const images = [
 const CONSEJEROS = [
   {
     nombre: "Camilo Leavi Blazquez",
-    periodo: "Concejero HCD (2023)",
+    periodo: "Consejero HCD (2023)",
     iniciales: "CL",
     avatarBg: "from-red-650 to-red-800"
   },
   {
     nombre: "Micaela Ramírez",
-    periodo: "Concejera HCD (2024)",
+    periodo: "Consejera HCD (2024)",
     iniciales: "MR",
     avatarBg: "from-red-600 to-rose-700"
   },
   {
     nombre: "Santiago López",
-    periodo: "Concejero HCD (2025-2026)",
+    periodo: "Consejero HCD (2025-2026)",
     iniciales: "SL",
     avatarBg: "from-accent to-red-650"
   }

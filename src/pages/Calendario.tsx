@@ -446,7 +446,7 @@ const Calendario = () => {
                     setSelectedDay(cell.date);
                   }}
                   className={cn(
-                    "min-h-[76px] p-2 rounded-xl border flex flex-col justify-between transition-all relative cursor-pointer select-none",
+                    "min-h-[52px] sm:min-h-[76px] p-1 sm:p-2 rounded-xl border flex flex-col justify-between transition-all relative cursor-pointer select-none",
                     !cell.isCurrentMonth
                       ? "bg-transparent border-transparent opacity-20 pointer-events-none"
                       : isToday
@@ -462,26 +462,50 @@ const Calendario = () => {
                     {cell.date.getDate()}
                   </span>
 
-                  {/* Day Events chips list */}
-                  <div className="flex flex-col gap-1 w-full overflow-hidden mt-1.5">
-                    {dayEvents.slice(0, 2).map(e => (
-                      <div
-                        key={e.id}
-                        className={cn(
-                          "text-[8px] font-bold px-1.5 py-0.5 rounded truncate border text-center select-none",
-                          isToday 
-                            ? "bg-white/20 text-white border-white/30" 
-                            : chipStyle[e.tipo] || chipStyle.otro
-                        )}
-                      >
-                        {truncateTitle(e.titulo)}
-                      </div>
-                    ))}
-                    {dayEvents.length > 2 && (
-                      <div className={cn("text-[7px] font-bold pl-1 mt-0.5", isToday ? "text-white/80" : "text-white/30")}>
-                        +{dayEvents.length - 2} más
-                      </div>
-                    )}
+                  {/* Day Events indicator list */}
+                  <div className="flex flex-col gap-1 w-full overflow-hidden mt-1 sm:mt-1.5">
+                    {/* Desktop View: Full Text Chips */}
+                    <div className="hidden sm:flex flex-col gap-1 w-full">
+                      {dayEvents.slice(0, 2).map(e => (
+                        <div
+                          key={e.id}
+                          className={cn(
+                            "text-[8px] font-bold px-1.5 py-0.5 rounded truncate border text-center select-none",
+                            isToday 
+                              ? "bg-white/20 text-white border-white/30" 
+                              : chipStyle[e.tipo] || chipStyle.otro
+                          )}
+                        >
+                          {truncateTitle(e.titulo)}
+                        </div>
+                      ))}
+                      {dayEvents.length > 2 && (
+                        <div className={cn("text-[7px] font-bold pl-1 mt-0.5", isToday ? "text-white/80" : "text-white/30")}>
+                          +{dayEvents.length - 2} más
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Mobile View: Small Native Colored Dots */}
+                    <div className="flex sm:hidden justify-center gap-0.5 w-full flex-wrap">
+                      {dayEvents.slice(0, 3).map(e => {
+                        let dotColor = "bg-teal-500";
+                        if (e.tipo === "parcial") dotColor = "bg-red-500";
+                        else if (e.tipo === "final") dotColor = "bg-purple-500";
+                        else if (e.tipo === "entrega") dotColor = "bg-amber-500";
+                        else if (e.tipo === "clase") dotColor = "bg-emerald-500";
+
+                        return (
+                          <span 
+                            key={e.id} 
+                            className={cn("w-1.5 h-1.5 rounded-full border border-black/10 shrink-0", isToday ? "bg-white" : dotColor)} 
+                          />
+                        );
+                      })}
+                      {dayEvents.length > 3 && (
+                        <span className={cn("text-[6px] font-black leading-none mt-0.5", isToday ? "text-white" : "text-white/40")}>+</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

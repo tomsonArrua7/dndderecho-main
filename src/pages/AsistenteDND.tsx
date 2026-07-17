@@ -124,6 +124,7 @@ export default function AsistenteDND() {
   // Estados para el cargador dinámico
   const [loadingTime, setLoadingTime] = useState(0);
   const [loadingStage, setLoadingStage] = useState("Buscando apuntes oficiales en la biblioteca...");
+  const [showConfig, setShowConfig] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -311,13 +312,10 @@ export default function AsistenteDND() {
           className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white/80 py-2.5 px-4 rounded-xl transition-all self-start md:self-center"
         >
           Ver Drive Oficial <ExternalLink className="h-3.5 w-3.5" />
-        </a>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 items-stretch">
+        </a>      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 items-stretch">
         
         {/* Sidebar de Configuración */}
-        <Card className="lg:col-span-4 p-5 bg-white dark:bg-[#0D1224]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col justify-between h-fit gap-6 shadow-xl">
+        <Card className={`lg:col-span-4 p-5 bg-white dark:bg-[#0D1224]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col justify-between h-fit gap-6 shadow-xl ${showConfig ? "block" : "hidden lg:flex"}`}>
           <div className="space-y-5">
             <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-accent" /> Configuración de Estudio
@@ -395,19 +393,30 @@ export default function AsistenteDND() {
         </Card>
 
         {/* Panel del Chat */}
-        <Card className="lg:col-span-8 bg-white dark:bg-[#0D1224]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col h-[630px] overflow-hidden shadow-xl">
+        <Card className="lg:col-span-8 bg-white dark:bg-[#0D1224]/80 backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col h-[520px] md:h-[630px] overflow-hidden shadow-xl">
           
           {/* Header del Chat */}
-          <div className="px-5 py-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#10162D] flex items-center gap-3 shrink-0">
-            <div className="h-8 w-8 rounded-lg bg-accent/20 border border-accent/30 flex items-center justify-center text-accent">
-              <Bot className="h-4.5 w-4.5" />
-            </div>
-            <div>
-              <div className="font-bold text-slate-900 dark:text-white text-sm">Tutoría & Asistente DND</div>
-              <div className="text-[10px] text-slate-500 dark:text-white/40 uppercase tracking-wider font-bold">
-                {selectedMateria ? `Estudiando ${selectedMateria}` : "Tutor general de la web"}
+          <div className="px-5 py-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#10162D] flex items-center justify-between gap-3 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-accent/20 border border-accent/30 flex items-center justify-center text-accent">
+                <Bot className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <div className="font-bold text-slate-900 dark:text-white text-sm">Tutoría & Asistente DND</div>
+                <div className="text-[10px] text-slate-550 dark:text-white/40 uppercase tracking-wider font-bold">
+                  {selectedMateria ? `Estudiando ${selectedMateria}` : "Tutor general de la web"}
+                </div>
               </div>
             </div>
+
+            {/* Toggle Configuración Móvil */}
+            <button
+              onClick={() => setShowConfig(!showConfig)}
+              className="lg:hidden px-3.5 py-1.5 rounded-xl border border-slate-250 dark:border-white/10 text-xs font-bold text-slate-750 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-1.5 transition-colors duration-200 cursor-pointer"
+            >
+              <span>⚙️</span>
+              <span>{showConfig ? "Ocultar" : "Configurar"}</span>
+            </button>
           </div>
 
           {/* Si el usuario NO está registrado, se bloquea el chat */}
