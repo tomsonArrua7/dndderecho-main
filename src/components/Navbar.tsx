@@ -88,8 +88,8 @@ export const Navbar = () => {
                   end={l.to === "/"}
                   className={({ isActive }) =>
                     cn(
-                      "relative px-2 xl:px-3 2xl:px-4 py-2 flex flex-col items-center group",
-                      "text-[10px] xl:text-[11px] font-bold uppercase tracking-[0.1em] xl:tracking-[0.15em] 2xl:tracking-[0.2em] whitespace-nowrap",
+                      "relative px-2 xl:px-3 py-2 flex flex-col items-center group",
+                      "text-[10px] xl:text-[11px] font-bold uppercase tracking-[0.1em] xl:tracking-[0.15em] whitespace-nowrap",
                       "transition-all duration-400 ease-out",
                       isActive ? "text-white" : "text-white/40 hover:text-white"
                     )
@@ -97,11 +97,10 @@ export const Navbar = () => {
                 >
                   {({ isActive }) => (
                     <>
-                      <div className="flex items-center gap-0 2xl:gap-2">
-                        <l.icon className={cn("hidden 2xl:block h-3.5 w-3.5 transition-all duration-500", isActive ? "text-accent scale-110" : "opacity-40 group-hover:opacity-100 group-hover:rotate-12")} strokeWidth={2} />
+                      <div className="flex items-center">
                         <span>{l.label}</span>
                       </div>
-
+ 
                       {/* Premium indicator bar */}
                       <span
                         className={cn(
