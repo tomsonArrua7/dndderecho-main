@@ -16,7 +16,7 @@ jobs:
           host: 200.58.102.187
           username: root
           password: ${{ secrets.DEPLOY_ROOT_PASSWORD }}
-          port: 22
+          port: 5696
           script: |
             git config --global --add safe.directory /home/dndjursoc/htdocs/dndjursoc.com.ar
             cd /home/dndjursoc/htdocs/dndjursoc.com.ar
@@ -29,6 +29,23 @@ jobs:
             else
               git pull origin master
             fi
+
+            # Auto-extract local self-hosted Supabase ANON_KEY and create .env
+            echo "Extracting local Supabase credentials from Docker env..."
+            if [ -f "/root/supabase/docker/.env" ]; then
+              LOCAL_ANON_KEY=$(grep '^ANON_KEY=' /root/supabase/docker/.env | cut -d'=' -f2- | tr -d '"\r\n' | sed 's/^"//;s/"$//')
+              if [ -n "$LOCAL_ANON_KEY" ]; then
+                echo "VITE_SUPABASE_URL=\"https://api.dndjursoc.com.ar\"" > .env
+                echo "VITE_SUPABASE_ANON_KEY=\"$LOCAL_ANON_KEY\"" >> .env
+                echo "VITE_TURNSTILE_SITE_KEY=\"0x4AAAAAAADunhl1yt6HU0ztO\"" >> .env
+                echo "Successfully generated .env file automatically."
+              else
+                echo "WARNING: ANON_KEY variable not found inside /root/supabase/docker/.env"
+              fi
+            else
+              echo "WARNING: /root/supabase/docker/.env file not found"
+            fi
+
             npm ci --prefer-offline 2>/dev/null || npm install
             npm run build
             mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
