@@ -76,9 +76,9 @@ jobs:
                 echo "Re-creating Supabase auth container to apply new env variables..."
                 cd /root/supabase/docker
                 if docker compose version &> /dev/null; then
-                  docker compose up -d --force-recreate --no-deps auth > /tmp/docker-up-log.txt 2>&1 || true
+                  docker compose up -d > /tmp/docker-up-log.txt 2>&1 || true
                 elif command -v docker-compose &> /dev/null; then
-                  docker-compose up -d --force-recreate --no-deps auth > /tmp/docker-up-log.txt 2>&1 || true
+                  docker-compose up -d > /tmp/docker-up-log.txt 2>&1 || true
                 else
                   echo "No docker compose or docker-compose found" > /tmp/docker-up-log.txt
                 fi
