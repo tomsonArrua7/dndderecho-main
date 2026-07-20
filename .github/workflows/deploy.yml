@@ -71,10 +71,12 @@ jobs:
                 # Restart Supabase auth container to apply env changes
                 echo "Re-creating Supabase auth container to apply new env variables..."
                 cd /root/supabase/docker
-                if command -v docker-compose &> /dev/null; then
+                if docker compose version &> /dev/null; then
+                  docker compose up -d --force-recreate --no-deps auth > /tmp/docker-up-log.txt 2>&1 || true
+                elif command -v docker-compose &> /dev/null; then
                   docker-compose up -d --force-recreate --no-deps auth > /tmp/docker-up-log.txt 2>&1 || true
                 else
-                  docker compose up -d --force-recreate --no-deps auth > /tmp/docker-up-log.txt 2>&1 || true
+                  echo "No docker compose or docker-compose found" > /tmp/docker-up-log.txt
                 fi
                 cd /home/dndjursoc/htdocs/dndjursoc.com.ar
               else
@@ -104,18 +106,18 @@ jobs:
             docker ps -a >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
             echo "--- DOCKER COMPOSE CONFIG ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
             cd /root/supabase/docker
-            if command -v docker-compose &> /dev/null; then
-              docker-compose config >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
-              echo "--- DOCKER COMPOSE PS ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
-              docker-compose ps >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
-              echo "--- DOCKER COMPOSE LOGS AUTH ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
-              docker-compose logs --tail=50 auth >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
-            else
+            if docker compose version &> /dev/null; then
               docker compose config >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
               echo "--- DOCKER COMPOSE PS ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
               docker compose ps >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
               echo "--- DOCKER COMPOSE LOGS AUTH ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
               docker compose logs --tail=50 auth >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
+            elif command -v docker-compose &> /dev/null; then
+              docker-compose config >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
+              echo "--- DOCKER COMPOSE PS ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
+              docker-compose ps >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
+              echo "--- DOCKER COMPOSE LOGS AUTH ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
+              docker-compose logs --tail=50 auth >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1 || true
             fi
             cd /home/dndjursoc/htdocs/dndjursoc.com.ar
             echo "Deploy completado: $(git log --oneline -1)"
