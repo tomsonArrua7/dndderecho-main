@@ -108,12 +108,9 @@ const Index = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
             <Button asChild size="xl" className="h-16 px-10 bg-accent text-white hover:bg-accent/90 shadow-[0_15px_30px_rgba(220,38,38,0.25)] rounded-2xl text-lg font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
-              <Link to="/permutero">
+              <Link to="/auth">
                 Comenzar <ArrowRight className="ml-3 h-6 w-6" />
               </Link>
-            </Button>
-            <Button asChild variant="outline" size="xl" className="h-16 px-10 bg-white/5 text-white border-white/10 hover:bg-white/10 backdrop-blur-md rounded-2xl text-lg font-bold">
-              <Link to="/auth">Ingreso Alumnos</Link>
             </Button>
           </motion.div>
         </div>
