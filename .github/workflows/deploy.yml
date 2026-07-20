@@ -68,13 +68,13 @@ jobs:
                  echo 'GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
                  echo 'GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
                 
-                # Restart Supabase containers to apply env changes
-                echo "Re-creating Supabase containers to apply new env variables..."
+                # Restart Supabase auth container to apply env changes
+                echo "Re-creating Supabase auth container to apply new env variables..."
                 cd /root/supabase/docker
                 if command -v docker-compose &> /dev/null; then
-                  docker-compose up -d
+                  docker-compose up -d --force-recreate --no-deps auth || true
                 else
-                  docker compose up -d
+                  docker compose up -d --force-recreate --no-deps auth || true
                 fi
                 cd /home/dndjursoc/htdocs/dndjursoc.com.ar
               else
