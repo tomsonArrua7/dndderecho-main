@@ -48,14 +48,25 @@ jobs:
             # Configure Google OAuth variables inside /root/supabase/docker/.env
             if [ -n "${{ secrets.GOOGLE_CLIENT_ID }}" ] && [ -n "${{ secrets.GOOGLE_CLIENT_SECRET }}" ]; then
               if [ -f "/root/supabase/docker/.env" ]; then
-                echo "Configuring Google OAuth inside self-hosted Supabase..."
-                # Remove old Google values if they exist
-                sed -i '/^GOTRUE_EXTERNAL_GOOGLE_/d' /root/supabase/docker/.env
-                # Append new Google values
-                echo 'GOTRUE_EXTERNAL_GOOGLE_ENABLED="true"' >> /root/supabase/docker/.env
-                echo 'GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
-                echo 'GOTRUE_EXTERNAL_GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
-                echo 'GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI="https://api.dndjursoc.com.ar/auth/v1/callback"' >> /root/supabase/docker/.env
+                 echo "Configuring Google OAuth inside self-hosted Supabase..."
+                 # Uncomment Google provider in docker-compose.yml
+                 if [ -f "/root/supabase/docker/docker-compose.yml" ]; then
+                   echo "Uncommenting Google provider in docker-compose.yml..."
+                   sed -i 's/# GOTRUE_EXTERNAL_GOOGLE_/GOTRUE_EXTERNAL_GOOGLE_/g' /root/supabase/docker/docker-compose.yml
+                 fi
+                 # Remove old Google values if they exist
+                 sed -i '/^GOTRUE_EXTERNAL_GOOGLE_/d' /root/supabase/docker/.env
+                 sed -i '/^GOOGLE_ENABLED/d' /root/supabase/docker/.env
+                 sed -i '/^GOOGLE_CLIENT_ID/d' /root/supabase/docker/.env
+                 sed -i '/^GOOGLE_SECRET/d' /root/supabase/docker/.env
+                 # Append new Google values in both formats (for GoTrue direct and compose mapping)
+                 echo 'GOTRUE_EXTERNAL_GOOGLE_ENABLED="true"' >> /root/supabase/docker/.env
+                 echo 'GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
+                 echo 'GOTRUE_EXTERNAL_GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
+                 echo 'GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI="https://api.dndjursoc.com.ar/auth/v1/callback"' >> /root/supabase/docker/.env
+                 echo 'GOOGLE_ENABLED="true"' >> /root/supabase/docker/.env
+                 echo 'GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
+                 echo 'GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
                 
                 # Restart Supabase containers to apply env changes
                 echo "Re-creating Supabase containers to apply new env variables..."
