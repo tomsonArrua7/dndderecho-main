@@ -68,6 +68,10 @@ jobs:
                  echo 'GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
                  echo 'GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
                 
+                # Remove conflicting containers if any exist
+                docker rm -f supabase-auth 2>/dev/null || true
+                docker rm -f 8e484fe61b5b_supabase-auth 2>/dev/null || true
+                
                 # Restart Supabase auth container to apply env changes
                 echo "Re-creating Supabase auth container to apply new env variables..."
                 cd /root/supabase/docker
