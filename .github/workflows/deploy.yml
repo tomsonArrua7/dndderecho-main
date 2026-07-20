@@ -45,7 +45,29 @@ jobs:
             else
               echo "WARNING: /root/supabase/docker/.env file not found"
             fi
-
+            # Configure Google OAuth variables inside /root/supabase/docker/.env
+            if [ -n "${{ secrets.GOOGLE_CLIENT_ID }}" ] && [ -n "${{ secrets.GOOGLE_CLIENT_SECRET }}" ]; then
+              if [ -f "/root/supabase/docker/.env" ]; then
+                echo "Configuring Google OAuth inside self-hosted Supabase..."
+                # Remove old Google values if they exist
+                sed -i '/^GOTRUE_EXTERNAL_GOOGLE_/d' /root/supabase/docker/.env
+                # Append new Google values
+                echo 'GOTRUE_EXTERNAL_GOOGLE_ENABLED="true"' >> /root/supabase/docker/.env
+                echo 'GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
+                echo 'GOTRUE_EXTERNAL_GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
+                echo 'GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI="https://api.dndjursoc.com.ar/auth/v1/callback"' >> /root/supabase/docker/.env
+                
+                # Restart Supabase auth container
+                echo "Restarting Supabase auth/GoTrue container..."
+                cd /root/supabase/docker
+                docker compose up -d --force-recreate auth
+                cd /home/dndjursoc/htdocs/dndjursoc.com.ar
+              else
+                echo "WARNING: /root/supabase/docker/.env not found, could not configure Google OAuth"
+              fi
+            else
+              echo "INFO: Google OAuth secrets not set in GitHub. Skipping server-side configuration."
+            fi
             npm ci --prefer-offline 2>/dev/null || npm install
             npm run build
             mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
