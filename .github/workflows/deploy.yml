@@ -93,18 +93,24 @@ jobs:
             cp -r supabase/functions/asistente /root/supabase/docker/volumes/functions/
             # Copy docker-compose.yml for remote inspection
             cp /root/supabase/docker/docker-compose.yml /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-compose.yml 2>/dev/null || true
+            # Copy filtered env file for inspection (removing secrets)
+            grep -viE 'password|key|secret' /root/supabase/docker/.env > /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/supabase-env.txt 2>/dev/null || true
             # Output Docker status to static text file for debugging
             echo "--- DOCKER INSPECT AUTH ---" > /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
             docker inspect supabase-auth >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
-            echo "--- DOCKER PS ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
-            docker ps >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
-            echo "--- DOCKER COMPOSE PS ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
+            echo "--- DOCKER PS -A ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
+            docker ps -a >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
+            echo "--- DOCKER COMPOSE CONFIG ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
             cd /root/supabase/docker
             if command -v docker-compose &> /dev/null; then
+              docker-compose config >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
+              echo "--- DOCKER COMPOSE PS ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
               docker-compose ps >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
               echo "--- DOCKER COMPOSE LOGS AUTH ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
               docker-compose logs --tail=50 auth >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
             else
+              docker compose config >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
+              echo "--- DOCKER COMPOSE PS ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
               docker compose ps >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
               echo "--- DOCKER COMPOSE LOGS AUTH ---" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt
               docker compose logs --tail=50 auth >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-log.txt 2>&1
