@@ -20,7 +20,15 @@ jobs:
           script: |
             git config --global --add safe.directory /home/dndjursoc/htdocs/dndjursoc.com.ar
             cd /home/dndjursoc/htdocs/dndjursoc.com.ar
-            git pull origin master
+            if [ ! -d ".git" ]; then
+              echo "No .git folder found. Reinitializing repository..."
+              git init
+              git remote add origin https://github.com/tomsonArrua7/dndderecho-main.git
+              git fetch
+              git checkout -f master
+            else
+              git pull origin master
+            fi
             npm ci --prefer-offline 2>/dev/null || npm install
             npm run build
             mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
