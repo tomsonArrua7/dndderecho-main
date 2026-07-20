@@ -57,10 +57,14 @@ jobs:
                 echo 'GOTRUE_EXTERNAL_GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
                 echo 'GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI="https://api.dndjursoc.com.ar/auth/v1/callback"' >> /root/supabase/docker/.env
                 
-                # Restart Supabase auth container
-                echo "Restarting Supabase auth/GoTrue container..."
+                # Restart Supabase containers to apply env changes
+                echo "Re-creating Supabase containers to apply new env variables..."
                 cd /root/supabase/docker
-                docker compose up -d --force-recreate auth
+                if command -v docker-compose &> /dev/null; then
+                  docker-compose up -d
+                else
+                  docker compose up -d
+                fi
                 cd /home/dndjursoc/htdocs/dndjursoc.com.ar
               else
                 echo "WARNING: /root/supabase/docker/.env not found, could not configure Google OAuth"
