@@ -24,10 +24,13 @@ jobs:
               echo "No .git folder found. Reinitializing repository..."
               git init
               git remote add origin https://github.com/tomsonArrua7/dndderecho-main.git
-              git fetch
+              git fetch origin master
               git checkout -f master
             else
-              git pull origin master
+              echo "Fetching latest origin/master and forcing hard reset..."
+              git fetch origin master
+              git reset --hard origin/master
+              git clean -fd
             fi
 
             # Auto-extract local self-hosted Supabase ANON_KEY and create .env
@@ -90,8 +93,11 @@ jobs:
               echo "INFO: Google OAuth secrets not set in GitHub. Skipping server-side configuration."
             fi
             npm ci --prefer-offline 2>/dev/null || npm install
-            npm run build
+            echo "Running npm run build..."
+            npm run build > /tmp/npm-build.log 2>&1 || true
+            cp /tmp/npm-build.log /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/npm-build-log.txt 2>/dev/null || true
             cp -r dist/* /home/dndjursoc/htdocs/dndjursoc.com.ar/ 2>/dev/null || true
+            cp -r dist/* /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/ 2>/dev/null || true
             mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
             cp -r supabase/functions/mass-mailing /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/send-match-email /root/supabase/docker/volumes/functions/
