@@ -31,12 +31,12 @@ export const HeroActions = () => {
           <div className="relative z-10 flex flex-col h-full justify-between">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white font-black text-[10px] uppercase tracking-[0.2em] mb-6 border border-white/10 backdrop-blur-md">
-                <BookOpen className="h-3 w-3 text-red-400" /> Nuevo Ingreso
+                <BookOpen className="h-3 w-3 text-red-400" /> <span style={{ color: '#FFFFFF' }}>Nuevo Ingreso</span>
               </div>
-              <h3 className="font-display text-3xl md:text-5xl font-black mb-4 text-white leading-tight tracking-tight">
+              <h3 className="font-display text-3xl md:text-5xl font-black mb-4 !text-white leading-tight tracking-tight" style={{ color: '#FFFFFF' }}>
                 ¿Sos Ingresante?
               </h3>
-              <p className="text-white/70 text-base md:text-lg mb-8 leading-relaxed font-medium">
+              <p className="!text-white/80 text-base md:text-lg mb-8 leading-relaxed font-medium" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
                 Encontrá acá todo lo que necesitás para arrancar tu carrera en la UNLP: Guías, fechas clave y materiales iniciales.
               </p>
             </div>
@@ -62,12 +62,12 @@ export const HeroActions = () => {
           <div className="relative z-10 flex flex-col h-full justify-between">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/20 text-red-300 font-black text-[10px] uppercase tracking-[0.2em] mb-6 border border-red-500/30 backdrop-blur-md">
-                <ShieldCheck className="h-3 w-3 text-red-400" strokeWidth={1.5} /> Innovación
+                <ShieldCheck className="h-3 w-3 text-red-400" strokeWidth={1.5} /> <span style={{ color: '#FCA5A5' }}>Innovación</span>
               </div>
-              <h3 className="font-display text-3xl md:text-5xl font-black mb-4 text-white leading-tight tracking-tight">
+              <h3 className="font-display text-3xl md:text-5xl font-black mb-4 !text-white leading-tight tracking-tight" style={{ color: '#FFFFFF' }}>
                 ¿Buscás cambiar de comisión?
               </h3>
-              <p className="text-white/70 text-base md:text-lg mb-8 leading-relaxed font-medium">
+              <p className="!text-white/80 text-base md:text-lg mb-8 leading-relaxed font-medium" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
                 ¡Encontrá permuta rápido y fácil! Publicás, matcheas y listo.
               </p>
             </div>
@@ -83,8 +83,8 @@ export const HeroActions = () => {
                   <div className="bg-red-600 rounded-full p-1 shadow-red-500/40">
                     <Sparkles className="h-3 w-3 text-white" />
                   </div>
-                  <span className="text-white text-xs font-medium">
-                    <strong>{realizadasCount}</strong> permutas
+                  <span className="!text-white text-xs font-medium" style={{ color: '#FFFFFF' }}>
+                    <strong style={{ color: '#FFFFFF' }}>{realizadasCount}</strong> permutas
                   </span>
                 </div>
               )}
@@ -100,12 +100,12 @@ export const HeroActions = () => {
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="space-y-4 max-w-2xl text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/20 text-red-200 font-black text-[10px] uppercase tracking-[0.2em] border border-red-500/30 backdrop-blur-md">
-                <Sparkles className="h-3.5 w-3.5 text-red-400" /> Inteligencia Artificial
+                <Sparkles className="h-3.5 w-3.5 text-red-400" /> <span style={{ color: '#FECACA' }}>Inteligencia Artificial</span>
               </div>
-              <h3 className="font-display text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
+              <h3 className="font-display text-3xl md:text-4xl font-black !text-white leading-tight tracking-tight" style={{ color: '#FFFFFF' }}>
                 Tutor Virtual: Asistente DND
               </h3>
-              <p className="text-white/70 text-base leading-relaxed font-medium">
+              <p className="!text-white/80 text-base leading-relaxed font-medium" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
                 ¿Tenés dudas sobre alguna materia, cátedra o comisión? Nuestro asistente con IA lee tus apuntes y te responde en tiempo real con directrices específicas de tu cursada.
               </p>
             </div>
