@@ -18,87 +18,34 @@ jobs:
           password: ${{ secrets.DEPLOY_ROOT_PASSWORD }}
           port: 5696
           script: |
-            git config --global --add safe.directory /home/dndjursoc/htdocs/dndjursoc.com.ar
+            echo "DEPLOY START: $(date)" > /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
+            git config --global --add safe.directory '*'
             cd /home/dndjursoc/htdocs/dndjursoc.com.ar
-            if [ ! -d ".git" ]; then
-              echo "No .git folder found. Reinitializing repository..."
-              git init
-              git remote add origin https://github.com/tomsonArrua7/dndderecho-main.git
-              git fetch origin master
-              git checkout -f master
-            else
-              echo "Fetching latest origin/master and forcing hard reset..."
-              git fetch origin master
-              git reset --hard origin/master
-              git clean -fd
-            fi
+            
+            echo "STEP 1: GIT FETCH & RESET" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
+            git fetch origin master
+            git reset --hard origin/master
+            git clean -fd
 
-            # Auto-extract local self-hosted Supabase ANON_KEY and create .env
-            echo "Extracting local Supabase credentials from Docker env..."
+            echo "STEP 2: ENV & DOCKER CHECK" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
             if [ -f "/root/supabase/docker/.env" ]; then
               LOCAL_ANON_KEY=$(grep '^ANON_KEY=' /root/supabase/docker/.env | cut -d'=' -f2- | tr -d '"\r\n' | sed 's/^"//;s/"$//')
               if [ -n "$LOCAL_ANON_KEY" ]; then
                 echo "VITE_SUPABASE_URL=\"https://api.dndjursoc.com.ar\"" > .env
                 echo "VITE_SUPABASE_ANON_KEY=\"$LOCAL_ANON_KEY\"" >> .env
                 echo "VITE_TURNSTILE_SITE_KEY=\"0x4AAAAAAD5z1Imm9ecQi4tW\"" >> .env
-                echo "Successfully generated .env file automatically."
-              else
-                echo "WARNING: ANON_KEY variable not found inside /root/supabase/docker/.env"
               fi
-            else
-              echo "WARNING: /root/supabase/docker/.env file not found"
             fi
-            # Configure Google OAuth variables inside /root/supabase/docker/.env
-            if [ -n "${{ secrets.GOOGLE_CLIENT_ID }}" ] && [ -n "${{ secrets.GOOGLE_CLIENT_SECRET }}" ]; then
-              if [ -f "/root/supabase/docker/.env" ]; then
-                 echo "Configuring Google OAuth inside self-hosted Supabase..."
-                 # Uncomment Google provider in docker-compose.yml
-                 if [ -f "/root/supabase/docker/docker-compose.yml" ]; then
-                   echo "Uncommenting Google provider in docker-compose.yml..."
-                   sed -i 's/# GOTRUE_EXTERNAL_GOOGLE_/GOTRUE_EXTERNAL_GOOGLE_/g' /root/supabase/docker/docker-compose.yml
-                 fi
-                 # Remove old Google values if they exist
-                 sed -i '/^GOTRUE_EXTERNAL_GOOGLE_/d' /root/supabase/docker/.env
-                 sed -i '/^GOOGLE_ENABLED/d' /root/supabase/docker/.env
-                 sed -i '/^GOOGLE_CLIENT_ID/d' /root/supabase/docker/.env
-                 sed -i '/^GOOGLE_SECRET/d' /root/supabase/docker/.env
-                 # Append new Google values in both formats (for GoTrue direct and compose mapping)
-                 echo 'GOTRUE_EXTERNAL_GOOGLE_ENABLED="true"' >> /root/supabase/docker/.env
-                 echo 'GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
-                 echo 'GOTRUE_EXTERNAL_GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
-                 echo 'GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI="https://api.dndjursoc.com.ar/auth/v1/callback"' >> /root/supabase/docker/.env
-                 echo 'GOOGLE_ENABLED="true"' >> /root/supabase/docker/.env
-                 echo 'GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"' >> /root/supabase/docker/.env
-                 echo 'GOOGLE_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"' >> /root/supabase/docker/.env
-                
-                # Remove conflicting containers if any exist
-                docker rm -f supabase-auth 2>/dev/null || true
-                docker rm -f 8e484fe61b5b_supabase-auth 2>/dev/null || true
-                
-                # Restart Supabase auth container to apply env changes
-                echo "Re-creating Supabase auth container to apply new env variables..."
-                cd /root/supabase/docker
-                if docker compose version &> /dev/null; then
-                  docker compose up -d > /tmp/docker-up-log.txt 2>&1 || true
-                elif command -v docker-compose &> /dev/null; then
-                  docker-compose up -d > /tmp/docker-up-log.txt 2>&1 || true
-                else
-                  echo "No docker compose or docker-compose found" > /tmp/docker-up-log.txt
-                fi
-                cd /home/dndjursoc/htdocs/dndjursoc.com.ar
-              else
-                echo "WARNING: /root/supabase/docker/.env not found, could not configure Google OAuth"
-              fi
-            else
-              echo "INFO: Google OAuth secrets not set in GitHub. Skipping server-side configuration."
-            fi
+
+            echo "STEP 3: NPM BUILD" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
             npm ci --prefer-offline 2>/dev/null || npm install
-            echo "Running npm run build..."
-            npm run build > /tmp/npm-build.log 2>&1 || true
-            cp /tmp/npm-build.log /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/npm-build-log.txt 2>/dev/null || true
+            npm run build
+
+            echo "STEP 4: COPY DIST FILES" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
             cp -r dist/* /home/dndjursoc/htdocs/dndjursoc.com.ar/ 2>/dev/null || true
             cp -r dist/* /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/ 2>/dev/null || true
-            mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
+
+            echo "DEPLOY FINISHED AT $(date)" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
             cp -r supabase/functions/mass-mailing /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/send-match-email /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/calendario-ics /root/supabase/docker/volumes/functions/
