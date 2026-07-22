@@ -6,6 +6,7 @@ import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
+import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 
 import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users } from "lucide-react";
 
@@ -28,6 +29,8 @@ export const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const links = publicLinks;
+  const isLight = resolvedTheme === "light";
+  const logoSrc = isLight ? logoDndNuevoFondoBlanco : "/LogoDNDnuevo.png";
 
   /* Close drawer on outside click */
   useEffect(() => {
@@ -54,7 +57,12 @@ export const Navbar = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-md bg-gradient-to-r from-[#060A18]/90 via-[#10132B]/85 to-[#4A0E17]/90 selection:bg-accent/30 shadow-lg"
+        className={cn(
+          "sticky top-0 z-50 transition-colors duration-300 backdrop-blur-md shadow-lg border-b",
+          isLight
+            ? "bg-white/95 border-slate-200/90 text-slate-900"
+            : "bg-gradient-to-r from-[#060A18]/90 via-[#10132B]/85 to-[#4A0E17]/90 border-white/10 text-white selection:bg-accent/30"
+        )}
       >
         <div className="w-full px-3 md:px-8 flex h-16 items-center justify-between gap-2">
 
@@ -64,10 +72,14 @@ export const Navbar = () => {
             className="flex items-center gap-2 group shrink-0 transition-transform duration-300 hover:scale-105"
             onClick={() => setOpen(false)}
           >
-            <img src="/LogoDNDnuevo.png" alt="Dnd." className="h-5 md:h-6 w-auto object-contain" />
+            <img src={logoSrc} alt="Dnd." className="h-5 md:h-6 w-auto object-contain" />
             <div className="leading-[1.15] flex flex-col text-left font-display">
-              <span className="text-white text-[9px] md:text-[10px] font-black tracking-widest uppercase">DEFENDAMOS</span>
-              <span className="text-red-500 text-[9px] md:text-[10px] font-black tracking-widest uppercase">NUESTRO DERECHO</span>
+              <span className={cn("text-[9px] md:text-[10px] font-black tracking-widest uppercase", isLight ? "text-[#0B132B]" : "text-white")}>
+                DEFENDAMOS
+              </span>
+              <span className="text-red-500 text-[9px] md:text-[10px] font-black tracking-widest uppercase">
+                NUESTRO DERECHO
+              </span>
             </div>
           </Link>
 
@@ -88,7 +100,9 @@ export const Navbar = () => {
                       "relative px-1.5 xl:px-3 py-1.5 flex flex-col items-center group",
                       "text-[10px] xl:text-[11px] 2xl:text-[12px] font-black uppercase tracking-[0.1em] whitespace-nowrap",
                       "transition-all duration-300 ease-out",
-                      isActive ? "text-white" : "text-white/60 hover:text-white"
+                      isActive
+                        ? (isLight ? "text-slate-950 font-black" : "text-white font-black")
+                        : (isLight ? "text-slate-600 hover:text-red-600" : "text-white/60 hover:text-white")
                     )
                   }
                 >
@@ -121,11 +135,16 @@ export const Navbar = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-full text-white/60 hover:text-white hover:bg-white/10 border border-white/10 transition-all duration-300 flex items-center justify-center cursor-pointer"
+              className={cn(
+                "p-2 rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer",
+                isLight
+                  ? "text-slate-700 hover:bg-slate-100 border border-slate-200"
+                  : "text-white/60 hover:text-white hover:bg-white/10 border border-white/10"
+              )}
               aria-label="Cambiar tema"
             >
               {resolvedTheme === "light" ? (
-                <Moon className="h-4 w-4 text-indigo-400 fill-indigo-400/10" strokeWidth={2} />
+                <Moon className="h-4 w-4 text-indigo-500 fill-indigo-500/10" strokeWidth={2} />
               ) : (
                 <Sun className="h-4 w-4 text-amber-400 fill-amber-400/10" strokeWidth={2} />
               )}
@@ -140,8 +159,10 @@ export const Navbar = () => {
                   onMouseEnter={() => setDropdownOpen(true)}
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className={cn(
-                    "inline-flex items-center gap-2 h-9 px-4 xl:px-5 rounded-full text-[11px] font-black uppercase tracking-widest",
-                    "bg-black/40 border border-white/20 text-white hover:bg-white/10 hover:border-red-500/50 transition-all duration-300 shadow-md"
+                    "inline-flex items-center gap-2 h-9 px-4 xl:px-5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all duration-300 shadow-md",
+                    isLight
+                      ? "bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 hover:border-red-500/50"
+                      : "bg-black/40 border border-white/20 text-white hover:bg-white/10 hover:border-red-500/50"
                   )}
                 >
                   <User className="h-4 w-4 text-red-500" strokeWidth={2.5} /> 

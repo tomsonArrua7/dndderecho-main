@@ -3,16 +3,23 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import rectoradoNueva from "@/assets/rectorado-nueva.png";
 import logoDndNuevo from "@/assets/logo-dnd-nuevo.png";
+import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { HeroActions } from "@/components/HeroActions";
 import { motion } from "framer-motion";
 import { YouTubeSection } from "@/components/YouTubeSection";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const [realizadasCount, setRealizadasCount] = useState(0);
   const location = useLocation();
+  const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === "light";
+
+  const heroLogoSrc = isLight ? logoDndNuevoFondoBlanco : logoDndNuevo;
 
   useEffect(() => {
     supabase.from("permutas").select("*", { count: "exact", head: true }).eq("status", "realizada").then(({ count }) => {
@@ -47,13 +54,25 @@ const Index = () => {
           <img
             src={rectoradoNueva}
             alt="Facultad de Derecho UNLP - Rectorado"
-            className="w-full h-full object-cover object-center opacity-85"
+            className={cn(
+              "w-full h-full object-cover object-center transition-opacity duration-500",
+              isLight ? "opacity-35" : "opacity-90"
+            )}
           />
-          {/* Capa Duotono Azul Marino (izquierda) a Rojo Carmesí (derecha) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#040A21]/75 via-[#0D1536]/40 to-[#5C0A19]/70 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#040A21]/50 via-transparent to-[#5C0A19]/50" />
-          {/* Capa de sombra vertical para suavizar bordes */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#060A18]/80 via-transparent to-[#0A0E1A]" />
+          {/* Capa Duotono: Ajustado según modo día y modo noche */}
+          {isLight ? (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-100/60 via-white/50 to-red-100/60" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/30 to-background" />
+            </>
+          ) : (
+            <>
+              {/* Degradé duotono más intenso (Azul Marino + Rojo Carmesí) */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#020514]/92 via-[#080D21]/80 to-[#5C0A19]/88 mix-blend-multiply" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#020514]/75 via-[#080D21]/50 to-[#5C0A19]/70" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#060A18]/85 via-transparent to-[#0A0E1A]" />
+            </>
+          )}
         </motion.div>
 
         {/* Content */}
@@ -67,9 +86,12 @@ const Index = () => {
             className="mb-8 md:mb-10"
           >
             <img 
-              src={logoDndNuevo} 
+              src={heroLogoSrc} 
               alt="Dnd." 
-              className="w-60 sm:w-72 md:w-96 h-auto max-w-full object-contain drop-shadow-[0_12px_35px_rgba(220,38,38,0.45)]" 
+              className={cn(
+                "w-60 sm:w-72 md:w-96 h-auto max-w-full object-contain transition-all duration-300",
+                isLight ? "drop-shadow-[0_10px_25px_rgba(0,0,0,0.12)]" : "drop-shadow-[0_12px_35px_rgba(220,38,38,0.45)]"
+              )}
             />
           </motion.div>
 
@@ -78,7 +100,10 @@ const Index = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-10 md:mb-12 font-medium leading-relaxed tracking-wide px-4"
+            className={cn(
+              "text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-10 md:mb-12 font-medium leading-relaxed tracking-wide px-4",
+              isLight ? "text-slate-800 font-semibold" : "text-white/90"
+            )}
           >
             La plataforma estudiantil de{" "}
             <span className="text-[#DC2626] font-extrabold drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
