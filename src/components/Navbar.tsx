@@ -83,49 +83,79 @@ export const Navbar = () => {
             </div>
           </Link>
 
-          {/* ── Nav desktop ── */}
-          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-2 flex-1 justify-center min-w-0 px-2">
-            {links.map((l, i) => (
-              <motion.div
-                key={l.to}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
-              >
+          {/* ── Nav desktop (Cápsula Flotante Glassmorphism) ── */}
+          <nav className="hidden lg:flex items-center flex-1 justify-center min-w-0 px-2">
+            <div
+              className={cn(
+                "inline-flex items-center gap-1 p-1.5 rounded-full backdrop-blur-xl border transition-all duration-300 shadow-lg",
+                isLight
+                  ? "bg-slate-100/90 border-slate-200/90 shadow-slate-200/50"
+                  : "bg-white/[0.04] border-white/10 shadow-black/40"
+              )}
+            >
+              {links.map((l) => (
                 <NavLink
+                  key={l.to}
                   to={l.to}
                   end={l.to === "/"}
                   className={({ isActive }) =>
                     cn(
-                      "relative px-1.5 xl:px-3 py-1.5 flex flex-col items-center group",
-                      "text-[10px] xl:text-[11px] 2xl:text-[12px] font-black uppercase tracking-[0.1em] whitespace-nowrap",
-                      "transition-all duration-300 ease-out",
+                      "relative px-3.5 py-1.5 rounded-full flex items-center gap-1.5 group transition-all duration-300 select-none",
+                      "text-[11px] xl:text-[11.5px] font-extrabold uppercase tracking-[0.08em] whitespace-nowrap",
                       isActive
-                        ? (isLight ? "text-slate-950 font-black" : "text-white font-black")
-                        : (isLight ? "text-slate-600 hover:text-red-600" : "text-white/60 hover:text-white")
+                        ? (isLight ? "text-slate-950" : "text-white")
+                        : (isLight ? "text-slate-600 hover:text-slate-950" : "text-white/60 hover:text-white")
                     )
                   }
                 >
                   {({ isActive }) => (
                     <>
-                      <div className="flex items-center">
-                        <span>{l.label}</span>
-                      </div>
- 
-                      {/* Premium indicator bar */}
-                      <span
+                      {/* Active floating background pill (Framer Motion) */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="navbar-active-pill"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          className={cn(
+                            "absolute inset-0 rounded-full shadow-md z-0",
+                            isLight
+                              ? "bg-white border border-slate-200/80 shadow-slate-200"
+                              : "bg-gradient-to-r from-red-600/35 via-red-500/25 to-red-600/35 border border-red-500/40 shadow-[0_0_12px_rgba(220,38,38,0.35)]"
+                          )}
+                        />
+                      )}
+
+                      {/* Icon */}
+                      <l.icon
                         className={cn(
-                          "absolute bottom-0 left-0 h-[2.5px] rounded-full transition-all duration-500 ease-out",
+                          "h-3.5 w-3.5 relative z-10 transition-transform duration-300 group-hover:scale-110",
                           isActive
-                            ? "w-full bg-red-500 shadow-[0_0_10px_rgba(220,38,38,0.6)]"
-                            : "w-0 bg-red-500 group-hover:w-1/2 group-hover:left-1/4"
+                            ? "text-red-500"
+                            : (isLight ? "text-slate-500 group-hover:text-red-500" : "text-white/40 group-hover:text-red-400")
                         )}
+                        strokeWidth={2.2}
                       />
+
+                      {/* Label */}
+                      <span className="relative z-10">{l.label}</span>
+
+                      {/* Badge IA for Asistente DND */}
+                      {l.to === "/asistente" && (
+                        <span
+                          className={cn(
+                            "relative z-10 text-[8px] font-black px-1.5 py-0.5 rounded-full tracking-tighter uppercase leading-none border transition-all duration-300",
+                            isActive
+                              ? "bg-red-500 text-white border-red-400 shadow-[0_0_8px_rgba(220,38,38,0.6)]"
+                              : "bg-red-500/20 text-red-400 border-red-500/30 group-hover:bg-red-500 group-hover:text-white"
+                          )}
+                        >
+                          IA
+                        </span>
+                      )}
                     </>
                   )}
                 </NavLink>
-              </motion.div>
-            ))}
+              ))}
+            </div>
           </nav>
 
           {/* ── Actions ── */}
