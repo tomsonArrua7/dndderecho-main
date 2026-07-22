@@ -10,7 +10,6 @@ import { useTheme } from "next-themes";
 import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users } from "lucide-react";
 
 const publicLinks = [
-  { to: "/",                label: "Inicio",         icon: Home },
   { to: "/noticias",        label: "Noticias",       icon: Newspaper },
   { to: "/apuntes",         label: "Biblioteca",     icon: BookOpen },
   { to: "/asistente",       label: "Asistente DND",  icon: Bot },
@@ -57,16 +56,16 @@ export const Navbar = () => {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-md bg-gradient-to-r from-[#060A18]/90 via-[#10132B]/85 to-[#4A0E17]/90 selection:bg-accent/30 shadow-lg"
       >
-        <div className="container flex h-16 items-center justify-between gap-2 xl:gap-4">
+        <div className="max-w-7xl mx-auto px-3 md:px-6 flex h-16 items-center justify-between gap-1 xl:gap-4">
 
           {/* ── Logo ── */}
           <Link
             to="/"
-            className="flex items-center gap-3 group shrink-0 transition-transform duration-300 hover:scale-105"
+            className="flex items-center gap-2.5 group shrink-0 transition-transform duration-300 hover:scale-105"
             onClick={() => setOpen(false)}
           >
-            <img src="/LogoDNDnuevo.png" alt="Dnd." className="h-8 md:h-10 w-auto object-contain" />
-            <div className="leading-tight hidden sm:flex items-center gap-1.5 text-[11px] md:text-xs font-black tracking-widest uppercase font-display">
+            <img src="/LogoDNDnuevo.png" alt="Dnd." className="h-7 md:h-9 w-auto object-contain" />
+            <div className="leading-tight hidden sm:flex lg:hidden 2xl:flex items-center gap-1.5 text-[10px] md:text-xs font-black tracking-widest uppercase font-display">
               <span className="text-white">DEFENDAMOS</span>
               <span className="text-red-500 font-bold">•</span>
               <span className="text-red-500">NUESTRO DERECHO</span>
@@ -74,7 +73,7 @@ export const Navbar = () => {
           </Link>
 
           {/* ── Nav desktop ── */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 flex-1 justify-center">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-2 flex-1 justify-center min-w-0">
             {links.map((l, i) => (
               <motion.div
                 key={l.to}
@@ -87,8 +86,8 @@ export const Navbar = () => {
                   end={l.to === "/"}
                   className={({ isActive }) =>
                     cn(
-                      "relative px-2.5 xl:px-3.5 py-2 flex flex-col items-center group",
-                      "text-[11px] xl:text-[12px] font-black uppercase tracking-[0.15em] whitespace-nowrap",
+                      "relative px-2 xl:px-3 py-1.5 flex flex-col items-center group",
+                      "text-[10px] xl:text-[11px] 2xl:text-[12px] font-black uppercase tracking-[0.12em] whitespace-nowrap",
                       "transition-all duration-300 ease-out",
                       isActive ? "text-white" : "text-white/60 hover:text-white"
                     )

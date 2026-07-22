@@ -1,8 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import facultad from "@/assets/facultad_unlp_optimized.png";
-import { DndMark } from "@/components/DndMark";
+import rectoradoNueva from "@/assets/rectorado-nueva.png";
+import logoDndNuevo from "@/assets/logo-dnd-nuevo.png";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { InstagramFeed } from "@/components/InstagramFeed";
@@ -45,12 +45,13 @@ const Index = () => {
           className="absolute inset-0 -z-10"
         >
           <img
-            src="/RectoradoNueva.png"
+            src={rectoradoNueva}
             alt="Facultad de Derecho UNLP - Rectorado"
             className="w-full h-full object-cover object-center"
           />
           {/* Capa Duotono Azul Marino (izquierda) a Rojo Carmesí (derecha) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#040817]/95 via-[#0D122B]/80 to-[#5C0A19]/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#030612]/75 via-[#0A0F24]/50 to-[#4A0815]/70 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#030612]/60 via-[#0A0F24]/35 to-[#4A0815]/55" />
           {/* Capa de sombra vertical para suavizar bordes */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-[#0A0E1A]" />
         </motion.div>
@@ -66,9 +67,9 @@ const Index = () => {
             className="mb-8 md:mb-10"
           >
             <img 
-              src="/LogoDNDnuevo.png" 
+              src={logoDndNuevo} 
               alt="Dnd." 
-              className="w-60 sm:w-72 md:w-96 h-auto max-w-full object-contain drop-shadow-[0_12px_35px_rgba(220,38,38,0.35)]" 
+              className="w-60 sm:w-72 md:w-96 h-auto max-w-full object-contain drop-shadow-[0_12px_35px_rgba(220,38,38,0.45)]" 
             />
           </motion.div>
 
