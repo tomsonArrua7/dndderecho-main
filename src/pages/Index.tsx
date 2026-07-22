@@ -36,80 +36,70 @@ const Index = () => {
       {/* ════════════════════════════════════════════════════════════
           HERO SECTION
           ════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden hero-mask">
-        {/* Fondo fotográfico con zoom suave */}
+      <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Fondo fotográfico con zoom suave y capas duotono */}
         <motion.div 
-          initial={{ scale: 1.1 }}
+          initial={{ scale: 1.08 }}
           animate={{ scale: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
+          transition={{ duration: 1.8, ease: "easeOut" }}
           className="absolute inset-0 -z-10"
         >
           <img
-            src={facultad}
-            alt="Facultad de Derecho UNLP"
+            src="/RectoradoNueva.png"
+            alt="Facultad de Derecho UNLP - Rectorado"
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-hero" />
-          <div className="absolute inset-0 bg-primary-deep/70 mix-blend-multiply" />
+          {/* Capa Duotono Azul Marino (izquierda) a Rojo Carmesí (derecha) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#040817]/95 via-[#0D122B]/80 to-[#5C0A19]/90" />
+          {/* Capa de sombra vertical para suavizar bordes */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-[#0A0E1A]" />
         </motion.div>
 
         {/* Content */}
-        <div className="container relative z-10 pt-20 pb-32 flex flex-col items-center text-center">
+        <div className="container relative z-10 pt-16 pb-24 md:pt-20 md:pb-28 flex flex-col items-center text-center">
 
+          {/* Logo Principal Centrado */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-12"
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-8 md:mb-10"
           >
-            <DndMark size={140} className="drop-shadow-[0_0_40px_rgba(220,38,38,0.4)]" />
+            <img 
+              src="/LogoDNDnuevo.png" 
+              alt="Dnd." 
+              className="w-60 sm:w-72 md:w-96 h-auto max-w-full object-contain drop-shadow-[0_12px_35px_rgba(220,38,38,0.35)]" 
+            />
           </motion.div>
 
-          <h1 className="font-display text-4xl md:text-5xl font-bold leading-tight mb-20 text-white tracking-tight max-w-2xl mx-auto">
-            <motion.span
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="block text-xs uppercase tracking-[0.4em] text-accent font-black mb-6"
-            >
-              DND Jursoc · Facultad de Derecho
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="block"
-            >
-              Defendamos
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="block text-white/90"
-            >
-              Nuestro Derecho
-            </motion.span>
-          </h1>
-
+          {/* Párrafo Descriptivo */}
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1 }}
-            className="text-xl md:text-2xl text-white/50 max-w-2xl mx-auto mb-16 font-medium leading-relaxed tracking-tight"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-10 md:mb-12 font-medium leading-relaxed tracking-wide px-4"
           >
-            La plataforma estudiantil definitiva de DND Jursoc para la comunidad de la Facultad de Ciencias Jurídicas y Sociales (UNLP).
+            La plataforma estudiantil de{" "}
+            <span className="text-[#DC2626] font-extrabold drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+              DND Jursoc
+            </span>{" "}
+            para la comunidad de la Facultad de Ciencias Jurídicas y Sociales de la UNLP.
           </motion.p>
 
+          {/* Botón Único: COMENZAR */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="flex items-center justify-center"
           >
-            <Button asChild size="xl" className="h-16 px-10 bg-accent text-white hover:bg-accent/90 shadow-[0_15px_30px_rgba(220,38,38,0.25)] rounded-2xl text-lg font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
+            <Button
+              asChild
+              size="xl"
+              className="h-14 md:h-16 px-12 md:px-16 bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-[0_12px_30px_rgba(220,38,38,0.4)] rounded-2xl text-base md:text-lg font-black uppercase tracking-[0.2em] transition-all hover:scale-105 active:scale-95 border border-red-500/30"
+            >
               <Link to="/auth">
-                Comenzar <ArrowRight className="ml-3 h-6 w-6" />
+                COMENZAR
               </Link>
             </Button>
           </motion.div>
