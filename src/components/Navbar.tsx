@@ -56,24 +56,23 @@ export const Navbar = () => {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="sticky top-0 z-50 border-b border-white/10 backdrop-blur-md bg-gradient-to-r from-[#060A18]/90 via-[#10132B]/85 to-[#4A0E17]/90 selection:bg-accent/30 shadow-lg"
       >
-        <div className="max-w-7xl mx-auto px-3 md:px-6 flex h-16 items-center justify-between gap-1 xl:gap-4">
+        <div className="w-full px-3 md:px-8 flex h-16 items-center justify-between gap-2">
 
-          {/* ── Logo ── */}
+          {/* ── Logo + Subtext ── */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 group shrink-0 transition-transform duration-300 hover:scale-105"
+            className="flex items-center gap-2 group shrink-0 transition-transform duration-300 hover:scale-105"
             onClick={() => setOpen(false)}
           >
-            <img src="/LogoDNDnuevo.png" alt="Dnd." className="h-7 md:h-9 w-auto object-contain" />
-            <div className="leading-tight hidden sm:flex lg:hidden 2xl:flex items-center gap-1.5 text-[10px] md:text-xs font-black tracking-widest uppercase font-display">
-              <span className="text-white">DEFENDAMOS</span>
-              <span className="text-red-500 font-bold">•</span>
-              <span className="text-red-500">NUESTRO DERECHO</span>
+            <img src="/LogoDNDnuevo.png" alt="Dnd." className="h-5 md:h-6 w-auto object-contain" />
+            <div className="leading-[1.15] flex flex-col text-left font-display">
+              <span className="text-white text-[9px] md:text-[10px] font-black tracking-widest uppercase">DEFENDAMOS</span>
+              <span className="text-red-500 text-[9px] md:text-[10px] font-black tracking-widest uppercase">NUESTRO DERECHO</span>
             </div>
           </Link>
 
           {/* ── Nav desktop ── */}
-          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-2 flex-1 justify-center min-w-0">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-2 flex-1 justify-center min-w-0 px-2">
             {links.map((l, i) => (
               <motion.div
                 key={l.to}
@@ -86,8 +85,8 @@ export const Navbar = () => {
                   end={l.to === "/"}
                   className={({ isActive }) =>
                     cn(
-                      "relative px-2 xl:px-3 py-1.5 flex flex-col items-center group",
-                      "text-[10px] xl:text-[11px] 2xl:text-[12px] font-black uppercase tracking-[0.12em] whitespace-nowrap",
+                      "relative px-1.5 xl:px-3 py-1.5 flex flex-col items-center group",
+                      "text-[10px] xl:text-[11px] 2xl:text-[12px] font-black uppercase tracking-[0.1em] whitespace-nowrap",
                       "transition-all duration-300 ease-out",
                       isActive ? "text-white" : "text-white/60 hover:text-white"
                     )

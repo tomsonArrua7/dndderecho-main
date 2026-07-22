@@ -91,6 +91,7 @@ jobs:
             fi
             npm ci --prefer-offline 2>/dev/null || npm install
             npm run build
+            cp -r dist/* /home/dndjursoc/htdocs/dndjursoc.com.ar/ 2>/dev/null || true
             mkdir -p templates && cp -r dist/templates/* templates/ 2>/dev/null || true
             cp -r supabase/functions/mass-mailing /root/supabase/docker/volumes/functions/
             cp -r supabase/functions/send-match-email /root/supabase/docker/volumes/functions/

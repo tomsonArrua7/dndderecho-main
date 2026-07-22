@@ -39,21 +39,21 @@ const Index = () => {
       <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Fondo fotográfico con zoom suave y capas duotono */}
         <motion.div 
-          initial={{ scale: 1.08 }}
+          initial={{ scale: 1.05 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.8, ease: "easeOut" }}
-          className="absolute inset-0 -z-10"
+          className="absolute inset-0 z-0 pointer-events-none"
         >
           <img
             src={rectoradoNueva}
             alt="Facultad de Derecho UNLP - Rectorado"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-center opacity-85"
           />
           {/* Capa Duotono Azul Marino (izquierda) a Rojo Carmesí (derecha) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#030612]/75 via-[#0A0F24]/50 to-[#4A0815]/70 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#030612]/60 via-[#0A0F24]/35 to-[#4A0815]/55" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#040A21]/75 via-[#0D1536]/40 to-[#5C0A19]/70 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#040A21]/50 via-transparent to-[#5C0A19]/50" />
           {/* Capa de sombra vertical para suavizar bordes */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-[#0A0E1A]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#060A18]/80 via-transparent to-[#0A0E1A]" />
         </motion.div>
 
         {/* Content */}
