@@ -46,11 +46,12 @@ jobs:
             cp -r dist/* /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/ 2>/dev/null || true
 
             echo "DEPLOY FINISHED AT $(date)" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
-            cp -r supabase/functions/mass-mailing /root/supabase/docker/volumes/functions/
-            cp -r supabase/functions/send-match-email /root/supabase/docker/volumes/functions/
-            cp -r supabase/functions/calendario-ics /root/supabase/docker/volumes/functions/
-            cp -r supabase/functions/send-recovery-email /root/supabase/docker/volumes/functions/
-            cp -r supabase/functions/asistente /root/supabase/docker/volumes/functions/
+            mkdir -p /root/supabase/docker/volumes/functions/ 2>/dev/null || true
+            cp -r supabase/functions/mass-mailing /root/supabase/docker/volumes/functions/ 2>/dev/null || true
+            cp -r supabase/functions/send-match-email /root/supabase/docker/volumes/functions/ 2>/dev/null || true
+            cp -r supabase/functions/calendario-ics /root/supabase/docker/volumes/functions/ 2>/dev/null || true
+            cp -r supabase/functions/send-recovery-email /root/supabase/docker/volumes/functions/ 2>/dev/null || true
+            cp -r supabase/functions/asistente /root/supabase/docker/volumes/functions/ 2>/dev/null || true
             # Copy docker-compose.yml for remote inspection
             cp /root/supabase/docker/docker-compose.yml /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/docker-compose.yml 2>/dev/null || true
             # Copy filtered env file for inspection (removing secrets)
