@@ -62,15 +62,23 @@ const Index = () => {
           {/* Capa Duotono: Ajustado según modo día y modo noche */}
           {isLight ? (
             <>
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-100/60 via-white/50 to-red-100/60" />
-              <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/30 to-background" />
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-200/85 via-white/40 to-red-200/85" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/30 to-background" />
+              <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-sky-400/30 rounded-full blur-[100px] pointer-events-none" />
+              <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-red-400/30 rounded-full blur-[100px] pointer-events-none" />
             </>
           ) : (
             <>
-              {/* Degradé duotono más intenso (Azul Marino + Rojo Carmesí) */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#020514]/92 via-[#080D21]/80 to-[#5C0A19]/88 mix-blend-multiply" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#020514]/75 via-[#080D21]/50 to-[#5C0A19]/70" />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#060A18]/85 via-transparent to-[#0A0E1A]" />
+              {/* Degradé duotono lateral azul (izquierda) y rojo (derecha) más fuerte y cercano al centro */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#020516]/98 via-[#06123D]/92 via-40% to-transparent w-full" />
+              <div className="absolute inset-0 bg-gradient-to-l from-[#7A0B1E]/98 via-[#4A0713]/92 via-40% to-transparent w-full" />
+              
+              {/* Esferas de luz con desenfoque profundo (Spotlights azul y rojo hacia el centro) */}
+              <div className="absolute -left-24 top-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-blue-900/60 rounded-full blur-[110px] pointer-events-none" />
+              <div className="absolute -right-24 top-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-red-800/65 rounded-full blur-[110px] pointer-events-none" />
+
+              {/* Degradé de integración vertical (Navbar + Footer del Hero) */}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#060A18]/90 via-transparent to-[#0A0E1A]" />
             </>
           )}
         </motion.div>
