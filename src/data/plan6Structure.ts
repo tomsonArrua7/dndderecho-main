@@ -156,6 +156,14 @@ export const MATERIAS_PLAN6: Materia[] = [
     requisitos: [],
     requisitosEspeciales: { primerAnioCompleto: true }
   },
+  {
+    id: "10618",
+    nombre: "Taller de lecto-comprensión en Idioma II",
+    nombreCorto: "Idioma II",
+    anio: 2, duracion: "cuatrimestral", horas: 32, tipo: "idioma",
+    requisitos: [],
+    requisitosEspeciales: { primerAnioCompleto: true }
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // TERCER AÑO

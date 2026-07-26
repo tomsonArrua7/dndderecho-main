@@ -431,34 +431,34 @@ const MiEspacio = () => {
 
       {/* Modal Editar Perfil */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-md bg-slate-950 border border-white/10 text-white rounded-xl p-6">
-          <DialogTitle className="font-serif text-xl font-bold mb-2 text-red-200">
+        <DialogContent className="max-w-md bg-card text-card-foreground border border-border rounded-xl p-6 shadow-2xl">
+          <DialogTitle className="font-display text-xl font-bold mb-1 text-foreground">
             Editar Perfil
           </DialogTitle>
-          <p className="text-white/50 text-xs mb-6">
+          <p className="text-muted-foreground text-xs mb-6">
             Actualizá tus datos personales y tu foto de perfil.
           </p>
 
           <form onSubmit={handleSaveProfile} className="space-y-4">
             {/* Foto de Perfil */}
-            <div className="flex items-center gap-4 p-3 rounded-lg bg-white/[0.02] border border-white/5">
+            <div className="flex items-center gap-4 p-3.5 rounded-xl bg-muted/50 border border-border">
               <div className="relative group shrink-0">
                 {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt={name} className="h-16 w-16 rounded-full object-cover border border-white/10" />
+                  <img src={profile.avatar_url} alt={name} className="h-16 w-16 rounded-full object-cover border border-border" />
                 ) : (
-                  <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                    <User className="h-8 w-8 text-white/30" />
+                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center border border-border">
+                    <User className="h-8 w-8 text-muted-foreground" />
                   </div>
                 )}
                 {uploading && (
-                  <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
-                    <Loader2 className="h-5 w-5 animate-spin text-white" />
+                  <div className="absolute inset-0 rounded-full bg-background/80 backdrop-blur-xs flex items-center justify-center">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
                   </div>
                 )}
               </div>
               <div className="flex-1">
-                <Label htmlFor="avatar-file" className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold hover:bg-white/10 transition-colors">
-                  <Camera className="h-3.5 w-3.5" />
+                <Label htmlFor="avatar-file" className="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-background border border-input text-xs font-semibold text-foreground hover:bg-muted transition-colors shadow-xs">
+                  <Camera className="h-3.5 w-3.5 text-accent" />
                   {uploading ? "Subiendo..." : "Cambiar Foto"}
                 </Label>
                 <input 
@@ -469,26 +469,26 @@ const MiEspacio = () => {
                   disabled={uploading} 
                   className="hidden" 
                 />
-                <p className="text-[10px] text-white/30 mt-1">Imágenes PNG, JPG o WEBP</p>
+                <p className="text-[10px] text-muted-foreground mt-1.5">Imágenes PNG, JPG o WEBP</p>
               </div>
             </div>
 
             {/* Nombre */}
             <div>
-              <Label htmlFor="edit-name">Nombre Completo</Label>
+              <Label htmlFor="edit-name" className="text-xs font-bold text-foreground">Nombre Completo</Label>
               <Input
                 id="edit-name"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 required
-                className="bg-white/5 border-white/10 text-white focus:border-red-500 mt-1"
+                className="bg-background border-input text-foreground focus-visible:ring-accent mt-1.5"
                 maxLength={80}
               />
             </div>
 
             {/* Año Ingreso */}
             <div>
-              <Label htmlFor="edit-anio">Año de ingreso a la facultad</Label>
+              <Label htmlFor="edit-anio" className="text-xs font-bold text-foreground">Año de ingreso a la facultad</Label>
               <Input
                 id="edit-anio"
                 type="text"
@@ -497,35 +497,35 @@ const MiEspacio = () => {
                 onChange={(e) => setEditAnioIngreso(e.target.value.replace(/\D/g, "").slice(0, 4))}
                 required
                 placeholder="Ej: 2023"
-                className="bg-white/5 border-white/10 text-white focus:border-red-500 mt-1"
+                className="bg-background border-input text-foreground focus-visible:ring-accent mt-1.5"
               />
             </div>
 
             {/* Teléfono */}
             <div>
-              <Label htmlFor="edit-phone">Teléfono de contacto</Label>
+              <Label htmlFor="edit-phone" className="text-xs font-bold text-foreground">Teléfono de contacto</Label>
               <Input
                 id="edit-phone"
                 type="tel"
                 value={editPhone}
                 onChange={(e) => setEditPhone(e.target.value)}
-                className="bg-white/5 border-white/10 text-white focus:border-red-500 mt-1"
+                className="bg-background border-input text-foreground focus-visible:ring-accent mt-1.5"
                 placeholder="Ej: 2215016468"
               />
             </div>
 
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-border">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-xs font-bold uppercase tracking-widest text-white/50 hover:bg-white/10 hover:text-white"
+                className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
-                className="bg-red-650 hover:bg-red-700 text-xs font-bold uppercase tracking-widest text-white"
+                className="bg-accent hover:bg-accent/90 text-xs font-bold uppercase tracking-widest text-white shadow-sm"
                 disabled={savingProfile || uploading}
               >
                 {savingProfile && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
@@ -538,18 +538,18 @@ const MiEspacio = () => {
 
       {/* Dialog para recortar foto de perfil */}
       <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-md bg-slate-950 border border-white/10 text-white rounded-xl p-6 z-[200]">
-          <DialogTitle className="font-serif text-lg font-bold mb-1 text-red-200">
+        <DialogContent className="max-w-md bg-card text-card-foreground border border-border rounded-xl p-6 z-[200] shadow-2xl">
+          <DialogTitle className="font-display text-lg font-bold mb-1 text-foreground">
             Ajustar foto de perfil
           </DialogTitle>
-          <p className="text-white/50 text-xs mb-4">
+          <p className="text-muted-foreground text-xs mb-4">
             Arrastrá la foto para moverla y usá la barra de abajo para hacer zoom para que calce bien en el círculo.
           </p>
           
           <div className="flex flex-col items-center gap-6">
             {/* Circular Preview Mask */}
             <div 
-              className="relative w-[280px] h-[280px] overflow-hidden rounded-full border border-white/20 bg-slate-900 cursor-move"
+              className="relative w-[280px] h-[280px] overflow-hidden rounded-full border-2 border-border bg-muted cursor-move shadow-inner"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -592,14 +592,14 @@ const MiEspacio = () => {
                   }}
                 />
               )}
-              <div className="absolute inset-0 rounded-full border-2 border-red-500/30 pointer-events-none" />
+              <div className="absolute inset-0 rounded-full border-2 border-accent/40 pointer-events-none" />
             </div>
 
             {/* Zoom Slider */}
             <div className="w-full flex flex-col gap-2">
-              <div className="flex justify-between text-xs text-white/50">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Zoom</span>
-                <span>{Math.round(zoom * 100)}%</span>
+                <span className="font-bold text-foreground">{Math.round(zoom * 100)}%</span>
               </div>
               <input
                 type="range"
@@ -608,7 +608,7 @@ const MiEspacio = () => {
                 step="0.01"
                 value={zoom}
                 onChange={(e) => setZoom(parseFloat(e.target.value))}
-                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-red-500"
+                className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-accent"
               />
             </div>
 
@@ -619,14 +619,14 @@ const MiEspacio = () => {
                   setIsCropModalOpen(false);
                   setTempImage(null);
                 }}
-                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-white/50 hover:bg-white/10 hover:text-white"
+                className="px-4 py-2 rounded-lg bg-muted border border-border text-xs font-bold uppercase tracking-widest text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirmCrop}
                 disabled={uploading}
-                className="px-6 py-2 rounded-lg bg-red-650 hover:bg-red-700 disabled:bg-red-800 disabled:opacity-50 text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2"
+                className="px-6 py-2 rounded-lg bg-accent hover:bg-accent/90 disabled:opacity-50 text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2 shadow-sm transition-colors"
               >
                 {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 Guardar Foto
