@@ -59,7 +59,7 @@ const Index = () => {
               isLight ? "opacity-35" : "opacity-90"
             )}
           />
-          {/* Capa Duotono: Ajustado según modo día y modo noche (Homogéneo y Cinematográfico) */}
+          {/* Capa Duotono: Ajustado según modo día y modo noche (Balance Equilibrado Azul/Rojo) */}
           {isLight ? (
             <>
               <div className="absolute inset-0 bg-gradient-to-r from-sky-200/80 via-white/30 to-red-200/80" />
@@ -69,15 +69,15 @@ const Index = () => {
             </>
           ) : (
             <>
-              {/* Gradiente Duotono Horizontal Suave (Azul Izquierda / Rojo Derecha) */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#020516]/95 via-[#06123D]/80 via-35% to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-l from-[#500814]/98 via-[#33050C]/85 via-42% to-transparent" />
+              {/* Gradientes Duotono Simétricos: Azul a la Izquierda / Rojo Carmesí a la Derecha */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#020726]/95 via-[#0A1D66]/85 via-40% to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-l from-[#2E030B]/95 via-[#8A0D20]/85 via-40% to-transparent" />
 
-              {/* Focos Ambientales Grandes y Ultrafusos (Sin parches ni bordes visibles) */}
-              <div className="absolute -left-40 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-900/40 rounded-full blur-[160px] pointer-events-none" />
-              <div className="absolute -right-40 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-950/70 rounded-full blur-[160px] pointer-events-none" />
+              {/* Focos Ambientales de igual intensidad y luminosidad */}
+              <div className="absolute -left-40 top-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-[#0D2B8A]/45 rounded-full blur-[160px] pointer-events-none" />
+              <div className="absolute -right-40 top-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-[#B8122B]/45 rounded-full blur-[160px] pointer-events-none" />
 
-              {/* Gradiente Vertical Inferior Homogéneo para integrar el suelo y cubrir suavemente la base */}
+              {/* Gradiente Vertical Inferior Homogéneo para integrar el suelo */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E1A] via-[#0A0E1A]/85 via-35% to-transparent" />
 
               {/* Sombra Superior para integrar la Navbar */}
