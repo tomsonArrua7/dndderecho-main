@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   CalendarDays,
   ClipboardList,
@@ -7,13 +7,12 @@ import {
   Scale,
   CalendarPlus,
   ExternalLink,
-  Clock,
   PartyPopper,
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { academicDates, type AcademicDate, type CategoryKey } from "@/data/academicDates";
-import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 
 // ── Category metadata ─────────────────────────────────────────────────────────────
@@ -22,11 +21,11 @@ const CATEGORY_META: Record<
   { label: string; icon: React.ElementType; color: string; bg: string; border: string }
 > = {
   inscripcion: {
-    label: "Inscripción",
+    label: "Calendario Académico",
     icon: ClipboardList,
-    color: "text-sky-400",
-    bg: "bg-sky-400/10",
-    border: "border-sky-400/25",
+    color: "text-teal-400",
+    bg: "bg-teal-400/10",
+    border: "border-teal-400/25",
   },
   examen: {
     label: "Examen",
@@ -43,14 +42,14 @@ const CATEGORY_META: Record<
     border: "border-amber-400/25",
   },
   agrupacion: {
-    label: "DND",
+    label: "Aviso DND",
     icon: Megaphone,
     color: "text-rose-400",
     bg: "bg-rose-400/10",
     border: "border-rose-400/25",
   },
   cuatrimestre: {
-    label: "Cuatrimestre",
+    label: "Cursada / TP",
     icon: CalendarDays,
     color: "text-emerald-400",
     bg: "bg-emerald-400/10",
@@ -60,6 +59,7 @@ const CATEGORY_META: Record<
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function parseDate(iso: string): Date {
+  if (iso.includes("T")) return new Date(iso);
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y, m - 1, d);
 }
@@ -68,6 +68,7 @@ function daysUntil(iso: string): number {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   const target = parseDate(iso);
+  target.setHours(0, 0, 0, 0);
   return Math.round((target.getTime() - now.getTime()) / 86_400_000);
 }
 
@@ -79,23 +80,23 @@ function formatDate(iso: string): string {
 }
 
 function downloadICS(event: AcademicDate) {
-  const fmt = (iso: string) => iso.replace(/-/g, "");
+  const fmt = (iso: string) => iso.replace(/-/g, "").replace(/:/g, "").split(".")[0];
   const start = fmt(event.date);
-  const end = event.dateEnd ? fmt(event.dateEnd) : fmt(event.date);
+  const end = event.dateEnd ? fmt(event.dateEnd) : start;
   const desc = (event.description ?? "").replace(/\n/g, "\\n");
-  const loc = event.location ?? "";
+  const loc = event.location ?? "Facultad de Derecho UNLP";
 
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//DND Derecho UNLP//ES",
     "BEGIN:VEVENT",
-    `DTSTART;VALUE=DATE:${start}`,
-    `DTEND;VALUE=DATE:${end}`,
+    `DTSTART;VALUE=DATE:${start.slice(0, 8)}`,
+    `DTEND;VALUE=DATE:${end.slice(0, 8)}`,
     `SUMMARY:${event.title}`,
     `DESCRIPTION:${desc}`,
     `LOCATION:${loc}`,
-    `UID:${event.id}@dnd.derecho.unlp.edu.ar`,
+    `UID:${event.id}@dndjursoc.com.ar`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
@@ -110,15 +111,15 @@ function downloadICS(event: AcademicDate) {
 }
 
 function openGoogleCalendar(event: AcademicDate) {
-  const fmt = (iso: string) => iso.replace(/-/g, "");
+  const fmt = (iso: string) => iso.replace(/-/g, "").replace(/:/g, "").split(".")[0];
   const start = fmt(event.date);
-  const end = event.dateEnd ? fmt(event.dateEnd) : fmt(event.date);
+  const end = event.dateEnd ? fmt(event.dateEnd) : start;
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: event.title,
     dates: `${start}/${end}`,
     details: event.description ?? "",
-    location: event.location ?? "",
+    location: event.location ?? "Facultad de Derecho UNLP",
   });
   window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank");
 }
@@ -137,7 +138,7 @@ function UrgencyBadge({ days }: { days: number }) {
 
 // ── Event Card ────────────────────────────────────────────────────────────────
 function EventCard({ event }: { event: AcademicDate }) {
-  const meta = CATEGORY_META[event.category];
+  const meta = CATEGORY_META[event.category] || CATEGORY_META.agrupacion;
   const Icon = meta.icon;
   const days = daysUntil(event.date);
   const isUrgent = days >= 0 && days <= 2;
@@ -171,12 +172,14 @@ function EventCard({ event }: { event: AcademicDate }) {
         <div className="flex gap-1.5">
           <button
             onClick={() => openGoogleCalendar(event)}
+            title="Agregar a Google Calendar"
             className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all btn-app"
           >
             <CalendarPlus size={12} />
           </button>
           <button
             onClick={() => downloadICS(event)}
+            title="Descargar archivo iCal (.ics)"
             className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all btn-app"
           >
             <ExternalLink size={12} />
@@ -199,22 +202,74 @@ function EventCard({ event }: { event: AcademicDate }) {
 
 function EmptyState() {
   return (
-    <div className="flex items-center gap-4 py-6 px-4">
+    <div className="flex items-center gap-4 py-8 px-4 w-full justify-center">
       <PartyPopper className="w-5 h-5 text-white/20" />
-      <p className="text-xs font-medium text-white/40">Sin fechas próximas</p>
+      <p className="text-xs font-medium text-white/40">Sin fechas próximas registradas</p>
     </div>
   );
 }
 
 export function UpcomingDates() {
-  const sorted = useMemo(() => {
+  const [dbEvents, setDbEvents] = useState<AcademicDate[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchGlobalEvents() {
+      try {
+        const yesterdayIso = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const { data, error } = await supabase
+          .from("eventos")
+          .select("*")
+          .eq("es_global", true)
+          .gte("fecha", yesterdayIso)
+          .order("fecha", { ascending: true })
+          .limit(6);
+
+        if (!error && data) {
+          const mapped: AcademicDate[] = data.map((e) => {
+            let category: CategoryKey = "agrupacion";
+            if (e.tipo === "parcial" || e.tipo === "final") category = "examen";
+            else if (e.tipo === "entrega" || e.tipo === "clase") category = "cuatrimestre";
+            else if (e.tipo === "academico") category = "inscripcion";
+
+            return {
+              id: e.id,
+              category,
+              title: e.titulo,
+              description: e.descripcion || undefined,
+              date: e.fecha,
+              location: "Facultad de Derecho UNLP",
+            };
+          });
+          setDbEvents(mapped);
+        }
+      } catch (err) {
+        console.error("Error fetching global events for widget:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGlobalEvents();
+  }, []);
+
+  const combinedDates = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return [...academicDates]
-      .filter((e) => parseDate(e.dateEnd ?? e.date) >= today)
+
+    // Filter static dates to only future ones
+    const staticFuture = academicDates.filter(
+      (e) => parseDate(e.dateEnd ?? e.date) >= today
+    );
+
+    // Merge DB events and static future dates (DB events take precedence if IDs overlap)
+    const dbIds = new Set(dbEvents.map((e) => e.id));
+    const merged = [...dbEvents, ...staticFuture.filter((e) => !dbIds.has(e.id))];
+
+    return merged
       .sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime())
       .slice(0, 4);
-  }, []);
+  }, [dbEvents]);
 
   return (
     <section className="w-full">
@@ -232,10 +287,16 @@ export function UpcomingDates() {
 
       {/* Mobile: Horizontal Scroll | Desktop: Vertical Stack or Grid */}
       <div className="flex overflow-x-auto pb-4 gap-3 md:grid md:grid-cols-1 lg:grid-cols-2 scrollbar-hide snap-x snap-mandatory">
-        {sorted.length === 0 ? (
-          <EmptyState />
+        {loading ? (
+          <div className="py-6 text-center text-xs text-white/30 w-full col-span-2">
+            Cargando fechas...
+          </div>
+        ) : combinedDates.length === 0 ? (
+          <div className="w-full col-span-2">
+            <EmptyState />
+          </div>
         ) : (
-          sorted.map((event) => (
+          combinedDates.map((event) => (
             <div key={event.id} className="snap-center">
               <EventCard event={event} />
             </div>

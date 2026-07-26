@@ -279,7 +279,7 @@ export type Database = {
     Enums: {
       estado_permuta: "activa" | "realizada" | "cancelada"
       estado_materia: "pendiente" | "cursando" | "aprobada"
-      tipo_evento: "parcial" | "final" | "entrega" | "clase" | "otro"
+      tipo_evento: "parcial" | "final" | "entrega" | "clase" | "otro" | "academico"
       user_role: "estudiante" | "admin"
     }
     CompositeTypes: {
@@ -410,7 +410,7 @@ export const Constants = {
     Enums: {
       estado_permuta: ["activa", "realizada", "cancelada"],
       estado_materia: ["pendiente", "cursando", "aprobada"],
-      tipo_evento: ["parcial", "final", "entrega", "clase", "otro"],
+      tipo_evento: ["parcial", "final", "entrega", "clase", "otro", "academico"],
       user_role: ["estudiante", "admin"],
     },
   },

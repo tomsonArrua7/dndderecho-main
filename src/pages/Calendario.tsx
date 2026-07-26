@@ -15,18 +15,30 @@ interface Evento {
   id: string;
   titulo: string;
   descripcion: string | null;
-  tipo: "parcial" | "final" | "entrega" | "clase" | "otro";
+  tipo: "parcial" | "final" | "entrega" | "clase" | "otro" | "academico";
   fecha: string;
   es_global: boolean;
   user_id: string;
 }
 
+const getTipoLabel = (tipo: string) => {
+  switch (tipo) {
+    case "parcial": return "Parcial";
+    case "final": return "Final";
+    case "entrega": return "Entrega";
+    case "clase": return "Clase";
+    case "academico": return "Calendario Académico";
+    case "otro": default: return "Otro";
+  }
+};
+
 const tipoColor: Record<string, string> = {
   parcial: "bg-red-500/10 text-red-400 border border-red-500/20",
-  final: "bg-purple-550/10 text-purple-400 border border-purple-550/20",
+  final: "bg-purple-500/10 text-purple-400 border border-purple-500/20",
   entrega: "bg-amber-500/10 text-amber-400 border border-amber-550/20",
   clase: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  otro: "bg-teal-500/10 text-teal-400 border border-teal-500/20",
+  academico: "bg-teal-500/10 text-teal-400 border border-teal-500/20",
+  otro: "bg-slate-500/10 text-slate-400 border border-slate-500/20",
 };
 
 const chipStyle: Record<string, string> = {
@@ -34,7 +46,8 @@ const chipStyle: Record<string, string> = {
   final: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   entrega: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   clase: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  otro: "bg-teal-500/10 text-teal-400 border-teal-500/20",
+  academico: "bg-teal-500/10 text-teal-400 border border-teal-500/20",
+  otro: "bg-slate-500/10 text-slate-400 border border-slate-500/20",
 };
 
 const isSameDay = (d1: Date, d2: Date) => {
@@ -90,16 +103,19 @@ const Calendario = () => {
   };
 
   const fetchEventos = async () => {
-    if (!user) return;
     let query = supabase.from("eventos").select("*");
 
-    if (suscripto) {
+    if (user) {
       query = query.or(`user_id.eq.${user.id},es_global.eq.true`);
     } else {
-      query = query.eq("user_id", user.id).eq("es_global", false);
+      query = query.eq("es_global", true);
     }
 
-    const { data } = await query.order("fecha");
+    const { data, error } = await query.order("fecha");
+    if (error) {
+      console.error("Error fetching eventos:", error);
+      return;
+    }
     setEventos((data as Evento[]) || []);
   };
 
@@ -109,7 +125,7 @@ const Calendario = () => {
 
   useEffect(() => {
     fetchEventos();
-  }, [user, suscripto]);
+  }, [user]);
 
   const toggleSubscription = async () => {
     if (!user) return;
@@ -309,6 +325,7 @@ const Calendario = () => {
                       <SelectItem value="final">Final</SelectItem>
                       <SelectItem value="entrega">Entrega</SelectItem>
                       <SelectItem value="clase">Clase</SelectItem>
+                      <SelectItem value="academico">Calendario Académico</SelectItem>
                       <SelectItem value="otro">Otro</SelectItem>
                     </SelectContent>
                   </Select>
@@ -489,11 +506,12 @@ const Calendario = () => {
                     {/* Mobile View: Small Native Colored Dots */}
                     <div className="flex sm:hidden justify-center gap-0.5 w-full flex-wrap">
                       {dayEvents.slice(0, 3).map(e => {
-                        let dotColor = "bg-teal-500";
+                        let dotColor = "bg-slate-400";
                         if (e.tipo === "parcial") dotColor = "bg-red-500";
                         else if (e.tipo === "final") dotColor = "bg-purple-500";
                         else if (e.tipo === "entrega") dotColor = "bg-amber-500";
                         else if (e.tipo === "clase") dotColor = "bg-emerald-500";
+                        else if (e.tipo === "academico") dotColor = "bg-teal-500";
 
                         return (
                           <span 
@@ -573,8 +591,9 @@ const Calendario = () => {
                   <SelectItem value="clase">Día de Cursada</SelectItem>
                   <SelectItem value="parcial">Parcial</SelectItem>
                   <SelectItem value="entrega">TP (Entrega)</SelectItem>
-                  <SelectItem value="otro">Calendario Académico</SelectItem>
+                  <SelectItem value="academico">Calendario Académico</SelectItem>
                   <SelectItem value="final">Examen Final</SelectItem>
+                  <SelectItem value="otro">Otro</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -615,8 +634,8 @@ const Calendario = () => {
                 <div key={e.id} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between gap-4 shadow-paper">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                      <span className={cn("text-[8px] px-1.5 py-0.5 rounded border font-bold uppercase font-mono tracking-wider", tipoColor[e.tipo])}>
-                        {e.tipo}
+                      <span className={cn("text-[8px] px-1.5 py-0.5 rounded border font-bold uppercase font-mono tracking-wider", tipoColor[e.tipo] || tipoColor.otro)}>
+                        {getTipoLabel(e.tipo)}
                       </span>
                       {e.es_global && (
                         <span className="text-[8px] px-1.5 py-0.5 rounded border bg-red-650/20 border-red-500/30 text-red-400 font-bold uppercase font-mono tracking-wider">
@@ -692,7 +711,7 @@ const Section = ({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className={cn("text-[8px] px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider font-mono", tipoColor[e.tipo])}>{e.tipo}</span>
+                  <span className={cn("text-[8px] px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider font-mono", tipoColor[e.tipo] || tipoColor.otro)}>{getTipoLabel(e.tipo)}</span>
                   {e.es_global && (
                     <span className="text-[8px] px-1.5 py-0.5 rounded border bg-red-650/20 border-red-500/30 text-red-400 font-bold uppercase tracking-wider font-mono">
                       Aviso DND
