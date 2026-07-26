@@ -59,29 +59,29 @@ const Index = () => {
               isLight ? "opacity-35" : "opacity-90"
             )}
           />
-          {/* Capa Duotono: Ajustado según modo día y modo noche (Balance Equilibrado Azul/Rojo) */}
+          {/* Capa Duotono: Ajustado según modo día y modo noche (Centro Despejado para Fotografía) */}
           {isLight ? (
             <>
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-200/80 via-white/30 to-red-200/80" />
-              <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-background" />
-              <div className="absolute -left-32 top-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-sky-400/25 rounded-full blur-[130px] pointer-events-none" />
-              <div className="absolute -right-32 top-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-red-400/25 rounded-full blur-[130px] pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-200/75 via-white/20 to-red-200/75" />
+              <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-transparent to-background" />
+              <div className="absolute -left-32 top-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-sky-400/20 rounded-full blur-[130px] pointer-events-none" />
+              <div className="absolute -right-32 top-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-red-400/20 rounded-full blur-[130px] pointer-events-none" />
             </>
           ) : (
             <>
-              {/* Gradientes Duotono Simétricos: Azul a la Izquierda / Rojo Carmesí a la Derecha */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#020726]/95 via-[#0A1D66]/85 via-40% to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-l from-[#2E030B]/95 via-[#8A0D20]/85 via-40% to-transparent" />
+              {/* Gradientes Duotono Simétricos: Azul Izquierda / Rojo Derecha (Despejados en el centro) */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#020726]/95 via-[#0A1D66]/65 via-28% to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-l from-[#2E030B]/95 via-[#8A0D20]/65 via-28% to-transparent" />
 
-              {/* Focos Ambientales de igual intensidad y luminosidad */}
-              <div className="absolute -left-40 top-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-[#0D2B8A]/45 rounded-full blur-[160px] pointer-events-none" />
-              <div className="absolute -right-40 top-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-[#B8122B]/45 rounded-full blur-[160px] pointer-events-none" />
+              {/* Focos Ambientales laterales ajustados a los extremos */}
+              <div className="absolute -left-48 top-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#0D2B8A]/35 rounded-full blur-[160px] pointer-events-none" />
+              <div className="absolute -right-48 top-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#B8122B]/35 rounded-full blur-[160px] pointer-events-none" />
 
-              {/* Gradiente Vertical Inferior Homogéneo para integrar el suelo */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E1A] via-[#0A0E1A]/85 via-35% to-transparent" />
+              {/* Gradiente Vertical Inferior sutil para mantener clara la foto en el centro */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E1A] via-[#0A0E1A]/50 via-18% to-transparent" />
 
-              {/* Sombra Superior para integrar la Navbar */}
-              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#060A18]/90 to-transparent" />
+              {/* Sombra Superior sutil para integrar la Navbar */}
+              <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#060A18]/80 to-transparent" />
             </>
           )}
         </motion.div>
