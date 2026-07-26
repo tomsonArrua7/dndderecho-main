@@ -66,16 +66,21 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/30 to-background" />
               <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-sky-400/30 rounded-full blur-[100px] pointer-events-none" />
               <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-red-400/30 rounded-full blur-[100px] pointer-events-none" />
+              <div className="absolute right-[18%] bottom-[10%] w-[400px] h-[400px] bg-red-200/90 rounded-full blur-[70px] pointer-events-none" />
             </>
           ) : (
             <>
-              {/* Degradé duotono lateral azul (izquierda) y rojo (derecha) más fuerte y cercano al centro */}
+              {/* Degradé duotono lateral azul (izquierda) y rojo (derecha) más fuerte */}
               <div className="absolute inset-0 bg-gradient-to-r from-[#020516]/98 via-[#06123D]/92 via-40% to-transparent w-full" />
-              <div className="absolute inset-0 bg-gradient-to-l from-[#7A0B1E]/98 via-[#4A0713]/92 via-40% to-transparent w-full" />
+              <div className="absolute inset-0 bg-gradient-to-l from-[#7A0B1E]/98 via-[#4A0713]/95 via-55% to-transparent w-full" />
               
-              {/* Esferas de luz con desenfoque profundo (Spotlights azul y rojo hacia el centro) */}
+              {/* Esferas de luz con desenfoque profundo (Spotlights azul e izquierda) */}
               <div className="absolute -left-24 top-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-blue-900/60 rounded-full blur-[110px] pointer-events-none" />
-              <div className="absolute -right-24 top-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-red-800/65 rounded-full blur-[110px] pointer-events-none" />
+              <div className="absolute -right-24 top-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-red-800/70 rounded-full blur-[110px] pointer-events-none" />
+
+              {/* Parche de degradé y blur localizado para tapar la estatua / artefacto (Abajo a la derecha) */}
+              <div className="absolute right-[12%] bottom-[5%] w-[480px] h-[420px] bg-[#2E050D] opacity-95 rounded-full blur-[65px] pointer-events-none" />
+              <div className="absolute right-[15%] bottom-[8%] w-[380px] h-[350px] bg-[#600A18] opacity-80 rounded-full blur-[55px] pointer-events-none" />
 
               {/* Degradé de integración vertical (Navbar + Footer del Hero) */}
               <div className="absolute inset-0 bg-gradient-to-b from-[#060A18]/90 via-transparent to-[#0A0E1A]" />
