@@ -261,28 +261,31 @@ export default function Trivia() {
           preguntasIds: d.preguntas_ids || [],
           player1Id: d.player1_id,
           player1Nombre: d.player1_nombre || "Estudiante 1",
-          player1Aciertos: d.player1_aciertos || 0,
-          player1TiempoMs: d.player1_tiempo_ms || 0,
-          player1Puntos: d.player1_puntos || 0,
-          player1Completed: d.player1_completed ?? true,
+          player1Aciertos: Number(d.player1_aciertos || 0),
+          player1TiempoMs: Number(d.player1_tiempo_ms || 0),
+          player1Puntos: Number(d.player1_puntos || 0),
+          player1Completed: Boolean(d.player1_completed),
           player2Id: d.player2_id,
           player2Nombre: d.player2_nombre,
-          player2Aciertos: d.player2_aciertos,
-          player2TiempoMs: d.player2_tiempo_ms,
-          player2Puntos: d.player2_puntos,
-          player2Completed: d.player2_completed,
+          player2Aciertos: d.player2_aciertos !== null && d.player2_aciertos !== undefined ? Number(d.player2_aciertos) : undefined,
+          player2TiempoMs: d.player2_tiempo_ms !== null && d.player2_tiempo_ms !== undefined ? Number(d.player2_tiempo_ms) : undefined,
+          player2Puntos: d.player2_puntos !== null && d.player2_puntos !== undefined ? Number(d.player2_puntos) : undefined,
+          player2Completed: Boolean(d.player2_completed),
           ganadorId: d.ganador_id,
           status: d.status || "esperando_rival",
           createdAt: d.created_at || new Date().toISOString()
         }));
 
-        const combined = [...formattedRemote];
-        localDuelos.forEach(ld => {
-          if (!combined.some(cd => cd.id === ld.id)) {
-            combined.push(ld);
-          }
-        });
-        setDuelosList(combined);
+        const combinedMap = new Map<string, DueloTrivia>();
+        localDuelos.forEach(ld => combinedMap.set(ld.id, ld));
+        formattedRemote.forEach(rd => combinedMap.set(rd.id, rd));
+
+        const resultList = Array.from(combinedMap.values()).sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+
+        setDuelosList(resultList);
+        localStorage.setItem("dnd_duelos_list", JSON.stringify(resultList));
         return;
       }
     } catch (err) {
@@ -295,7 +298,15 @@ export default function Trivia() {
   useEffect(() => {
     fetchLeaderboardAndStats();
     fetchDuelos();
-  }, [user?.id]);
+
+    const interval = setInterval(() => {
+      if (activeTab === "duelos") {
+        fetchDuelos();
+      }
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [user?.id, activeTab]);
 
   const startDueloGame = (fixedPool: TriviaQuestion[]) => {
     const preparedPool = fixedPool.map(q => {
@@ -419,20 +430,84 @@ export default function Trivia() {
     } catch (e) {}
   };
 
-  const joinDuelo = async (duelo: DueloTrivia) => {
+  const joinDuelo = async (dueloTarget: DueloTrivia | string) => {
     if (!user) return;
-    if (duelo.player1Id === user.id) {
-      if (!duelo.player1Completed) {
-        setCurrentDuelo(duelo);
-        setDueloRole("player1");
-        const fixedPool = duelo.preguntasIds.map(id => TRIVIA_QUESTIONS.find(q => q.id === id)).filter(Boolean) as TriviaQuestion[];
-        startDueloGame(fixedPool);
-        return;
+    const targetId = typeof dueloTarget === "string" ? dueloTarget.trim().toUpperCase() : dueloTarget.id;
+
+    // Buscar estado fresco de la sala en Supabase
+    let freshDuelo: DueloTrivia | null = null;
+    try {
+      const { data: d } = await supabase
+        .from("trivia_duelos" as any)
+        .select("*")
+        .eq("id", targetId)
+        .single();
+
+      if (d) {
+        freshDuelo = {
+          id: d.id,
+          esPublico: d.es_publico ?? true,
+          materiaId: d.materia_id || "todas",
+          materiaNombre: d.materia_nombre || "General",
+          preguntasIds: d.preguntas_ids || [],
+          player1Id: d.player1_id,
+          player1Nombre: d.player1_nombre || "Estudiante 1",
+          player1Aciertos: Number(d.player1_aciertos || 0),
+          player1TiempoMs: Number(d.player1_tiempo_ms || 0),
+          player1Puntos: Number(d.player1_puntos || 0),
+          player1Completed: Boolean(d.player1_completed),
+          player2Id: d.player2_id,
+          player2Nombre: d.player2_nombre,
+          player2Aciertos: d.player2_aciertos !== null && d.player2_aciertos !== undefined ? Number(d.player2_aciertos) : undefined,
+          player2TiempoMs: d.player2_tiempo_ms !== null && d.player2_tiempo_ms !== undefined ? Number(d.player2_tiempo_ms) : undefined,
+          player2Puntos: d.player2_puntos !== null && d.player2_puntos !== undefined ? Number(d.player2_puntos) : undefined,
+          player2Completed: Boolean(d.player2_completed),
+          ganadorId: d.ganador_id,
+          status: d.status || "esperando_rival",
+          createdAt: d.created_at || new Date().toISOString()
+        };
+      }
+    } catch (e) {}
+
+    if (!freshDuelo) {
+      if (typeof dueloTarget !== "string") {
+        freshDuelo = dueloTarget;
+      } else {
+        const localMatch = duelosList.find(d => d.id === targetId);
+        if (localMatch) {
+          freshDuelo = localMatch;
+        } else {
+          freshDuelo = {
+            id: targetId,
+            esPublico: false,
+            materiaId: "todas",
+            materiaNombre: "General",
+            preguntasIds: TRIVIA_QUESTIONS.slice(0, 10).map(q => q.id),
+            player1Id: "desconocido",
+            player1Nombre: "Rival Privado",
+            player1Aciertos: 0,
+            player1TiempoMs: 0,
+            player1Puntos: 0,
+            player1Completed: true,
+            status: "esperando_rival",
+            createdAt: new Date().toISOString()
+          };
+        }
       }
     }
 
+    if (freshDuelo.player1Id === user.id) {
+      setCurrentDuelo(freshDuelo);
+      setDueloRole("player1");
+      const fixedPool = freshDuelo.preguntasIds
+        .map(id => TRIVIA_QUESTIONS.find(q => q.id === id))
+        .filter(Boolean) as TriviaQuestion[];
+      startDueloGame(fixedPool.length > 0 ? fixedPool : TRIVIA_QUESTIONS.slice(0, 10));
+      return;
+    }
+
     const updatedDuelo: DueloTrivia = {
-      ...duelo,
+      ...freshDuelo,
       player2Id: user.id,
       player2Nombre: userName,
       player2Completed: false,
@@ -442,19 +517,23 @@ export default function Trivia() {
     setCurrentDuelo(updatedDuelo);
     setDueloRole("player2");
 
-    setDuelosList(prev => prev.map(d => d.id === duelo.id ? updatedDuelo : d));
+    setDuelosList(prev => {
+      const filtered = prev.filter(d => d.id !== updatedDuelo.id);
+      return [updatedDuelo, ...filtered];
+    });
 
     try {
-      await supabase.from("trivia_duelos" as any).upsert({
-        id: duelo.id,
+      await supabase.from("trivia_duelos" as any).update({
         player2_id: user.id,
         player2_nombre: userName,
         status: "en_curso"
-      });
+      }).eq("id", updatedDuelo.id);
     } catch (e) {}
 
-    const fixedPool = duelo.preguntasIds.map(id => TRIVIA_QUESTIONS.find(q => q.id === id)).filter(Boolean) as TriviaQuestion[];
-    startDueloGame(fixedPool);
+    const fixedPool = updatedDuelo.preguntasIds
+      .map(id => TRIVIA_QUESTIONS.find(q => q.id === id))
+      .filter(Boolean) as TriviaQuestion[];
+    startDueloGame(fixedPool.length > 0 ? fixedPool : TRIVIA_QUESTIONS.slice(0, 10));
   };
 
   const saveStats = async (newCorrect: number, newScore: number, finalStreak: number) => {
@@ -533,62 +612,114 @@ export default function Trivia() {
 
       if (currentDuelo && dueloRole) {
         const isP1 = dueloRole === "player1";
-        const updatedDuelo: DueloTrivia = {
+
+        // 1. Actualizar ÚNICAMENTE los campos del jugador actual en Supabase (sin sobreescribir al rival)
+        try {
+          if (isP1) {
+            await supabase.from("trivia_duelos" as any).update({
+              player1_aciertos: newCorrect,
+              player1_puntos: newScore,
+              player1_completed: true
+            }).eq("id", currentDuelo.id);
+          } else {
+            await supabase.from("trivia_duelos" as any).update({
+              player2_id: user.id,
+              player2_nombre: userName,
+              player2_aciertos: newCorrect,
+              player2_puntos: newScore,
+              player2_completed: true
+            }).eq("id", currentDuelo.id);
+          }
+        } catch (e) {}
+
+        // 2. Traer el registro completo y actualizado desde Supabase
+        let latestDuelo: DueloTrivia = {
           ...currentDuelo,
           ...(isP1 ? {
             player1Aciertos: newCorrect,
             player1Puntos: newScore,
             player1Completed: true
           } : {
+            player2Id: user.id,
+            player2Nombre: userName,
             player2Aciertos: newCorrect,
             player2Puntos: newScore,
             player2Completed: true
           })
         };
 
-        if (updatedDuelo.player1Completed && updatedDuelo.player2Completed) {
-          updatedDuelo.status = "finalizado";
-          const p1Correct = updatedDuelo.player1Aciertos;
-          const p2Correct = updatedDuelo.player2Aciertos || 0;
+        try {
+          const { data: remoteRecord } = await supabase
+            .from("trivia_duelos" as any)
+            .select("*")
+            .eq("id", currentDuelo.id)
+            .single();
+
+          if (remoteRecord) {
+            latestDuelo = {
+              id: remoteRecord.id,
+              esPublico: remoteRecord.es_publico ?? true,
+              materiaId: remoteRecord.materia_id || "todas",
+              materiaNombre: remoteRecord.materia_nombre || "General",
+              preguntasIds: remoteRecord.preguntas_ids || [],
+              player1Id: remoteRecord.player1_id,
+              player1Nombre: remoteRecord.player1_nombre || "Estudiante 1",
+              player1Aciertos: Number(remoteRecord.player1_aciertos || 0),
+              player1TiempoMs: Number(remoteRecord.player1_tiempo_ms || 0),
+              player1Puntos: Number(remoteRecord.player1_puntos || 0),
+              player1Completed: Boolean(remoteRecord.player1_completed),
+              player2Id: remoteRecord.player2_id,
+              player2Nombre: remoteRecord.player2_nombre,
+              player2Aciertos: remoteRecord.player2_aciertos !== null && remoteRecord.player2_aciertos !== undefined ? Number(remoteRecord.player2_aciertos) : undefined,
+              player2TiempoMs: remoteRecord.player2_tiempo_ms !== null && remoteRecord.player2_tiempo_ms !== undefined ? Number(remoteRecord.player2_tiempo_ms) : undefined,
+              player2Puntos: remoteRecord.player2_puntos !== null && remoteRecord.player2_puntos !== undefined ? Number(remoteRecord.player2_puntos) : undefined,
+              player2Completed: Boolean(remoteRecord.player2_completed),
+              ganadorId: remoteRecord.ganador_id,
+              status: remoteRecord.status || "en_curso",
+              createdAt: remoteRecord.created_at || new Date().toISOString()
+            };
+          }
+        } catch (e) {}
+
+        // 3. Evaluar si ambos completaron para dictaminar ganador
+        if (latestDuelo.player1Completed && latestDuelo.player2Completed) {
+          latestDuelo.status = "finalizado";
+          const p1Correct = latestDuelo.player1Aciertos;
+          const p2Correct = latestDuelo.player2Aciertos || 0;
 
           if (p1Correct > p2Correct) {
-            updatedDuelo.ganadorId = updatedDuelo.player1Id;
+            latestDuelo.ganadorId = latestDuelo.player1Id;
           } else if (p2Correct > p1Correct) {
-            updatedDuelo.ganadorId = updatedDuelo.player2Id;
+            latestDuelo.ganadorId = latestDuelo.player2Id;
           } else {
-            if (updatedDuelo.player1Puntos > (updatedDuelo.player2Puntos || 0)) {
-              updatedDuelo.ganadorId = updatedDuelo.player1Id;
-            } else if ((updatedDuelo.player2Puntos || 0) > updatedDuelo.player1Puntos) {
-              updatedDuelo.ganadorId = updatedDuelo.player2Id;
+            if (latestDuelo.player1Puntos > (latestDuelo.player2Puntos || 0)) {
+              latestDuelo.ganadorId = latestDuelo.player1Id;
+            } else if ((latestDuelo.player2Puntos || 0) > latestDuelo.player1Puntos) {
+              latestDuelo.ganadorId = latestDuelo.player2Id;
             } else {
-              updatedDuelo.ganadorId = "empate";
+              latestDuelo.ganadorId = "empate";
             }
           }
+
+          try {
+            await supabase.from("trivia_duelos" as any).update({
+              ganador_id: latestDuelo.ganadorId,
+              status: "finalizado"
+            }).eq("id", latestDuelo.id);
+          } catch (e) {}
         }
 
-        setDueloVersusModal(updatedDuelo);
-        setDuelosList(prev => prev.map(d => d.id === updatedDuelo.id ? updatedDuelo : d));
+        setDueloVersusModal(latestDuelo);
+        setDuelosList(prev => {
+          const filtered = prev.filter(d => d.id !== latestDuelo.id);
+          return [latestDuelo, ...filtered];
+        });
 
         try {
-          await supabase.from("trivia_duelos" as any).upsert({
-            id: updatedDuelo.id,
-            es_publico: updatedDuelo.esPublico,
-            materia_id: updatedDuelo.materiaId,
-            materia_nombre: updatedDuelo.materiaNombre,
-            preguntas_ids: updatedDuelo.preguntasIds,
-            player1_id: updatedDuelo.player1Id,
-            player1_nombre: updatedDuelo.player1Nombre,
-            player1_aciertos: updatedDuelo.player1Aciertos,
-            player1_puntos: updatedDuelo.player1Puntos,
-            player1_completed: updatedDuelo.player1Completed,
-            player2_id: updatedDuelo.player2Id,
-            player2_nombre: updatedDuelo.player2Nombre,
-            player2_aciertos: updatedDuelo.player2Aciertos,
-            player2_puntos: updatedDuelo.player2Puntos,
-            player2_completed: updatedDuelo.player2Completed,
-            ganador_id: updatedDuelo.ganadorId,
-            status: updatedDuelo.status
-          });
+          const stored = localStorage.getItem("dnd_duelos_list");
+          const list: DueloTrivia[] = stored ? JSON.parse(stored) : [];
+          const filtered = list.filter(d => d.id !== latestDuelo.id);
+          localStorage.setItem("dnd_duelos_list", JSON.stringify([latestDuelo, ...filtered]));
         } catch (e) {}
       }
 
@@ -1178,6 +1309,14 @@ export default function Trivia() {
                   >
                     <Users className="w-3.5 h-3.5" />
                     <span>Mis Duelos Recientes</span>
+                  </button>
+                  <button
+                    onClick={fetchDuelos}
+                    className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    title="Actualizar Duelos"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-indigo-400" />
+                    <span className="hidden sm:inline">Actualizar</span>
                   </button>
                 </div>
 
