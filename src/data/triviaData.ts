@@ -752,5 +752,84 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     opciones: ["Competencia, Causa, Objeto, Procedimiento, Motivación y Finalidad", "Solamente la firma del Ministro", "El presupuesto y la licitación", "La publicación en el Boletín Oficial únicamente"],
     respuesta_correcta_index: 0,
     fundamento_juridico: "Art. 7 de la Ley 19.549 / Decreto-Ley 7647 PBA.", puntos_base: 10
+  },
+  {
+    id: "10141-02", id_categoria: "10141", categoria_nombre: "D. Administrativo I", dificultad: "media",
+    pregunta: "La presunción de legitimidad del acto administrativo implica que:",
+    opciones: ["Es siempre inimpugnable ante la justicia", "Se presume válido y ajustado a derecho hasta que se declare su nulidad", "Carece de fuerza ejecutoria de pleno derecho", "Requiere homologación judicial obligatoria antes de aplicarse"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 12 de la Ley de Procedimientos Administrativos 19.549.", puntos_base: 25
+  },
+
+  // --- 10113: INTRODUCCIÓN A LA SOCIOLOGÍA ---
+  {
+    id: "10113-01", id_categoria: "10113", categoria_nombre: "Intro Sociología", dificultad: "facil",
+    pregunta: "Según Émile Durkheim, la solidaridad basada en la división del trabajo y en la interdependencia en sociedades complejas es:",
+    opciones: ["Solidaridad Mecánica", "Solidaridad Orgánica", "Solidaridad Colectiva", "Solidaridad Estatutaria"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Émile Durkheim, 'La división del trabajo social' (1893).", puntos_base: 10
+  },
+
+  // --- 10616: INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO ---
+  {
+    id: "10616-01", id_categoria: "10616", categoria_nombre: "Pensamiento Científico", dificultad: "facil",
+    pregunta: "¿Qué epistemólogo sostuvo que la ciencia progresa mediante la refutación y falsación de hipótesis?",
+    opciones: ["Rudolf Carnap", "Karl Popper", "Thomas Kuhn", "Paul Feyerabend"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Karl Popper, 'La lógica de la investigación científica' (1934).", puntos_base: 10
+  },
+
+  // --- 10626: DERECHOS HUMANOS ---
+  {
+    id: "10626-01", id_categoria: "10626", categoria_nombre: "Derechos Humanos", dificultad: "facil",
+    pregunta: "¿Qué tribunal internacional con sede en San José de Costa Rica tiene competencia para juzgar la responsabilidad de los Estados americanos?",
+    opciones: ["Tribunal Penal Internacional", "Corte Interamericana de Derechos Humanos (Corte IDH)", "Corte Internacional de Justicia (La Haya)", "Comité de Derechos Humanos de la ONU"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Convención Americana sobre Derechos Humanos (Pacto de San José de Costa Rica).", puntos_base: 10
+  },
+
+  // --- 10132: DERECHO PRIVADO IV - COMERCIAL ---
+  {
+    id: "10132-01", id_categoria: "10132", categoria_nombre: "D. Privado IV (Com.)", dificultad: "facil",
+    pregunta: "El título valor librado por el girador que contiene una promesa incondicional de pagar una suma determinada de dinero a su vencimiento se denomina:",
+    opciones: ["Cheque cruzado", "Pagaré", "Warrant", "Factura de crédito"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Decreto-Ley 5965/63 (Régimen de Letra de Cambio y Pagaré).", puntos_base: 10
+  },
+
+  // --- 10142: DERECHO PRIVADO VI - COMERCIAL (SOCIEDADES) ---
+  {
+    id: "10142-01", id_categoria: "10142", categoria_nombre: "D. Privado VI (Com.)", dificultad: "media",
+    pregunta: "En la Sociedad de Responsabilidad Limitada (SRL) regulada en la Ley 19.550, la responsabilidad de los socios está limitada a:",
+    opciones: ["Todo su patrimonio personal sin tope", "La integración de las cuotas que suscriban o adquieran", "El capital social declarado en el balance anterior", "La decisión del órgano de fiscalización"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 146 de la Ley General de Sociedades 19.550.", puntos_base: 25
+  },
+
+  // --- 10653: DERECHO DE FAMILIA ---
+  {
+    id: "10653-01", id_categoria: "10653", categoria_nombre: "Derecho de Familia", dificultad: "facil",
+    pregunta: "En el Código Civil y Comercial, el divorcio unilateral puede ser solicitado por:",
+    opciones: ["Solo uno de los cónyuges sin necesidad de invocar causa ni esperar plazo", "Ambos cónyuges de común acuerdo únicamente", "Solo si han transcurrido 3 años de separación de hecho", "Únicamente alegando culpa o infidelidad en la demanda"],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Art. 437 CCyCN: 'El divorcio se declara judicialmente a petición de uno o de ambos cónyuges'.", puntos_base: 10
+  },
+
+  // --- 10659: DERECHO DE LAS SUCESIONES ---
+  {
+    id: "10659-01", id_categoria: "10659", categoria_nombre: "D. Sucesiones", dificultad: "media",
+    pregunta: "Según el Art. 2445 del CCyCN, la porción legítima inviolable reservada al cónyuge supérstite en la sucesión es de:",
+    opciones: ["Dos tercios (2/3)", "Un medio (1/2)", "Un tercio (1/3)", "Tres cuartos (3/4)"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2445 del Código Civil y Comercial de la Nación.", puntos_base: 25
+  },
+
+  // --- 10147: FILOSOFÍA DEL DERECHO ---
+  {
+    id: "10147-01", id_categoria: "10147", categoria_nombre: "Filosofía del Derecho", dificultad: "media",
+    pregunta: "¿Qué filósofo del derecho formuló la 'Fórmula de Radbruch' expresando que el derecho extremadamente injusto no es derecho?",
+    opciones: ["Hans Kelsen", "Gustav Radbruch", "Robert Alexy", "John Finnis"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Gustav Radbruch, 'Gesetzliches Unrecht und übergesetzliches Recht' (1946).", puntos_base: 25
   }
 ];
