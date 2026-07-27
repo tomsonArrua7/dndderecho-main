@@ -13,7 +13,6 @@ import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, Cal
 const publicLinks = [
   { to: "/noticias",        label: "Noticias",       icon: Newspaper },
   { to: "/apuntes",         label: "Biblioteca",     icon: BookOpen },
-  { to: "/trivia",          label: "Trivia",         icon: Trophy },
   { to: "/asistente",       label: "Asistente DND",  icon: Bot },
   { to: "/permutero",       label: "Permutero",      icon: Repeat2 },
   { to: "/servicios",       label: "Info Útil",      icon: ShieldCheck },
@@ -29,7 +28,7 @@ export const Navbar = () => {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const links = profile?.role === "admin" ? publicLinks : publicLinks.filter(l => l.to !== "/trivia");
+  const links = publicLinks;
   const isLight = resolvedTheme === "light";
   const logoSrc = isLight ? logoDndNuevoFondoBlanco : "/LogoDNDnuevo.png";
 

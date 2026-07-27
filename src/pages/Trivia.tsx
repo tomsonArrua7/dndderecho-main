@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -241,48 +241,9 @@ export default function Trivia() {
         return e.materiaFav.toLowerCase().includes(catObj?.nombre.toLowerCase() || "") || e.materiaFav.includes("General");
       });
 
-  // SI NO ESTÁ AUTENTICADO O NO ES ADMIN: PANTALLA RESTRINGIDA
+  // SI NO ESTÁ AUTENTICADO O NO ES ADMIN: REDIRIGIR FUERA
   if (!loading && (!user || !isAdmin)) {
-    return (
-      <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-md w-full bg-white/[0.03] border border-white/10 rounded-3xl p-6 md:p-8 text-center space-y-6 shadow-2xl backdrop-blur-xl">
-          <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-            <Lock className="w-8 h-8 animate-pulse" />
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-2xl md:text-3xl font-black font-display text-white">Acceso Restringido (Beta)</h2>
-            <p className="text-slate-400 text-xs md:text-sm leading-relaxed">
-              La **Trivia Jurídica Académica** se encuentra actualmente en fase de pruebas exclusivas para **Administradores**.
-            </p>
-          </div>
-
-          <div className="pt-2 space-y-3">
-            {!user ? (
-              <Link
-                to="/auth"
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-red-600/30 hover:from-red-500 hover:to-rose-500 transition-all active:scale-95 cursor-pointer"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Iniciar Sesión como Admin</span>
-              </Link>
-            ) : (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs font-bold">
-                Tu usuario actual ({user.email}) no posee privilegios de administrador para probar esta función en desarrollo.
-              </div>
-            )}
-
-            <Link
-              to="/"
-              className="block text-xs font-bold text-slate-500 hover:text-slate-300 transition-colors"
-            >
-              Volver al Inicio
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return <Navigate to="/" replace />;
   }
 
   return (
