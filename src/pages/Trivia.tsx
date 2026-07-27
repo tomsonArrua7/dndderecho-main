@@ -91,6 +91,7 @@ export default function Trivia() {
   });
   const [disabledOptions, setDisabledOptions] = useState<number[]>([]);
   const [showHint, setShowHint] = useState(false);
+  const [currentQuestionPenalty, setCurrentQuestionPenalty] = useState(0);
 
   // Historial de la Partida (Modo Repaso de Errores)
   const [gameHistory, setGameHistory] = useState<Array<{
@@ -380,13 +381,14 @@ export default function Trivia() {
     setLifelines({ used5050: false, usedHint: false, usedExtraTime: false });
     setDisabledOptions([]);
     setShowHint(false);
+    setCurrentQuestionPenalty(0);
     setGameHistory([]);
     setShowReviewModal(false);
   };
 
   const currentQuestion = questionsPool[currentIndex];
 
-  // Handlers para Comodines
+  // Handlers para Comodines con penalización de puntos
   const use5050 = () => {
     if (lifelines.used5050 || isAnswered || !currentQuestion) return;
     const correctIdx = currentQuestion.respuesta_correcta_index;
@@ -395,18 +397,21 @@ export default function Trivia() {
     const disabledTwo = shuffled.slice(0, 2);
     setDisabledOptions(disabledTwo);
     setLifelines(prev => ({ ...prev, used5050: true }));
+    setCurrentQuestionPenalty(prev => Math.min(80, prev + 50)); // -50% de puntos
   };
 
   const useHint = () => {
     if (lifelines.usedHint || isAnswered || !currentQuestion) return;
     setShowHint(true);
     setLifelines(prev => ({ ...prev, usedHint: true }));
+    setCurrentQuestionPenalty(prev => Math.min(80, prev + 30)); // -30% de puntos
   };
 
   const useExtraTime = () => {
     if (lifelines.usedExtraTime || isAnswered || !currentQuestion) return;
     setTimeLeft(prev => prev + 10);
     setLifelines(prev => ({ ...prev, usedExtraTime: true }));
+    setCurrentQuestionPenalty(prev => Math.min(80, prev + 20)); // -20% de puntos
   };
 
   const handleSelectOption = (index: number) => {
@@ -429,8 +434,10 @@ export default function Trivia() {
     if (isCorrect) {
       setCorrectAnswersCount(prev => prev + 1);
       const speedBonus = timeLeft * 1; 
-      const currentPoints = currentQuestion.puntos_base + speedBonus;
-      setScore(prev => prev + currentPoints);
+      const rawPoints = currentQuestion.puntos_base + speedBonus;
+      const penaltyFactor = (100 - currentQuestionPenalty) / 100;
+      const finalQuestionPoints = Math.max(1, Math.round(rawPoints * penaltyFactor));
+      setScore(prev => prev + finalQuestionPoints);
       setStreak(prev => {
         const next = prev + 1;
         if (next > maxStreak) setMaxStreak(next);
@@ -449,6 +456,7 @@ export default function Trivia() {
       setTimeLeft(15);
       setDisabledOptions([]);
       setShowHint(false);
+      setCurrentQuestionPenalty(0);
     } else {
       setGameOver(true);
       saveStats(correctAnswersCount, score, maxStreak);
@@ -962,57 +970,65 @@ export default function Trivia() {
               </div>
             </div>
 
-            {/* COMODINES DE CÁTEDRA */}
+            {/* COMODINES DE CÁTEDRA CON PENALIZACIÓN DE PUNTOS */}
             {!isAnswered && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 rounded-2xl bg-white/[0.02] border border-white/10">
-                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Comodines de Cátedra:</span>
-                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Comodines de Cátedra:</span>
+                  </span>
+                  {currentQuestionPenalty > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500/20 border border-red-500/40 text-red-300">
+                      ⚠️ Penalización: -{currentQuestionPenalty}% PTS
+                    </span>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-between">
                   <button
                     onClick={use5050}
                     disabled={lifelines.used5050}
                     className={cn(
-                      "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 cursor-pointer border min-h-[34px]",
+                      "px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1 cursor-pointer border min-h-[34px]",
                       lifelines.used5050
                         ? "bg-white/5 text-slate-600 border-white/5 cursor-not-allowed"
                         : "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 hover:bg-indigo-500/30"
                     )}
-                    title="Elimina 2 opciones incorrectas"
+                    title="50:50 (Elimina 2 incorrectas - Penaliza 50% de los puntos)"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>50:50</span>
+                    <span>50:50 (-50%)</span>
                   </button>
 
                   <button
                     onClick={useHint}
                     disabled={lifelines.usedHint}
                     className={cn(
-                      "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 cursor-pointer border min-h-[34px]",
+                      "px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1 cursor-pointer border min-h-[34px]",
                       lifelines.usedHint
                         ? "bg-white/5 text-slate-600 border-white/5 cursor-not-allowed"
                         : "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
                     )}
-                    title="Muestra la norma o jurisprudencia de la pregunta"
+                    title="Pista (Muestra la norma - Penaliza 30% de los puntos)"
                   >
                     <BookOpenCheck className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Pista</span>
+                    <span>Pista (-30%)</span>
                   </button>
 
                   <button
                     onClick={useExtraTime}
                     disabled={lifelines.usedExtraTime}
                     className={cn(
-                      "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 cursor-pointer border min-h-[34px]",
+                      "px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1 cursor-pointer border min-h-[34px]",
                       lifelines.usedExtraTime
                         ? "bg-white/5 text-slate-600 border-white/5 cursor-not-allowed"
                         : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
                     )}
-                    title="Suma +10 segundos al temporizador"
+                    title="Prórroga (+10 segundos - Penaliza 20% de los puntos)"
                   >
                     <Timer className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>+10s</span>
+                    <span>+10s (-20%)</span>
                   </button>
                 </div>
               </div>
