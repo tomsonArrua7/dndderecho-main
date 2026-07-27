@@ -794,29 +794,48 @@ export default function Trivia() {
                 <p className="text-xs text-slate-500 italic py-4">No hay salas de duelo públicas en espera. ¡Creá una nueva!</p>
               ) : (
                 <div className="space-y-2.5">
-                  {duelosList.map((duelo) => (
-                    <div
-                      key={duelo.id}
-                      className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-4"
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
-                            {duelo.id}
-                          </span>
-                          <span className="text-xs font-black text-white">{duelo.materiaNombre}</span>
-                        </div>
-                        <p className="text-[11px] text-slate-400">Creado por: <span className="text-indigo-300 font-bold">{duelo.player1Nombre}</span></p>
-                      </div>
+                  {duelosList.map((duelo) => {
+                    const isOwnRoom = duelo.player1Id === user?.id || duelo.player1Nombre === userName;
 
-                      <button
-                        onClick={handleStartGame}
-                        className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase cursor-pointer"
+                    return (
+                      <div
+                        key={duelo.id}
+                        className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-4"
                       >
-                        Aceptar Duelo 1v1
-                      </button>
-                    </div>
-                  ))}
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                              {duelo.id}
+                            </span>
+                            <span className="text-xs font-black text-white">{duelo.materiaNombre}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-400">Creado por: <span className="text-indigo-300 font-bold">{duelo.player1Nombre}</span></p>
+                        </div>
+
+                        {isOwnRoom ? (
+                          <div className="flex items-center gap-2">
+                            <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/20 text-xs font-bold font-mono">
+                              ⏳ Tu Sala (Esperando Rival)
+                            </span>
+                            <button
+                              onClick={() => setDuelosList(prev => prev.filter(d => d.id !== duelo.id))}
+                              className="p-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-bold transition-all cursor-pointer"
+                              title="Eliminar Sala"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleStartGame}
+                            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase cursor-pointer"
+                          >
+                            Aceptar Duelo 1v1
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -831,7 +850,7 @@ export default function Trivia() {
                 <Trophy className="w-5 h-5 text-yellow-400" />
                 <span>Tabla del Ranking General Único</span>
               </h3>
-              <p className="text-xs text-slate-400">Ordenado por puntaje histórico acumulado en evaluaciones y duelos.</p>
+              <p className="text-xs text-slate-400">Ordenado por puntaje histórico acumulado de usuarios reales.</p>
             </div>
 
             <div className="space-y-2.5">
@@ -839,7 +858,7 @@ export default function Trivia() {
               <div className="p-4 rounded-2xl bg-indigo-600/30 border border-indigo-500 flex items-center justify-between gap-4 shadow-lg">
                 <div className="flex items-center gap-3">
                   <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center font-mono">
-                    #4
+                    #1
                   </span>
                   <div>
                     <h4 className="font-black text-sm text-white flex items-center gap-1.5">
@@ -856,35 +875,13 @@ export default function Trivia() {
                 </div>
               </div>
 
-              {/* JUGADORES DEL MOCK LEADERBOARD */}
-              {MOCK_LEADERBOARD.map((entry) => {
-                return (
-                  <div
-                    key={entry.id}
-                    className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className={cn(
-                        "w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm font-mono border",
-                        entry.posicion === 1 ? "bg-amber-500/20 border-amber-500/50 text-amber-300" :
-                        entry.posicion === 2 ? "bg-slate-300/20 border-slate-300/50 text-slate-200" :
-                        entry.posicion === 3 ? "bg-amber-700/20 border-amber-700/50 text-amber-400" : "bg-white/5 border-white/10 text-slate-400"
-                      )}>
-                        #{entry.posicion}
-                      </span>
-                      <div>
-                        <h4 className="font-black text-sm text-white">{entry.nombre}</h4>
-                        <p className="text-[11px] text-slate-400">{entry.facultad} — {entry.materiaFav}</p>
-                      </div>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="text-base font-black text-amber-400 font-mono">{entry.puntos} PTS</span>
-                      <span className="text-[10px] text-slate-400 block font-mono">Precisión {entry.aciertosPorcentaje}%</span>
-                    </div>
-                  </div>
-                );
-              })}
+              {MOCK_LEADERBOARD.length === 0 && (
+                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
+                  <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
+                  <h4 className="font-black text-sm text-white">¡Encabezás el Ranking General Único!</h4>
+                  <p className="text-xs text-slate-400">Se han eliminado todos los perfiles ficticios. ¡Sumá más puntos en evaluaciones y duelos para defender tu posición!</p>
+                </div>
+              )}
             </div>
           </div>
         )}

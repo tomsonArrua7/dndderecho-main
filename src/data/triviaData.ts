@@ -457,13 +457,7 @@ export const CATEGORIAS_TRIVIA: CategoriaTrivia[] = [
   }
 ];
 
-export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
-  { id: "lead_1", posicion: 1, nombre: "Dr. Gonzalo Arrua", facultad: "FCJyS - UNLP", materiaFav: "Derecho Procesal II", puntos: 1850, aciertosPorcentaje: 94, racha: 18 },
-  { id: "lead_2", posicion: 2, nombre: "Dra. Sofía Benítez", facultad: "FCJyS - UNLP", materiaFav: "Derecho Penal II", puntos: 1420, aciertosPorcentaje: 89, racha: 12 },
-  { id: "lead_3", posicion: 3, nombre: "Esteban Quiroga", facultad: "FCJyS - UNLP", materiaFav: "Derecho Constitucional", puntos: 980, aciertosPorcentaje: 82, racha: 8 },
-  { id: "lead_4", posicion: 4, nombre: "Camila Fernández", facultad: "FCJyS - UNLP", materiaFav: "Derecho Privado III", puntos: 720, aciertosPorcentaje: 78, racha: 6 },
-  { id: "lead_5", posicion: 5, nombre: "Mateo Rossi", facultad: "FCJyS - UNLP", materiaFav: "Derecho Administrativo I", puntos: 450, aciertosPorcentaje: 74, racha: 4 }
-];
+export const MOCK_LEADERBOARD: LeaderboardEntry[] = [];
 
 // =========================================================================
 // BANCO DE PREGUNTAS TÉCNICAS (CON VARIACIÓN DEL ÍNDICE DE RESPUESTA CORRECTA 0, 1, 2, 3)
