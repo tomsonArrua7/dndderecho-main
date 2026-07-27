@@ -284,10 +284,22 @@ export default function Trivia() {
       selected.push(...generalRemaining.slice(0, targetCount - selected.length));
     }
 
-    const newIds = selected.map(q => q.id);
+    // Mezclar aleatoriamente el orden de las opciones para cada pregunta
+    const preparedPool = selected.map(q => {
+      const correctText = q.opciones[q.respuesta_correcta_index];
+      const shuffledOptions = [...q.opciones].sort(() => Math.random() - 0.5);
+      const newCorrectIndex = shuffledOptions.indexOf(correctText);
+      return {
+        ...q,
+        opciones: shuffledOptions,
+        respuesta_correcta_index: newCorrectIndex
+      };
+    });
+
+    const newIds = preparedPool.map(q => q.id);
     setUsedQuestionIds(prev => Array.from(new Set([...prev, ...newIds])));
 
-    setQuestionsPool(selected);
+    setQuestionsPool(preparedPool);
     setCurrentIndex(0);
     setScore(0);
     setStreak(0);
