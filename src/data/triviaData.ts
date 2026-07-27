@@ -534,6 +534,76 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     respuesta_correcta_index: 1,
     fundamento_juridico: "Escuela de Frankfurt (Adorno, Horkheimer, Marcuse).", puntos_base: 25
   },
+  {
+    id: "10610-11", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "¿Quién concibió y promovió en 1904-1905 la nacionalización de la Universidad de La Plata para dotarla de un perfil científico y experimental moderno?",
+    opciones: ["Dr. Dardo Rocha", "Dr. Joaquín V. González", "Rafael Hernández", "Máximo Paz"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Compendio Cátedra 1 / Memoria de 1905 (Ley Nacional 4699).", puntos_base: 25
+  },
+  {
+    id: "10610-12", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "Según el Art. 11 del Estatuto de la UNLP, ¿cuál es la condición jurídica de las materias aprobadas por los estudiantes de grado?",
+    opciones: ["Expiran si transcurren 5 años sin rendir", "Son derechos adquiridos inalienables que bajo ninguna circunstancia pueden ser derogados", "Requieren revalidación periódica quinquenal", "Quedan a decisión discrecional del Decano"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 11 del Estatuto de la Universidad Nacional de La Plata.", puntos_base: 25
+  },
+  {
+    id: "10610-13", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "Según el Compendio de Cátedra 1, ¿cuál de los modelos universitarios coloniales españoles funcionaba como un 'convento-universidad'?",
+    opciones: ["Universidad de Bolonia", "Universidad de Salamanca", "Universidad de Alcalá de Henares", "Universidad de Coímbra"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Compendio DND Cátedra 1 / Tünnermann Bernheim (Pág. 56).", puntos_base: 25
+  },
+  {
+    id: "10610-14", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "dificil",
+    pregunta: "El modelo napoleónico de universidad republicana implantado en América Latina durante el siglo XIX se caracterizó por:",
+    opciones: ["Una estructura académica integrada centrada en la investigación pura", "Un conglomerado de escuelas autárquicas profesionalistas (abogacía, medicina)", "Universidades privadas sin fiscalización estatal", "Institutos dedicados exclusivamente a la teología"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Darcy Ribeiro / Compendio DND Cátedra 1 (Pág. 60).", puntos_base: 50
+  },
+  {
+    id: "10610-15", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "El Art. 7 de la Ley de Educación Superior (Ley 24.521) permite el ingreso de mayores de 25 años sin título secundario siempre que:",
+    opciones: ["Demuestren preparación o experiencia laboral acorde mediante evaluaciones institucionales", "Tengan prohibido el ingreso a carreras de grado", "Cursen un año previo eliminatorio obligatorio", "Rindan examen directo en el Ministerio de Educación"],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Art. 7 de la Ley de Educación Superior 24.521.", puntos_base: 25
+  },
+  {
+    id: "10610-16", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "facil",
+    pregunta: "El ingreso libre e irrestricto y la gratuidad de la enseñanza de grado en la UNLP están consagrados en los artículos:",
+    opciones: ["Artículos 1 y 2", "Artículos 20 y 21", "Artículos 49 y 50", "Artículos 88 y 94"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Arts. 20 y 21 del Estatuto de la UNLP.", puntos_base: 10
+  },
+  {
+    id: "10610-17", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "facil",
+    pregunta: "El célebre documento redactado por Deodoro Roca durante la Reforma Universitaria de Córdoba de 1918 se denomina:",
+    opciones: ["Manifiesto de Mayo", "Manifiesto Liminar de la Juventud Argentina de Córdoba", "Carta de la Reforma Universitaria", "Declaración de Autonomía"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Reforma Universitaria de 1918 / Compendio DND Cátedra 1.", puntos_base: 10
+  },
+  {
+    id: "10610-18", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "El órgano supremo de gobierno de la Universidad Nacional de La Plata integrado por el cogobierno cuatripartito es:",
+    opciones: ["El Consejo Superior", "La Asamblea Universitaria", "El Consejo Directivo", "La Junta Ejecutiva"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 49 del Estatuto de la UNLP.", puntos_base: 25
+  },
+  {
+    id: "10610-19", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "dificil",
+    pregunta: "Según el Compendio Cátedra 1, la primera universidad fundada en el continente americano (1538) fue la:",
+    opciones: ["Universidad de San Marcos (Lima)", "Real y Pontificia Universidad de México", "Universidad de Santo Domingo", "Universidad Nacional de Córdoba"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Compendio DND Cátedra 1 (Pág. 56).", puntos_base: 50
+  },
+  {
+    id: "10610-20", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "El modelo clásico de universidad republicana fundado por Andrés Bello en 1843 que consagró la 'universidad de abogados' fue la:",
+    opciones: ["Universidad Central de Venezuela", "Universidad de Chile", "Universidad de Buenos Aires", "Universidad de San Carlos de Guatemala"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Andrés Bello / Compendio DND Cátedra 1 (Pág. 60).", puntos_base: 25
+  },
 
   // --- 10111: INTRODUCCIÓN AL DERECHO ---
   {
