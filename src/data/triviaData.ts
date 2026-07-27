@@ -32,6 +32,34 @@ export interface LeaderboardEntry {
   rangoNombre?: string;
 }
 
+export interface DueloTrivia {
+  id: string; // Código único de sala (ej. "JURSOC-829")
+  esPublico: boolean; // true = Sala Pública en Lobby, false = Sala Privada por Código
+  materiaId: string;
+  materiaNombre: string;
+  preguntasIds: string[]; // IDs de las 10 preguntas
+
+  // Creador (P1)
+  player1Id: string;
+  player1Nombre: string;
+  player1Aciertos: number;
+  player1TiempoMs: number;
+  player1Puntos: number;
+  player1Completed: boolean;
+
+  // Desafiante (P2)
+  player2Id?: string;
+  player2Nombre?: string;
+  player2Aciertos?: number;
+  player2TiempoMs?: number;
+  player2Puntos?: number;
+  player2Completed?: boolean;
+
+  ganadorId?: string | "empate";
+  status: "esperando_rival" | "en_curso" | "finalizado";
+  createdAt: string;
+}
+
 export interface RangoJuridico {
   id: string;
   nombre: string;
