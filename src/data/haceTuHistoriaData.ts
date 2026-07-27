@@ -18,7 +18,7 @@ export interface PreguntaJuridicaMinijuego {
   id: string;
   pregunta: string;
   opciones: string[];
-  opcionCorrectaIdx: number;
+  opcionCorrectaIdx: number; // 0 (A), 1 (B), 2 (C), o 3 (D)
   explicacion: string;
   dificultad: 1 | 2 | 3 | 4;
 }
@@ -271,19 +271,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "📚 Estudio enfocado: Dedicar el fin de semana completo a leer fuentes romanas.",
         desafioJuridico: {
           id: "quiz_e1",
-          pregunta: "¿Qué principio básico del Derecho Romano establece 'Nemo plus iuris ad alium transferre potest quam ipse habet'?",
+          pregunta: "Caso Práctico Romano: Un ciudadano vende una estatua ajena. ¿Qué principio romano ampara al verdadero dueño para entablar la reivindicatio?",
           opciones: [
-            "Nadie puede transmitir a otro un derecho más amplio del que él mismo posee.",
-            "El contrato celebrado entre ausentes se presume perfeccionado al momento del pago.",
-            "La cosa juzgada solo afecta a quienes participaron de la litis.",
-            "El poseedor de buena fe no debe rendir cuentas de los frutos consumidos."
+            "Res inter alios acta aliis neque nocet neque prodest.",
+            "Nemo plus iuris ad alium transferre potest quam ipse habet.",
+            "Pacta sunt servanda secundum bonam fidem.",
+            "In dubio pro reo et favor debitoris."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "Es la regla clásica de la transmisión de derechos: nadie puede otorgar más de lo que tiene.",
+          opcionCorrectaIdx: 1, // OPCIÓN B (1)
+          explicacion: "El principio 'Nemo plus iuris...' ampara la reivindicación: el vendedor no tenía el derecho para transmitir el dominio.",
           dificultad: 1
         },
         impacto: { prestigio: 6, contactos: -3, etica: 3, templanza: -6, dineroPesos: -15000, impactoRamas: { civilComercial: 6 } },
-        feedbackNarrativo: "Aprobaste Romano con buena nota. Tu libreta universitaria comenzó limpia y sólida."
+        feedbackNarrativo: "Respondiste correctamente citando la máxima romana en el examen oral."
       },
       {
         id: "e1_op2",
@@ -301,7 +301,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPAS 2 A 10 CON PUNTOS NERFEADOS (+4 a +7 MAX Y COSTOS DE TRADEOFF)
+  // ETAPA 2
   {
     id: 2,
     edadInicio: 19,
@@ -359,19 +359,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "⚖️ Quedarte asistiendo al penalista en las audiencias de prisión preventiva en calle 8.",
         desafioJuridico: {
           id: "quiz_e2",
-          pregunta: "En el Fuero Penal de la Prov. de Buenos Aires, ¿qué órgano judicial dicta la medida de Prisión Preventiva a pedido del Fiscal?",
+          pregunta: "Caso Práctico Penal: El Fiscal solicita prisión preventiva sin fundar peligro de fuga ni entorpecimiento probatorio. ¿En qué garantía del Art. 18 de la Constitución Nacional te basás para oponerte?",
           opciones: [
-            "El Juez de Garantías.",
-            "El Tribunal de Casación Penal.",
-            "El Fiscal de Cámara.",
-            "El Defensor Oficial General."
+            "En el principio de irretroactividad de la ley penal.",
+            "En la prohibición de juzgamiento por comisiones especiales.",
+            "En el estado de inocencia e inviolabilidad de la libertad durante el proceso.",
+            "En el principio de reserva del Art. 19 CN."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "El Juez de Garantías es el único facultado para resolver sobre la libertad o prisión preventiva del imputado.",
+          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          explicacion: "El principio de inocencia (Art. 18 CN) exige que la prisión preventiva sea excepcional y fundada únicamente en riesgos procesales.",
           dificultad: 1
         },
         impacto: { prestigio: 7, contactos: 5, etica: 2, templanza: -6, dineroPesos: 150000, impactoRamas: { penal: 8 } },
-        feedbackNarrativo: "Demostraste solvencia procesal asistiendo a las audiencias en calle 8."
+        feedbackNarrativo: "Fundamentaste la libertad procesal amparado en el Art. 18 de la Constitución Nacional."
       },
       {
         id: "e2_op3",
@@ -382,6 +382,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
+  // ETAPA 3 A 11 CON EXÁMENES Y VARIACIÓN DE OPCIONES CORRECTAS EN INDEX 0, 1, 2 Y 3
   {
     id: 3,
     edadInicio: 20,
@@ -439,19 +440,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🎓 Beca de Investigación Académica: Escribir artículos de doctrina jurídica.",
         desafioJuridico: {
           id: "quiz_e3",
-          pregunta: "Según la doctrina del Derecho Administrativo, ¿cuál es el carácter esencial de los actos administrativos expedidos por el Poder Ejecutivo?",
+          pregunta: "Caso Práctico Administrativo: Un decreto municipal revoca un permiso comercial sin motivación ni dictamen jurídico. Según el Art. 12 de la Ley 19.549 / DL 7647 PBA, ¿qué vicio padece el acto?",
           opciones: [
-            "Presunción de legitimidad y ejecutividad.",
-            "Nulidad absoluta de oficio sin revisión judicial.",
-            "Carácter meramente consultivo sin fuerza obligatoria.",
-            "Sujeción previa a homologación bancaria."
+            "Vicio grave en la motivación y forma escrita del acto administrativo.",
+            "Causa justa de rescisión sin indemnización previa.",
+            "Caducidad extemporánea de la concesión pública.",
+            "Condonación implícita de la deuda tributaria."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "El acto administrativo goza de presunción de legitimidad y fuerza ejecutiva conforme a la ley de procedimiento.",
+          opcionCorrectaIdx: 0, // OPCIÓN A (0)
+          explicacion: "La falta de motivación en el acto administrativo vicia su validez y permite entablar el recurso de nulidad.",
           dificultad: 2
         },
         impacto: { prestigio: 8, contactos: 2, etica: 5, templanza: -4, dineroPesos: 250000, impactoRamas: { civilComercial: 6, cibertech: 5 } },
-        feedbackNarrativo: "Publicaste un artículo doctrinario respaldado por la ley administrativa."
+        feedbackNarrativo: "Publicaste un artículo impugnando el acto administrativo viciado."
       },
       {
         id: "e3_op3",
@@ -520,19 +521,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🔥 Rendir todo en mesa libre: Vivir a café y no dormir durante 3 semanas.",
         desafioJuridico: {
           id: "quiz_e4",
-          pregunta: "Según el Art. 2561 del Código Civil y Comercial de la Nación (CCyCN), ¿cuál es el plazo general de prescripción de la acción por responsabilidad civil extracontractual?",
+          pregunta: "Caso Práctico Civil: Un cliente reclama daños tras sufrir un choque provocado por el desprendimiento de una rueda defectuosa de un colectivo. ¿Qué artículo del Código Civil y Comercial funda la responsabilidad objetiva por el riesgo o vicio de la cosa?",
           opciones: [
-            "3 años.",
-            "1 año.",
-            "5 años.",
-            "10 años."
+            "Artículo 119 del Código Penal.",
+            "Artículo 1091 del CCyCN sobre imprevisión.",
+            "Artículo 1757 del CCyCN sobre responsabilidad objetiva.",
+            "Artículo 2561 del CCyCN sobre prescripción."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "El plazo prescripcional para reclamos de daños y perjuicios es de 3 años.",
+          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          explicacion: "El Art. 1757 CCyCN establece que la responsabilidad por el riesgo o vicio de la cosa es objetiva y no requiere probar culpa del dueño o guardián.",
           dificultad: 2
         },
         impacto: { prestigio: 9, contactos: -3, etica: 3, templanza: -12, dineroPesos: -60000, impactoRamas: { civilComercial: 8 } },
-        feedbackNarrativo: "Rendiste libre con buena nota citando el Código Civil y Comercial."
+        feedbackNarrativo: "Citaste impecablemente el Art. 1757 del CCyCN ante la mesa de examen libre."
       },
       {
         id: "e4_op3",
@@ -594,19 +595,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "❤️ Dedicación total al Consultorio Gratuito: Resolver amparos de salud comunitarios.",
         desafioJuridico: {
           id: "quiz_e5",
-          pregunta: "Según el Art. 43 de la Constitución Nacional, ¿qué garantía constitucional procede ante la lesión arbitraria de derechos sin otro medio idóneo?",
+          pregunta: "Caso Práctico Amparo: Una obra social niega la cobertura de una prórroga quirúrgica urgente a un niño. ¿Qué plazo de traslado prevé el Art. 43 CN y la ley de amparo ante la inminencia de daño irreparable?",
           opciones: [
-            "Acción de Amparo.",
-            "Juicio Ejecutivo Ordinario.",
-            "Recurso de Casación.",
-            "Interdicto de Recobrar la Posesión."
+            "Traslado ordinario por 15 días hábiles procesales.",
+            "Plazo reducido abreviado de 3 días con medida cautelar de no innovar.",
+            "Audiencia de mediación previa obligatoria de 60 días.",
+            "Desestimación in limine por falta de agotamiento de la vía administrativa."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "La Acción de Amparo tutelar derechos fundamentales sin otro medio idóneo.",
+          opcionCorrectaIdx: 1, // OPCIÓN B (1)
+          explicacion: "En amparos de salud con peligro en la demora, el amparo exige un trámite híper sumario con medidas cautelares urgentes.",
           dificultad: 2
         },
         impacto: { prestigio: 9, contactos: 5, etica: 10, templanza: 4, dineroPesos: 80000, impactoRamas: { administrativoPublico: 8 } },
-        feedbackNarrativo: "Redactaste una Acción de Amparo colectiva que tuteló derechos comunitarios."
+        feedbackNarrativo: "Solicitaste la cautelar médica innovativa obteniendo la prótesis de urgencia."
       },
       {
         id: "e5_op2",
@@ -737,19 +738,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🏢 Estudio Corporativo 'DND & Asociados': Innovación, contratos tech y sueldo de $1.400.000/mes.",
         desafioJuridico: {
           id: "quiz_e7",
-          pregunta: "En la Ley 14.543 de Juicio por Jurados de PBA, ¿cuántos votos de los 12 jurados se requieren para veredicto de CULPABILIDAD en delitos no perpetuos?",
+          pregunta: "Caso Práctico Corporativo: Una PyME contratante sufre un hiper-descalce financiero por devaluación sorpresiva. ¿Qué figura del Art. 1091 CCyCN invocás para renegociar el convenio?",
           opciones: [
-            "Al menos 10 votos de los 12 jurados.",
-            "Unanimidad absoluta (12 de 12).",
-            "Mayoría simple (7 de 12).",
-            "Al menos 8 votos de 12."
+            "Teoría de los actos propios y cosa juzgada.",
+            "Frustración definitiva del objeto social.",
+            "Imprevisión y excesiva onerosidad sobreviniente.",
+            "Nulidad relativa por vicio de lesión enorme."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "En PBA, la culpabilidad en delitos no perpetuos exige al menos 10 votos concordantes.",
+          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          explicacion: "El Art. 1091 CCyCN permite revisar o resolver contratos cuando una prestación se torna excesivamente onerosa por imprevisión.",
           dificultad: 3
         },
         impacto: { prestigio: 8, contactos: 6, etica: 3, templanza: -5, dineroPesos: 3500000, impactoRamas: { cibertech: 10, civilComercial: 8 } },
-        feedbackNarrativo: "Superaste el examen técnico de ingreso a DND & Asociados."
+        feedbackNarrativo: "Reestructuraste el contrato corporativo aplicando la teoría de la imprevisión."
       },
       {
         id: "empleo_op2",
@@ -822,7 +823,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         id: "e8_op2",
         texto: "💰 Aceptar el dinero turbio ($8.000.000) e interponer recursos dilatorios.",
         impacto: { prestigio: -12, contactos: 5, etica: -25, templanza: -10, dineroPesos: 8000000 },
-        feedbackNarrativo: "Cobraste $8.000.000 en efectivo. Tu ética sufrió un golpe duro."
+        feedbackNarrativo: "Cobraste $8.000.000 en efectivo."
       },
       {
         id: "e8_op3",
@@ -953,19 +954,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "⚖️ Asumir la defensa técnica estricta garantizando el debido proceso ante el Jurado Popular.",
         desafioJuridico: {
           id: "quiz_e10",
-          pregunta: "¿Qué recurso extraordinario procede ante la Suprema Corte de Justicia de la Prov. de Buenos Aires (SCBA) por violación de la doctrina legal del Tribunal?",
+          pregunta: "Caso Práctico Suprema Corte: Se impugna una sentencia por errónea interpretación de doctrina legal de la SCBA. ¿Qué recurso extraordinario procede en la Provincia de Buenos Aires?",
           opciones: [
+            "Recurso Ordinario de Apelación ante la Cámara.",
             "Recurso Extraordinario de Inaplicabilidad de Ley (REIL).",
-            "Recurso de Apelación Extraordinario de Garantías.",
-            "Recurso Directo de Queja por Retardo de Justicia.",
-            "Amparo Colectivo de Urgencia."
+            "Recurso Directo de Queja por Denegatoria.",
+            "Amparo Colectivo de Ejecución."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "El REIL es el recurso constitucional ante la SCBA cuando la sentencia violó la doctrina legal.",
+          opcionCorrectaIdx: 1, // OPCIÓN B (1)
+          explicacion: "El REIL es el vía constitucional ante la SCBA para cuestionar la violación de la doctrina legal sentada por el tribunal.",
           dificultad: 4
         },
         impacto: { prestigio: 10, contactos: 7, etica: 6, templanza: -8, dineroPesos: 11000000 },
-        feedbackNarrativo: "Tu alegato de clausura ante el Jurado Popular sentado en jurisprudencia de la SCBA fue aplaudido."
+        feedbackNarrativo: "Tu alegato fundado en el REIL ante la Suprema Corte sentó doctrina procesal."
       },
       {
         id: "e10_op2",
@@ -977,7 +978,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 11 REESTRUCTURADA: EL CIERRE DE CARRERA Y EL JURY DE ENJUICIAMIENTO (45 A 65 AÑOS)
   {
     id: 11,
     edadInicio: 45,
@@ -1029,19 +1029,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "⚖️ Defender firmemente tu fallo ante el Jury de Enjuiciamiento invocando la independencia judicial.",
         desafioJuridico: {
           id: "quiz_e11",
-          pregunta: "Para remover a un Juez de Cámara en la Prov. de Buenos Aires mediante Jury de Enjuiciamiento (Ley 13.661), ¿qué causa constitucional se requiere comprobar?",
+          pregunta: "Caso Práctico Jury (Ley 13.661 PBA): Para nombrar o remover a un Ministro de la Suprema Corte bonaerense (SCBA), ¿qué mayoría legislativa exige la Constitución Provincial?",
           opciones: [
-            "Falta de aptitud, delito en el ejercicio de sus funciones o mala conducta grave.",
-            "Desacuerdo ideológico del Poder Ejecutivo con sus sentencias.",
-            "Falta de publicación de artículos académicos en revistas locales.",
-            "Inasistencia a los festejos anuales del Colegio de Abogados."
+            "Mayoría simple del Consejo de la Magistratura.",
+            "Decreto del Gobernador con aval judicial.",
+            "Acuerdo del Senado Provincial por dos tercios de los miembros presentes.",
+            "Aprobación unánime del Colegio de Abogados."
           ],
-          opcionCorrectaIdx: 0,
-          explicacion: "El Jury exige comprobar mal desempeño o delito en el ejercicio del cargo con garantías constitucionales.",
+          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          explicacion: "El acuerdo de nombramiento o tratamiento en el Senado exige la mayoría calificada de dos tercios de los miembros presentes.",
           dificultad: 4
         },
         impacto: { prestigio: 12, contactos: 8, etica: 10, templanza: -10, dineroPesos: 14000000 },
-        feedbackNarrativo: "Sostuviste tu fallo con solvencia constitucional impecable. El Jury desestimó los cargos por unanimidad."
+        feedbackNarrativo: "Sostuviste tu fallo con solvencia constitucional. El Jury desestimó los cargos por unanimidad."
       },
       {
         id: "e11_op2",

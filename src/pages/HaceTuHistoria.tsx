@@ -43,7 +43,8 @@ import {
   UserPlus,
   ChevronDown,
   History,
-  XCircle
+  XCircle,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -80,6 +81,9 @@ export default function HaceTuHistoria() {
   const [etica, setEtica] = useState(50);
   const [templanza, setTemplanza] = useState(75);
   const [dineroPesos, setDineroPesos] = useState(35000);
+
+  // Modal de Confirmación de Renuncia Voluntaria
+  const [showResignModal, setShowResignModal] = useState(false);
 
   // Estado del Minijuego Jurídico Modal
   const [activeQuiz, setActiveQuiz] = useState<{ desafio: PreguntaJuridicaMinijuego; opcionOriginal: OpcionDilema } | null>(null);
@@ -248,6 +252,38 @@ export default function HaceTuHistoria() {
     return scores[0];
   };
 
+  // CÁLCULO DE TÍTULO FINAL PERSONALIZADO SEGÚN ESTADÍSTICA DESTACADA
+  const getCustomCareerTitle = () => {
+    if (dineroPesos >= 20000000) {
+      return {
+        titulo: "💰 Magnate Corporativo & Firma Millonaria",
+        mencion: "Destacado por construir un patrimonio económico extraordinario en la abogacía."
+      };
+    }
+    if (prestigio >= contactos && prestigio >= etica && prestigio >= templanza) {
+      return {
+        titulo: "⚖️ Catedrático Ilustre & Maestro del Derecho",
+        mencion: "Reconocido en toda la provincia por tu impecable doctrina y prestigio técnico."
+      };
+    }
+    if (contactos >= prestigio && contactos >= etica && contactos >= templanza) {
+      return {
+        titulo: "🤝 Estratega Político & Operador Institucional",
+        mencion: "Destacado por tejer redes de influencia decisivas en la UNLP y la función pública."
+      };
+    }
+    if (etica >= prestigio && etica >= contactos && etica >= templanza) {
+      return {
+        titulo: "🏛️ Baluarte Moral & Defensor Incorruptible",
+        mencion: "Ejemplo intachable de ética procesal ante el Colegio de Abogados de La Plata."
+      };
+    }
+    return {
+      titulo: "🧠 Litigante de Acero & Mente Imperturbable",
+      mencion: "Sobreviviente a la presión procesal extrema con una templanza admirable."
+    };
+  };
+
   const calculateGastosFijosBianuales = () => {
     if (currentEtapaIdx < 6) return 0;
     const costoMatriculaCALP = 250000;
@@ -291,6 +327,7 @@ export default function HaceTuHistoria() {
     setActiveQuiz(null);
     setQuizSelectedOptionIdx(null);
     setQuizAnswerSubmitted(false);
+    setShowResignModal(false);
     setNewLogroAlert(null);
     setLastFeedback(null);
     setLastImpact(null);
@@ -298,6 +335,13 @@ export default function HaceTuHistoria() {
     setGameOverReason(null);
     setIsVictory(false);
     setGameStarted(true);
+  };
+
+  const confirmResignation = () => {
+    setShowResignModal(false);
+    const motivo = `🚪 Retiro Voluntario / Renuncia a los ${ETAPAS_CARRERA[currentEtapaIdx]?.edadInicio || 18} Años`;
+    saveCareerToHistory(false, motivo);
+    resetGame();
   };
 
   const handleMakeChoice = (opcion: OpcionDilema) => {
@@ -322,7 +366,7 @@ export default function HaceTuHistoria() {
       impact.prestigio = -15;
       impact.templanza = -12;
     } else if (opcion.desafioJuridico) {
-      impact.prestigio += 5; // Bonus moderado
+      impact.prestigio += 5;
     }
 
     setLastImpact(impact);
@@ -411,6 +455,7 @@ export default function HaceTuHistoria() {
     setGameStarted(false);
     setSelectedSkill(null);
     setCurrentEtapaIdx(0);
+    setShowResignModal(false);
     setGameOverReason(null);
     setIsVictory(false);
   };
@@ -419,6 +464,7 @@ export default function HaceTuHistoria() {
   const dominantBranch = getDominantBranch();
   const currentOVRGeneral = calculateOVRGeneral();
   const gastosFijosActuales = calculateGastosFijosBianuales();
+  const customTitleObj = getCustomCareerTitle();
 
   // 1. PANTALLA PRE-JUEGO
   if (!gameStarted) {
@@ -703,7 +749,7 @@ export default function HaceTuHistoria() {
                             "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase border",
                             carrera.fueVictoria ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300" : "bg-red-500/20 border-red-500/40 text-red-300"
                           )}>
-                            {carrera.fueVictoria ? "Jubilación a los 65 Años" : `Muerte Súbita a los ${carrera.edadFinal} Años`}
+                            {carrera.fueVictoria ? "Jubilación a los 65 Años" : `Final a los ${carrera.edadFinal} Años`}
                           </span>
                           <span className="text-[10px] text-slate-400 font-mono">{carrera.fechaISO}</span>
                         </div>
@@ -746,14 +792,14 @@ export default function HaceTuHistoria() {
               <Scale className="w-7 h-7" />
             </div>
             <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-widest border border-amber-500/30">
-              ⚖️ MINIJUEGO DESAFÍO JURÍDICO — NIVEL {desafio.dificultad}
+              ⚖️ CASO PRÁCTICO / DESAFÍO JURÍDICO — NIVEL {desafio.dificultad}
             </span>
-            <h2 className="text-xl md:text-2xl font-black text-white pt-1">Demostrá Solvencia Doctrinal</h2>
-            <p className="text-xs text-slate-300">Respondé correctamente para asegurar el beneficio de tu decisión.</p>
+            <h2 className="text-xl md:text-2xl font-black text-white pt-1">Demostrá Solvencia Normativa</h2>
+            <p className="text-xs text-slate-300">Respondé basándote en los artículos del Código aplicable para asegurar el beneficio.</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-950 border border-white/15 space-y-2">
-            <span className="text-[10px] font-black uppercase text-amber-400 block">Pregunta Técnica:</span>
+            <span className="text-[10px] font-black uppercase text-amber-400 block">Caso Práctico:</span>
             <p className="text-sm md:text-base font-bold text-white leading-snug">{desafio.pregunta}</p>
           </div>
 
@@ -803,7 +849,7 @@ export default function HaceTuHistoria() {
             )}>
               <div className="flex items-center gap-2 font-black uppercase text-[11px]">
                 {isCorrectAnswer ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
-                <span>{isCorrectAnswer ? "¡RESPUESTA TÉCNICA CORRECTA (+5 PRESTIGIO)!" : "RESPUESTA INCORRECTA (-15 PRESTIGIO / -12 TEMPLANZA)"}</span>
+                <span>{isCorrectAnswer ? "¡FUNDAMENTACIÓN CORRECTA (+5 PRESTIGIO)!" : "FUNDAMENTACIÓN INCORRECTA (-15 PRESTIGIO / -12 TEMPLANZA)"}</span>
               </div>
               <p className="leading-relaxed text-slate-200">{desafio.explicacion}</p>
             </div>
@@ -818,6 +864,41 @@ export default function HaceTuHistoria() {
               <ArrowRight className="w-4 h-4" />
             </button>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  // MODAL DE CONFIRMACIÓN DE RENUNCIA VOLUNTARIA
+  if (showResignModal) {
+    return (
+      <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
+        <div className="max-w-md w-full bg-slate-900 border border-red-500/40 rounded-3xl p-6 space-y-6 shadow-2xl text-center relative z-10">
+          <div className="w-14 h-14 mx-auto rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400">
+            <LogOut className="w-7 h-7" />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-white">¿Renunciar a la Carrera?</h3>
+            <p className="text-xs text-slate-300">
+              Esta acción guardará tu partida actual en el Hall of Fame como "Retiro Voluntario" a los {currentEtapa.edadInicio} años.
+            </p>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => setShowResignModal(false)}
+              className="w-1/2 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmResignation}
+              className="w-1/2 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase tracking-wider shadow-lg cursor-pointer"
+            >
+              Sí, Renunciar
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -951,7 +1032,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 5. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS
+  // 5. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS (CON TÍTULO PERSONALIZADO)
   if (isVictory) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -960,12 +1041,13 @@ export default function HaceTuHistoria() {
             <Trophy className="w-10 h-10" />
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-widest border border-emerald-500/30">
               ¡JUBILACIÓN COMPLETADA A LOS 65 AÑOS!
             </span>
-            <h2 className="text-2xl md:text-3xl font-black text-white pt-2">Leyenda Jurídica de La Plata</h2>
-            <p className="text-xs text-slate-400">Origen: {getCiudadNatalNombre()} — FCJyS UNLP</p>
+            <h2 className="text-2xl md:text-3xl font-black text-amber-400 pt-2">{customTitleObj.titulo}</h2>
+            <p className="text-xs text-slate-300 italic max-w-md mx-auto">{customTitleObj.mencion}</p>
+            <p className="text-[11px] text-slate-400 pt-1">Origen: {getCiudadNatalNombre()} — FCJyS UNLP</p>
           </div>
 
           <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
@@ -1002,12 +1084,12 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 6. PANTALLA PRINCIPAL DE JUEGO
+  // 6. PANTALLA PRINCIPAL DE JUEGO (CON BOTÓN DE RENUNCIA VOLUNTARIA)
   return (
     <div className="min-h-screen bg-[#070A14] text-white py-6 md:py-10 px-3 md:px-8 relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10 space-y-6">
         
-        {/* HEADER DE ESTADO CON OVR GIGANTE */}
+        {/* HEADER DE ESTADO CON OVR GIGANTE Y BOTÓN DE RENUNCIA */}
         <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-4 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div>
@@ -1023,7 +1105,7 @@ export default function HaceTuHistoria() {
               <h2 className="text-lg md:text-xl font-black text-white mt-1">{currentEtapa.puesto}</h2>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <div className="flex items-center gap-3 bg-gradient-to-br from-amber-500/20 via-slate-950 to-indigo-500/20 p-3 rounded-2xl border border-amber-500/40 shadow-inner">
                 <div className="text-right">
                   <span className="text-[9px] font-black uppercase tracking-widest text-amber-300 block">OVR GENERAL</span>
@@ -1031,10 +1113,14 @@ export default function HaceTuHistoria() {
                 </div>
               </div>
 
-              <div className="text-right border-l border-white/10 pl-4 hidden sm:block">
-                <span className="text-[9px] uppercase font-black tracking-wider text-slate-400 block">Patrimonio ($)</span>
-                <span className="text-lg font-black text-emerald-400 font-mono">{formatPesos(dineroPesos)}</span>
-              </div>
+              <button
+                onClick={() => setShowResignModal(true)}
+                title="Renunciar a la carrera voluntariamente"
+                className="p-3 rounded-2xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 transition-all cursor-pointer flex flex-col items-center justify-center shrink-0"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="text-[9px] font-black uppercase">Renunciar</span>
+              </button>
             </div>
           </div>
 
@@ -1229,7 +1315,7 @@ export default function HaceTuHistoria() {
                       {hasQuizMinigame && (
                         <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1">
                           <Scale className="w-3 h-3 text-amber-400" />
-                          [Decisión Crítica: Requiere Desafío / Examen Jurídico]
+                          [Caso Práctico: Desafío Normativo]
                         </span>
                       )}
 
