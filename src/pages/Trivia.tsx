@@ -89,6 +89,16 @@ export default function Trivia() {
 
   const fetchLeaderboardAndStats = async () => {
     if (!user) return;
+
+    let currentStats = { ...userStats };
+    const savedStats = localStorage.getItem(`dnd_trivia_stats_${user.id}`);
+    if (savedStats) {
+      try {
+        currentStats = JSON.parse(savedStats);
+        setUserStats(currentStats);
+      } catch (e) {}
+    }
+
     try {
       // 1. Cargar Estadísticas del usuario desde Supabase
       const { data: statsData } = await supabase
@@ -98,12 +108,13 @@ export default function Trivia() {
         .maybeSingle();
 
       if (statsData) {
-        setUserStats({
+        currentStats = {
           totalJugadas: (statsData as any).partidas_jugadas || 0,
           totalCorrectas: (statsData as any).total_aciertos || 0,
           puntosTotales: (statsData as any).puntos_totales || 0,
           mejorRacha: (statsData as any).mejor_racha || 0
-        });
+        };
+        setUserStats(currentStats);
       }
 
       // 2. Cargar Leaderboard global desde Supabase (Vista trivia_leaderboard)
@@ -114,11 +125,42 @@ export default function Trivia() {
       if (boardData && boardData.length > 0) {
         setLeaderboardList(boardData as any);
       } else {
-        setLeaderboardList(MOCK_LEADERBOARD);
+        // Si la BD no devuelve filas aún, mostramos la entrada del usuario si tiene puntos/partidas
+        if (currentStats.puntosTotales > 0 || currentStats.totalJugadas > 0) {
+          setLeaderboardList([
+            {
+              id: user.id,
+              posicion: 1,
+              nombre: userName,
+              facultad: "Jursoc UNLP",
+              materiaFav: "Derecho General",
+              puntos: currentStats.puntosTotales,
+              aciertosPorcentaje: Math.round((currentStats.totalCorrectas / Math.max(1, currentStats.totalJugadas)) * 100),
+              racha: currentStats.mejorRacha,
+              avatarUrl: profile?.avatar_url
+            }
+          ]);
+        } else {
+          setLeaderboardList([]);
+        }
       }
     } catch (err) {
       console.error("Error al sincronizar datos de Supabase:", err);
-      setLeaderboardList(MOCK_LEADERBOARD);
+      if (currentStats.puntosTotales > 0 || currentStats.totalJugadas > 0) {
+        setLeaderboardList([
+          {
+            id: user.id,
+            posicion: 1,
+            nombre: userName,
+            facultad: "Jursoc UNLP",
+            materiaFav: "Derecho General",
+            puntos: currentStats.puntosTotales,
+            aciertosPorcentaje: Math.round((currentStats.totalCorrectas / Math.max(1, currentStats.totalJugadas)) * 100),
+            racha: currentStats.mejorRacha,
+            avatarUrl: profile?.avatar_url
+          }
+        ]);
+      }
     }
   };
 
@@ -129,16 +171,41 @@ export default function Trivia() {
   const saveStats = async (newCorrect: number, newScore: number, finalStreak: number) => {
     if (!user) return;
 
-    // Actualización local rápida
-    const updatedStats = {
-      totalJugadas: userStats.totalJugadas + questionsPool.length,
-      totalCorrectas: userStats.totalCorrectas + newCorrect,
-      puntosTotales: userStats.puntosTotales + newScore,
-      mejorRacha: Math.max(userStats.mejorRacha, finalStreak)
-    };
-    setUserStats(updatedStats);
+    const newTotalJugadas = userStats.totalJugadas + questionsPool.length;
+    const newTotalCorrectas = userStats.totalCorrectas + newCorrect;
+    const newPuntosTotales = userStats.puntosTotales + newScore;
+    const newMejorRacha = Math.max(userStats.mejorRacha, finalStreak);
 
-    // Persistencia oficial en Supabase (Trigger actualizará trivia_estadisticas_usuario)
+    const updatedStats = {
+      totalJugadas: newTotalJugadas,
+      totalCorrectas: newTotalCorrectas,
+      puntosTotales: newPuntosTotales,
+      mejorRacha: newMejorRacha
+    };
+
+    setUserStats(updatedStats);
+    localStorage.setItem(`dnd_trivia_stats_${user.id}`, JSON.stringify(updatedStats));
+
+    const myEntry: LeaderboardEntry = {
+      id: user.id,
+      posicion: 1,
+      nombre: userName,
+      facultad: "Jursoc UNLP",
+      materiaFav: selectedCategoria === "todas" ? "Derecho General" : (CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre || "Derecho"),
+      puntos: newPuntosTotales,
+      aciertosPorcentaje: Math.round((newTotalCorrectas / Math.max(1, newTotalJugadas)) * 100),
+      racha: newMejorRacha,
+      avatarUrl: profile?.avatar_url
+    };
+
+    // Actualización inmediata en pantalla
+    setLeaderboardList(prev => {
+      const filtered = prev.filter(e => e.id !== user.id && e.nombre !== userName);
+      const combined = [...filtered, myEntry].sort((a, b) => b.puntos - a.puntos);
+      return combined.map((e, idx) => ({ ...e, posicion: idx + 1 }));
+    });
+
+    // Guardado resiliente en Supabase (partida + upsert directo a estadísticas)
     try {
       await supabase.from("trivia_partidas" as any).insert({
         user_id: user.id,
@@ -150,9 +217,20 @@ export default function Trivia() {
         racha_maxima: finalStreak
       });
 
+      await supabase.from("trivia_estadisticas_usuario" as any).upsert({
+        user_id: user.id,
+        puntos_totales: newPuntosTotales,
+        partidas_jugadas: newTotalJugadas,
+        total_preguntas: newTotalJugadas,
+        total_aciertos: newTotalCorrectas,
+        mejor_racha: newMejorRacha,
+        materia_favorita: selectedCategoria === "todas" ? "Derecho General" : (CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre || "Derecho"),
+        updated_at: new Date().toISOString()
+      });
+
       await fetchLeaderboardAndStats();
     } catch (err) {
-      console.error("Error guardando partida en Supabase:", err);
+      console.error("Error guardando en Supabase:", err);
     }
   };
 
