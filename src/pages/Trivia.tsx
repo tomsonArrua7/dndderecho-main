@@ -237,6 +237,18 @@ export default function Trivia() {
     }
   };
 
+  // Helper para deserializar arreglos de preguntas_ids de Supabase de manera resiliente
+  const safeParseArray = (val: any): string[] => {
+    if (Array.isArray(val)) return val;
+    if (typeof val === "string") {
+      try {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
+    return [];
+  };
+
   // Cargar Duelos de Supabase / localStorage
   const fetchDuelos = async () => {
     let localDuelos: DueloTrivia[] = [];
@@ -258,7 +270,7 @@ export default function Trivia() {
           esPublico: d.es_publico ?? true,
           materiaId: d.materia_id || "todas",
           materiaNombre: d.materia_nombre || "General",
-          preguntasIds: d.preguntas_ids || [],
+          preguntasIds: safeParseArray(d.preguntas_ids),
           player1Id: d.player1_id,
           player1Nombre: d.player1_nombre || "Estudiante 1",
           player1Aciertos: Number(d.player1_aciertos || 0),
@@ -449,7 +461,7 @@ export default function Trivia() {
           esPublico: d.es_publico ?? true,
           materiaId: d.materia_id || "todas",
           materiaNombre: d.materia_nombre || "General",
-          preguntasIds: d.preguntas_ids || [],
+          preguntasIds: safeParseArray(d.preguntas_ids),
           player1Id: d.player1_id,
           player1Nombre: d.player1_nombre || "Estudiante 1",
           player1Aciertos: Number(d.player1_aciertos || 0),
