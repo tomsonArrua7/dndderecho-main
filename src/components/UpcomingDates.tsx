@@ -167,35 +167,6 @@ function EventCard({ event }: { event: AcademicDate }) {
           {formatDate(event.date)}
         </p>
       </div>
-
-      <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
-        <div className="flex gap-1.5">
-          <button
-            onClick={() => openGoogleCalendar(event)}
-            title="Agregar a Google Calendar"
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all btn-app"
-          >
-            <CalendarPlus size={12} />
-          </button>
-          <button
-            onClick={() => downloadICS(event)}
-            title="Descargar archivo iCal (.ics)"
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all btn-app"
-          >
-            <ExternalLink size={12} />
-          </button>
-        </div>
-        {event.link && (
-          <a
-            href={event.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[9px] font-black uppercase tracking-widest text-accent hover:underline"
-          >
-            Link
-          </a>
-        )}
-      </div>
     </article>
   );
 }
