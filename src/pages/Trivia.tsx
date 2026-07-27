@@ -39,7 +39,8 @@ import {
   Copy,
   Check,
   Search,
-  Share2
+  Share2,
+  Trash2
 } from "lucide-react";
 import { 
   TRIVIA_QUESTIONS, 
@@ -82,6 +83,7 @@ export default function Trivia() {
   const [dueloRole, setDueloRole] = useState<"player1" | "player2" | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [dueloVersusModal, setDueloVersusModal] = useState<DueloTrivia | null>(null);
+  const [createdDueloModal, setCreatedDueloModal] = useState<DueloTrivia | null>(null);
   const [dueloFilterTab, setDueloFilterTab] = useState<"publicas" | "mis_duelos">("publicas");
   
   // Filtros de juego
@@ -379,8 +381,42 @@ export default function Trivia() {
       });
     } catch (e) {}
 
-    const fixedPool = preguntasIds.map(id => TRIVIA_QUESTIONS.find(q => q.id === id)).filter(Boolean) as TriviaQuestion[];
-    startDueloGame(fixedPool);
+    // Mostrar modal con el código para compartir antes de iniciar
+    setCreatedDueloModal(newDuelo);
+  };
+
+  const deleteDuelo = async (dueloId: string) => {
+    setDuelosList(prev => prev.filter(d => d.id !== dueloId));
+    try {
+      const stored = localStorage.getItem("dnd_duelos_list");
+      if (stored) {
+        const list = JSON.parse(stored).filter((d: any) => d.id !== dueloId);
+        localStorage.setItem("dnd_duelos_list", JSON.stringify(list));
+      }
+    } catch (e) {}
+
+    try {
+      await supabase.from("trivia_duelos" as any).delete().eq("id", dueloId);
+    } catch (e) {}
+  };
+
+  const clearPendingDuelos = async () => {
+    const pendingIds = duelosList
+      .filter(d => d.player1Id === user?.id && !d.player1Completed && d.status === "esperando_rival")
+      .map(d => d.id);
+
+    setDuelosList(prev => prev.filter(d => !pendingIds.includes(d.id)));
+    try {
+      const stored = localStorage.getItem("dnd_duelos_list");
+      if (stored) {
+        const list = JSON.parse(stored).filter((d: any) => !pendingIds.includes(d.id));
+        localStorage.setItem("dnd_duelos_list", JSON.stringify(list));
+      }
+    } catch (e) {}
+
+    try {
+      await supabase.from("trivia_duelos" as any).delete().in("id", pendingIds);
+    } catch (e) {}
   };
 
   const joinDuelo = async (duelo: DueloTrivia) => {
@@ -1144,6 +1180,16 @@ export default function Trivia() {
                     <span>Mis Duelos Recientes</span>
                   </button>
                 </div>
+
+                {dueloFilterTab === "mis_duelos" && duelosList.some(d => d.player1Id === user?.id && !d.player1Completed && d.status === "esperando_rival") && (
+                  <button
+                    onClick={clearPendingDuelos}
+                    className="px-3 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 text-[10px] font-bold uppercase transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Limpiar Duelos Sin Jugar</span>
+                  </button>
+                )}
               </div>
 
               {/* CONTENIDO DE DUELOS */}
@@ -1210,7 +1256,7 @@ export default function Trivia() {
                         const isPending = d.status === "esperando_rival";
 
                         return (
-                          <div key={d.id} className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div key={d.id} className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-white/20 transition-all">
                             <div className="space-y-1">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="font-bold text-sm text-white">vs {rivalNombre}</span>
@@ -1238,15 +1284,28 @@ export default function Trivia() {
                               <p className="text-xs text-slate-400">Código: <strong className="text-amber-400 font-mono">{d.id}</strong> ({d.materiaNombre})</p>
                             </div>
 
-                            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-                              <div className="text-right text-xs font-mono font-bold">
+                            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                              <div className="text-right text-xs font-mono font-bold mr-2">
                                 <span className="text-emerald-400">{myAciertos}/10</span> vs <span className="text-slate-400">{rivalAciertos}/10</span>
                               </div>
                               <button
-                                onClick={() => setDueloVersusModal(d)}
+                                onClick={() => {
+                                  if (isMeP1 && !d.player1Completed) {
+                                    setCreatedDueloModal(d);
+                                  } else {
+                                    setDueloVersusModal(d);
+                                  }
+                                }}
                                 className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
                               >
-                                Ver Ficha
+                                {isMeP1 && !d.player1Completed ? "Ver Código / Jugar" : "Ver Ficha"}
+                              </button>
+                              <button
+                                onClick={() => deleteDuelo(d.id)}
+                                className="p-1.5 rounded-xl bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition-all cursor-pointer"
+                                title="Eliminar Duelo"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </div>
@@ -1985,6 +2044,82 @@ export default function Trivia() {
                     className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
                   >
                     Cerrar Ficha
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* MODAL SALA CREADA CON CÓDIGO Y ACCIONES DE COMPARTIR */}
+        <AnimatePresence>
+          {createdDueloModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="bg-slate-900 border border-indigo-500/30 rounded-3xl p-6 max-w-md w-full space-y-6 shadow-2xl text-center relative"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+                  <Swords className="w-8 h-8" />
+                </div>
+
+                <div className="space-y-1">
+                  <h2 className="text-xl font-black text-white">¡Sala de Duelo Creada!</h2>
+                  <p className="text-xs text-slate-400">Materia: <strong className="text-white">{createdDueloModal.materiaNombre}</strong></p>
+                </div>
+
+                {/* CÓDIGO DE SALA Y BOTONES DE COPIAR */}
+                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
+                  <span className="text-[10px] uppercase font-black tracking-wider text-slate-400 block">
+                    Código de Sala para enviar a tu amigo:
+                  </span>
+                  <div className="text-3xl font-black font-mono text-amber-400 tracking-wider">
+                    {createdDueloModal.id}
+                  </div>
+                  
+                  <div className="flex gap-2 justify-center pt-1">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(createdDueloModal.id);
+                        setCopiedCode(true);
+                        setTimeout(() => setCopiedCode(false), 2000);
+                      }}
+                      className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {copiedCode ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                      <span>{copiedCode ? "¡Copiado!" : "Copiar Código"}</span>
+                    </button>
+
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`¡Te desafío a un Duelo Jurídico 1v1 en DnD Derecho! Sumate a mi sala con el código: ${createdDueloModal.id} en https://dndjursoc.com.ar/trivia`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      <span>Enviar por WhatsApp</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      const pool = createdDueloModal.preguntasIds.map(id => TRIVIA_QUESTIONS.find(q => q.id === id)).filter(Boolean) as TriviaQuestion[];
+                      setCreatedDueloModal(null);
+                      startDueloGame(pool);
+                    }}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs uppercase tracking-wider shadow-lg cursor-pointer"
+                  >
+                    <span>Comenzar Mi Ronda (10 Preguntas)</span>
+                  </button>
+                  <button
+                    onClick={() => setCreatedDueloModal(null)}
+                    className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all cursor-pointer"
+                  >
+                    Volver a Duelos (Jugar Luego)
                   </button>
                 </div>
               </motion.div>
