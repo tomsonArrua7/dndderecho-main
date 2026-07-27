@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
@@ -9,7 +9,8 @@ import {
   EtapaVida, 
   OpcionDilema,
   ImpactoStats,
-  RamasPuntuacion
+  RamasPuntuacion,
+  EventoInesperado
 } from "@/data/haceTuHistoriaData";
 import { 
   ShieldAlert, 
@@ -28,9 +29,9 @@ import {
   GraduationCap,
   TrendingUp,
   Award,
-  HeartPulse,
-  Flame,
-  Zap
+  Zap,
+  Info,
+  Dice5
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,8 +50,12 @@ export default function HaceTuHistoria() {
   const [prestigio, setPrestigio] = useState(50);
   const [contactos, setContactos] = useState(50);
   const [etica, setEtica] = useState(50);
-  const [saludMental, setSaludMental] = useState(80); // NUEVA STAT: Salud Mental / Estrés (0-100)
-  const [dineroPesos, setDineroPesos] = useState(35000); // Ahorros en Pesos
+  const [saludMental, setSaludMental] = useState(80);
+  const [dineroPesos, setDineroPesos] = useState(35000);
+
+  // Evento Inesperado Activo de la Etapa
+  const [activeRandomEvent, setActiveRandomEvent] = useState<EventoInesperado | null>(null);
+  const [hasDismissedEvent, setHasDismissedEvent] = useState(false);
 
   // Puntuación acumulativa por rama del derecho
   const [ramas, setRamas] = useState<RamasPuntuacion>({
@@ -68,6 +73,27 @@ export default function HaceTuHistoria() {
   const [lastFeedback, setLastFeedback] = useState<string | null>(null);
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [isVictory, setIsVictory] = useState(false);
+
+  // Al iniciar o cambiar de etapa, seleccionar un Evento Inesperado aleatorio (1 de entre 5)
+  useEffect(() => {
+    if (gameStarted && ETAPAS_CARRERA[currentEtapaIdx]) {
+      const stageEvents = ETAPAS_CARRERA[currentEtapaIdx].eventosInesperados;
+      if (stageEvents && stageEvents.length > 0) {
+        const randomIndex = Math.floor(Math.random() * stageEvents.length);
+        const selectedEvent = stageEvents[randomIndex];
+        setActiveRandomEvent(selectedEvent);
+        setHasDismissedEvent(false);
+
+        // Aplicar el impacto del evento inmediatamente a las stats
+        const imp = selectedEvent.impacto;
+        setPrestigio(p => Math.min(100, Math.max(0, p + imp.prestigio)));
+        setContactos(c => Math.min(100, Math.max(0, c + imp.contactos)));
+        setEtica(e => Math.min(100, Math.max(0, e + imp.etica)));
+        setSaludMental(s => Math.min(100, Math.max(0, s + imp.saludMental)));
+        setDineroPesos(d => Math.max(0, d + imp.dineroPesos));
+      }
+    }
+  }, [currentEtapaIdx, gameStarted]);
 
   // Si no es admin, redirigir inmediatamente a /mi-espacio
   if (!loading && (!user || !isAdminUser)) {
@@ -238,7 +264,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 2. MODAL RESUMEN BI-ANUAL DE CRECIMIENTO CON VOLATILIDAD VISUAL
+  // 2. MODAL RESUMEN BI-ANUAL DE CRECIMIENTO
   if (showBiAnnualSummary && lastImpact) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -446,7 +472,7 @@ export default function HaceTuHistoria() {
             </div>
           </div>
 
-          {/* TABLERO DE STATS INCLUYENDO SALUD MENTAL */}
+          {/* TABLERO DE STATS */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
             <div className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
               <span className="text-[10px] text-slate-400 uppercase font-black block">⚖️ Prestigio</span>
@@ -471,6 +497,41 @@ export default function HaceTuHistoria() {
             </div>
           </div>
         </div>
+
+        {/* TARJETA DE EVENTO INESPERADO (RANDOM EVENT) */}
+        <AnimatePresence mode="wait">
+          {activeRandomEvent && !hasDismissedEvent && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className={cn(
+                "p-4 md:p-5 rounded-3xl border shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden",
+                activeRandomEvent.tipo === "positivo" && "bg-emerald-950/60 border-emerald-500/40 text-emerald-200 shadow-emerald-950/30",
+                activeRandomEvent.tipo === "negativo" && "bg-red-950/60 border-red-500/40 text-red-200 shadow-red-950/30",
+                activeRandomEvent.tipo === "neutro" && "bg-slate-900/90 border-slate-700 text-slate-200 shadow-slate-950/30"
+              )}
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Dice5 className="w-4 h-4 text-amber-400 animate-bounce" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/80">
+                    ¡EVENTO INESPERADO DE ETAPA!
+                  </span>
+                </div>
+                <h4 className="text-base font-black text-white">{activeRandomEvent.titulo}</h4>
+                <p className="text-xs text-white/80 leading-relaxed">{activeRandomEvent.descripcion}</p>
+              </div>
+
+              <button
+                onClick={() => setHasDismissedEvent(true)}
+                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-xs uppercase tracking-wider shrink-0 cursor-pointer border border-white/10 transition-all self-end md:self-center"
+              >
+                Entendido ✓
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* NARRATIVA Y DILEMA DE LA ETAPA DE VIDA */}
         <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 shadow-2xl">

@@ -17,9 +17,17 @@ export interface ImpactoStats {
   prestigio: number;
   contactos: number;
   etica: number;
-  saludMental: number; // NUEVA STAT: 0-100 (Salud Mental / Nivel de Estrés)
+  saludMental: number;
   dineroPesos: number;
   impactoRamas?: Partial<RamasPuntuacion>;
+}
+
+export interface EventoInesperado {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  tipo: "positivo" | "negativo" | "neutro";
+  impacto: ImpactoStats;
 }
 
 export interface OpcionDilema {
@@ -40,6 +48,7 @@ export interface EtapaVida {
   dilemaTexto: string;
   esFestejoRecibida?: boolean;
   esEleccionPrimerEmpleo?: boolean;
+  eventosInesperados: EventoInesperado[];
   opciones: OpcionDilema[];
 }
 
@@ -84,6 +93,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "1. El Ingreso a la Universidad y el Parcial de Romano",
     contextoEscenario: "Entrás por las escalinatas de la Facultad de Ciencias Jurídicas y Sociales (Jursoc) de la UNLP a los 18 años. El ambiente es vibrante: volantes en las puertas, pasillos desbordados y clases multitudinarias. Es jueves por la noche: tus compañeros de comisión armaron previa para ir a los boliches de diagonal 74, pero el sábado rindiendo tu primer parcial decisivo de Derecho Romano.",
     dilemaTexto: "¿Cómo administrás tu tiempo en tu primera prueba de fuego universitaria?",
+    eventosInesperados: [
+      {
+        id: "e1_ev1",
+        titulo: "🟢 Paro Sorpresa de Empleados de la UNLP",
+        descripcion: "Se suspendieron las clases del viernes. Tuviste 24 horas extra inesperadas para estudiar o descansar.",
+        tipo: "positivo",
+        impacto: { prestigio: 5, contactos: 0, etica: 0, saludMental: 15, dineroPesos: 0 }
+      },
+      {
+        id: "e1_ev2",
+        titulo: "🔴 Corte de Luz en tu Depto de La Plata",
+        descripcion: "Apagón sorpresivo en la zona del centro la noche previa a rendir. Tuviste que estudiar a vela.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -15, dineroPesos: -10000 }
+      },
+      {
+        id: "e1_ev3",
+        titulo: "🟢 Sorteo del Centro de Estudiantes",
+        descripcion: "Te ganaste un combo de fotocopias gratis y una libreta universitaria de regalo en el subsuelo de Jursoc.",
+        tipo: "positivo",
+        impacto: { prestigio: 0, contactos: 10, etica: 0, saludMental: 5, dineroPesos: 15000 }
+      },
+      {
+        id: "e1_ev4",
+        titulo: "⚪ Hallazgo en la Biblioteca de Calle 48",
+        descripcion: "Encontraste un ejemplar clásico de Derecho Romano anotado por un ex Juez de la Suprema Corte.",
+        tipo: "neutro",
+        impacto: { prestigio: 10, contactos: 0, etica: 0, saludMental: 0, dineroPesos: 0 }
+      },
+      {
+        id: "e1_ev5",
+        titulo: "🔴 Colectivo de Línea Roto",
+        descripcion: "Te quedaste tirado en plaza Italia y llegaste tarde a la clase teórica del Titular de Cátedra.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: -5, etica: 0, saludMental: -10, dineroPesos: -5000 }
+      }
+    ],
     opciones: [
       {
         id: "e1_op1",
@@ -115,6 +161,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "2. Las Jodas Platenses vs La Barandilla de Tribunales",
     contextoEscenario: "Tenés 19 años. Estás cursando Derecho Político y Constitucional. Tus amigos organizaron una escapada de fin de semana a la costa y, en simultáneo, un conocido abogado penalista te ofrece acompañarlo a audiencias de excarcelación en el Fuero Penal de calle 8.",
     dilemaTexto: "¿Aceptás el viaje de relax con amigos o te metés de lleno en la práctica penal bonaerense?",
+    eventosInesperados: [
+      {
+        id: "e2_ev1",
+        titulo: "🟢 Invitación a Charla Magistral de un Juez Penal",
+        descripcion: "Un Juez de Garantías dictó una conferencia exclusiva y te regaló su libro autografiado.",
+        tipo: "positivo",
+        impacto: { prestigio: 15, contactos: 15, etica: 5, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e2_ev2",
+        titulo: "🔴 Demora por Paro de Transporte en La Plata",
+        descripcion: "Tuviste que pagar un taxi caro para no perder el examen parcial de Constitucional.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -10, dineroPesos: -25000 }
+      },
+      {
+        id: "e2_ev3",
+        titulo: "⚪ Encuentro Casual en la Plaza Moreno",
+        descripcion: "Te cruzaste con un ex compañero del colegio secundario que ahora cursa Ciencia Política.",
+        tipo: "neutro",
+        impacto: { prestigio: 0, contactos: 10, etica: 0, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e2_ev4",
+        titulo: "🟢 Descuento Especial en el Comedor Universitario",
+        descripcion: "Aprovechaste el menú estudiantil del comedor de la UNLP y ahorraste bastante dinero este mes.",
+        tipo: "positivo",
+        impacto: { prestigio: 0, contactos: 5, etica: 0, saludMental: 10, dineroPesos: 40000 }
+      },
+      {
+        id: "e2_ev5",
+        titulo: "🔴 Pérdida de Apuntes en la Fotocopiadora",
+        descripcion: "Te extraviaron el resumen de Derecho Político la noche previa al examen.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -20, dineroPesos: -15000 }
+      }
+    ],
     opciones: [
       {
         id: "e2_op1",
@@ -146,6 +229,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "3. La Militancia en el Subsuelo vs La Beca de Investigación",
     contextoEscenario: "Llegás a los 20 años en la mitad de la carrera. En la facultad surgen dos caminos políticos e institucionales: integrarte a la conducción del Centro de Estudiantes en el subsuelo o postularte a una Beca de Investigación en Derecho Administrativo.",
     dilemaTexto: "¿Dónde invertís tu capital político e intelectual dentro de la facultad?",
+    eventosInesperados: [
+      {
+        id: "e3_ev1",
+        titulo: "🟢 Reconocimiento en el Consejo Directivo UNLP",
+        descripcion: "Tu proyecto de extensión fue aprobado por unanimidad en el Consejo Directivo de Jursoc.",
+        tipo: "positivo",
+        impacto: { prestigio: 20, contactos: 20, etica: 10, saludMental: 10, dineroPesos: 0 }
+      },
+      {
+        id: "e3_ev2",
+        titulo: "🔴 Discusión Fuerte en Asamblea Estudiantil",
+        descripcion: "Un acalorado debate político en el patio de la facultad te generó tensión y agotamiento.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: -5, etica: 0, saludMental: -15, dineroPesos: 0 }
+      },
+      {
+        id: "e3_ev3",
+        titulo: "🟢 Cobro de Beca de Ayudantía",
+        descripcion: "El decanato liquidó un pago diferido por tus tareas de colaboración académica.",
+        tipo: "positivo",
+        impacto: { prestigio: 5, contactos: 5, etica: 0, saludMental: 5, dineroPesos: 150000 }
+      },
+      {
+        id: "e3_ev4",
+        titulo: "⚪ Asistencia a Jornadas de Derecho Administrativo",
+        descripcion: "Escuchaste exposiciones de juristas nacionales en el aula magna de calle 48.",
+        tipo: "neutro",
+        impacto: { prestigio: 10, contactos: 5, etica: 0, saludMental: 0, dineroPesos: 0 }
+      },
+      {
+        id: "e3_ev5",
+        titulo: "🔴 Rotura de Computadora Personal",
+        descripcion: "Se averió el disco de tu notebook con los modelos de escritos y resúmenes.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -20, dineroPesos: -120000 }
+      }
+    ],
     opciones: [
       {
         id: "e3_op1",
@@ -177,6 +297,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "4. Derecho Penal II y el Ahogo Económico de Alquiler",
     contextoEscenario: "A los 21 años las exigencias crecen: cursás Penal II y Obligaciones. El costo del alquiler en La Plata se disparó y tenés que decidir si atrasás materias para trabajar más horas o apretás los dientes sacrificando salud mental.",
     dilemaTexto: "¿Cómo enfrentás la recta final de materias pesadas frente a la presión financiera?",
+    eventosInesperados: [
+      {
+        id: "e4_ev1",
+        titulo: "🟢 Devolución de Depósito de Alquiler",
+        descripcion: "Recuperaste dinero de una garantía de alquiler anterior en La Plata.",
+        tipo: "positivo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: 15, dineroPesos: 200000 }
+      },
+      {
+        id: "e4_ev2",
+        titulo: "🔴 Cambio de Cátedra Sorpresivo",
+        descripcion: "Cambiaron la comisión de examen oral y el nuevo Profesor Titular es híper exigente.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -25, dineroPesos: 0 }
+      },
+      {
+        id: "e4_ev3",
+        titulo: "🟢 Regalo de Colección de Libros Penales",
+        descripcion: "Un abogado jubilado donó su biblioteca de Códigos comentados al Centro de Estudiantes.",
+        tipo: "positivo",
+        impacto: { prestigio: 15, contactos: 5, etica: 0, saludMental: 10, dineroPesos: 0 }
+      },
+      {
+        id: "e4_ev4",
+        titulo: "⚪ Debate Institucional sobre Reforma del Código Penal",
+        descripcion: "Asististe como oyente a la comisión de legisladores bonaerenses en la Cámara de Diputados.",
+        tipo: "neutro",
+        impacto: { prestigio: 10, contactos: 10, etica: 0, saludMental: 0, dineroPesos: 0 }
+      },
+      {
+        id: "e4_ev5",
+        titulo: "🔴 Multa por Trámite Municipal Extemporáneo",
+        descripcion: "Tuviste que saldar una multa por una habilitación comercial de un familiar.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -10, dineroPesos: -60000 }
+      }
+    ],
     opciones: [
       {
         id: "e4_op1",
@@ -208,6 +365,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "5. La Práctica Profesional Supervisada y la Última Materia",
     contextoEscenario: "Llegás a los 22 años a la materia final de Práctica Profesional Consultorio Jurídico Gratuito. Atendés casos reales de sectores vulnerables de La Plata. En paralelo, te ofrecen entrar como pasante meritorio en un Juzgado Civil.",
     dilemaTexto: "¿Dedicarte de lleno al Consultorio Gratuito o meter la cabeza en el Poder Judicial?",
+    eventosInesperados: [
+      {
+        id: "e5_ev1",
+        titulo: "🟢 Elogio Público del Juez de Cámara",
+        descripcion: "Un Juez de Cámara elogió la redacción de tu primer escrito de práctica procesal.",
+        tipo: "positivo",
+        impacto: { prestigio: 25, contactos: 15, etica: 10, saludMental: 15, dineroPesos: 0 }
+      },
+      {
+        id: "e5_ev2",
+        titulo: "🔴 Error de Foliado en Expediente de Práctica",
+        descripcion: "Un fallo en el foliado físico te hizo perder 4 horas rehaciendo el trámite en casilleros.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -15, dineroPesos: 0 }
+      },
+      {
+        id: "e5_ev3",
+        titulo: "🟢 Otorgamiento de Mención de Honor Académica",
+        descripcion: "La facultad distinguió tu promedio en la lista de graduación inminente.",
+        tipo: "positivo",
+        impacto: { prestigio: 20, contactos: 10, etica: 15, saludMental: 10, dineroPesos: 0 }
+      },
+      {
+        id: "e5_ev4",
+        titulo: "⚪ Conferencia sobre Litigio Estratégico en SCBA",
+        descripcion: "Presenciaste un alegato histórico en el salón de la Suprema Corte de calle 13.",
+        tipo: "neutro",
+        impacto: { prestigio: 10, contactos: 5, etica: 0, saludMental: 0, dineroPesos: 0 }
+      },
+      {
+        id: "e5_ev5",
+        titulo: "🔴 Robo de Mochila con la Notebook",
+        descripcion: "Te sustrajeron la mochila en la parada de colectivo con tus apuntes finales.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -30, dineroPesos: -150000 }
+      }
+    ],
     opciones: [
       {
         id: "e5_op1",
@@ -240,6 +434,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     contextoEscenario: "¡Día glorioso! A los 23 años saliste del aula del 3er piso tras aprobar el examen final. Abajo en las escalinatas de calle 48 te están esperando tus amigos, tus compañeros y tu familia con bolsas de harina, huevos y cotillón.",
     dilemaTexto: "¿Cómo elegís festejar la obtención del título de Abogado/a de la UNLP?",
     esFestejoRecibida: true,
+    eventosInesperados: [
+      {
+        id: "e6_ev1",
+        titulo: "🟢 Felicitaciones del Decano de la Facultad",
+        descripcion: "El Decano te saludó personalmente en el pasillo al entregarte el acta firmado.",
+        tipo: "positivo",
+        impacto: { prestigio: 15, contactos: 20, etica: 5, saludMental: 15, dineroPesos: 0 }
+      },
+      {
+        id: "e6_ev2",
+        titulo: "🔴 Lluvia Torrencial en el Festejo de Calle 48",
+        descripcion: "Una tormenta sorpresiva arruinó la pancarta de recibida que te prepararon tus amigos.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -10, dineroPesos: -15000 }
+      },
+      {
+        id: "e6_ev3",
+        titulo: "🟢 Regalo Sorpresa de Graduación",
+        descripcion: "Tu familia te regaló un maletín de cuero y el primer Código Civil y Comercial profesional.",
+        tipo: "positivo",
+        impacto: { prestigio: 10, contactos: 5, etica: 0, saludMental: 20, dineroPesos: 80000 }
+      },
+      {
+        id: "e6_ev4",
+        titulo: "⚪ Foto Oficial en las Escalinatas",
+        descripcion: "Quedaste retratado en el álbum oficial de egresados de la UNLP.",
+        tipo: "neutro",
+        impacto: { prestigio: 5, contactos: 5, etica: 0, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e6_ev5",
+        titulo: "🔴 Trámite de Titulo Demorado en Ministerio",
+        descripcion: "Una demora burocrática atrasó 2 semanas la entrega física de tu diploma.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -15, dineroPesos: 0 }
+      }
+    ],
     opciones: [
       {
         id: "recibida_op1",
@@ -272,6 +503,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     contextoEscenario: "Con la matrícula en mano expedida por el Colegio de Abogados de La Plata (Av. 13), tenés frente a vos 4 caminos profesionales decisivos para arrancar tu ejercicio laboral.",
     dilemaTexto: "¿Dónde elegís iniciar tu trayectoria profesional como graduado?",
     esEleccionPrimerEmpleo: true,
+    eventosInesperados: [
+      {
+        id: "e7_ev1",
+        titulo: "🟢 Asignación de Primer Caso de Oficio",
+        descripcion: "Te asignaron una causa oficial rentable que te generó tus primeros honorarios regulados.",
+        tipo: "positivo",
+        impacto: { prestigio: 15, contactos: 10, etica: 10, saludMental: 10, dineroPesos: 450000 }
+      },
+      {
+        id: "e7_ev2",
+        titulo: "🔴 Aumento Sorpresivo de la Cuota Anual CALP",
+        descripcion: "El Colegio de Abogados actualizó el valor del Jus y la matrícula profesional.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -10, dineroPesos: -180000 }
+      },
+      {
+        id: "e7_ev3",
+        titulo: "🟢 Invitación a Comisión de Jóvenes Abogados",
+        descripcion: "Te invitaron a coordinar la Subcomisión de Derecho Procesal en el Colegio.",
+        tipo: "positivo",
+        impacto: { prestigio: 15, contactos: 25, etica: 5, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e7_ev4",
+        titulo: "⚪ Juramento Colectivo en el Salón de Actos",
+        descripcion: "Juraste la matrícula junto a 30 colegas de tu misma camada de la UNLP.",
+        tipo: "neutro",
+        impacto: { prestigio: 5, contactos: 10, etica: 5, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e7_ev5",
+        titulo: "🔴 Falla Técnica en Firma Digital Bonaerense",
+        descripcion: "Un problema con el token te obligó a perder toda la mañana en la delegación del Colegio.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -15, dineroPesos: 0 }
+      }
+    ],
     opciones: [
       {
         id: "empleo_op1",
@@ -309,6 +577,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "8. El Dilema del Soborno y las Prácticas Límite",
     contextoEscenario: "Tenés 26 años. Un importante cliente acusado de fraude impositivo te ofrece una abultada suma en dólares en efectivo ($5.000.000 equivalentes) si lográs 'extraviar' una pericia contable comprometedora antes de que llegue a la fiscalía.",
     dilemaTexto: "¿Aceptás la maniobra límite para enriquecerte o mantenés la integridad profesional?",
+    eventosInesperados: [
+      {
+        id: "e8_ev1",
+        titulo: "🟢 Regulación Extraordinaria de Honorarios",
+        descripcion: "Un Juez de Primera Instancia reguló honorarios por encima del mínimo legal en un juicio civil.",
+        tipo: "positivo",
+        impacto: { prestigio: 20, contactos: 10, etica: 5, saludMental: 15, dineroPesos: 1500000 }
+      },
+      {
+        id: "e8_ev2",
+        titulo: "🔴 Inspección Sorpresiva de la AFIP / ARBA",
+        descripcion: "Una auditoría fiscal de rutina te hizo perder 3 días revisando libros del estudio.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -20, dineroPesos: -250000 }
+      },
+      {
+        id: "e8_ev3",
+        titulo: "🟢 Cliente Recomendado por colega",
+        descripcion: "Un colega penalista te derivó un cliente corporativo importante por sobrecarga de trabajo.",
+        tipo: "positivo",
+        impacto: { prestigio: 15, contactos: 20, etica: 10, saludMental: 10, dineroPesos: 900000 }
+      },
+      {
+        id: "e8_ev4",
+        titulo: "⚪ Publicación de Comentario de Fallo en Revista Legal",
+        descripcion: "Tu análisis sobre un fallo reciente de la Corte bonaerense fue publicado con elogios.",
+        tipo: "neutro",
+        impacto: { prestigio: 15, contactos: 5, etica: 5, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e8_ev5",
+        titulo: "🔴 Conflicto de Intereses Inesperado",
+        descripcion: "Tuviste que renunciar al patrocinio de un expediente por parentesco lejano de la contraparte.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: -5, etica: 10, saludMental: -10, dineroPesos: -300000 }
+      }
+    ],
     opciones: [
       {
         id: "e8_op1",
@@ -340,6 +645,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "9. ¿Fundar tu propio Estudio Jurídico Independiente?",
     contextoEscenario: "A los 28 años tenés capital acumulado y prestigio. Se presenta la oportunidad de alquilar un piso en calle 12 y fundar tu propio **Estudio Jurídico Independiente**, o bien hacerte Socio Principal en Antigravity.",
     dilemaTexto: "¿Darás el salto hacia la independencia profesional absoluta?",
+    eventosInesperados: [
+      {
+        id: "e9_ev1",
+        titulo: "🟢 Incorporación de Procurador Brillante",
+        descripcion: "Contrataste a un estudiante estrella de Jursoc UNLP que duplicó la eficiencia de la oficina.",
+        tipo: "positivo",
+        impacto: { prestigio: 20, contactos: 15, etica: 10, saludMental: 15, dineroPesos: 1200000 }
+      },
+      {
+        id: "e9_ev2",
+        titulo: "🔴 Incremento de Expensas y Alquiler del Despacho",
+        descripcion: "Un aumento no pactado del inmueble comercial redujo los márgenes netos del mes.",
+        tipo: "negativo",
+        impacto: { prestigio: 0, contactos: 0, etica: 0, saludMental: -15, dineroPesos: -450000 }
+      },
+      {
+        id: "e9_ev3",
+        titulo: "🟢 Adjudicación de Asesoría Exclusiva a Empresa",
+        descripcion: "Firmaste un abono mensual fijo con una distribuidora líder del Gran La Plata.",
+        tipo: "positivo",
+        impacto: { prestigio: 25, contactos: 20, etica: 5, saludMental: 10, dineroPesos: 2500000 }
+      },
+      {
+        id: "e9_ev4",
+        titulo: "⚪ Entrevista en Radio / Diario Local Platense",
+        descripcion: "Te consultaron como especialista opinando sobre un proyecto de ley procesal.",
+        tipo: "neutro",
+        impacto: { prestigio: 15, contactos: 10, etica: 0, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e9_ev5",
+        titulo: "🔴 Paro Judicial de 48 Horas",
+        descripcion: "Se suspendieron términos procesales y se postergaron ejecuciones de honorarios.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -10, dineroPesos: -200000 }
+      }
+    ],
     opciones: [
       {
         id: "e9_op1",
@@ -371,6 +713,43 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "10. El Juicio por Jurados del Siglo y Causas Nacionales",
     contextoEscenario: "Entre los 32 y los 45 años encabezás las causas procesales de mayor impacto en la Provincia de Buenos Aires: un juicio por jurados mediático sobre un mega-fraude corporativo y ambiental en el Gran La Plata.",
     dilemaTexto: "¿Cómo encarás la defensa en el debate oral más importante de la década?",
+    eventosInesperados: [
+      {
+        id: "e10_ev1",
+        titulo: "🟢 Fallo Plenario Favorable de la SCBA",
+        descripcion: "La Suprema Corte ratificó tu doctrina procesal en un fallo plenario histórico.",
+        tipo: "positivo",
+        impacto: { prestigio: 35, contactos: 25, etica: 15, saludMental: 20, dineroPesos: 3000000 }
+      },
+      {
+        id: "e10_ev2",
+        titulo: "🔴 Operación Prensa Mediática en Contra",
+        descripcion: "Un medio local publicó notas tendenciosas sobre un cliente polémico de tu firma.",
+        tipo: "negativo",
+        impacto: { prestigio: -15, contactos: -10, etica: 0, saludMental: -25, dineroPesos: 0 }
+      },
+      {
+        id: "e10_ev3",
+        titulo: "🟢 Nombramiento como Miembro del Instituto de Derecho Procesal",
+        descripcion: "Te incorporaron como académico titular en la Academia de Derecho de Buenos Aires.",
+        tipo: "positivo",
+        impacto: { prestigio: 30, contactos: 20, etica: 10, saludMental: 10, dineroPesos: 0 }
+      },
+      {
+        id: "e10_ev4",
+        titulo: "⚪ Transmisión en Vivo del Debate Oral",
+        descripcion: "Tu exposición en el debate penal fue transmitida en directo para todo el país.",
+        tipo: "neutro",
+        impacto: { prestigio: 20, contactos: 15, etica: 0, saludMental: -5, dineroPesos: 0 }
+      },
+      {
+        id: "e10_ev5",
+        titulo: "🔴 Recusación Inesperada del Tribunal",
+        descripcion: "Una maniobra de la querella demoró 3 meses el inicio del juicio por jurados.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -15, dineroPesos: -500000 }
+      }
+    ],
     opciones: [
       {
         id: "e10_op1",
@@ -398,10 +777,47 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     id: 11,
     edadInicio: 45,
     edadFin: 65,
-    puesto: "Titular de Cátedra / Conjuez de la SCBA",
+    puesto: "Juez de Cámara / Titular de Cátedra UNLP",
     titulo: "11. Elecciones del Colegio de Abogados y la Cúspide Académica",
-    contextoEscenario: "Superando los 45 años, sos un referente ineludible en el ámbito jurídico bonaerense. Se te propone presidir el Colegio de Abogados de La Plata (CALP) o ser designado Titular de Cátedra de la FCJyS UNLP.",
-    dilemaTexto: "¿Hacia dónde dirigís el tramo final de tu carrera profesional?",
+    contextoEscenario: "Superando los 45 años, sos un referente ineludible en el ámbito jurídico bonaerense. Se te propone presidir el Colegio de Abogados de La Plata (CALP), asumir la Titularidad de Cátedra en la UNLP o integrar la nómina de Juez de Cámara / Juez de la Suprema Corte (SCBA).",
+    dilemaTexto: "¿Hacia dónde dirigís el tramo final de tu carrera profesional hasta los 65 años?",
+    eventosInesperados: [
+      {
+        id: "e11_ev1",
+        titulo: "🟢 Homenaje Institucional en la Universidad de La Plata",
+        descripcion: "La FCJyS UNLP te otorgó una placa de honor por tu trayectoria y aporte a la educación jurídica.",
+        tipo: "positivo",
+        impacto: { prestigio: 40, contactos: 30, etica: 25, saludMental: 20, dineroPesos: 0 }
+      },
+      {
+        id: "e11_ev2",
+        titulo: "🔴 Reforma Judicial Provincial Repentina",
+        descripcion: "Un cambio en la ley orgánica del Poder Judicial obligó a reestructurar expedientes y juzgados.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: 0, etica: 0, saludMental: -15, dineroPesos: 0 }
+      },
+      {
+        id: "e11_ev3",
+        titulo: "🟢 Publicación del Libro Tratado de Derecho Bonaerense",
+        descripcion: "Tu libro se transformó en la obra de referencia obligatoria para abogados y jueces de la provincia.",
+        tipo: "positivo",
+        impacto: { prestigio: 45, contactos: 20, etica: 15, saludMental: 15, dineroPesos: 5000000 }
+      },
+      {
+        id: "e11_ev4",
+        titulo: "⚪ Discurso de Cierre de Año en el Colegio de Abogados",
+        descripcion: "Brindaste el discurso principal de fin de año frente a 500 matriculados en calle 13.",
+        tipo: "neutro",
+        impacto: { prestigio: 15, contactos: 15, etica: 0, saludMental: 5, dineroPesos: 0 }
+      },
+      {
+        id: "e11_ev5",
+        titulo: "🔴 Impugnación de Lista Colegial",
+        descripcion: "Una presenting judicial de la oposición demoró la aprobación de los padrones electorales.",
+        tipo: "negativo",
+        impacto: { prestigio: -5, contactos: -10, etica: 0, saludMental: -15, dineroPesos: 0 }
+      }
+    ],
     opciones: [
       {
         id: "e11_op1",
@@ -417,9 +833,9 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       },
       {
         id: "e11_op3",
-        texto: "💼 Retirarte multimillonario vendiendo tu firma jurídica a un consorcio internacional.",
-        impacto: { prestigio: 35, contactos: 20, etica: 15, saludMental: 30, dineroPesos: 50000000 },
-        feedbackNarrativo: "Vendiste la firma por una cifra colosal de $50.000.000. Te retirás a disfrutar de tu patrimonio en total plenitud."
+        texto: "⚖️ Asumir la postulación definitiva a Juez de Cámara o Juez de la Suprema Corte (SCBA).",
+        impacto: { prestigio: 50, contactos: 45, etica: 30, saludMental: 15, dineroPesos: 25000000 },
+        feedbackNarrativo: "Alcanzaste la máxima magistratura de la Provincia de Buenos Aires. Tu firma quedó consagrada en fallos históricos de la SCBA."
       }
     ]
   }
