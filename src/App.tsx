@@ -46,6 +46,8 @@ import AsistenteDND   from "./pages/AsistenteDND";
 import Ingresantes   from "./pages/Ingresantes";
 import QuienesSomos   from "./pages/QuienesSomos";
 import Trivia         from "./pages/Trivia";
+import Juegos         from "./pages/Juegos";
+import HaceTuHistoria from "./pages/HaceTuHistoria";
 
 const queryClient = new QueryClient();
 
@@ -220,6 +222,8 @@ const AppContent = () => {
         <Route path="/ingresantes"     element={<Ingresantes />} />
         <Route path="/quienes-somos"   element={<QuienesSomos />} />
         <Route path="/trivia"          element={<ProtectedRoute><Trivia /></ProtectedRoute>} />
+        <Route path="/juegos"          element={<ProtectedRoute><Juegos /></ProtectedRoute>} />
+        <Route path="/hace-tu-historia" element={<ProtectedRoute><HaceTuHistoria /></ProtectedRoute>} />
 
         {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
         <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
