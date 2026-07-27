@@ -11,7 +11,6 @@ import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users, Trophy } from "lucide-react";
 
 const publicLinks = [
-  { to: "/juegos",          label: "Juegos",         icon: Trophy },
   { to: "/noticias",        label: "Noticias",       icon: Newspaper },
   { to: "/apuntes",         label: "Biblioteca",     icon: BookOpen },
   { to: "/asistente",       label: "Asistente DND",  icon: Bot },
