@@ -9,6 +9,7 @@ import {
   MUNICIPIOS_PBA,
   LOGROS_JUEGO,
   CarreraGuardada,
+  PreguntaJuridicaMinijuego,
   SkillDefinition, 
   EtapaVida, 
   OpcionDilema,
@@ -42,9 +43,9 @@ import {
   UserPlus,
   ChevronDown,
   History,
-  Medal,
-  Calendar,
-  DollarSign
+  HelpCircle,
+  XCircle,
+  BookOpen
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -81,6 +82,11 @@ export default function HaceTuHistoria() {
   const [etica, setEtica] = useState(50);
   const [templanza, setTemplanza] = useState(75);
   const [dineroPesos, setDineroPesos] = useState(35000);
+
+  // Estado del Minijuego Jurídico Modal
+  const [activeQuiz, setActiveQuiz] = useState<{ desafio: PreguntaJuridicaMinijuego; opcionOriginal: OpcionDilema } | null>(null);
+  const [quizSelectedOptionIdx, setQuizSelectedOptionIdx] = useState<number | null>(null);
+  const [quizAnswerSubmitted, setQuizAnswerSubmitted] = useState(false);
 
   // Gestión de Empleados y Gastos Fijos (Etapa 7+)
   const [staff, setStaff] = useState<StaffConfig>({
@@ -171,7 +177,6 @@ export default function HaceTuHistoria() {
     }
   }, [currentEtapaIdx, gameStarted]);
 
-  // Guardar carrera terminada en el Hall of Fame
   const saveCareerToHistory = (fueVictoria: boolean, motivo: string) => {
     const nuevaCarrera: CarreraGuardada = {
       id: Date.now().toString(),
@@ -187,7 +192,6 @@ export default function HaceTuHistoria() {
     setCarrerasPasadas(prev => [nuevaCarrera, ...prev]);
   };
 
-  // Si no es admin, redirigir inmediatamente a /mi-espacio
   if (!loading && (!user || !isAdminUser)) {
     return <Navigate to="/mi-espacio" replace />;
   }
@@ -280,6 +284,9 @@ export default function HaceTuHistoria() {
     setStaff({ expertoCount: 0, juniorCount: 0, hasContador: false, estudioNombre: "DND & Asociados" });
     
     setCurrentEtapaIdx(selectedEdadInicial === 25 ? 1 : 0);
+    setActiveQuiz(null);
+    setQuizSelectedOptionIdx(null);
+    setQuizAnswerSubmitted(false);
     setNewLogroAlert(null);
     setLastFeedback(null);
     setLastImpact(null);
@@ -289,12 +296,35 @@ export default function HaceTuHistoria() {
     setGameStarted(true);
   };
 
+  // Al hacer click en una opción, si tiene Minijuego Desafío Jurídico, abrir modal
   const handleMakeChoice = (opcion: OpcionDilema) => {
     if (opcion.costoPesosRequerido && dineroPesos < opcion.costoPesosRequerido) {
       return;
     }
 
-    const impact = opcion.impacto;
+    if (opcion.desafioJuridico) {
+      setActiveQuiz({ desafio: opcion.desafioJuridico, opcionOriginal: opcion });
+      setQuizSelectedOptionIdx(null);
+      setQuizAnswerSubmitted(false);
+      return;
+    }
+
+    applyChoiceImpact(opcion, true);
+  };
+
+  // Aplicar el impacto definitivo de una opción (con o sin bonus por minijuego)
+  const applyChoiceImpact = (opcion: OpcionDilema, isCorrectQuiz: boolean) => {
+    let impact = { ...opcion.impacto };
+
+    // Si respondió mal el minijuego, penalizar prestigo y templanza
+    if (!isCorrectQuiz) {
+      impact.prestigio = -12;
+      impact.templanza = -10;
+    } else if (opcion.desafioJuridico) {
+      // Bonus por respuesta perfecta
+      impact.prestigio += 10;
+    }
+
     setLastImpact(impact);
 
     let newPrestigio = applyStatChange(prestigio, impact.prestigio);
@@ -325,10 +355,13 @@ export default function HaceTuHistoria() {
       }));
     }
 
-    setLastFeedback(opcion.feedbackNarrativo);
+    const finalFeedback = isCorrectQuiz
+      ? (opcion.desafioJuridico ? `✨ ¡Demostraste solvencia en el examen jurídico! ${opcion.feedbackNarrativo}` : opcion.feedbackNarrativo)
+      : `❌ Cometiste un error técnico en el fundamento jurídico. Sufriste impugnación procesal y pérdida de prestigio.`;
+
+    setLastFeedback(finalFeedback);
     checkLogrosUnlock(newPrestigio, newContactos, newEtica, newDinero, currentEtapaIdx);
 
-    // Muerte Súbita o Bancarrota
     if (newTemplanza <= 0) {
       const reason = "🧠 BURNOUT TOTAL / COLAPSO POR ESTRÉS: El nivel de estrés extremo destruyó tu templanza. Tuviste que abandonar la profesión.";
       setGameOverReason(reason);
@@ -349,6 +382,19 @@ export default function HaceTuHistoria() {
     }
 
     setShowBiAnnualSummary(true);
+  };
+
+  const submitQuizAnswer = (selectedIdx: number) => {
+    setQuizSelectedOptionIdx(selectedIdx);
+    setQuizAnswerSubmitted(true);
+  };
+
+  const confirmQuizResult = () => {
+    if (!activeQuiz || quizSelectedOptionIdx === null) return;
+    const isCorrect = quizSelectedOptionIdx === activeQuiz.desafio.opcionCorrectaIdx;
+    const opcionOriginal = activeQuiz.opcionOriginal;
+    setActiveQuiz(null);
+    applyChoiceImpact(opcionOriginal, isCorrect);
   };
 
   const nextEtapa = () => {
@@ -392,7 +438,6 @@ export default function HaceTuHistoria() {
               Explorá la carrera de abogacía, consultá tus logros obtenidos y revisá tu historial de carreras anteriores.
             </p>
 
-            {/* PESTAÑAS NAVEGADOR PRE-JUEGO */}
             <div className="flex items-center justify-center gap-2 pt-2">
               <button
                 onClick={() => setActivePreGameTab("setup")}
@@ -435,11 +480,8 @@ export default function HaceTuHistoria() {
             </div>
           </div>
 
-          {/* VISTA 1: SETUP DE NUEVA CARRERA */}
           {activePreGameTab === "setup" && (
             <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
-              
-              {/* SELECTOR DE PROVINCIA Y CIUDAD */}
               <div className="space-y-4">
                 <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
@@ -494,7 +536,6 @@ export default function HaceTuHistoria() {
                 </div>
               </div>
 
-              {/* EDAD DE INICIO */}
               <div className="space-y-3 pt-4 border-t border-white/10">
                 <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
                   <Clock className="w-4 h-4" />
@@ -535,7 +576,6 @@ export default function HaceTuHistoria() {
                 </div>
               </div>
 
-              {/* SELECCIÓN DE SKILL INICIAL */}
               <div className="space-y-3 pt-4 border-t border-white/10">
                 <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
@@ -565,7 +605,6 @@ export default function HaceTuHistoria() {
                 </div>
               </div>
 
-              {/* BOTÓN INICIAR HISTORIA */}
               <div className="pt-4">
                 <button
                   disabled={!selectedSkill}
@@ -585,7 +624,6 @@ export default function HaceTuHistoria() {
             </div>
           )}
 
-          {/* VISTA 2: GALERÍA DE LOGROS */}
           {activePreGameTab === "logros" && (
             <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
               <div className="space-y-1">
@@ -631,7 +669,6 @@ export default function HaceTuHistoria() {
             </div>
           )}
 
-          {/* VISTA 3: HISTORIAL DE CARRERAS (HALL OF FAME) */}
           {activePreGameTab === "historial" && (
             <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
               <div className="space-y-1">
@@ -696,7 +733,101 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 2. MODAL RESUMEN BI-ANUAL DE CRECIMIENTO
+  // 2. MODAL DE MINIJUEGO DESAFÍO JURÍDICO
+  if (activeQuiz) {
+    const { desafio, opcionOriginal } = activeQuiz;
+    const isCorrectAnswer = quizSelectedOptionIdx === desafio.opcionCorrectaIdx;
+
+    return (
+      <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
+        <div className="max-w-xl w-full bg-slate-900 border border-amber-500/50 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative z-10">
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 mx-auto rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <Scale className="w-7 h-7" />
+            </div>
+            <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-widest border border-amber-500/30">
+              ⚖️ MINIJUEGO DESAFÍO JURÍDICO — NIVEL {desafio.dificultad}
+            </span>
+            <h2 className="text-xl md:text-2xl font-black text-white pt-1">Demostrá Solvencia Doctrinal</h2>
+            <p className="text-xs text-slate-300">Respondé correctamente para asegurar el beneficio de tu decisión y ganar +10 de Prestigio Bonus.</p>
+          </div>
+
+          {/* PREGUNTA JURÍDICA */}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-white/15 space-y-2">
+            <span className="text-[10px] font-black uppercase text-amber-400 block">Pregunta Técnica:</span>
+            <p className="text-sm md:text-base font-bold text-white leading-snug">{desafio.pregunta}</p>
+          </div>
+
+          {/* 4 OPCIONES MULTIPLE CHOICE */}
+          <div className="space-y-2.5">
+            {desafio.opciones.map((opcText, idx) => {
+              const isSelected = quizSelectedOptionIdx === idx;
+              const isRightOption = idx === desafio.opcionCorrectaIdx;
+
+              let btnStyle = "bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/20 text-white";
+
+              if (quizAnswerSubmitted) {
+                if (isRightOption) btnStyle = "bg-emerald-600/30 border-emerald-500 text-emerald-200 shadow-lg font-bold";
+                else if (isSelected && !isRightOption) btnStyle = "bg-red-600/30 border-red-500 text-red-200 font-bold";
+                else btnStyle = "bg-slate-950/40 border-white/5 text-slate-500 opacity-50";
+              } else if (isSelected) {
+                btnStyle = "bg-amber-500/30 border-amber-500 text-white font-bold";
+              }
+
+              return (
+                <button
+                  key={idx}
+                  disabled={quizAnswerSubmitted}
+                  onClick={() => submitQuizAnswer(idx)}
+                  className={cn(
+                    "w-full text-left p-4 rounded-2xl border transition-all text-xs md:text-sm flex items-center justify-between gap-3 cursor-pointer",
+                    btnStyle
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center font-bold text-xs shrink-0">
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                    <span>{opcText}</span>
+                  </div>
+
+                  {quizAnswerSubmitted && isRightOption && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
+                  {quizAnswerSubmitted && isSelected && !isRightOption && <XCircle className="w-5 h-5 text-red-400 shrink-0" />}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* FEEDBACK Y EXPLICACIÓN AL RESPONDER */}
+          {quizAnswerSubmitted && (
+            <div className={cn(
+              "p-4 rounded-2xl border text-xs space-y-1.5",
+              isCorrectAnswer ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-200" : "bg-red-950/60 border-red-500/40 text-red-200"
+            )}>
+              <div className="flex items-center gap-2 font-black uppercase text-[11px]">
+                {isCorrectAnswer ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
+                <span>{isCorrectAnswer ? "¡RESPUESTA TÉCNICA CORRECTA (+10 PRESTIGIO BONUS)!" : "RESPUESTA INCORRECTA (-12 PRESTIGIO / -10 TEMPLANZA)"}</span>
+              </div>
+              <p className="leading-relaxed text-slate-200">{desafio.explicacion}</p>
+            </div>
+          )}
+
+          {/* BOTÓN CONFIRMAR */}
+          {quizAnswerSubmitted && (
+            <button
+              onClick={confirmQuizResult}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Continuar Historia</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // 3. MODAL RESUMEN BI-ANUAL
   if (showBiAnnualSummary && lastImpact) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -786,7 +917,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 3. PANTALLA GAME OVER
+  // 4. PANTALLA GAME OVER
   if (gameOverReason) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -824,7 +955,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 4. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS
+  // 5. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS
   if (isVictory) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -875,7 +1006,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 5. PANTALLA PRINCIPAL DE JUEGO
+  // 6. PANTALLA PRINCIPAL DE JUEGO
   return (
     <div className="min-h-screen bg-[#070A14] text-white py-6 md:py-10 px-3 md:px-8 relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10 space-y-6">
@@ -1006,7 +1137,7 @@ export default function HaceTuHistoria() {
           )}
         </div>
 
-        {/* TARJETA DE EVENTO INESPERADO (RANDOM EVENT) */}
+        {/* TARJETA DE EVENTO INESPERADO */}
         <AnimatePresence mode="wait">
           {activeRandomEvent && !hasDismissedEvent && (
             <motion.div
@@ -1041,7 +1172,7 @@ export default function HaceTuHistoria() {
           )}
         </AnimatePresence>
 
-        {/* NARRATIVA Y DILEMA DE LA ETAPA DE VIDA */}
+        {/* NARRATIVA Y DILEMA DE LA ETAPA */}
         <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 shadow-2xl">
           <div className="space-y-3">
             <h3 className="text-xl md:text-2xl font-black text-white">{currentEtapa.titulo}</h3>
@@ -1055,10 +1186,10 @@ export default function HaceTuHistoria() {
             <p className="text-sm md:text-base font-bold text-white leading-snug">{currentEtapa.dilemaTexto}</p>
           </div>
 
-          {/* OPCIONES DE ACCIÓN EXPANDIDAS */}
+          {/* OPCIONES DE ACCIÓN */}
           <div className="space-y-3 pt-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-              ¿Qué decisión tomás? ({currentEtapa.opciones.length} variantes disponibles)
+              ¿Qué decisión tomás?
             </span>
 
             <div className="space-y-2.5">
@@ -1070,6 +1201,7 @@ export default function HaceTuHistoria() {
                 if (isOriginLocked) return null;
 
                 const isSkillOption = Boolean(opcion.requiereSkillId && opcion.requiereSkillId === selectedSkill?.id);
+                const hasQuizMinigame = Boolean(opcion.desafioJuridico);
                 const hasEnoughMoney = !opcion.costoPesosRequerido || dineroPesos >= opcion.costoPesosRequerido;
 
                 return (
@@ -1085,6 +1217,8 @@ export default function HaceTuHistoria() {
                         ? "bg-slate-950/50 border-white/5 opacity-50 cursor-not-allowed"
                         : isSkillOption
                         ? "bg-gradient-to-r from-indigo-600/30 via-slate-900 to-violet-600/30 border-indigo-500/60 shadow-lg shadow-indigo-900/20 cursor-pointer"
+                        : hasQuizMinigame
+                        ? "bg-gradient-to-r from-amber-600/20 via-slate-900 to-indigo-600/20 border-amber-500/50 hover:border-amber-400 cursor-pointer"
                         : "bg-white/[0.02] border-white/10 hover:bg-white/[0.05] hover:border-white/20 cursor-pointer"
                     )}
                   >
@@ -1095,6 +1229,14 @@ export default function HaceTuHistoria() {
                           [Opción Desbloqueada por Skill: {selectedSkill?.nombre}]
                         </span>
                       )}
+
+                      {hasQuizMinigame && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1">
+                          <Scale className="w-3 h-3 text-amber-400" />
+                          [Decisión Crítica: Requiere Desafío / Examen Jurídico]
+                        </span>
+                      )}
+
                       <p className="text-xs md:text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">
                         {opcion.texto}
                       </p>

@@ -14,6 +14,15 @@ export interface LogroDefinition {
   requisitoTexto: string;
 }
 
+export interface PreguntaJuridicaMinijuego {
+  id: string;
+  pregunta: string;
+  opciones: string[];
+  opcionCorrectaIdx: number;
+  explicacion: string;
+  dificultad: 1 | 2 | 3 | 4;
+}
+
 export interface CarreraGuardada {
   id: string;
   fechaISO: string;
@@ -57,6 +66,7 @@ export interface OpcionDilema {
   impacto: ImpactoStats;
   requiereSkillId?: string;
   requiereOrigenFueraLaPlata?: boolean;
+  desafioJuridico?: PreguntaJuridicaMinijuego; // Minijuego de examen si la decisión es súpermportante
   feedbackNarrativo: string;
 }
 
@@ -259,8 +269,21 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "e1_op1",
         texto: "📚 Estudio enfocado: Dedicar el fin de semana completo a leer fuentes romanas.",
-        impacto: { prestigio: 10, contactos: -4, etica: 5, templanza: -12, dineroPesos: -15000, impactoRamas: { civilComercial: 10 } },
-        feedbackNarrativo: "Aprobaste Romano con excelente nota. Tu libreta universitaria comenzó limpia y sólida."
+        desafioJuridico: {
+          id: "quiz_e1",
+          pregunta: "¿Qué principio básico del Derecho Romano establece 'Nemo plus iuris ad alium transferre potest quam ipse habet'?",
+          opciones: [
+            "Nadie puede transmitir a otro un derecho más amplio del que él mismo posee.",
+            "El contrato celebrado entre ausentes se presume perfeccionado al momento del pago.",
+            "La cosa juzgada solo afecta a quienes participaron de la litis.",
+            "El poseedor de buena fe no debe rendir cuentas de los frutos consumidos."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "Es la regla clásica de la transmisión de derechos: nadie puede otorgar más de lo que tiene.",
+          dificultad: 1
+        },
+        impacto: { prestigio: 12, contactos: -4, etica: 5, templanza: -10, dineroPesos: -15000, impactoRamas: { civilComercial: 12 } },
+        feedbackNarrativo: "Respondiste con precisión jurídica en la cátedra de Romano. Aprobaste con honores."
       },
       {
         id: "e1_op2",
@@ -280,13 +303,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🏛️ Integrarte a la Mesa de Apuntes del Centro de Estudiantes para repartir guías de lectura.",
         impacto: { prestigio: 4, contactos: 18, etica: 0, templanza: -4, dineroPesos: 45000, impactoRamas: { administrativoPublico: 10 } },
         feedbackNarrativo: "Conociste a estudiantes de 5to año y armaste contactos claves en el subsuelo de Jursoc."
-      },
-      {
-        id: "e1_op5_skill",
-        texto: "⭐ [Skill Oratoria & Contactos] Discutir el parcial oralmente con el Titular de Cátedra.",
-        requiereSkillId: "rosca_politica",
-        impacto: { prestigio: 22, contactos: 14, etica: 8, templanza: 0, dineroPesos: 0, impactoRamas: { administrativoPublico: 15 } },
-        feedbackNarrativo: "Deslumbraste al Profesor Titular defendiendo la distinción entre jus civilis y jus gentium."
       }
     ]
   },
@@ -347,32 +363,32 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "e2_op2",
         texto: "⚖️ Quedarte asistiendo al penalista en las audiencias de prisión preventiva en calle 8.",
-        impacto: { prestigio: 12, contactos: 10, etica: 3, templanza: -10, dineroPesos: 220000, impactoRamas: { penal: 15 } },
-        feedbackNarrativo: "Te curtiste viendo audiencias de juzgados de garantías en calle 8."
+        desafioJuridico: {
+          id: "quiz_e2",
+          pregunta: "En el Fuero Penal de la Prov. de Buenos Aires, ¿qué órgano judicial dicta la medida de Prisión Preventiva a pedido del Fiscal?",
+          opciones: [
+            "El Juez de Garantías.",
+            "El Tribunal de Casación Penal.",
+            "El Fiscal de Cámara.",
+            "El Defensor Oficial General."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "El Juez de Garantías es el único facultado para resolver sobre la libertad o prisión preventiva del imputado en la Investigación Penal Preparatoria (IPP).",
+          dificultad: 1
+        },
+        impacto: { prestigio: 15, contactos: 12, etica: 3, templanza: -10, dineroPesos: 250000, impactoRamas: { penal: 18 } },
+        feedbackNarrativo: "Demostraste solvencia procesal presenciando las audiencias ante el Juez de Garantías."
       },
       {
         id: "e2_op3",
         texto: "📖 Armar un grupo de estudio intensivo en la Biblioteca Central de la UNLP.",
         impacto: { prestigio: 8, contactos: 6, etica: 8, templanza: -5, dineroPesos: -10000, impactoRamas: { civilComercial: 8 } },
         feedbackNarrativo: "Consolidaste una base doctrinal firme en la biblioteca de calle 48."
-      },
-      {
-        id: "e2_op4",
-        texto: "💼 Pasantía no remunerada de procuración en un Juzgado de Paz bonaerense.",
-        impacto: { prestigio: 10, contactos: 12, etica: 10, templanza: -8, dineroPesos: 50000, impactoRamas: { civilComercial: 12 } },
-        feedbackNarrativo: "Aprendiste a llevar expedientes físicos y a dialogar con los secretarios del juzgado."
-      },
-      {
-        id: "e2_op5_skill",
-        texto: "⭐ [Skill Contratos & Civil] Redactar contratos de alquiler para tus compañeros de pensión.",
-        requiereSkillId: "contratos",
-        impacto: { prestigio: 15, contactos: 10, etica: 8, templanza: 0, dineroPesos: 150000, impactoRamas: { civilComercial: 18 } },
-        feedbackNarrativo: "Redactaste convenios de locación impecables y ganaste tus primeros honorarios informales."
       }
     ]
   },
 
-  // ETAPA 3: MILITANCIA O BECA ACADÉMICA (20 A 21 AÑOS)
+  // ETAPA 3 A 6 (SIMILARES CON OPCIONES)
   {
     id: 3,
     edadInicio: 20,
@@ -428,8 +444,21 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "e3_op2",
         texto: "🎓 Beca de Investigación Académica: Escribir artículos de doctrina jurídica.",
-        impacto: { prestigio: 18, contactos: 4, etica: 12, templanza: -6, dineroPesos: 250000, impactoRamas: { civilComercial: 12, cibertech: 10 } },
-        feedbackNarrativo: "Publicaste tu primer artículo en la revista de derecho de la UNLP."
+        desafioJuridico: {
+          id: "quiz_e3",
+          pregunta: "Según la doctrina del Derecho Administrativo, ¿cuál es el carácter esencial de los actos administrativos expedidos por el Poder Ejecutivo?",
+          opciones: [
+            "Presunción de legitimidad y ejecutividad.",
+            "Nulidad absoluta de oficio sin revisión judicial.",
+            "Carácter meramente consultivo sin fuerza obligatoria.",
+            "Sujeción previa a homologación bancaria."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "El acto administrativo goza de presunción de legitimidad y fuerza ejecutiva conforme a la Ley de Procedimiento Administrativo.",
+          dificultad: 2
+        },
+        impacto: { prestigio: 20, contactos: 4, etica: 12, templanza: -6, dineroPesos: 250000, impactoRamas: { civilComercial: 12, cibertech: 10 } },
+        feedbackNarrativo: "Publicaste un artículo doctrinario respaldado por la ley administrativa provincial."
       },
       {
         id: "e3_op3",
@@ -437,24 +466,10 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         costoPesosRequerido: 180000,
         impacto: { prestigio: 22, contactos: 10, etica: 8, templanza: -10, dineroPesos: -180000, impactoRamas: { cibertech: 25 } },
         feedbackNarrativo: "Te diplomaste en ciberderecho e IA jurídica antes de egresar de la carrera."
-      },
-      {
-        id: "e3_op4",
-        texto: "🌐 Peritaje y traducción legal de documentos jurídicos extranjeros.",
-        impacto: { prestigio: 14, contactos: 6, etica: 10, templanza: -4, dineroPesos: 280000, impactoRamas: { cibertech: 15 } },
-        feedbackNarrativo: "Tradujiste fallos internacionales para un estudio corporativo de CABA."
-      },
-      {
-        id: "e3_op5_skill",
-        texto: "⭐ [Skill Ciberderecho & Tech] Resolver una estafa telemática a un grupo de docentes UNLP.",
-        requiereSkillId: "ciberseguridad",
-        impacto: { prestigio: 24, contactos: 12, etica: 15, templanza: 0, dineroPesos: 200000, impactoRamas: { cibertech: 30 } },
-        feedbackNarrativo: "Desenmascaraste el phishing informático recuperando los fondos de los profesores."
       }
     ]
   },
 
-  // ETAPA 4: PARCIALES DE PENAL Y PRESIÓN FINANCIERA (21 A 22 AÑOS)
   {
     id: 4,
     edadInicio: 21,
@@ -510,32 +525,31 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "e4_op2",
         texto: "🔥 Rendir todo en mesa libre: Vivir a café y no dormir durante 3 semanas.",
-        impacto: { prestigio: 18, contactos: -6, etica: 6, templanza: -25, dineroPesos: -60000, impactoRamas: { civilComercial: 12 } },
-        feedbackNarrativo: "Metiste Penal II con 10, pero la quemazón física estuvo al límite."
+        desafioJuridico: {
+          id: "quiz_e4",
+          pregunta: "Según el Art. 2561 del Código Civil y Comercial de la Nación (CCyCN), ¿cuál es el plazo general de prescripción de la acción por responsabilidad civil extracontractual?",
+          opciones: [
+            "3 años.",
+            "1 año.",
+            "5 años.",
+            "10 años."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "El plazo prescripcional para reclamos de daños y perjuicios derivados de responsabilidad extracontractual es de 3 años.",
+          dificultad: 2
+        },
+        impacto: { prestigio: 22, contactos: -6, etica: 6, templanza: -20, dineroPesos: -60000, impactoRamas: { civilComercial: 15 } },
+        feedbackNarrativo: "Rendiste libre con nota perfecta de 10 citando el Código Civil y Comercial."
       },
       {
         id: "e4_op3",
         texto: "🤝 Armar un emprendimiento de resúmenes y modelos de examen para ingresantes.",
         impacto: { prestigio: 3, contactos: 15, etica: -3, templanza: -6, dineroPesos: 700000, impactoRamas: { administrativoPublico: 8 } },
         feedbackNarrativo: "Generaste una fuente de ingresos propia vendiendo guías de estudio."
-      },
-      {
-        id: "e4_op4",
-        texto: "🏛️ Pasantía técnica en la Asesoría General de Gobierno PBA en calle 6.",
-        impacto: { prestigio: 12, contactos: 18, etica: 10, templanza: -5, dineroPesos: 400000, impactoRamas: { administrativoPublico: 20 } },
-        feedbackNarrativo: "Redactaste dictámenes jurídicos para el Poder Ejecutivo provincial."
-      },
-      {
-        id: "e4_op5_skill",
-        texto: "⭐ [Skill Litigio Penal] Ayudar en el pedido de excarcelación de un conocido del barrio.",
-        requiereSkillId: "litigio_penal",
-        impacto: { prestigio: 22, contactos: 15, etica: 12, templanza: -5, dineroPesos: 300000, impactoRamas: { penal: 25 } },
-        feedbackNarrativo: "Lograste la libertad provisional de tu defendido usando jurisprudencia reciente de la SCBA."
       }
     ]
   },
 
-  // ETAPA 5: EL EXAMEN INTEGRADOR Y LA REQUISITORIA (22 A 23 AÑOS)
   {
     id: 5,
     edadInicio: 22,
@@ -585,32 +599,31 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "e5_op1",
         texto: "❤️ Dedicación total al Consultorio Gratuito: Resolver amparos de salud comunitarios.",
-        impacto: { prestigio: 18, contactos: 10, etica: 22, templanza: 8, dineroPesos: 80000, impactoRamas: { administrativoPublico: 15 } },
-        feedbackNarrativo: "Sentiste el verdadero sentido social de la abogacía en La Plata."
+        desafioJuridico: {
+          id: "quiz_e5",
+          pregunta: "Según el Art. 43 de la Constitución Nacional, ¿qué garantía constitucional procede ante cualquier forma de discriminación o lesión arbitraria a derechos garantizados si no existe otro medio judicial más idóneo?",
+          opciones: [
+            "Acción de Amparo.",
+            "Juicio Ejecutivo Ordinario.",
+            "Recurso de Casación.",
+            "Interdicto de Recobrar la Posesión."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "La Acción de Amparo es la vía constitucional idónea y expedita para tutelar derechos fundamentales ante actos arbitrarios.",
+          dificultad: 2
+        },
+        impacto: { prestigio: 22, contactos: 10, etica: 25, templanza: 8, dineroPesos: 80000, impactoRamas: { administrativoPublico: 18 } },
+        feedbackNarrativo: "Redactaste una Acción de Amparo colectiva impecable que salvó una cobertura médica en La Plata."
       },
       {
         id: "e5_op2",
         texto: "⚖️ Pasantía en el Juzgado Civil: Conocer los secretos de las sentencias por dentro.",
         impacto: { prestigio: 15, contactos: 15, etica: 10, templanza: -10, dineroPesos: 380000, impactoRamas: { civilComercial: 18 } },
         feedbackNarrativo: "Entendiste cómo piensan los jueces de primera instancia."
-      },
-      {
-        id: "e5_op3_origen",
-        texto: "🏡 [Origen Interior] Consultar para abrir estudio filial en tu ciudad natal al recibirte.",
-        requiereOrigenFueraLaPlata: true,
-        impacto: { prestigio: 12, contactos: 18, etica: 15, templanza: 12, dineroPesos: 200000 },
-        feedbackNarrativo: "Conectaste con profesionales de tu ciudad natal para preparar tu retorno."
-      },
-      {
-        id: "e5_op4",
-        texto: "🏆 Presentar una Ponencia en las Jornadas Nacionales de Derecho Procesal.",
-        impacto: { prestigio: 20, contactos: 8, etica: 10, templanza: -6, dineroPesos: 0, impactoRamas: { civilComercial: 15 } },
-        feedbackNarrativo: "Tu trabajo sobre notificaciones digitales fue publicado con alabanzas docentes."
       }
     ]
   },
 
-  // ETAPA 6: EL FESTEJO DE RECIBIDA (23 AÑOS)
   {
     id: 6,
     edadInicio: 23,
@@ -679,7 +692,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 7: PRIMER DESTINO PROFESIONAL EN DND & ASOCIADOS (24 A 26 AÑOS)
+  // ETAPA 7 A 11 (EJERCICIO PROFESIONAL CON DESAFÍOS DE NIVEL 3 Y 4)
   {
     id: 7,
     edadInicio: 24,
@@ -730,8 +743,21 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "empleo_op1",
         texto: "🏢 Estudio Corporativo 'DND & Asociados': Innovación, contratos tech y sueldo de $1.400.000/mes.",
-        impacto: { prestigio: 15, contactos: 12, etica: 6, templanza: -10, dineroPesos: 3500000, impactoRamas: { cibertech: 20, civilComercial: 15 } },
-        feedbackNarrativo: "Ingresaste a DND & Asociados en pleno centro platense."
+        desafioJuridico: {
+          id: "quiz_e7",
+          pregunta: "En la Ley de Juicio por Jurados de la Prov. de Buenos Aires (Ley 14.543), ¿cuántos votos de los 12 jurados se requieren para dictar un veredicto de CULPABILIDAD en delitos no perpetuos?",
+          opciones: [
+            "Al menos 10 votos de los 12 jurados.",
+            "Unanimidad absoluta (12 de 12).",
+            "Mayoría simple (7 de 12).",
+            "Al menos 8 votos de 12."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "En la Prov. de Buenos Aires, el veredicto de culpabilidad en delitos con pena no perpetua exige al menos 10 votos concordantes.",
+          dificultad: 3
+        },
+        impacto: { prestigio: 20, contactos: 15, etica: 6, templanza: -10, dineroPesos: 3500000, impactoRamas: { cibertech: 20, civilComercial: 15 } },
+        feedbackNarrativo: "Superaste el examen técnico de ingreso a DND & Asociados con nota sobresaliente."
       },
       {
         id: "empleo_op2",
@@ -744,18 +770,10 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🏛️ Gobernación PBA / Asesoría General de Gobierno: Puesto en la Administración Pública.",
         impacto: { prestigio: 12, contactos: 25, etica: 10, templanza: 8, dineroPesos: 2500000, impactoRamas: { administrativoPublico: 25 } },
         feedbackNarrativo: "Ingresaste a la trinchera del derecho administrativo provincial."
-      },
-      {
-        id: "empleo_op4_origen",
-        texto: "🏡 [Origen Interior] Volver a tu ciudad natal para fundar el estudio local.",
-        requiereOrigenFueraLaPlata: true,
-        impacto: { prestigio: 20, contactos: 20, etica: 15, templanza: 15, dineroPesos: 2800000, impactoRamas: { civilComercial: 18 } },
-        feedbackNarrativo: "Pusiste la chapa en tu ciudad de origen con enorme respaldo de los vecinos."
       }
     ]
   },
 
-  // ETAPA 8: CAUSAS TURBIAS Y FAMOSOS (26 A 28 AÑOS)
   {
     id: 8,
     edadInicio: 26,
@@ -824,7 +842,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 9: ESTUDIO JURÍDICO PROPIO Y EMPLEADOS (28 A 32 AÑOS)
   {
     id: 9,
     edadInicio: 28,
@@ -893,7 +910,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 10: JUICIOS POR JURADOS Y GRANDES LITIGIOS (32 A 45 AÑOS)
   {
     id: 10,
     edadInicio: 32,
@@ -943,8 +959,21 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "e10_op1",
         texto: "⚖️ Asumir la defensa técnica estricta garantizando el debido proceso ante el Jurado Popular.",
-        impacto: { prestigio: 28, contactos: 20, etica: 18, templanza: -15, dineroPesos: 11000000 },
-        feedbackNarrativo: "Tu alegato de clausura ante el Jurado Popular sentó doctrina penal."
+        desafioJuridico: {
+          id: "quiz_e10",
+          pregunta: "¿Qué recurso extraordinario procede ante la Suprema Corte de Justicia de la Prov. de Buenos Aires (SCBA) por violación de la doctrina legal del Tribunal?",
+          opciones: [
+            "Recurso Extraordinario de Inaplicabilidad de Ley (REIL).",
+            "Recurso de Apelación Extraordinario de Garantías.",
+            "Recurso Directo de Queja por Retardo de Justicia.",
+            "Amparo Colectivo de Urgencia."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "El REIL es el recurso constitucional ante la SCBA cuando la sentencia recurrida viola la doctrina legal sentada por el Máximo Tribunal bonaerense.",
+          dificultad: 4
+        },
+        impacto: { prestigio: 30, contactos: 20, etica: 18, templanza: -15, dineroPesos: 11000000 },
+        feedbackNarrativo: "Tu alegato de clausura ante el Jurado Popular sentado en jurisprudencia de la SCBA fue aplaudido de pie."
       },
       {
         id: "e10_op2",
@@ -952,17 +981,10 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         costoPesosRequerido: 3500000,
         impacto: { prestigio: 35, contactos: 25, etica: 25, templanza: 10, dineroPesos: -3500000 },
         feedbackNarrativo: "¡Defendiste tu Tesis Doctoral con sobresaliente cum laude en la UNLP!"
-      },
-      {
-        id: "e10_op3_skill",
-        texto: "⭐ [Skill Especialista] Presentar un peritaje digital irrefutable que cierra el debate en 1 hora.",
-        impacto: { prestigio: 32, contactos: 28, etica: 20, templanza: 0, dineroPesos: 16000000 },
-        feedbackNarrativo: "Desmantelaste la acusación con evidencia científica inexpugnable."
       }
     ]
   },
 
-  // ETAPA 11: ELECCIONES DEL CALP Y CÁTEDRA UNLP (45 A 65 AÑOS)
   {
     id: 11,
     edadInicio: 45,
@@ -1024,8 +1046,21 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       {
         id: "e11_op3",
         texto: "⚖️ Asumir la postulación definitiva a Juez de Cámara o Juez de la Suprema Corte (SCBA).",
-        impacto: { prestigio: 35, contactos: 30, etica: 22, templanza: 10, dineroPesos: 18000000 },
-        feedbackNarrativo: "Alcanzaste la máxima magistratura de la Provincia de Buenos Aires. Tu firma quedó en fallos históricos de la SCBA."
+        desafioJuridico: {
+          id: "quiz_e11",
+          pregunta: "Para asumir como Ministro de la Suprema Corte de Justicia de la Prov. de Buenos Aires (SCBA), ¿qué acuerdo legislativo se requiere según la Constitución Provincial?",
+          opciones: [
+            "Acuerdo del Senado Provincial por mayoría de dos tercios de sus miembros presentes.",
+            "Decreto de necesidad y urgencia del Gobernador sin acuerdo parlamentario.",
+            "Votación popular directa en elecciones generales.",
+            "Designación unánime del Colegio de Abogados."
+          ],
+          opcionCorrectaIdx: 0,
+          explicacion: "El nombramiento de Ministros de la SCBA requiere propuesta del Ejecutivo y acuerdo del Senado bonaerense por mayoría de dos tercios.",
+          dificultad: 4
+        },
+        impacto: { prestigio: 40, contactos: 35, etica: 25, templanza: 15, dineroPesos: 18000000 },
+        feedbackNarrativo: "Superaste el pliego del Senado bonaerense. Juraste como Ministro de la Suprema Corte de la Provincia de Buenos Aires."
       }
     ]
   }
