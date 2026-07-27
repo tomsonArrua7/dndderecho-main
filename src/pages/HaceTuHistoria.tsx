@@ -1,21 +1,20 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { 
-  TEMPORADAS_JUEGO, 
+  ETAPAS_CARRERA, 
   SKILLS_DISPONIBLES, 
   SkillDefinition, 
-  TemporadaDilema, 
+  EtapaVida, 
   OpcionDilema,
-  ImpactoStats
+  ImpactoStats,
+  RamasPuntuacion
 } from "@/data/haceTuHistoriaData";
 import { 
   ShieldAlert, 
   Scale, 
-  Award, 
   RotateCcw, 
-  Lock, 
   CheckCircle2, 
   Sparkles, 
   Users, 
@@ -26,99 +25,141 @@ import {
   Briefcase,
   AlertTriangle,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  Coins,
+  TrendingUp,
+  Award
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function HaceTuHistoria() {
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
   
-  // Acceso Beta / Admin
-  const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
-  const [adminCodeInput, setAdminCodeInput] = useState("");
-  const [codeError, setCodeError] = useState(false);
+  // Verificación estricta de Admin
+  const isAdminUser = profile?.role === "admin";
 
   // Estado del Juego
   const [gameStarted, setGameStarted] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState<SkillDefinition | null>(null);
-  const [currentSeasonIdx, setCurrentSeasonIdx] = useState(0);
+  const [currentEtapaIdx, setCurrentEtapaIdx] = useState(0);
 
-  // Estadísticas (Start at 50/100)
-  const [stats, setStats] = useState<ImpactoStats>({
-    prestigio: 50,
-    contactos: 50,
-    etica: 50,
-    billetera: 50
+  // Estadísticas del jugador
+  const [prestigio, setPrestigio] = useState(50);
+  const [contactos, setContactos] = useState(50);
+  const [etica, setEtica] = useState(50);
+  const [dineroPesos, setDineroPesos] = useState(35000); // Ahorros iniciales universitaria en Pesos
+
+  // Puntuación acumulativa por rama del derecho
+  const [ramas, setRamas] = useState<RamasPuntuacion>({
+    penal: 0,
+    civilComercial: 0,
+    administrativoPublico: 0,
+    cibertech: 0
   });
+
+  // Resumen Bi-Anual
+  const [showBiAnnualSummary, setShowBiAnnualSummary] = useState(false);
+  const [lastImpact, setLastImpact] = useState<ImpactoStats | null>(null);
 
   // Historial de la partida
   const [lastFeedback, setLastFeedback] = useState<string | null>(null);
-  const [lastOptionText, setLastOptionText] = useState<string | null>(null);
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [isVictory, setIsVictory] = useState(false);
 
-  const isAdminUser = profile?.role === "admin" || isAdminUnlocked;
+  // Si no es admin, redirigir inmediatamente a /mi-espacio
+  if (!loading && (!user || !isAdminUser)) {
+    return <Navigate to="/mi-espacio" replace />;
+  }
 
-  // Promedio OVR
-  const calculateOVR = (s: ImpactoStats) => {
-    return Math.round((s.prestigio + s.contactos + s.etica + s.billetera) / 4);
+  // Formateador de Pesos Argentinos ($)
+  const formatPesos = (val: number) => {
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      maximumFractionDigits: 0
+    }).format(val);
   };
 
-  const handleAdminVerify = (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanCode = adminCodeInput.trim().toUpperCase();
-    if (cleanCode === "ADMIN" || cleanCode === "ADMIN2026" || cleanCode === "AGY2026" || cleanCode === "SI" || cleanCode === "SI POSEO") {
-      setIsAdminUnlocked(true);
-      setCodeError(false);
-    } else {
-      setCodeError(true);
-    }
+  // Determinar la Rama del Derecho Predominante
+  const getDominantBranch = (r: RamasPuntuacion) => {
+    const scores = [
+      { name: "Penalista & Garantías", score: r.penal, icon: Scale },
+      { name: "Civilista & Comercial", score: r.civilComercial, icon: FileText },
+      { name: "Derecho Público & Administrativo", score: r.administrativoPublico, icon: Users },
+      { name: "Ciberderecho & Tech", score: r.cibertech, icon: ShieldCheck }
+    ];
+    scores.sort((a, b) => b.score - a.score);
+    return scores[0];
+  };
+
+  // OVR Promedio
+  const calculateOVR = () => {
+    return Math.round((prestigio + contactos + etica) / 3);
   };
 
   const startNewGame = (skill: SkillDefinition) => {
     setSelectedSkill(skill);
-    setStats({ prestigio: 50, contactos: 50, etica: 50, billetera: 50 });
-    setCurrentSeasonIdx(0);
+    setPrestigio(50);
+    setContactos(50);
+    setEtica(50);
+    setDineroPesos(35000);
+    setRamas({ penal: 0, civilComercial: 0, administrativoPublico: 0, cibertech: 0 });
+    setCurrentEtapaIdx(0);
     setLastFeedback(null);
-    setLastOptionText(null);
+    setLastImpact(null);
+    setShowBiAnnualSummary(false);
     setGameOverReason(null);
     setIsVictory(false);
     setGameStarted(true);
   };
 
   const handleMakeChoice = (opcion: OpcionDilema) => {
-    const newStats: ImpactoStats = {
-      prestigio: Math.min(100, Math.max(0, stats.prestigio + opcion.impacto.prestigio)),
-      contactos: Math.min(100, Math.max(0, stats.contactos + opcion.impacto.contactos)),
-      etica: Math.min(100, Math.max(0, stats.etica + opcion.impacto.etica)),
-      billetera: Math.min(100, Math.max(0, stats.billetera + opcion.impacto.billetera))
-    };
+    const impact = opcion.impacto;
+    setLastImpact(impact);
 
-    setStats(newStats);
-    setLastOptionText(opcion.texto);
+    const newPrestigio = Math.min(100, Math.max(0, prestigio + impact.prestigio));
+    const newContactos = Math.min(100, Math.max(0, contactos + impact.contactos));
+    const newEtica = Math.min(100, Math.max(0, etica + impact.etica));
+    const newDinero = Math.max(0, dineroPesos + impact.dineroPesos);
+
+    setPrestigio(newPrestigio);
+    setContactos(newContactos);
+    setEtica(newEtica);
+    setDineroPesos(newDinero);
+
+    if (impact.impactoRamas) {
+      setRamas(prev => ({
+        penal: prev.penal + (impact.impactoRamas?.penal || 0),
+        civilComercial: prev.civilComercial + (impact.impactoRamas?.civilComercial || 0),
+        administrativoPublico: prev.administrativoPublico + (impact.impactoRamas?.administrativoPublico || 0),
+        cibertech: prev.cibertech + (impact.impactoRamas?.cibertech || 0)
+      }));
+    }
+
     setLastFeedback(opcion.feedbackNarrativo);
 
     // Verificar Game Over (Muerte Súbita)
-    if (newStats.etica <= 0) {
-      setGameOverReason("🏛️ RETIRO DE MATRÍCULA: El Tribunal de Disciplina del Colegio de Abogados de La Plata (CALP) resolvió sancionarte con el retiro definitivo de la matrícula profesional debido a infracciones graves a la ética procesal.");
+    if (newEtica <= 0) {
+      setGameOverReason("🏛️ RETIRO DE MATRÍCULA: El Tribunal de Disciplina del Colegio de Abogados de La Plata (CALP) resolvió retirarte la matrícula profesional por faltas graves a la ética.");
       return;
     }
-    if (newStats.billetera <= 0) {
-      setGameOverReason("💰 QUIEBRA Y DESAHUCIO: Entraste en morosidad total. No podés saldar los aportes a la Caja Previsional ni el alquiler del despacho en Antigravity. Tuviste que abandonar el ejercicio de la abogacía.");
+    if (newDinero <= 0 && currentEtapaIdx >= 3) {
+      setGameOverReason("💰 QUIEBRA Y DESAHUCIO FINANCIERO: Te quedaste sin un solo peso para saldar el alquiler del estudio y los aportes a la Caja Previsional. Tuviste que abandonar el ejercicio de la abogacía.");
       return;
     }
-    if (newStats.prestigio <= 0) {
-      setGameOverReason("⚖️ ESCARNIO PÚBLICO: Perdiste la confianza de los Magistrados de Tribunales y la comunidad platense. Ningún cliente acepta ser representado por tu firma.");
-      return;
-    }
-    if (newStats.contactos <= 0) {
-      setGameOverReason("🤝 AISLAMIENTO POLÍTICO: Quedaste aislado sin margen de maniobra institucional en los pasillos judiciales ni en la UNLP. Tu práctica profesional quedó paralizada.");
+    if (newPrestigio <= 0) {
+      setGameOverReason("⚖️ ESCARNIO PÚBLICO EN LA PLATA: Perdiste todo tu prestigio técnico. Los magistrados desestiman tus escritos por defecto y los clientes no confían en tu firma.");
       return;
     }
 
-    // Avanzar de temporada o ganar
-    if (currentSeasonIdx + 1 < TEMPORADAS_JUEGO.length) {
-      setCurrentSeasonIdx(prev => prev + 1);
+    // Mostrar Resumen Bi-Anual antes de pasar a la siguiente etapa
+    setShowBiAnnualSummary(true);
+  };
+
+  const nextEtapa = () => {
+    setShowBiAnnualSummary(false);
+    if (currentEtapaIdx + 1 < ETAPAS_CARRERA.length) {
+      setCurrentEtapaIdx(prev => prev + 1);
     } else {
       setIsVictory(true);
     }
@@ -127,71 +168,16 @@ export default function HaceTuHistoria() {
   const resetGame = () => {
     setGameStarted(false);
     setSelectedSkill(null);
-    setCurrentSeasonIdx(0);
+    setCurrentEtapaIdx(0);
     setGameOverReason(null);
     setIsVictory(false);
   };
 
-  const currentSeason: TemporadaDilema = TEMPORADAS_JUEGO[currentSeasonIdx];
+  const currentEtapa: EtapaVida = ETAPAS_CARRERA[currentEtapaIdx];
+  const dominantBranch = getDominantBranch(ramas);
 
-  // 1. PANTALLA BETA / ADMIN ACCESO RESTRINGIDO
-  if (!isAdminUser) {
-    return (
-      <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
-        <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-lg w-full bg-slate-900/90 border border-red-500/30 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl backdrop-blur-xl relative z-10">
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 mx-auto rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
-              <ShieldAlert className="w-8 h-8" />
-            </div>
-            <h1 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase font-display">
-              ⚠️ MÓDULO FASE BETA
-            </h1>
-            <p className="text-xs md:text-sm text-slate-300">
-              Acceso restringido. El sistema de usuarios de <strong>dndjursoc.com.ar</strong> indica que requiere validación de perfil Administrador para iniciar la simulación de carrera legal.
-            </p>
-          </div>
-
-          <form onSubmit={handleAdminVerify} className="space-y-4 pt-2">
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-                Confirmación de Credenciales / Clave de Acceso
-              </label>
-              <input
-                type="text"
-                placeholder="Ingresá 'ADMIN' o 'SI'"
-                value={adminCodeInput}
-                onChange={(e) => setAdminCodeInput(e.target.value)}
-                className="w-full bg-slate-950/80 border border-white/15 rounded-xl px-4 py-3 text-sm text-white font-mono font-bold placeholder:text-slate-600 focus:outline-none focus:border-red-500"
-              />
-            </div>
-
-            {codeError && (
-              <p className="text-xs text-red-400 font-bold bg-red-500/10 p-2.5 rounded-xl border border-red-500/20 text-center">
-                Código o confirmación inválida. Ingresá 'ADMIN' o 'SI' para acceder en fase Beta.
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-red-600/30 transition-all cursor-pointer min-h-[44px]"
-            >
-              Confirmar Acceso Administrador
-            </button>
-          </form>
-
-          <div className="pt-2 text-center">
-            <Link to="/juegos" className="text-xs text-slate-400 hover:text-white underline">
-              ← Volver al Hub de Juegos
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. PANTALLA SELECCIÓN DE SKILL INICIAL
-  if (isAdminUser && !gameStarted) {
+  // 1. SELECCIÓN DE SKILL INICIAL
+  if (!gameStarted) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -199,14 +185,14 @@ export default function HaceTuHistoria() {
         <div className="max-w-4xl mx-auto space-y-8 relative z-10">
           <div className="text-center space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-black uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Simulador de Carrera Jurídica — Antigravity Legal</span>
+              <GraduationCap className="w-4 h-4" />
+              <span>Simulador de Carrera Legal — UNLP & La Plata</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight font-display bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
               HACÉ TU HISTORIA
             </h1>
-            <p className="text-xs md:text-sm text-slate-400 max-w-xl mx-auto">
-              Egresaste de la FCJyS (Jursoc UNLP) a los 23 años e ingresás al innovador estudio <strong>Antigravity</strong> en La Plata. Elegí tu especialidad técnica inicial para arrancar la Temporada 1.
+            <p className="text-xs md:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              Comenzás a los 18 años como estudiante de 1er año en la FCJyS (Jursoc UNLP). Elegí tu inclinación o habilidad inicial para iniciar la aventura académica y profesional hasta los 65 años.
             </p>
           </div>
 
@@ -242,6 +228,81 @@ export default function HaceTuHistoria() {
     );
   }
 
+  // 2. MODAL RESUMEN BI-ANUAL DE CRECIMIENTO (CADA 2 AÑOS)
+  if (showBiAnnualSummary && lastImpact) {
+    return (
+      <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
+        <div className="max-w-lg w-full bg-slate-900 border border-indigo-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative z-10">
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 mx-auto rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+              <TrendingUp className="w-7 h-7" />
+            </div>
+            <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-widest border border-indigo-500/30">
+              RESUMEN BI-ANUAL DE CRECIMIENTO [{currentEtapa.edadInicio} - {currentEtapa.edadFin} AÑOS]
+            </span>
+            <h2 className="text-xl md:text-2xl font-black text-white pt-1">Evolución de Tu Perfil Jurídico</h2>
+          </div>
+
+          {/* ULTIMO FEEDBACK */}
+          <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-xs md:text-sm space-y-1">
+            <p className="font-bold text-indigo-300 text-[11px] uppercase flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Impacto de tu última decisión:
+            </p>
+            <p className="italic leading-relaxed text-slate-300">{lastFeedback}</p>
+          </div>
+
+          {/* VARIACIÓN DE STATS */}
+          <div className="grid grid-cols-2 gap-3 text-xs font-bold">
+            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-slate-400">⚖️ Prestigio:</span>
+              <span className={cn("font-mono font-black", lastImpact.prestigio >= 0 ? "text-emerald-400" : "text-red-400")}>
+                {lastImpact.prestigio >= 0 ? `+${lastImpact.prestigio}` : lastImpact.prestigio}
+              </span>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-slate-400">🤝 Contactos:</span>
+              <span className={cn("font-mono font-black", lastImpact.contactos >= 0 ? "text-emerald-400" : "text-red-400")}>
+                {lastImpact.contactos >= 0 ? `+${lastImpact.contactos}` : lastImpact.contactos}
+              </span>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-slate-400">🏛️ Ética:</span>
+              <span className={cn("font-mono font-black", lastImpact.etica >= 0 ? "text-emerald-400" : "text-red-400")}>
+                {lastImpact.etica >= 0 ? `+${lastImpact.etica}` : lastImpact.etica}
+              </span>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-slate-400">💰 Dinero Real:</span>
+              <span className={cn("font-mono font-black", lastImpact.dineroPesos >= 0 ? "text-emerald-400" : "text-red-400")}>
+                {lastImpact.dineroPesos >= 0 ? `+${formatPesos(lastImpact.dineroPesos)}` : formatPesos(lastImpact.dineroPesos)}
+              </span>
+            </div>
+          </div>
+
+          {/* PERFIL PREDOMINANTE DE RAMA */}
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs font-bold">
+            <div className="flex items-center gap-2 text-amber-300">
+              <Award className="w-4 h-4" />
+              <span>Perfil Predominante:</span>
+            </div>
+            <span className="text-white uppercase font-black">{dominantBranch.name}</span>
+          </div>
+
+          <button
+            onClick={nextEtapa}
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all min-h-[46px]"
+          >
+            <span>Avanzar a los {currentEtapa.edadFin} Años</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // 3. PANTALLA GAME OVER (MUERTE SÚBITA)
   if (gameOverReason) {
     return (
@@ -253,7 +314,7 @@ export default function HaceTuHistoria() {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-red-400 uppercase tracking-tight">GAME OVER — MUERTE SÚBITA</h2>
-            <p className="text-xs text-slate-400 font-mono">Carrera interrumpida a los {currentSeason.edadInicio} años</p>
+            <p className="text-xs text-slate-400 font-mono">Carrera interrumpida a los {currentEtapa.edadInicio} años</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-slate-200 text-xs md:text-sm leading-relaxed text-left space-y-2">
@@ -266,13 +327,13 @@ export default function HaceTuHistoria() {
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
-              <span>Reintentar Nueva Carrera</span>
+              <span>Reintentar Nueva Carrera desde los 18 Años</span>
             </button>
             <Link
-              to="/juegos"
+              to="/mi-espacio"
               className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all text-center"
             >
-              Volver a Juegos
+              Volver a Mi Espacio
             </Link>
           </div>
         </div>
@@ -280,9 +341,9 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 4. PANTALLA VICTORIA / FINAL DE LA CARRERA
+  // 4. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS
   if (isVictory) {
-    const finalOVR = calculateOVR(stats);
+    const finalOVR = calculateOVR();
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
         <div className="max-w-xl w-full bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
@@ -292,23 +353,28 @@ export default function HaceTuHistoria() {
 
           <div className="space-y-1">
             <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-widest border border-emerald-500/30">
-              ¡CARRERA COMPLETADA CON ÉXITO!
+              ¡JUBILACIÓN A LOS 65 AÑOS COMPLETADA!
             </span>
-            <h2 className="text-2xl md:text-3xl font-black text-white pt-2">Leyenda Jurídica de La Plata</h2>
-            <p className="text-xs text-slate-400">Managing Partner en Antigravity & Referente del Fuero Bonaerense</p>
+            <h2 className="text-2xl md:text-3xl font-black text-white pt-2">Leyenda Jurídica Platense</h2>
+            <p className="text-xs text-slate-400">Graduado/a de la FCJyS UNLP con una trayectoria histórica en la provincia</p>
           </div>
 
           {/* STATS FINALES */}
-          <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <span className="text-xs font-bold text-slate-400 uppercase">OVR Final de Carrera</span>
-              <span className="text-xl font-black text-amber-400 font-mono">{finalOVR} / 100</span>
+          <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="text-xs font-bold text-slate-400 uppercase">Patrimonio Neto Acumulado ($)</span>
+              <span className="text-xl font-black text-emerald-400 font-mono">{formatPesos(dineroPesos)}</span>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-xs font-bold text-left">
-              <div className="p-2 rounded-xl bg-white/5">⚖️ Prestigio: <span className="text-amber-400">{stats.prestigio}</span></div>
-              <div className="p-2 rounded-xl bg-white/5">🤝 Contactos: <span className="text-indigo-400">{stats.contactos}</span></div>
-              <div className="p-2 rounded-xl bg-white/5">🏛️ Ética: <span className="text-emerald-400">{stats.etica}</span></div>
-              <div className="p-2 rounded-xl bg-white/5">💰 Billetera: <span className="text-green-400">{stats.billetera}</span></div>
+            
+            <div className="grid grid-cols-3 gap-2 text-xs font-bold text-center">
+              <div className="p-2.5 rounded-xl bg-white/5">⚖️ Prestigio: <span className="text-amber-400 block font-mono text-sm">{prestigio}</span></div>
+              <div className="p-2.5 rounded-xl bg-white/5">🤝 Contactos: <span className="text-indigo-400 block font-mono text-sm">{contactos}</span></div>
+              <div className="p-2.5 rounded-xl bg-white/5">🏛️ Ética: <span className="text-emerald-400 block font-mono text-sm">{etica}</span></div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-xs font-bold flex items-center justify-between">
+              <span className="text-indigo-300">Perfil de Rama Definitivo:</span>
+              <span className="text-white uppercase font-black">{dominantBranch.name}</span>
             </div>
           </div>
 
@@ -318,13 +384,13 @@ export default function HaceTuHistoria() {
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
-              <span>Jugar Otra Historia</span>
+              <span>Jugar Otra Historia desde 1er Año</span>
             </button>
             <Link
-              to="/juegos"
+              to="/mi-espacio"
               className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all text-center"
             >
-              Volver al Hub de Juegos
+              Volver a Mi Espacio
             </Link>
           </div>
         </div>
@@ -332,28 +398,28 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 5. MOTOR PRINCIPAL DE DIPLOMACIA Y DECISIONES (TEMPORADAS 1 A 4)
-  const currentOVR = calculateOVR(stats);
+  // 5. PANTALLA PRINCIPAL DE JUEGO (ETAPAS DE 18 A 65 AÑOS)
+  const currentOVR = calculateOVR();
 
   return (
     <div className="min-h-screen bg-[#070A14] text-white py-6 md:py-10 px-3 md:px-8 relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10 space-y-6">
         
-        {/* HEADER DE ESTADO */}
+        {/* HEADER DE ESTADO Y MONEDA REAL */}
         <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-4 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-wider border border-indigo-500/30">
-                <Briefcase className="w-3 h-3" />
-                <span>[{currentSeason.edadInicio} a {currentSeason.edadFin} Años]</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-black uppercase tracking-wider border border-amber-500/30">
+                <Briefcase className="w-3.5 h-3.5" />
+                <span>[{currentEtapa.edadInicio} a {currentEtapa.edadFin} Años de Edad]</span>
               </div>
-              <h2 className="text-lg md:text-xl font-black text-white mt-1">{currentSeason.puesto} — Antigravity</h2>
+              <h2 className="text-lg md:text-xl font-black text-white mt-1">{currentEtapa.puesto}</h2>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <span className="text-[9px] uppercase font-black tracking-wider text-slate-400 block">OVR General</span>
-                <span className="text-xl font-black text-amber-400 font-mono">{currentOVR}</span>
+                <span className="text-[9px] uppercase font-black tracking-wider text-slate-400 block">Patrimonio Neto ($)</span>
+                <span className="text-lg md:text-xl font-black text-emerald-400 font-mono">{formatPesos(dineroPesos)}</span>
               </div>
               {selectedSkill && (
                 <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs font-bold text-indigo-300 flex items-center gap-1.5">
@@ -364,90 +430,54 @@ export default function HaceTuHistoria() {
             </div>
           </div>
 
-          {/* TABLERO DE ESTADÍSTICAS (STATS) */}
+          {/* TABLERO DE STATS & RAMA DOMINANTE */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
             <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black block">⚖️ Prestigio</span>
-              <div className="flex items-center justify-between">
-                <span className="font-mono font-black text-sm text-white">{stats.prestigio}/100</span>
-                <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-amber-400 transition-all duration-500" style={{ width: `${stats.prestigio}%` }} />
-                </div>
-              </div>
+              <span className="text-[10px] text-slate-400 uppercase font-black block">⚖️ Prestigio Técnico</span>
+              <span className="font-mono font-black text-sm text-amber-400">{prestigio}/100</span>
             </div>
 
             <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
               <span className="text-[10px] text-slate-400 uppercase font-black block">🤝 Contactos (Rosca)</span>
-              <div className="flex items-center justify-between">
-                <span className="font-mono font-black text-sm text-white">{stats.contactos}/100</span>
-                <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-400 transition-all duration-500" style={{ width: `${stats.contactos}%` }} />
-                </div>
-              </div>
+              <span className="font-mono font-black text-sm text-indigo-400">{contactos}/100</span>
             </div>
 
             <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black block">🏛️ Ética</span>
-              <div className="flex items-center justify-between">
-                <span className="font-mono font-black text-sm text-white">{stats.etica}/100</span>
-                <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-400 transition-all duration-500" style={{ width: `${stats.etica}%` }} />
-                </div>
-              </div>
+              <span className="text-[10px] text-slate-400 uppercase font-black block">🏛️ Ética Profes.</span>
+              <span className="font-mono font-black text-sm text-emerald-400">{etica}/100</span>
             </div>
 
             <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black block">💰 Billetera</span>
-              <div className="flex items-center justify-between">
-                <span className="font-mono font-black text-sm text-white">{stats.billetera}/100</span>
-                <div className="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-400 transition-all duration-500" style={{ width: `${stats.billetera}%` }} />
-                </div>
-              </div>
+              <span className="text-[10px] text-slate-400 uppercase font-black block">📜 Rama Principal</span>
+              <span className="font-black text-[11px] text-white truncate block">{dominantBranch.name}</span>
             </div>
           </div>
         </div>
 
-        {/* ULTIMO FEEDBACK NARRATIVO */}
-        <AnimatePresence mode="wait">
-          {lastFeedback && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 text-xs md:text-sm space-y-1"
-            >
-              <p className="font-black text-[10px] uppercase text-indigo-400 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Resultado de tu decisión anterior:
-              </p>
-              <p className="italic leading-relaxed">{lastFeedback}</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* NARRATIVA Y DILEMA DE LA TEMPORADA */}
+        {/* NARRATIVA Y DILEMA DE LA ETAPA DE VIDA */}
         <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-5 md:p-8 space-y-6 shadow-2xl">
           <div className="space-y-3">
-            <h3 className="text-xl md:text-2xl font-black text-white">{currentSeason.titulo}</h3>
-            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">{currentSeason.contextoEscenario}</p>
+            <h3 className="text-xl md:text-2xl font-black text-white">{currentEtapa.titulo}</h3>
+            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">{currentEtapa.contextoEscenario}</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/15 space-y-2">
             <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
-              El Dilema Procesal:
+              El Dilema de la Etapa:
             </span>
-            <p className="text-sm md:text-base font-bold text-white leading-snug">{currentSeason.dilemaTexto}</p>
+            <p className="text-sm md:text-base font-bold text-white leading-snug">{currentEtapa.dilemaTexto}</p>
           </div>
 
           {/* OPCIONES DE ACCIÓN */}
           <div className="space-y-3 pt-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-              ¿Qué decisión tomás para continuar tu carrera en La Plata?
+              ¿Qué camino elegís tomar?
             </span>
 
             <div className="space-y-2.5">
-              {currentSeason.opciones.map((opcion) => {
+              {currentEtapa.opciones.map((opcion) => {
                 const isSkillLocked = opcion.requiereSkillId && opcion.requiereSkillId !== selectedSkill?.id;
-                if (isSkillLocked) return null; // No mostrar si es para otra skill
+                if (isSkillLocked) return null;
 
                 const isSkillOption = Boolean(opcion.requiereSkillId && opcion.requiereSkillId === selectedSkill?.id);
 

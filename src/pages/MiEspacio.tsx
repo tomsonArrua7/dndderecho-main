@@ -391,10 +391,10 @@ const MiEspacio = () => {
                   color="accent"
                 />
                 <DashCard
-                  to="/juegos"
+                  to="/hace-tu-historia"
                   icon={Sparkles}
-                  title="Juegos & Hacé Tu Historia (Beta Admin)"
-                  stats="Simulador de carrera legal y minijuegos"
+                  title="Hacé Tu Historia (Beta Admin)"
+                  stats="Simulador de carrera legal (18 a 65 años)"
                   color="accent"
                 />
               </>

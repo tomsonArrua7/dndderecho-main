@@ -222,7 +222,6 @@ const AppContent = () => {
         <Route path="/ingresantes"     element={<Ingresantes />} />
         <Route path="/quienes-somos"   element={<QuienesSomos />} />
         <Route path="/trivia"          element={<AdminRoute><Trivia /></AdminRoute>} />
-        <Route path="/juegos"          element={<AdminRoute><Juegos /></AdminRoute>} />
         <Route path="/hace-tu-historia" element={<AdminRoute><HaceTuHistoria /></AdminRoute>} />
 
         {/* Ruta legacy /dashboard → redirige a /mi-espacio */}

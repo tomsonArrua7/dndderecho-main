@@ -229,8 +229,8 @@ export const Navbar = () => {
                             <Link to="/trivia" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-amber-400 hover:bg-amber-500/10 flex items-center gap-3 transition-all duration-300">
                               <Trophy size={16} strokeWidth={2}/> Trivia Jurídica (Beta)
                             </Link>
-                            <Link to="/juegos" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 flex items-center gap-3 transition-all duration-300">
-                              <Sparkles size={16} strokeWidth={2}/> Sección Juegos (Beta)
+                            <Link to="/hace-tu-historia" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 flex items-center gap-3 transition-all duration-300">
+                              <Sparkles size={16} strokeWidth={2}/> Hacé Tu Historia (Beta)
                             </Link>
                             <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
                               <Settings size={16} strokeWidth={2}/> Panel Admin
