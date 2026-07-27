@@ -14,6 +14,18 @@ export interface LogroDefinition {
   requisitoTexto: string;
 }
 
+export interface CarreraGuardada {
+  id: string;
+  fechaISO: string;
+  ciudadNatal: string;
+  edadFinal: number;
+  ovrFinal: number;
+  patrimonioFinal: number;
+  ramaPredominante: string;
+  fueVictoria: boolean;
+  motivoCierre: string;
+}
+
 export interface RamasPuntuacion {
   penal: number;
   civilComercial: number;
@@ -262,6 +274,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         costoPesosRequerido: 120000,
         impacto: { prestigio: 18, contactos: 8, etica: 5, templanza: -8, dineroPesos: -120000, impactoRamas: { penal: 12 } },
         feedbackNarrativo: "Invertiste en el seminario certificado de la facultad. Aprendiste técnicas de oralidad antes que tus compañeros."
+      },
+      {
+        id: "e1_op4",
+        texto: "🏛️ Integrarte a la Mesa de Apuntes del Centro de Estudiantes para repartir guías de lectura.",
+        impacto: { prestigio: 4, contactos: 18, etica: 0, templanza: -4, dineroPesos: 45000, impactoRamas: { administrativoPublico: 10 } },
+        feedbackNarrativo: "Conociste a estudiantes de 5to año y armaste contactos claves en el subsuelo de Jursoc."
+      },
+      {
+        id: "e1_op5_skill",
+        texto: "⭐ [Skill Oratoria & Contactos] Discutir el parcial oralmente con el Titular de Cátedra.",
+        requiereSkillId: "rosca_politica",
+        impacto: { prestigio: 22, contactos: 14, etica: 8, templanza: 0, dineroPesos: 0, impactoRamas: { administrativoPublico: 15 } },
+        feedbackNarrativo: "Deslumbraste al Profesor Titular defendiendo la distinción entre jus civilis y jus gentium."
       }
     ]
   },
@@ -330,6 +355,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "📖 Armar un grupo de estudio intensivo en la Biblioteca Central de la UNLP.",
         impacto: { prestigio: 8, contactos: 6, etica: 8, templanza: -5, dineroPesos: -10000, impactoRamas: { civilComercial: 8 } },
         feedbackNarrativo: "Consolidaste una base doctrinal firme en la biblioteca de calle 48."
+      },
+      {
+        id: "e2_op4",
+        texto: "💼 Pasantía no remunerada de procuración en un Juzgado de Paz bonaerense.",
+        impacto: { prestigio: 10, contactos: 12, etica: 10, templanza: -8, dineroPesos: 50000, impactoRamas: { civilComercial: 12 } },
+        feedbackNarrativo: "Aprendiste a llevar expedientes físicos y a dialogar con los secretarios del juzgado."
+      },
+      {
+        id: "e2_op5_skill",
+        texto: "⭐ [Skill Contratos & Civil] Redactar contratos de alquiler para tus compañeros de pensión.",
+        requiereSkillId: "contratos",
+        impacto: { prestigio: 15, contactos: 10, etica: 8, templanza: 0, dineroPesos: 150000, impactoRamas: { civilComercial: 18 } },
+        feedbackNarrativo: "Redactaste convenios de locación impecables y ganaste tus primeros honorarios informales."
       }
     ]
   },
@@ -399,6 +437,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         costoPesosRequerido: 180000,
         impacto: { prestigio: 22, contactos: 10, etica: 8, templanza: -10, dineroPesos: -180000, impactoRamas: { cibertech: 25 } },
         feedbackNarrativo: "Te diplomaste en ciberderecho e IA jurídica antes de egresar de la carrera."
+      },
+      {
+        id: "e3_op4",
+        texto: "🌐 Peritaje y traducción legal de documentos jurídicos extranjeros.",
+        impacto: { prestigio: 14, contactos: 6, etica: 10, templanza: -4, dineroPesos: 280000, impactoRamas: { cibertech: 15 } },
+        feedbackNarrativo: "Tradujiste fallos internacionales para un estudio corporativo de CABA."
+      },
+      {
+        id: "e3_op5_skill",
+        texto: "⭐ [Skill Ciberderecho & Tech] Resolver una estafa telemática a un grupo de docentes UNLP.",
+        requiereSkillId: "ciberseguridad",
+        impacto: { prestigio: 24, contactos: 12, etica: 15, templanza: 0, dineroPesos: 200000, impactoRamas: { cibertech: 30 } },
+        feedbackNarrativo: "Desenmascaraste el phishing informático recuperando los fondos de los profesores."
       }
     ]
   },
@@ -467,6 +518,19 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🤝 Armar un emprendimiento de resúmenes y modelos de examen para ingresantes.",
         impacto: { prestigio: 3, contactos: 15, etica: -3, templanza: -6, dineroPesos: 700000, impactoRamas: { administrativoPublico: 8 } },
         feedbackNarrativo: "Generaste una fuente de ingresos propia vendiendo guías de estudio."
+      },
+      {
+        id: "e4_op4",
+        texto: "🏛️ Pasantía técnica en la Asesoría General de Gobierno PBA en calle 6.",
+        impacto: { prestigio: 12, contactos: 18, etica: 10, templanza: -5, dineroPesos: 400000, impactoRamas: { administrativoPublico: 20 } },
+        feedbackNarrativo: "Redactaste dictámenes jurídicos para el Poder Ejecutivo provincial."
+      },
+      {
+        id: "e4_op5_skill",
+        texto: "⭐ [Skill Litigio Penal] Ayudar en el pedido de excarcelación de un conocido del barrio.",
+        requiereSkillId: "litigio_penal",
+        impacto: { prestigio: 22, contactos: 15, etica: 12, templanza: -5, dineroPesos: 300000, impactoRamas: { penal: 25 } },
+        feedbackNarrativo: "Lograste la libertad provisional de tu defendido usando jurisprudencia reciente de la SCBA."
       }
     ]
   },
@@ -536,6 +600,12 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         requiereOrigenFueraLaPlata: true,
         impacto: { prestigio: 12, contactos: 18, etica: 15, templanza: 12, dineroPesos: 200000 },
         feedbackNarrativo: "Conectaste con profesionales de tu ciudad natal para preparar tu retorno."
+      },
+      {
+        id: "e5_op4",
+        texto: "🏆 Presentar una Ponencia en las Jornadas Nacionales de Derecho Procesal.",
+        impacto: { prestigio: 20, contactos: 8, etica: 10, templanza: -6, dineroPesos: 0, impactoRamas: { civilComercial: 15 } },
+        feedbackNarrativo: "Tu trabajo sobre notificaciones digitales fue publicado con alabanzas docentes."
       }
     ]
   },

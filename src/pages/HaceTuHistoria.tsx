@@ -8,6 +8,7 @@ import {
   PROVINCIAS_ARGENTINA,
   MUNICIPIOS_PBA,
   LOGROS_JUEGO,
+  CarreraGuardada,
   SkillDefinition, 
   EtapaVida, 
   OpcionDilema,
@@ -39,9 +40,11 @@ import {
   Coins,
   Building2,
   UserPlus,
-  UserCheck,
-  TrendingDown,
-  ChevronDown
+  ChevronDown,
+  History,
+  Medal,
+  Calendar,
+  DollarSign
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +60,9 @@ export default function HaceTuHistoria() {
   
   // Verificación estricta de Admin
   const isAdminUser = profile?.role === "admin";
+
+  // Pestañas Pre-Juego: "setup" | "logros" | "historial"
+  const [activePreGameTab, setActivePreGameTab] = useState<"setup" | "logros" | "historial">("setup");
 
   // Setup Inicial de Personaje: Selector de Provincia y Ciudad
   const [selectedProvincia, setSelectedProvincia] = useState("Buenos Aires");
@@ -93,6 +99,17 @@ export default function HaceTuHistoria() {
       return [];
     }
   });
+
+  // Historial de Carreras Anteriores (Persistidas en localStorage)
+  const [carrerasPasadas, setCarrerasPasadas] = useState<CarreraGuardada[]>(() => {
+    try {
+      const saved = localStorage.getItem("dnd_historia_carreras");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [newLogroAlert, setNewLogroAlert] = useState<LogroDefinition | null>(null);
 
   // Evento Inesperado Activo de la Etapa
@@ -116,7 +133,7 @@ export default function HaceTuHistoria() {
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [isVictory, setIsVictory] = useState(false);
 
-  // Guardar logros desbloqueados en localStorage
+  // Guardar logros en localStorage
   useEffect(() => {
     try {
       localStorage.setItem("dnd_historia_logros", JSON.stringify(unlockedLogros));
@@ -125,7 +142,16 @@ export default function HaceTuHistoria() {
     }
   }, [unlockedLogros]);
 
-  // Al iniciar o cambiar de etapa, seleccionar un Evento Inesperado aleatorio (1 de entre 5)
+  // Guardar historial de carreras en localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("dnd_historia_carreras", JSON.stringify(carrerasPasadas));
+    } catch {
+      // Ignorar
+    }
+  }, [carrerasPasadas]);
+
+  // Al iniciar o cambiar de etapa, seleccionar un Evento Inesperado aleatorio
   useEffect(() => {
     if (gameStarted && ETAPAS_CARRERA[currentEtapaIdx]) {
       const stageEvents = ETAPAS_CARRERA[currentEtapaIdx].eventosInesperados;
@@ -135,7 +161,6 @@ export default function HaceTuHistoria() {
         setActiveRandomEvent(selectedEvent);
         setHasDismissedEvent(false);
 
-        // Aplicar impacto del evento con rendimientos decrecientes
         const imp = selectedEvent.impacto;
         setPrestigio(p => applyStatChange(p, imp.prestigio));
         setContactos(c => applyStatChange(c, imp.contactos));
@@ -146,12 +171,27 @@ export default function HaceTuHistoria() {
     }
   }, [currentEtapaIdx, gameStarted]);
 
+  // Guardar carrera terminada en el Hall of Fame
+  const saveCareerToHistory = (fueVictoria: boolean, motivo: string) => {
+    const nuevaCarrera: CarreraGuardada = {
+      id: Date.now().toString(),
+      fechaISO: new Date().toLocaleDateString("es-AR"),
+      ciudadNatal: getCiudadNatalNombre(),
+      edadFinal: ETAPAS_CARRERA[currentEtapaIdx]?.edadFin || 65,
+      ovrFinal: calculateOVRGeneral(),
+      patrimonioFinal: dineroPesos,
+      ramaPredominante: getDominantBranch().name,
+      fueVictoria,
+      motivoCierre: motivo
+    };
+    setCarrerasPasadas(prev => [nuevaCarrera, ...prev]);
+  };
+
   // Si no es admin, redirigir inmediatamente a /mi-espacio
   if (!loading && (!user || !isAdminUser)) {
     return <Navigate to="/mi-espacio" replace />;
   }
 
-  // Nombre de Ciudad Natal Definitivo
   const getCiudadNatalNombre = () => {
     if (selectedProvincia === "Buenos Aires") {
       return selectedMunicipioPBA;
@@ -159,7 +199,6 @@ export default function HaceTuHistoria() {
     return customCiudadNatal.trim() ? `${customCiudadNatal.trim()} (${selectedProvincia})` : selectedProvincia;
   };
 
-  // RENDIMIENTOS DECRECIENTES: Si stat >= 70, ganancias sufren 50% de nerfeo
   function applyStatChange(currentVal: number, change: number): number {
     if (change > 0 && currentVal >= 70) {
       const nerfedGain = Math.round(change * 0.5);
@@ -168,7 +207,6 @@ export default function HaceTuHistoria() {
     return Math.min(100, Math.max(0, currentVal + change));
   }
 
-  // Formateador de Pesos Argentinos ($)
   const formatPesos = (val: number) => {
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
@@ -177,12 +215,10 @@ export default function HaceTuHistoria() {
     }).format(val);
   };
 
-  // OVR General Ponderado
   const calculateOVRGeneral = () => {
     return Math.round((prestigio * 0.35) + (contactos * 0.25) + (etica * 0.25) + (templanza * 0.15));
   };
 
-  // OVR por Ramas de Especialidad
   const calculateOVRRamas = () => {
     return {
       penal: Math.min(100, Math.round((prestigio * 0.35) + (contactos * 0.25) + (ramas.penal * 0.40))),
@@ -204,9 +240,8 @@ export default function HaceTuHistoria() {
     return scores[0];
   };
 
-  // Cálculo de Gastos Fijos Bianuales (Etapa 7+)
   const calculateGastosFijosBianuales = () => {
-    if (currentEtapaIdx < 6) return 0; // Pre-graduación no paga
+    if (currentEtapaIdx < 6) return 0;
     const costoMatriculaCALP = 250000;
     const costoExpertos = staff.expertoCount * 2400000;
     const costoJuniors = staff.juniorCount * 900000;
@@ -214,7 +249,6 @@ export default function HaceTuHistoria() {
     return costoMatriculaCALP + costoExpertos + costoJuniors + costoContador;
   };
 
-  // Comprobar Desbloqueo de Logros
   const checkLogrosUnlock = (newPrestigio: number, newContactos: number, newEtica: number, newDinero: number, currentStageIdx: number) => {
     LOGROS_JUEGO.forEach((logro) => {
       if (unlockedLogros.includes(logro.id)) return;
@@ -268,13 +302,11 @@ export default function HaceTuHistoria() {
     let newEtica = applyStatChange(etica, impact.etica);
     let newTemplanza = applyStatChange(templanza, impact.templanza);
 
-    // DEDUCCIÓN DE GASTOS FIOS DE EMPLEADOS Y MATRÍCULA (ETAPA 7+)
     const gastosFijos = calculateGastosFijosBianuales();
     let netDineroChange = impact.dineroPesos - gastosFijos;
 
-    // Beneficios adicionales de staff
     if (staff.expertoCount > 0) newPrestigio = Math.min(100, newPrestigio + (staff.expertoCount * 5));
-    if (staff.hasContador) netDineroChange += 500000; // Facturación eficiente
+    if (staff.hasContador) netDineroChange += 500000;
 
     const newDinero = dineroPesos + netDineroChange;
 
@@ -298,15 +330,21 @@ export default function HaceTuHistoria() {
 
     // Muerte Súbita o Bancarrota
     if (newTemplanza <= 0) {
-      setGameOverReason("🧠 BURNOUT TOTAL / COLAPSO POR ESTRÉS: El nivel de estrés extremo y la presión mediática destruyeron tu templanza. Tuviste que abandonar la abogacía.");
+      const reason = "🧠 BURNOUT TOTAL / COLAPSO POR ESTRÉS: El nivel de estrés extremo destruyó tu templanza. Tuviste que abandonar la profesión.";
+      setGameOverReason(reason);
+      saveCareerToHistory(false, reason);
       return;
     }
     if (newEtica <= 0) {
-      setGameOverReason("🏛️ RETIRO DE MATRÍCULA: El Tribunal de Disciplina del Colegio de Abogados de La Plata (CALP) resolvió retirarte la matrícula profesional por faltas graves.");
+      const reason = "🏛️ RETIRO DE MATRÍCULA: El Tribunal de Disciplina del CALP resolvió retirarte la matrícula profesional por faltas graves.";
+      setGameOverReason(reason);
+      saveCareerToHistory(false, reason);
       return;
     }
     if (newDinero <= 0 && currentEtapaIdx >= 6) {
-      setGameOverReason(`💰 BANCARROTA Y EMBARGO: Te quedaste sin liquidez para saldar la matrícula del CALP y los sueldos del personal de tu estudio (${formatPesos(gastosFijos)} bianuales). Sufriste la quiebra procesal.`);
+      const reason = `💰 BANCARROTA Y EMBARGO: Te quedaste sin liquidez para saldar la matrícula del CALP y sueldos (${formatPesos(gastosFijos)}).`;
+      setGameOverReason(reason);
+      saveCareerToHistory(false, reason);
       return;
     }
 
@@ -319,6 +357,7 @@ export default function HaceTuHistoria() {
       setCurrentEtapaIdx(prev => prev + 1);
     } else {
       setIsVictory(true);
+      saveCareerToHistory(true, "¡Jubilación de Leyenda a los 65 Años!");
     }
   };
 
@@ -335,7 +374,7 @@ export default function HaceTuHistoria() {
   const currentOVRGeneral = calculateOVRGeneral();
   const gastosFijosActuales = calculateGastosFijosBianuales();
 
-  // 1. SETUP DE PERSONAJE CON SELECTOR AVANZADO DE CIUDADES
+  // 1. PANTALLA PRE-JUEGO (SETUP / LOGROS / HALL OF FAME)
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
@@ -344,164 +383,314 @@ export default function HaceTuHistoria() {
           <div className="text-center space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-black uppercase tracking-widest">
               <GraduationCap className="w-4 h-4" />
-              <span>Simulador de Carrera — DND & Asociados / UNLP</span>
+              <span>Plataforma DND & Asociados — UNLP</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight font-display bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
               HACÉ TU HISTORIA
             </h1>
             <p className="text-xs md:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Configurá tu lugar de nacimiento, edad de inicio y especialidad técnica para comenzar la aventura profesional.
+              Explorá la carrera de abogacía, consultá tus logros obtenidos y revisá tu historial de carreras anteriores.
             </p>
+
+            {/* PESTAÑAS NAVEGADOR PRE-JUEGO */}
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <button
+                onClick={() => setActivePreGameTab("setup")}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
+                  activePreGameTab === "setup"
+                    ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                )}
+              >
+                <GraduationCap className="w-4 h-4" />
+                <span>Nueva Carrera</span>
+              </button>
+
+              <button
+                onClick={() => setActivePreGameTab("logros")}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
+                  activePreGameTab === "logros"
+                    ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                )}
+              >
+                <Trophy className="w-4 h-4 text-amber-400" />
+                <span>Logros ({unlockedLogros.length}/{LOGROS_JUEGO.length})</span>
+              </button>
+
+              <button
+                onClick={() => setActivePreGameTab("historial")}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
+                  activePreGameTab === "historial"
+                    ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                )}
+              >
+                <History className="w-4 h-4 text-indigo-400" />
+                <span>Carreras Anteriores ({carrerasPasadas.length})</span>
+              </button>
+            </div>
           </div>
 
-          <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
-            
-            {/* SELECTOR DE PROVINCIA Y CIUDAD */}
-            <div className="space-y-4">
-              <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                <span>1. OrigenGeográfico (Provincia y Ciudad Natal)</span>
-              </label>
+          {/* VISTA 1: SETUP DE NUEVA CARRERA */}
+          {activePreGameTab === "setup" && (
+            <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+              
+              {/* SELECTOR DE PROVINCIA Y CIUDAD */}
+              <div className="space-y-4">
+                <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>1. Origen Geográfico (Provincia y Ciudad Natal)</span>
+                </label>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* DROPDOWN 1: PROVINCIA */}
-                <div className="space-y-1.5">
-                  <span className="text-[11px] text-slate-400 font-bold">Provincia:</span>
-                  <div className="relative">
-                    <select
-                      value={selectedProvincia}
-                      onChange={(e) => setSelectedProvincia(e.target.value)}
-                      className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer pr-10"
-                    >
-                      {PROVINCIAS_ARGENTINA.map((prov) => (
-                        <option key={prov} value={prov}>{prov}</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3.5 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* DROPDOWN 2 / CAMPO LIBRE: CIUDAD */}
-                <div className="space-y-1.5">
-                  <span className="text-[11px] text-slate-400 font-bold">
-                    {selectedProvincia === "Buenos Aires" ? "Municipio / Ciudad de PBA:" : "Escribí tu Ciudad Natal:"}
-                  </span>
-
-                  {selectedProvincia === "Buenos Aires" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] text-slate-400 font-bold">Provincia:</span>
                     <div className="relative">
                       <select
-                        value={selectedMunicipioPBA}
-                        onChange={(e) => setSelectedMunicipioPBA(e.target.value)}
+                        value={selectedProvincia}
+                        onChange={(e) => setSelectedProvincia(e.target.value)}
                         className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer pr-10"
                       >
-                        {MUNICIPIOS_PBA.map((muni) => (
-                          <option key={muni} value={muni}>{muni}</option>
+                        {PROVINCIAS_ARGENTINA.map((prov) => (
+                          <option key={prov} value={prov}>{prov}</option>
                         ))}
                       </select>
                       <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3.5 pointer-events-none" />
                     </div>
-                  ) : (
-                    <input
-                      type="text"
-                      placeholder="Ej: Villa María, Rosario, San Rafael..."
-                      value={customCiudadNatal}
-                      onChange={(e) => setCustomCiudadNatal(e.target.value)}
-                      className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs focus:outline-none focus:border-indigo-500"
-                    />
-                  )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] text-slate-400 font-bold">
+                      {selectedProvincia === "Buenos Aires" ? "Municipio / Ciudad de PBA:" : "Escribí tu Ciudad Natal:"}
+                    </span>
+
+                    {selectedProvincia === "Buenos Aires" ? (
+                      <div className="relative">
+                        <select
+                          value={selectedMunicipioPBA}
+                          onChange={(e) => setSelectedMunicipioPBA(e.target.value)}
+                          className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer pr-10"
+                        >
+                          {MUNICIPIOS_PBA.map((muni) => (
+                            <option key={muni} value={muni}>{muni}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3.5 pointer-events-none" />
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Ej: Villa María, Rosario, San Rafael..."
+                        value={customCiudadNatal}
+                        onChange={(e) => setCustomCiudadNatal(e.target.value)}
+                        className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs focus:outline-none focus:border-indigo-500"
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* EDAD DE INICIO */}
-            <div className="space-y-3 pt-4 border-t border-white/10">
-              <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>2. Edad al Comenzar</span>
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  onClick={() => setSelectedEdadInicial(18)}
-                  className={cn(
-                    "p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-1",
-                    selectedEdadInicial === 18
-                      ? "bg-indigo-600/30 border-indigo-500 text-white shadow-lg"
-                      : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-black text-sm text-white">🎓 18 Años (Ingresante UNLP)</span>
-                    {selectedEdadInicial === 18 && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
-                  </div>
-                  <p className="text-[11px] text-slate-400">Inicio desde 1er año. Ahorros iniciales de $35.000 y Templanza 80.</p>
-                </button>
-
-                <button
-                  onClick={() => setSelectedEdadInicial(25)}
-                  className={cn(
-                    "p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-1",
-                    selectedEdadInicial === 25
-                      ? "bg-indigo-600/30 border-indigo-500 text-white shadow-lg"
-                      : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-black text-sm text-white">💼 +25 Años (Estudiante Adulto)</span>
-                    {selectedEdadInicial === 25 && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
-                  </div>
-                  <p className="text-[11px] text-slate-400">Arrancás trabajando de empleado ($450.000/mes), pero con más nivel de estrés (Templanza 65).</p>
-                </button>
-              </div>
-            </div>
-
-            {/* SELECCIÓN DE SKILL INICIAL */}
-            <div className="space-y-3 pt-4 border-t border-white/10">
-              <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span>3. Especialidad Técnica Inicial</span>
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {SKILLS_DISPONIBLES.map((skill) => (
-                  <div
-                    key={skill.id}
-                    onClick={() => setSelectedSkill(skill)}
+              {/* EDAD DE INICIO */}
+              <div className="space-y-3 pt-4 border-t border-white/10">
+                <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>2. Edad al Comenzar</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setSelectedEdadInicial(18)}
                     className={cn(
-                      "p-4 rounded-2xl border transition-all cursor-pointer space-y-2 flex flex-col justify-between group shadow-lg",
-                      selectedSkill?.id === skill.id
-                        ? "bg-indigo-600/30 border-indigo-500 text-white"
+                      "p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-1",
+                      selectedEdadInicial === 18
+                        ? "bg-indigo-600/30 border-indigo-500 text-white shadow-lg"
                         : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
                     )}
                   >
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-black text-sm text-white">{skill.nombre}</span>
-                        {selectedSkill?.id === skill.id && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
-                      </div>
-                      <p className="text-[11px] text-slate-400 leading-relaxed">{skill.descripcion}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-sm text-white">🎓 18 Años (Ingresante UNLP)</span>
+                      {selectedEdadInicial === 18 && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
                     </div>
-                  </div>
-                ))}
+                    <p className="text-[11px] text-slate-400">Inicio desde 1er año. Ahorros iniciales de $35.000 y Templanza 80.</p>
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedEdadInicial(25)}
+                    className={cn(
+                      "p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-1",
+                      selectedEdadInicial === 25
+                        ? "bg-indigo-600/30 border-indigo-500 text-white shadow-lg"
+                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-sm text-white">💼 +25 Años (Estudiante Adulto)</span>
+                      {selectedEdadInicial === 25 && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
+                    </div>
+                    <p className="text-[11px] text-slate-400">Arrancás trabajando de empleado ($450.000/mes), pero con más nivel de estrés (Templanza 65).</p>
+                  </button>
+                </div>
+              </div>
+
+              {/* SELECCIÓN DE SKILL INICIAL */}
+              <div className="space-y-3 pt-4 border-t border-white/10">
+                <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span>3. Especialidad Técnica Inicial</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {SKILLS_DISPONIBLES.map((skill) => (
+                    <div
+                      key={skill.id}
+                      onClick={() => setSelectedSkill(skill)}
+                      className={cn(
+                        "p-4 rounded-2xl border transition-all cursor-pointer space-y-2 flex flex-col justify-between group shadow-lg",
+                        selectedSkill?.id === skill.id
+                          ? "bg-indigo-600/30 border-indigo-500 text-white"
+                          : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                      )}
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-black text-sm text-white">{skill.nombre}</span>
+                          {selectedSkill?.id === skill.id && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">{skill.descripcion}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* BOTÓN INICIAR HISTORIA */}
+              <div className="pt-4">
+                <button
+                  disabled={!selectedSkill}
+                  onClick={startNewGame}
+                  className={cn(
+                    "w-full py-4 rounded-2xl font-black text-xs uppercase tracking-wider shadow-xl flex items-center justify-center gap-2 transition-all min-h-[50px]",
+                    selectedSkill
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-indigo-600/30 cursor-pointer"
+                      : "bg-slate-800 text-slate-500 cursor-not-allowed border border-white/5"
+                  )}
+                >
+                  <span>Iniciar Simulación de Carrera</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+            </div>
+          )}
+
+          {/* VISTA 2: GALERÍA DE LOGROS */}
+          {activePreGameTab === "logros" && (
+            <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+              <div className="space-y-1">
+                <h3 className="text-xl font-black text-white flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-amber-400" />
+                  <span>Galería de Logros Desbloqueables</span>
+                </h3>
+                <p className="text-xs text-slate-400">Los logros conseguidos se acumulan entre todas tus carreras jugadas.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {LOGROS_JUEGO.map((logro) => {
+                  const isUnlocked = unlockedLogros.includes(logro.id);
+                  return (
+                    <div
+                      key={logro.id}
+                      className={cn(
+                        "p-4 rounded-2xl border transition-all space-y-2 flex items-start gap-3",
+                        isUnlocked
+                          ? "bg-amber-500/10 border-amber-500/40 text-amber-200"
+                          : "bg-white/[0.02] border-white/10 opacity-60 text-slate-400"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border font-bold",
+                        isUnlocked ? "bg-amber-500/20 border-amber-500/50 text-amber-300" : "bg-slate-800 border-white/10 text-slate-500"
+                      )}>
+                        {isUnlocked ? <Trophy className="w-5 h-5" /> : <Lock className="w-4 h-4" />}
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-black text-sm text-white">{logro.nombre}</h4>
+                          {isUnlocked && <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Desbloqueado</span>}
+                        </div>
+                        <p className="text-xs text-slate-300">{logro.descripcion}</p>
+                        <p className="text-[10px] text-amber-400/80 font-mono font-bold">Requisito: {logro.requisitoTexto}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
+          )}
 
-            {/* BOTÓN INICIAR HISTORIA */}
-            <div className="pt-4">
-              <button
-                disabled={!selectedSkill}
-                onClick={startNewGame}
-                className={cn(
-                  "w-full py-4 rounded-2xl font-black text-xs uppercase tracking-wider shadow-xl flex items-center justify-center gap-2 transition-all min-h-[50px]",
-                  selectedSkill
-                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-indigo-600/30 cursor-pointer"
-                    : "bg-slate-800 text-slate-500 cursor-not-allowed border border-white/5"
-                )}
-              >
-                <span>Iniciar Simulación de Carrera</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+          {/* VISTA 3: HISTORIAL DE CARRERAS (HALL OF FAME) */}
+          {activePreGameTab === "historial" && (
+            <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+              <div className="space-y-1">
+                <h3 className="text-xl font-black text-white flex items-center gap-2">
+                  <History className="w-5 h-5 text-indigo-400" />
+                  <span>Historial de Carreras Anteriores (Hall of Fame)</span>
+                </h3>
+                <p className="text-xs text-slate-400">Registro histórico de todas las partidas jugadas hasta los 65 años o Game Over.</p>
+              </div>
+
+              {carrerasPasadas.length === 0 ? (
+                <div className="p-8 text-center bg-white/[0.02] border border-white/10 rounded-2xl space-y-2">
+                  <History className="w-8 h-8 text-slate-500 mx-auto" />
+                  <p className="text-sm font-bold text-slate-300">Aún no completaste ninguna carrera.</p>
+                  <p className="text-xs text-slate-500">Iniciá una simulación en la pestaña "Nueva Carrera" para inaugurar tu registro.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {carrerasPasadas.map((carrera) => (
+                    <div
+                      key={carrera.id}
+                      className={cn(
+                        "p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all",
+                        carrera.fueVictoria
+                          ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-200"
+                          : "bg-red-950/40 border-red-500/40 text-red-200"
+                      )}
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase border",
+                            carrera.fueVictoria ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300" : "bg-red-500/20 border-red-500/40 text-red-300"
+                          )}>
+                            {carrera.fueVictoria ? "Jubilación a los 65 Años" : `Muerte Súbita a los ${carrera.edadFinal} Años`}
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">{carrera.fechaISO}</span>
+                        </div>
+                        <h4 className="font-black text-base text-white">{carrera.ciudadNatal}</h4>
+                        <p className="text-xs text-slate-300 italic">{carrera.motivoCierre}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-right self-end sm:self-center">
+                        <div>
+                          <span className="text-[9px] uppercase font-black text-slate-400 block">OVR Final</span>
+                          <span className="text-lg font-black text-amber-400 font-mono">{carrera.ovrFinal}</span>
+                        </div>
+                        <div className="border-l border-white/10 pl-4">
+                          <span className="text-[9px] uppercase font-black text-slate-400 block">Patrimonio ($)</span>
+                          <span className="text-base font-black text-emerald-400 font-mono">{formatPesos(carrera.patrimonioFinal)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+          )}
 
-          </div>
         </div>
       </div>
     );
@@ -529,18 +718,15 @@ export default function HaceTuHistoria() {
             <p className="italic leading-relaxed text-slate-300">{lastFeedback}</p>
           </div>
 
-          {/* DEDUCCIÓN DE GASTOS FIJOS DE PERSONAL Y MATRÍCULA */}
           {currentEtapaIdx >= 6 && (
             <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 text-xs font-bold space-y-1">
               <div className="flex items-center justify-between text-amber-300">
                 <span className="flex items-center gap-1.5"><Building2 className="w-4 h-4" /> Deducción de Gastos Fijos (Matrícula + Staff):</span>
                 <span className="text-red-400 font-mono">-{formatPesos(gastosFijosActuales)}</span>
               </div>
-              <p className="text-[10px] text-slate-400 font-normal">Incluye Matrícula CALP ($250k) y liquidación de sueldos de empleados contratados.</p>
             </div>
           )}
 
-          {/* ALERT NUEVO LOGRO DESBLOQUEADO */}
           <AnimatePresence>
             {newLogroAlert && (
               <motion.div
@@ -558,7 +744,6 @@ export default function HaceTuHistoria() {
             )}
           </AnimatePresence>
 
-          {/* VARIACIÓN DE STATS SIN /100 */}
           <div className="grid grid-cols-2 gap-3 text-xs font-bold">
             <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
               <span className="text-slate-400">⚖️ Prestigio:</span>
@@ -601,7 +786,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 3. PANTALLA GAME OVER (MUERTE SÚBITA O BANCARROTA)
+  // 3. PANTALLA GAME OVER
   if (gameOverReason) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -662,7 +847,6 @@ export default function HaceTuHistoria() {
               <span className="text-xl font-black text-emerald-400 font-mono">{formatPesos(dineroPesos)}</span>
             </div>
             
-            {/* STATS FINALES LIMPIAS */}
             <div className="grid grid-cols-4 gap-2 text-xs font-bold text-center">
               <div className="p-2 rounded-xl bg-white/5">⚖️ Pres.: <span className="text-amber-400 block font-mono text-sm">{prestigio}</span></div>
               <div className="p-2 rounded-xl bg-white/5">🤝 Contactos: <span className="text-indigo-400 block font-mono text-sm">{contactos}</span></div>
@@ -691,12 +875,12 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 5. PANTALLA PRINCIPAL DE JUEGO CON OVR GIGANTE Y PANEL DE EMPLEADOS
+  // 5. PANTALLA PRINCIPAL DE JUEGO
   return (
     <div className="min-h-screen bg-[#070A14] text-white py-6 md:py-10 px-3 md:px-8 relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10 space-y-6">
         
-        {/* HEADER DE ESTADO CON OVR GIGANTE VISUAL */}
+        {/* HEADER DE ESTADO CON OVR GIGANTE */}
         <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-4 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div>
@@ -712,7 +896,6 @@ export default function HaceTuHistoria() {
               <h2 className="text-lg md:text-xl font-black text-white mt-1">{currentEtapa.puesto}</h2>
             </div>
 
-            {/* OVR NUMERO GIGANTE Y VISTOSO */}
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3 bg-gradient-to-br from-amber-500/20 via-slate-950 to-indigo-500/20 p-3 rounded-2xl border border-amber-500/40 shadow-inner">
                 <div className="text-right">
@@ -728,7 +911,7 @@ export default function HaceTuHistoria() {
             </div>
           </div>
 
-          {/* TABLERO DE STATS LIMPIAS SIN /100 */}
+          {/* TABLERO DE STATS LIMPIAS */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
             <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
               <span className="text-[11px] text-slate-400 uppercase font-black">⚖️ Prestigio</span>
@@ -753,7 +936,7 @@ export default function HaceTuHistoria() {
             </div>
           </div>
 
-          {/* PANEL DE GESTIÓN DE EMPLEADOS Y GASTOS FIJOS (ETAPA 7+) */}
+          {/* PANEL DE EMPLEADOS */}
           {currentEtapaIdx >= 6 && (
             <div className="pt-3 border-t border-white/10 space-y-3">
               <div className="flex items-center justify-between">
@@ -767,7 +950,6 @@ export default function HaceTuHistoria() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                {/* EXPERTO */}
                 <div className="p-2.5 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-between">
                   <div>
                     <p className="font-bold text-white text-[11px]">👨‍⚖️ Abogado Experto</p>
@@ -786,7 +968,6 @@ export default function HaceTuHistoria() {
                   </div>
                 </div>
 
-                {/* JUNIOR */}
                 <div className="p-2.5 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-between">
                   <div>
                     <p className="font-bold text-white text-[11px]">💼 Abogado Junior</p>
@@ -805,7 +986,6 @@ export default function HaceTuHistoria() {
                   </div>
                 </div>
 
-                {/* CONTADOR */}
                 <div className="p-2.5 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-between">
                   <div>
                     <p className="font-bold text-white text-[11px]">📊 Contador Público</p>
@@ -875,10 +1055,10 @@ export default function HaceTuHistoria() {
             <p className="text-sm md:text-base font-bold text-white leading-snug">{currentEtapa.dilemaTexto}</p>
           </div>
 
-          {/* OPCIONES DE ACCIÓN */}
+          {/* OPCIONES DE ACCIÓN EXPANDIDAS */}
           <div className="space-y-3 pt-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-              ¿Qué decisión tomás?
+              ¿Qué decisión tomás? ({currentEtapa.opciones.length} variantes disponibles)
             </span>
 
             <div className="space-y-2.5">
