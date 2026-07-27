@@ -85,61 +85,75 @@ export default function Trivia() {
   });
 
   const userName = profile?.full_name || user?.email?.split("@")[0] || "Estudiante Jursoc";
+  const isAdmin = profile?.role === "admin";
 
-  useEffect(() => {
+  const fetchLeaderboardAndStats = async () => {
     if (!user) return;
-    const statsKey = `dnd_trivia_stats_${user.id}`;
-    const savedStats = localStorage.getItem(statsKey);
-    if (savedStats) {
-      try { setUserStats(JSON.parse(savedStats)); } catch (e) { console.error(e); }
-    }
+    try {
+      // 1. Cargar Estadísticas del usuario desde Supabase
+      const { data: statsData } = await supabase
+        .from("trivia_estadisticas_usuario" as any)
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-    const savedLeaderboard = localStorage.getItem("dnd_trivia_leaderboard");
-    if (savedLeaderboard) {
-      try {
-        setLeaderboardList(JSON.parse(savedLeaderboard));
-      } catch (e) {
+      if (statsData) {
+        setUserStats({
+          totalJugadas: (statsData as any).partidas_jugadas || 0,
+          totalCorrectas: (statsData as any).total_aciertos || 0,
+          puntosTotales: (statsData as any).puntos_totales || 0,
+          mejorRacha: (statsData as any).mejor_racha || 0
+        });
+      }
+
+      // 2. Cargar Leaderboard global desde Supabase (Vista trivia_leaderboard)
+      const { data: boardData } = await supabase
+        .from("trivia_leaderboard" as any)
+        .select("*");
+
+      if (boardData && boardData.length > 0) {
+        setLeaderboardList(boardData as any);
+      } else {
         setLeaderboardList(MOCK_LEADERBOARD);
       }
-    } else {
+    } catch (err) {
+      console.error("Error al sincronizar datos de Supabase:", err);
       setLeaderboardList(MOCK_LEADERBOARD);
-      localStorage.setItem("dnd_trivia_leaderboard", JSON.stringify(MOCK_LEADERBOARD));
     }
+  };
+
+  useEffect(() => {
+    fetchLeaderboardAndStats();
   }, [user?.id]);
 
-  const saveStats = (newCorrect: number, newScore: number, finalStreak: number) => {
+  const saveStats = async (newCorrect: number, newScore: number, finalStreak: number) => {
     if (!user) return;
 
+    // Actualización local rápida
     const updatedStats = {
       totalJugadas: userStats.totalJugadas + questionsPool.length,
       totalCorrectas: userStats.totalCorrectas + newCorrect,
       puntosTotales: userStats.puntosTotales + newScore,
       mejorRacha: Math.max(userStats.mejorRacha, finalStreak)
     };
-
     setUserStats(updatedStats);
-    localStorage.setItem(`dnd_trivia_stats_${user.id}`, JSON.stringify(updatedStats));
 
-    // Agregar o actualizar entrada en la tabla general de líderes
-    const newEntry: LeaderboardEntry = {
-      id: user.id,
-      posicion: 0,
-      nombre: userName,
-      facultad: "Jursoc UNLP",
-      materiaFav: selectedCategoria === "todas" ? "Derecho General" : (CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre || "Derecho"),
-      puntos: updatedStats.puntosTotales,
-      aciertosPorcentaje: Math.round((updatedStats.totalCorrectas / Math.max(1, updatedStats.totalJugadas)) * 100),
-      racha: updatedStats.mejorRacha,
-      avatarUrl: profile?.avatar_url
-    };
+    // Persistencia oficial en Supabase (Trigger actualizará trivia_estadisticas_usuario)
+    try {
+      await supabase.from("trivia_partidas" as any).insert({
+        user_id: user.id,
+        categoria_id: selectedCategoria,
+        dificultad: selectedDificultad,
+        puntos: newScore,
+        aciertos: newCorrect,
+        total_preguntas: questionsPool.length,
+        racha_maxima: finalStreak
+      });
 
-    setLeaderboardList(prev => {
-      const filtered = prev.filter(e => e.id !== user.id && e.nombre !== userName);
-      const combined = [...filtered, newEntry].sort((a, b) => b.puntos - a.puntos);
-      const ranked = combined.map((entry, index) => ({ ...entry, posicion: index + 1 }));
-      localStorage.setItem("dnd_trivia_leaderboard", JSON.stringify(ranked));
-      return ranked;
-    });
+      await fetchLeaderboardAndStats();
+    } catch (err) {
+      console.error("Error guardando partida en Supabase:", err);
+    }
   };
 
   // Timer logic
