@@ -43,9 +43,7 @@ import {
   UserPlus,
   ChevronDown,
   History,
-  HelpCircle,
-  XCircle,
-  BookOpen
+  XCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -96,7 +94,7 @@ export default function HaceTuHistoria() {
     estudioNombre: "DND & Asociados"
   });
 
-  // Logros Desbloqueados (Persistidos en localStorage)
+  // Logros Desbloqueados
   const [unlockedLogros, setUnlockedLogros] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem("dnd_historia_logros");
@@ -106,7 +104,7 @@ export default function HaceTuHistoria() {
     }
   });
 
-  // Historial de Carreras Anteriores (Persistidas en localStorage)
+  // Historial de Carreras Anteriores
   const [carrerasPasadas, setCarrerasPasadas] = useState<CarreraGuardada[]>(() => {
     try {
       const saved = localStorage.getItem("dnd_historia_carreras");
@@ -139,7 +137,6 @@ export default function HaceTuHistoria() {
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [isVictory, setIsVictory] = useState(false);
 
-  // Guardar logros en localStorage
   useEffect(() => {
     try {
       localStorage.setItem("dnd_historia_logros", JSON.stringify(unlockedLogros));
@@ -148,7 +145,6 @@ export default function HaceTuHistoria() {
     }
   }, [unlockedLogros]);
 
-  // Guardar historial de carreras en localStorage
   useEffect(() => {
     try {
       localStorage.setItem("dnd_historia_carreras", JSON.stringify(carrerasPasadas));
@@ -157,7 +153,6 @@ export default function HaceTuHistoria() {
     }
   }, [carrerasPasadas]);
 
-  // Al iniciar o cambiar de etapa, seleccionar un Evento Inesperado aleatorio
   useEffect(() => {
     if (gameStarted && ETAPAS_CARRERA[currentEtapaIdx]) {
       const stageEvents = ETAPAS_CARRERA[currentEtapaIdx].eventosInesperados;
@@ -203,12 +198,21 @@ export default function HaceTuHistoria() {
     return customCiudadNatal.trim() ? `${customCiudadNatal.trim()} (${selectedProvincia})` : selectedProvincia;
   };
 
+  // CURVA EXPONENCIAL DE DIFICULTAD (HARD DECAY FORMULA)
   function applyStatChange(currentVal: number, change: number): number {
-    if (change > 0 && currentVal >= 70) {
-      const nerfedGain = Math.round(change * 0.5);
-      return Math.min(100, currentVal + nerfedGain);
+    if (change <= 0) return Math.min(100, Math.max(0, currentVal + change));
+
+    let nerfedGain = change;
+    if (currentVal >= 90) {
+      nerfedGain = Math.round(change * 0.15); // 85% nerfeo
+    } else if (currentVal >= 80) {
+      nerfedGain = Math.round(change * 0.30); // 70% nerfeo
+    } else if (currentVal >= 70) {
+      nerfedGain = Math.round(change * 0.50); // 50% nerfeo
     }
-    return Math.min(100, Math.max(0, currentVal + change));
+
+    nerfedGain = Math.max(1, nerfedGain);
+    return Math.min(100, currentVal + nerfedGain);
   }
 
   const formatPesos = (val: number) => {
@@ -296,7 +300,6 @@ export default function HaceTuHistoria() {
     setGameStarted(true);
   };
 
-  // Al hacer click en una opción, si tiene Minijuego Desafío Jurídico, abrir modal
   const handleMakeChoice = (opcion: OpcionDilema) => {
     if (opcion.costoPesosRequerido && dineroPesos < opcion.costoPesosRequerido) {
       return;
@@ -312,17 +315,14 @@ export default function HaceTuHistoria() {
     applyChoiceImpact(opcion, true);
   };
 
-  // Aplicar el impacto definitivo de una opción (con o sin bonus por minijuego)
   const applyChoiceImpact = (opcion: OpcionDilema, isCorrectQuiz: boolean) => {
     let impact = { ...opcion.impacto };
 
-    // Si respondió mal el minijuego, penalizar prestigo y templanza
     if (!isCorrectQuiz) {
-      impact.prestigio = -12;
-      impact.templanza = -10;
+      impact.prestigio = -15;
+      impact.templanza = -12;
     } else if (opcion.desafioJuridico) {
-      // Bonus por respuesta perfecta
-      impact.prestigio += 10;
+      impact.prestigio += 5; // Bonus moderado
     }
 
     setLastImpact(impact);
@@ -335,7 +335,7 @@ export default function HaceTuHistoria() {
     const gastosFijos = calculateGastosFijosBianuales();
     let netDineroChange = impact.dineroPesos - gastosFijos;
 
-    if (staff.expertoCount > 0) newPrestigio = Math.min(100, newPrestigio + (staff.expertoCount * 5));
+    if (staff.expertoCount > 0) newPrestigio = Math.min(100, newPrestigio + (staff.expertoCount * 3));
     if (staff.hasContador) netDineroChange += 500000;
 
     const newDinero = dineroPesos + netDineroChange;
@@ -420,7 +420,7 @@ export default function HaceTuHistoria() {
   const currentOVRGeneral = calculateOVRGeneral();
   const gastosFijosActuales = calculateGastosFijosBianuales();
 
-  // 1. PANTALLA PRE-JUEGO (SETUP / LOGROS / HALL OF FAME)
+  // 1. PANTALLA PRE-JUEGO
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
@@ -749,16 +749,14 @@ export default function HaceTuHistoria() {
               ⚖️ MINIJUEGO DESAFÍO JURÍDICO — NIVEL {desafio.dificultad}
             </span>
             <h2 className="text-xl md:text-2xl font-black text-white pt-1">Demostrá Solvencia Doctrinal</h2>
-            <p className="text-xs text-slate-300">Respondé correctamente para asegurar el beneficio de tu decisión y ganar +10 de Prestigio Bonus.</p>
+            <p className="text-xs text-slate-300">Respondé correctamente para asegurar el beneficio de tu decisión.</p>
           </div>
 
-          {/* PREGUNTA JURÍDICA */}
           <div className="p-4 rounded-2xl bg-slate-950 border border-white/15 space-y-2">
             <span className="text-[10px] font-black uppercase text-amber-400 block">Pregunta Técnica:</span>
             <p className="text-sm md:text-base font-bold text-white leading-snug">{desafio.pregunta}</p>
           </div>
 
-          {/* 4 OPCIONES MULTIPLE CHOICE */}
           <div className="space-y-2.5">
             {desafio.opciones.map((opcText, idx) => {
               const isSelected = quizSelectedOptionIdx === idx;
@@ -798,7 +796,6 @@ export default function HaceTuHistoria() {
             })}
           </div>
 
-          {/* FEEDBACK Y EXPLICACIÓN AL RESPONDER */}
           {quizAnswerSubmitted && (
             <div className={cn(
               "p-4 rounded-2xl border text-xs space-y-1.5",
@@ -806,13 +803,12 @@ export default function HaceTuHistoria() {
             )}>
               <div className="flex items-center gap-2 font-black uppercase text-[11px]">
                 {isCorrectAnswer ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
-                <span>{isCorrectAnswer ? "¡RESPUESTA TÉCNICA CORRECTA (+10 PRESTIGIO BONUS)!" : "RESPUESTA INCORRECTA (-12 PRESTIGIO / -10 TEMPLANZA)"}</span>
+                <span>{isCorrectAnswer ? "¡RESPUESTA TÉCNICA CORRECTA (+5 PRESTIGIO)!" : "RESPUESTA INCORRECTA (-15 PRESTIGIO / -12 TEMPLANZA)"}</span>
               </div>
               <p className="leading-relaxed text-slate-200">{desafio.explicacion}</p>
             </div>
           )}
 
-          {/* BOTÓN CONFIRMAR */}
           {quizAnswerSubmitted && (
             <button
               onClick={confirmQuizResult}
@@ -1084,7 +1080,7 @@ export default function HaceTuHistoria() {
                 <div className="p-2.5 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-between">
                   <div>
                     <p className="font-bold text-white text-[11px]">👨‍⚖️ Abogado Experto</p>
-                    <p className="text-[9px] text-slate-400">$2.400.000/2 años (+15 Pres)</p>
+                    <p className="text-[9px] text-slate-400">$2.400.000/2 años (+3 Pres)</p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <button
