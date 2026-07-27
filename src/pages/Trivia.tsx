@@ -30,7 +30,9 @@ import {
   Lock,
   Gavel,
   BookOpen,
-  Briefcase
+  Briefcase,
+  Info,
+  X
 } from "lucide-react";
 import { 
   TRIVIA_QUESTIONS, 
@@ -63,6 +65,7 @@ export default function Trivia() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<"juego" | "ranking">("juego");
+  const [showRangosModal, setShowRangosModal] = useState(false);
   
   // Filtros de juego
   const [selectedCategoria, setSelectedCategoria] = useState<string>("todas");
@@ -509,18 +512,27 @@ export default function Trivia() {
 
               {/* BARRA DE PROGRESO DE RANGO JURIDICO */}
               <div className="space-y-1.5 pt-1">
-                <div className="flex items-center justify-between text-xs font-bold">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold">
                   <span className="text-slate-300 flex items-center gap-1.5">
                     <RangoIcon className="w-4 h-4 text-amber-400" />
                     <span>Progreso de Rango: <strong className="text-white">{rangoActual.nombre}</strong></span>
                   </span>
-                  <span className="text-slate-400 text-[11px]">
-                    {proximoRango ? (
-                      <>Siguiente Rango: <strong className="text-amber-300">{proximoRango.nombre}</strong> ({proximoRango.minPuntos - userStats.puntosTotales} PTS restantes)</>
-                    ) : (
-                      <span className="text-amber-400 font-black">¡Magistratura Máxima Alcanzada!</span>
-                    )}
-                  </span>
+                  <div className="flex items-center gap-3 justify-between sm:justify-end">
+                    <span className="text-slate-400 text-[11px]">
+                      {proximoRango ? (
+                        <>Siguiente: <strong className="text-amber-300">{proximoRango.nombre}</strong> ({proximoRango.minPuntos - userStats.puntosTotales} PTS restar.)</>
+                      ) : (
+                        <span className="text-amber-400 font-black">¡Magistratura Máxima!</span>
+                      )}
+                    </span>
+                    <button
+                      onClick={() => setShowRangosModal(true)}
+                      className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-[10px] uppercase tracking-wider transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+                    >
+                      <Award className="w-3 h-3 text-amber-400" />
+                      <span>Ver Escala de Rangos</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="w-full bg-slate-950/60 rounded-full h-3 p-0.5 border border-white/10 overflow-hidden">
@@ -699,6 +711,14 @@ export default function Trivia() {
                     <p className="text-[11px] text-slate-400">Puntuación {leaderboardFilter === "todas" ? "General Acumulada" : `específica de ${CATEGORIAS_TRIVIA.find(c => c.id === leaderboardFilter)?.nombre || "la rama"}`}</p>
                   </div>
                 </div>
+
+                <button
+                  onClick={() => setShowRangosModal(true)}
+                  className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <Award className="w-4 h-4 text-amber-400" />
+                  <span>Ver Escala de Rangos</span>
+                </button>
               </div>
 
               {/* TABS SELECTORAS DE RAMAS INDEPENDIENTES */}
@@ -1007,6 +1027,91 @@ export default function Trivia() {
             </div>
           </motion.div>
         )}
+
+        {/* MODAL DE ESCALA DE RANGOS JURÍDICOS */}
+        <AnimatePresence>
+          {showRangosModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="bg-slate-900 border border-white/15 rounded-3xl p-5 md:p-6 max-w-2xl w-full space-y-5 shadow-2xl overflow-y-auto max-h-[90vh]"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-amber-500/20 border border-amber-500/30 rounded-2xl text-amber-400">
+                      <Award className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="text-base md:text-lg font-black text-white">Escala de Rangos Jurídicos</h2>
+                      <p className="text-xs text-slate-400">Escalafón de carrera según los puntos acumulados en el juego</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowRangosModal(false)}
+                    className="p-2 text-slate-400 hover:text-white rounded-full bg-white/5 hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {RANGOS_JURIDICOS.map((rango) => {
+                    const RIcon = ICON_MAP[rango.iconoNombre] || BookOpen;
+                    const isUserCurrentRank = rangoActual.id === rango.id;
+                    return (
+                      <div 
+                        key={rango.id}
+                        className={cn(
+                          "p-3.5 md:p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative overflow-hidden",
+                          isUserCurrentRank 
+                            ? "bg-gradient-to-r from-amber-500/15 via-slate-800 to-slate-900 border-amber-500/60 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500/40" 
+                            : "bg-white/[0.02] border-white/10"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={cn("p-3 rounded-2xl bg-gradient-to-br text-white shadow-md shrink-0", rango.colorGradient)}>
+                            <RIcon className="w-5 h-5 md:w-6 md:h-6" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-black text-xs md:text-sm text-white">{rango.nombre}</h3>
+                              {isUserCurrentRank && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-400 text-slate-950 shadow-sm flex items-center gap-1">
+                                  ⭐ Tu Rango Actual
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[11px] md:text-xs text-slate-400 mt-0.5">{rango.descripcion}</p>
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-right w-full sm:w-auto flex sm:flex-col justify-between items-center sm:items-end">
+                          <span className="text-[9px] text-slate-400 font-bold uppercase">Puntaje Requerido</span>
+                          <span className="font-black text-amber-400 text-xs md:text-sm">
+                            {rango.maxPuntos === Infinity 
+                              ? `${rango.minPuntos.toLocaleString()} + PTS` 
+                              : `${rango.minPuntos.toLocaleString()} – ${rango.maxPuntos.toLocaleString()} PTS`}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={() => setShowRangosModal(false)}
+                    className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>
