@@ -53,7 +53,7 @@ const Servicios = () => {
             <h3 className="text-2xl font-bold text-white mb-4">¿No encontrás lo que buscás?</h3>
             <p className="text-white/40 mb-8">
               Si necesitás ayuda con algún trámite específico o tenés dudas sobre la información de la facultad, 
-              no dudes en acercarte a nuestra mesa en el centro de estudiantes o escribirnos.
+              no dudes en acercarte a nuestra mesa en el subsuelo o enviarle a cualquier militante un mensaje.
             </p>
             <a 
               href="https://www.jursoc.unlp.edu.ar/" 
