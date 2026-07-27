@@ -528,58 +528,70 @@ export default function Trivia() {
 
             {/* TABLA RESPONSIVA DE POSICIONES */}
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-3 md:p-6 overflow-x-auto shadow-2xl">
-              <table className="w-full text-left text-xs md:text-sm">
-                <thead>
-                  <tr className="border-b border-white/10 text-slate-400 text-[10px] md:text-xs font-black uppercase">
-                    <th className="pb-3 px-2 text-center">Pos</th>
-                    <th className="pb-3 px-2">Estudiante</th>
-                    <th className="pb-3 px-2 hidden sm:table-cell">Materia Fav</th>
-                    <th className="pb-3 px-2 text-center">Aciertos</th>
-                    <th className="pb-3 px-2 text-right">Puntos</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredLeaderboard.map((u) => {
-                    const isTop1 = u.posicion === 1;
-                    const isTop2 = u.posicion === 2;
-                    const isTop3 = u.posicion === 3;
-                    const isMe = u.id === user.id || u.nombre === userName;
+              {filteredLeaderboard.length === 0 ? (
+                <div className="text-center py-12 space-y-3">
+                  <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <Trophy className="w-6 h-6" />
+                  </div>
+                  <p className="text-sm font-bold text-white">Aún no hay puntuaciones en esta clasificación.</p>
+                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                    ¡Sé el primero en jugar y registrar tus puntos oficiales en la tabla de posiciones!
+                  </p>
+                </div>
+              ) : (
+                <table className="w-full text-left text-xs md:text-sm">
+                  <thead>
+                    <tr className="border-b border-white/10 text-slate-400 text-[10px] md:text-xs font-black uppercase">
+                      <th className="pb-3 px-2 text-center">Pos</th>
+                      <th className="pb-3 px-2">Estudiante</th>
+                      <th className="pb-3 px-2 hidden sm:table-cell">Materia Fav</th>
+                      <th className="pb-3 px-2 text-center">Aciertos</th>
+                      <th className="pb-3 px-2 text-right">Puntos</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {filteredLeaderboard.map((u) => {
+                      const isTop1 = u.posicion === 1;
+                      const isTop2 = u.posicion === 2;
+                      const isTop3 = u.posicion === 3;
+                      const isMe = u.id === user.id || u.nombre === userName;
 
-                    return (
-                      <tr key={u.id} className={cn("hover:bg-white/[0.02] transition-colors", isMe && "bg-red-500/10")}>
-                        <td className="py-3 px-2 text-center">
-                          <span className={cn(
-                            "inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-xs",
-                            isTop1 && "bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20",
-                            isTop2 && "bg-slate-300 text-slate-950",
-                            isTop3 && "bg-amber-700 text-white",
-                            !isTop1 && !isTop2 && !isTop3 && "bg-white/10 text-slate-300"
-                          )}>
-                            {u.posicion}
-                          </span>
-                        </td>
-                        <td className="py-3 px-2 font-bold text-white">
-                          <div className="flex items-center gap-2">
-                            <span>{u.nombre}</span>
-                            {isMe && (
-                              <span className="text-[8px] bg-red-500/30 text-red-300 px-1.5 py-0.5 rounded-full font-black uppercase">Tú</span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-3 px-2 text-slate-400 hidden sm:table-cell">
-                          {u.materiaFav}
-                        </td>
-                        <td className="py-3 px-2 text-center font-bold text-emerald-400">
-                          {u.aciertosPorcentaje}%
-                        </td>
-                        <td className="py-3 px-2 text-right font-black text-white text-sm md:text-base">
-                          {u.puntos} PTS
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                      return (
+                        <tr key={u.id} className={cn("hover:bg-white/[0.02] transition-colors", isMe && "bg-red-500/10")}>
+                          <td className="py-3 px-2 text-center">
+                            <span className={cn(
+                              "inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-xs",
+                              isTop1 && "bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20",
+                              isTop2 && "bg-slate-300 text-slate-950",
+                              isTop3 && "bg-amber-700 text-white",
+                              !isTop1 && !isTop2 && !isTop3 && "bg-white/10 text-slate-300"
+                            )}>
+                              {u.posicion}
+                            </span>
+                          </td>
+                          <td className="py-3 px-2 font-bold text-white">
+                            <div className="flex items-center gap-2">
+                              <span>{u.nombre}</span>
+                              {isMe && (
+                                <span className="text-[8px] bg-red-500/30 text-red-300 px-1.5 py-0.5 rounded-full font-black uppercase">Tú</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 px-2 text-slate-400 hidden sm:table-cell">
+                            {u.materiaFav}
+                          </td>
+                          <td className="py-3 px-2 text-center font-bold text-emerald-400">
+                            {u.aciertosPorcentaje}%
+                          </td>
+                          <td className="py-3 px-2 text-right font-black text-white text-sm md:text-base">
+                            {u.puntos} PTS
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           </motion.div>
         )}

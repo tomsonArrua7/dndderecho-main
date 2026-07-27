@@ -82,16 +82,7 @@ export const CATEGORIAS_TRIVIA: CategoriaTrivia[] = [
   }
 ];
 
-export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
-  { id: "top-1", posicion: 1, nombre: "Valentina Rossi", facultad: "Jursoc UNLP", materiaFav: "Derecho Civil", puntos: 485, aciertosPorcentaje: 96, racha: 14 },
-  { id: "top-2", posicion: 2, nombre: "Mateo Benítez", facultad: "Jursoc UNLP", materiaFav: "Derecho Penal", puntos: 440, aciertosPorcentaje: 92, racha: 11 },
-  { id: "top-3", posicion: 3, nombre: "Camila Fernández", facultad: "Jursoc UNLP", materiaFav: "Derecho Constitucional", puntos: 410, aciertosPorcentaje: 89, racha: 9 },
-  { id: "top-4", posicion: 4, nombre: "Ignacio Peralta", facultad: "Jursoc UNLP", materiaFav: "Derecho Administrativo", puntos: 375, aciertosPorcentaje: 85, racha: 8 },
-  { id: "top-5", posicion: 5, nombre: "Lucía Santillán", facultad: "Jursoc UNLP", materiaFav: "Derecho Provincial BA", puntos: 350, aciertosPorcentaje: 83, racha: 7 },
-  { id: "top-6", posicion: 6, nombre: "Joaquín Gómez", facultad: "Jursoc UNLP", materiaFav: "UNLP y Jursoc", puntos: 320, aciertosPorcentaje: 80, racha: 6 },
-  { id: "top-7", posicion: 7, nombre: "Sofía Martínez", facultad: "Jursoc UNLP", materiaFav: "Derecho Civil", puntos: 295, aciertosPorcentaje: 78, racha: 5 },
-  { id: "top-8", posicion: 8, nombre: "Franco Romero", facultad: "Jursoc UNLP", materiaFav: "Derecho Penal", puntos: 270, aciertosPorcentaje: 75, racha: 5 }
-];
+export const MOCK_LEADERBOARD: LeaderboardEntry[] = [];
 
 export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
   // --- DERECHO CIVIL ---
