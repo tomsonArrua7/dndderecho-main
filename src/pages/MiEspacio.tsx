@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, GraduationCap, Repeat2, Sparkles, User, Trash2, ArrowRight, Camera, Loader2 } from "lucide-react";
+import { CalendarDays, GraduationCap, Repeat2, Sparkles, User, Trash2, ArrowRight, Camera, Loader2, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { UpcomingDates } from "@/components/UpcomingDates";
 import { TOTAL_MATERIAS_PLAN6 } from "@/data/plan6Structure";
@@ -380,20 +380,29 @@ const MiEspacio = () => {
           </Link>
 
           {/* Action Cards */}
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {profile?.role === "admin" && (
+              <DashCard
+                to="/trivia"
+                icon={Trophy}
+                title="Trivia Jurídica (Beta Admin)"
+                stats="Desafío por materias y ranking"
+                color="accent"
+              />
+            )}
             <DashCard
               to="/permutero"
               icon={Repeat2}
               title="Permutero"
               stats={`${stats.permutas} permuta${stats.permutas !== 1 ? "s" : ""} activas`}
-              color="accent"
+              color="primary"
             />
             <DashCard
               to="/calendario"
               icon={CalendarDays}
-              title="Calendario Completo"
+              title="Calendario"
               stats={`${stats.eventos} evento${stats.eventos !== 1 ? "s" : ""} guardados`}
-              color="primary"
+              color="accent"
             />
           </div>
 

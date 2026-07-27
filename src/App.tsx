@@ -45,6 +45,7 @@ import PanelEscritor   from "./pages/PanelEscritor";
 import AsistenteDND   from "./pages/AsistenteDND";
 import Ingresantes   from "./pages/Ingresantes";
 import QuienesSomos   from "./pages/QuienesSomos";
+import Trivia         from "./pages/Trivia";
 
 const queryClient = new QueryClient();
 
@@ -218,6 +219,7 @@ const AppContent = () => {
         <Route path="/asistente"       element={<AsistenteDND />} />
         <Route path="/ingresantes"     element={<Ingresantes />} />
         <Route path="/quienes-somos"   element={<QuienesSomos />} />
+        <Route path="/trivia"          element={<Trivia />} />
 
         {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
         <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
