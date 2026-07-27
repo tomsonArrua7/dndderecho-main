@@ -463,13 +463,6 @@ export default function Trivia() {
     }
   };
 
-  const filteredLeaderboard = leaderboardFilter === "todas"
-    ? leaderboardList
-    : leaderboardList.filter(e => {
-        const catObj = CATEGORIAS_TRIVIA.find(c => c.id === leaderboardFilter);
-        return e.materiaFav.toLowerCase().includes(catObj?.nombre.toLowerCase() || "") || e.materiaFav.includes("General");
-      });
-
   // SI NO ESTÁ AUTENTICADO O NO ES ADMIN: REDIRIGIR FUERA
   if (!loading && (!user || !isAdmin)) {
     return <Navigate to="/" replace />;
@@ -825,18 +818,31 @@ export default function Trivia() {
             {/* TABLA RESPONSIVA DE POSICIONES CON RANGOS JURÍDICOS */}
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-3 md:p-6 overflow-x-auto shadow-2xl">
               {(() => {
-                const processedList = [...leaderboardList]
+                const safeBoard = Array.isArray(leaderboardList) ? leaderboardList : [];
+                const processedList = safeBoard
                   .map(e => {
                     const eCatPoints = e.puntosPorCategoria || {};
-                    const displayPts = leaderboardFilter === "todas" 
-                      ? e.puntos 
-                      : (eCatPoints[leaderboardFilter] !== undefined 
-                          ? eCatPoints[leaderboardFilter] 
-                          : (e.materiaFav.toLowerCase().includes(CATEGORIAS_TRIVIA.find(c => c.id === leaderboardFilter)?.nombre.toLowerCase() || "___") ? e.puntos : 0));
+                    const catObj = CATEGORIAS_TRIVIA.find(c => c.id === leaderboardFilter);
+                    const catName = (catObj?.nombre || "").toLowerCase();
+                    const userFav = (e.materiaFav || "").toLowerCase();
+                    const totalPts = Number(e.puntos || 0);
+
+                    let displayPts = totalPts;
+                    if (leaderboardFilter !== "todas") {
+                      if (eCatPoints[leaderboardFilter] !== undefined) {
+                        displayPts = Number(eCatPoints[leaderboardFilter] || 0);
+                      } else if (catName && userFav && userFav.includes(catName)) {
+                        displayPts = totalPts;
+                      } else {
+                        displayPts = 0;
+                      }
+                    }
+
                     return {
                       ...e,
+                      puntos: totalPts,
                       displayPts,
-                      rango: calcularRango(e.puntos)
+                      rango: calcularRango(totalPts)
                     };
                   })
                   .filter(e => leaderboardFilter === "todas" || e.displayPts > 0 || e.id === user?.id)
@@ -865,7 +871,9 @@ export default function Trivia() {
                         <th className="pb-3 px-2">Estudiante</th>
                         <th className="pb-3 px-2 text-center">Rango Jurídico</th>
                         <th className="pb-3 px-2 text-center hidden sm:table-cell">Aciertos</th>
-                        <th className="pb-3 px-2 text-right">Puntos</th>
+                        <th className="pb-3 px-2 text-right">
+                          {leaderboardFilter === "todas" ? "Puntos Totales" : "Puntos en Rama"}
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -902,10 +910,17 @@ export default function Trivia() {
                               </span>
                             </td>
                             <td className="py-3 px-2 text-center font-bold text-emerald-400 hidden sm:table-cell">
-                              {u.aciertosPorcentaje}%
+                              {u.aciertosPorcentaje || 0}%
                             </td>
-                            <td className="py-3 px-2 text-right font-black text-amber-400 text-sm md:text-base">
-                              {u.displayPts} PTS
+                            <td className="py-3 px-2 text-right">
+                              <span className="font-black text-amber-400 text-sm md:text-base block">
+                                {u.displayPts} PTS
+                              </span>
+                              {leaderboardFilter !== "todas" && (
+                                <span className="text-[9px] text-slate-500 font-bold block">
+                                  Total: {u.puntos} PTS
+                                </span>
+                              )}
                             </td>
                           </tr>
                         );
