@@ -953,5 +953,329 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     respuesta_correcta_index: 0,
     fundamento_juridico: "Estatuto de la UNLP, Art. 34: Es atribución del Consejo Superior aprobar la creación o modificación de planes de estudio de las distintas Facultades.",
     puntos_base: 50
+  },
+
+  // =========================================================================
+  // --- LOTE DERECHO PENAL ARGENTINO (Nuevas Preguntas Masivas) ---
+  // =========================================================================
+  {
+    id: "pen-f-04",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "facil",
+    pregunta: "¿Cuál es la regla general del artículo 2 del Código Penal Argentino ante la sanción de una ley penal posterior más benigna?",
+    opciones: [
+      "Se aplicará siempre la ley más benigna, y si durante la condena se dictare una ley más benigna, la pena se limitará a la establecida por esa ley.",
+      "Se aplicará incondicionalmente la ley vigente al momento de la comisión del hecho, prohibiendo la retroactividad.",
+      "La ley más benigna solo se aplicará si el proceso no cuenta con imputación formal del Ministerio Público Fiscal.",
+      "Se aplicará la ley posterior únicamente si el querellante o la víctima prestan conformidad en audiencia."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 2: 'Si la ley vigente al tiempo de cometerse el delito fuere distinta de la que exista al pronunciarse el fallo o en el tiempo intermedio, se aplicará siempre la más benigna'.",
+    puntos_base: 10
+  },
+  {
+    id: "pen-f-05",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "facil",
+    pregunta: "De acuerdo con el artículo 42 del Código Penal Argentino, ¿qué requisito define a la tentativa punible?",
+    opciones: [
+      "El comienzo de ejecución de un delito determinado con el fin de cometerlo, sin llegar a la consumación por circunstancias ajenas a la voluntad del agente.",
+      "La manifestación de la resolución criminal expresada únicamente mediante actos preparatorios previos.",
+      "La consumación formal de la conducta típica sin que se produzca el resultado material perjudicial esperado.",
+      "La producción de una lesión leve a un bien jurídico distinto del perseguido originalmente."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 42.",
+    puntos_base: 10
+  },
+  {
+    id: "pen-f-06",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "facil",
+    pregunta: "Según el artículo 43 del Código Penal Argentino, ¿cuál es la consecuencia jurídica para el autor de una tentativa que desiste voluntariamente del delito?",
+    opciones: [
+      "Queda exento de pena por la tentativa, sin perjuicio de la responsabilidad por los actos ya ejecutados si constituyen delito por sí mismos.",
+      "Se le reduce la pena de la tentativa a la mitad de la escala fijada para el delito consumado.",
+      "Queda sujeto a la aplicación obligatoria de una medida de seguridad no privativa de la libertad.",
+      "Se le concede automáticamente la suspensión del juicio a prueba sin cumplir otros requisitos."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 43.",
+    puntos_base: 10
+  },
+  {
+    id: "pen-f-07",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "facil",
+    pregunta: "¿Cuáles son los tres requisitos exigidos por el artículo 34 inciso 6º del Código Penal Argentino para configurar la legítima defensa propia?",
+    opciones: [
+      "Agresión ilegítima, necesidad racional del medio empleado para impedirla o repelerla, y falta de provocación suficiente por parte del que se defiende.",
+      "Agresión ilegítima, proporcionalidad matemática exacta de los medios empleados e intimación previa fehaciente.",
+      "Provocación previa atenuada, uso de fuerza física no letal y ratificación de la denuncia en sede judicial.",
+      "Peligro inminente, intervención policial de apoyo y falta de intención dolo-eventual."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 34 inc. 6º.",
+    puntos_base: 10
+  },
+  {
+    id: "pen-f-08",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "facil",
+    pregunta: "Conforme al artículo 35 del Código Penal Argentino, ¿cómo se sanciona al sujeto que excede los límites en las causales de justificación?",
+    opciones: [
+      "Con la pena fijada para el delito por culpa o imprudencia.",
+      "Con la pena del delito doloso reducida a la mitad en su mínimo y máximo legal.",
+      "Queda totalmente exento de pena por concurrir una causa de inculpabilidad absoluta.",
+      "Con pena de inhabilitación especial obligatoria sin sanción privativa de la libertad."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 35.",
+    puntos_base: 10
+  },
+  {
+    id: "pen-f-09",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "facil",
+    pregunta: "Conforme al artículo 44 del Código Penal Argentino, ¿cómo se disminuye la pena en la tentativa para delitos con pena temporal?",
+    opciones: [
+      "La pena se disminuirá de un tercio a la mitad respecto de la fijada para el delito consumado.",
+      "La pena se disminuye a la mitad exacta de su mínimo y de su máximo en todos los casos.",
+      "La pena es la misma que la del delito consumado si el autor estuvo a punto de lograr el resultado.",
+      "Se aplica pena de multa sustitutiva fijada prudencialmente por el juzgador."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 44.",
+    puntos_base: 10
+  },
+  {
+    id: "pen-m-04",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "Conforme al artículo 45 del Código Penal Argentino, ¿qué participantes sufren la misma pena asignada por la ley a los autores?",
+    opciones: [
+      "Los que toman parte en la ejecución y los que prestan al autor un auxilio o cooperación sin los cuales el hecho no habría podido cometerse.",
+      "Todos los cómplices primarios, secundarios y los encubridores con promesa posterior a la consumación.",
+      "Únicamente los ejecutores materiales de la acción típica, quedando exentos los instigadores.",
+      "Quienes prestaren cualquier auxilio secundario posterior al hecho sin acuerdo previo."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 45.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-05",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "En la doctrina penal argentina mayoritaria (Zaffaroni, Bacigalupo), ¿qué estrato de la teoría del delito elimina el error de prohibición invencible?",
+    opciones: [
+      "La culpabilidad, impidiendo que la conducta típica y antijurídica sea reprochada personalmente a su autor.",
+      "La tipicidad, descartando el dolo penal y tornando la conducta en un hecho atípico.",
+      "La antijuridicidad, actuando como una causa de justificación inominada de carácter objetivo.",
+      "La punibilidad, convirtiendo la pena en una eximente personal facultativa."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Doctrina penal argentina mayoritaria y Art. 34 inc. 1 del Código Penal.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-06",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "Según el artículo 34 inciso 1º del Código Penal Argentino, no es punible quien en el momento del hecho no haya podido comprender la criminalidad del acto por:",
+    opciones: [
+      "Insuficiencia de sus facultades, alteración morbosa de las mismas, o estado de inconsciencia.",
+      "Un estado de ebriedad voluntaria que no haya privado totalmente de la lucidez mental.",
+      "El desconocimiento o ignorancia de la publicación formal de la norma en el Boletín Oficial.",
+      "Una perturbación emocional severa provocada por discusiones de pareja previas."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 34 inc. 1º.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-07",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "Tras la reforma de la Ley 26.791 al artículo 80 inciso 1º del Código Penal Argentino, ¿cuál es el alcance de la agravante del homicidio?",
+    opciones: [
+      "Comprende al que matare a su ascendiente, descendiente, cónyuge, ex cónyuge, o a la persona con quien mantiene o ha mantenido una relación de pareja, mediare o no convivencia.",
+      "Aplica exclusivamente a cónyuges legalmente casados en régimen de comunidad de bienes y convivencia efectiva.",
+      "Comprende únicamente a los parientes consanguíneos hasta el segundo grado en línea colateral.",
+      "Exige de manera indispensable el cohabitar en el mismo domicilio al momento de la agresión."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 80 inc. 1º (según Ley 26.791).",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-08",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "Conforme al artículo 81 inciso 1º apartado 'a' del Código Penal Argentino, ¿qué circunstancia exige la ley para atenuar la pena en el homicidio por emoción violenta?",
+    opciones: [
+      "Que el autor se encuentre en estado de emoción violenta y que las circunstancias que la provocaron la hicieren excusable.",
+      "Que el estado pasional haya sido provocado de manera deliberada por el propio sujeto activo.",
+      "Que la emoción violenta se funde en celos desmedidos o sentimientos de despecho.",
+      "Que medie la previa conformidad de los derechohabientes de la víctima."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 81 inc. 1º ap. a.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-09",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "¿Cuál es la diferencia medular en el Código Penal Argentino entre el delito de Hurto (Art. 162) y el delito de Robo (Art. 164)?",
+    opciones: [
+      "El robo requiere que la apoderación ilegítima se cometa con fuerza en las cosas o violencia física en las personas, mientras que el hurto carece de ellas.",
+      "El hurto exige la participación de dos o más personas, mientras que el robo es unipersonal.",
+      "El robo recae sobre bienes inmuebles y el hurto sobre bienes muebles ajenos.",
+      "El hurto se persigue por acción privada y el robo por acción pública a instancia de parte."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Arts. 162 y 164.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-10",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "De acuerdo con el artículo 172 del Código Penal Argentino, ¿cuál es el elemento ardidoso indispensable que caracteriza al delito de estafa?",
+    opciones: [
+      "Un ardid o engaño que induce en error a la víctima, determinándola a realizar una disposición patrimonial perjudicial.",
+      "La fuerza física desplegada sobre las cosas para lograr la transferencia de la posesión.",
+      "La retención ilegítima de una cosa mueble recibida con la obligación legal de restituirla.",
+      "El daño físico directo ocasionado sobre bienes materiales ajenos."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 172.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-11",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "Según el artículo 26 del Código Penal Argentino, ¿en qué casos los tribunales pueden disponer la condena de ejecución condicional?",
+    opciones: [
+      "En los casos de primera condena a pena de prisión que no exceda de tres años.",
+      "En condenas a pena de prisión de hasta cinco años cuando el imputado repare el daño.",
+      "En cualquier delito doloso contra la propiedad si el delincuente carece de antecedentes.",
+      "Únicamente cuando el condenado tenga más de 70 años al momento del fallo."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 26.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-m-12",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "media",
+    pregunta: "Conforme al artículo 76 bis del Código Penal Argentino, ¿cuándo procede la suspensión del juicio a prueba (probation)?",
+    opciones: [
+      "En delitos de acción pública reprimidos con pena de prisión cuyo máximo no exceda de tres años, o cuando las circunstancias permitieren condena condicional.",
+      "Exclusivamente para delitos culposos de tránsito cuya inhabilitación no supere un año.",
+      "En cualquier delito grave independientemente de la pena siempre que se pague fianza real.",
+      "En delitos cometidos por funcionarios públicos en el ejercicio de sus funciones."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 76 bis.",
+    puntos_base: 20
+  },
+  {
+    id: "pen-d-04",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "dificil",
+    pregunta: "En el fallo de la CSJN 'Gramajo' (2006), ¿qué pronunciamiento emitió la Corte respecto de la medida de seguridad del artículo 52 del Código Penal?",
+    opciones: [
+      "Declaró su inconstitucionalidad por violar el principio de culpabilidad por el hecho (derecho penal del acto) y proporcionalidad, al castigar la peligrosidad.",
+      "Reafirmó su constitucionalidad considerando que la peligrosidad del imputado justifica la custodia indeterminada del Estado.",
+      "Estableció que es únicamente aplicable a delitos contra la propiedad cometidos con armas de fuego.",
+      "Dispuso su sustitución por inhabilitación perpetua para ejercer cargos públicos."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "CSJN, Fallos 329:3680 ('Gramajo, Marcelo Eduardo s/ causa N° 1573', 2006).",
+    puntos_base: 30
+  },
+  {
+    id: "pen-d-05",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "dificil",
+    pregunta: "Conforme a la doctrina de la CSJN sentada en el fallo 'Fiorentino' (1984), ¿qué requisitos debe reunir el consentimiento para validar la requisa domiciliaria sin orden judicial?",
+    opciones: [
+      "Debe ser expreso, libre, previo a la entrada de la prevención y prestado por persona capaz, exento de coerción o intimidación.",
+      "Es suficiente que el morador no oponga resistencia física ostensible al momento del ingreso policial.",
+      "Puede ser prestado por cualquier persona presente en la vivienda, incluidos menores.",
+      "Carece de toda validez legal, por ser la orden judicial escrita un requisito insubsanable."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "CSJN, Fallos 306:1752 ('Fiorentino, Diego E.'), Art. 18 de la Constitución Nacional.",
+    puntos_base: 30
+  },
+  {
+    id: "pen-d-06",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "dificil",
+    pregunta: "En la doctrina penal argentina (Zaffaroni, Soler), ¿cuál es el criterio subjetivo delimitador entre el Dolo Eventual y la Culpa Consciente?",
+    opciones: [
+      "En el dolo eventual el sujeto se representa la posibilidad del resultado típico y lo acepta o le es indiferente; en la culpa consciente confía en que no ocurrirá.",
+      "En el dolo eventual la representación del peligro es remota, mientras que en la culpa consciente es cierta.",
+      "En la culpa consciente el autor persigue intencionadamente el resultado pero con medios inidóneos.",
+      "En el dolo eventual el autor actúa sin representación previa del riesgo."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Doctrina penal mayoritaria argentina y Cámara Federal de Casación Penal.",
+    puntos_base: 30
+  },
+  {
+    id: "pen-d-07",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "dificil",
+    pregunta: "Con la Ley 27.347 (Art. 84 bis 2º párrafo del CP), ¿cuál de los siguientes factores agrava la pena del homicidio culposo de tránsito a prisión de 3 a 6 años?",
+    opciones: [
+      "Darse a la fuga, no socorrer a la víctima, estar bajo efectos del alcohol o estupefacientes, o conducir con exceso de velocidad mayor a 30 km/h sobre la máxima.",
+      "Que el vehículo no posea la Verificación Técnica Vehicular (VTV) aprobada.",
+      "Que el hecho ocurra en una avenida pavimentada en horario nocturno o feriados.",
+      "Que el conductor registre multas de tránsito impagas en los 12 meses previos."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Art. 84 bis, 2° párrafo (Ley 27.347).",
+    puntos_base: 30
+  },
+  {
+    id: "pen-d-08",
+    id_categoria: "derecho_penal",
+    categoria_nombre: "Derecho Penal",
+    dificultad: "dificil",
+    pregunta: "En los delitos de acción privada (Art. 73 CP), ¿qué efecto produce sobre la acción penal el desistimiento expreso formulado por el querellante particular?",
+    opciones: [
+      "Extingue la acción penal de manera irreversible conforme al artículo 59 inciso 4º del Código Penal.",
+      "Convierte la acción privada en acción pública ejercida por el Ministerio Público Fiscal.",
+      "Permite la continuidad de la causa mediante la designación de un Defensor Oficial.",
+      "Suspende la prescripción de la acción penal por tres años."
+    ],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Código Penal de la Nación, Arts. 59 inc. 4º y 73.",
+    puntos_base: 30
   }
 ];
