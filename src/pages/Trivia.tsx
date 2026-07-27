@@ -247,23 +247,47 @@ export default function Trivia() {
     return () => clearTimeout(timer);
   }, [inGame, isAnswered, timeLeft, gameOver]);
 
+  const [usedQuestionIds, setUsedQuestionIds] = useState<string[]>([]);
+
   const startGame = () => {
-    let pool = TRIVIA_QUESTIONS;
-    if (selectedCategoria !== "todas") {
-      pool = pool.filter(q => q.id_categoria === selectedCategoria);
-    }
-    if (selectedDificultad !== "todas") {
-      pool = pool.filter(q => q.dificultad === selectedDificultad);
-    }
-    if (pool.length === 0) {
-      pool = TRIVIA_QUESTIONS;
+    const targetCount = Math.max(questionsCount, 5);
+    
+    // 1. Filtrar por categoría
+    let categoryPool = selectedCategoria === "todas" 
+      ? TRIVIA_QUESTIONS 
+      : TRIVIA_QUESTIONS.filter(q => q.id_categoria === selectedCategoria);
+    
+    if (categoryPool.length === 0) categoryPool = TRIVIA_QUESTIONS;
+
+    // 2. Filtrar por dificultad
+    let exactMatches = selectedDificultad === "todas"
+      ? categoryPool
+      : categoryPool.filter(q => q.dificultad === selectedDificultad);
+
+    // Evitar preguntas usadas recientemente en la sesión
+    let unusedMatches = exactMatches.filter(q => !usedQuestionIds.includes(q.id));
+    if (unusedMatches.length < targetCount) {
+      unusedMatches = exactMatches;
     }
 
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    const countToUse = Math.min(Math.max(questionsCount, 5), shuffled.length);
-    const selectedPool = shuffled.slice(0, countToUse);
+    const shuffledExact = [...unusedMatches].sort(() => Math.random() - 0.5);
+    const selected: TriviaQuestion[] = [...shuffledExact.slice(0, targetCount)];
 
-    setQuestionsPool(selectedPool);
+    // 3. Relleno adaptativo si no se alcanza la cantidad objetivo
+    if (selected.length < targetCount) {
+      const remainingCategory = categoryPool.filter(q => !selected.some(s => s.id === q.id)).sort(() => Math.random() - 0.5);
+      selected.push(...remainingCategory.slice(0, targetCount - selected.length));
+    }
+
+    if (selected.length < targetCount) {
+      const generalRemaining = TRIVIA_QUESTIONS.filter(q => !selected.some(s => s.id === q.id)).sort(() => Math.random() - 0.5);
+      selected.push(...generalRemaining.slice(0, targetCount - selected.length));
+    }
+
+    const newIds = selected.map(q => q.id);
+    setUsedQuestionIds(prev => Array.from(new Set([...prev, ...newIds])));
+
+    setQuestionsPool(selected);
     setCurrentIndex(0);
     setScore(0);
     setStreak(0);
