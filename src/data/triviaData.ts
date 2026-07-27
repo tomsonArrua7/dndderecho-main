@@ -499,6 +499,41 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     respuesta_correcta_index: 3,
     fundamento_juridico: "Michel Foucault, 'Vigilar y Castigar' (1975).", puntos_base: 50
   },
+  {
+    id: "10610-06", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "Según el Compendio de Cátedra 1, ¿qué autor diferenció las ciencias de la naturaleza (explicativas) de las ciencias del espíritu (comprensivas)?",
+    opciones: ["Auguste Comte", "Wilhelm Dilthey", "Karl Popper", "René Descartes"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Wilhelm Dilthey, 'Introducción a las ciencias del espíritu' (1883).", puntos_base: 25
+  },
+  {
+    id: "10610-07", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "En la epistemología contemporánea de Thomas Kuhn, el conjunto de compromisos compartidos por una comunidad científica se denomina:",
+    opciones: ["Obstáculo epistemológico", "Paradigma (o Matriz Disciplinar)", "Falsacionismo dogmático", "Anarquía metodológica"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Thomas Kuhn, 'La estructura de las revoluciones científicas' (1962).", puntos_base: 25
+  },
+  {
+    id: "10610-08", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "dificil",
+    pregunta: "¿Qué concepto desarrolló Pierre Bourdieu para referirse a los sistemas de disposiciones duraderas e interiorizadas que guían la práctica social?",
+    opciones: ["Campo", "Habitus", "Capital simbólico", "Violencia de clase"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Pierre Bourdieu, 'El sentido práctico' (1980).", puntos_base: 50
+  },
+  {
+    id: "10610-09", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "facil",
+    pregunta: "Según Max Weber, la acción social motivada por convicciones éticas o religiosas sin importar sus consecuencias se clasifica como:",
+    opciones: ["Acción tradicional", "Acción racional con arreglo a valores", "Acción afectiva", "Acción racional con arreglo a fines"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Max Weber, 'Economía y Sociedad' (Tipología de la Acción Social).", puntos_base: 10
+  },
+  {
+    id: "10610-10", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "La Teoría Crítica orientada a denunciar la razón instrumental de la sociedad industrial fue desarrollada por la:",
+    opciones: ["Escuela de Viena", "Escuela de Frankfurt", "Escuela de Chicago", "Escuela de Birmingham"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Escuela de Frankfurt (Adorno, Horkheimer, Marcuse).", puntos_base: 25
+  },
 
   // --- 10111: INTRODUCCIÓN AL DERECHO ---
   {

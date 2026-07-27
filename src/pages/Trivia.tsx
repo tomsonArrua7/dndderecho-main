@@ -468,7 +468,10 @@ export default function Trivia() {
               <span>Jugar Otra Partida</span>
             </button>
             <button
-              onClick={() => setInGame(false)}
+              onClick={() => {
+                setInGame(false);
+                setGameOver(false);
+              }}
               className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all cursor-pointer"
             >
               Volver al Menú de Materias
