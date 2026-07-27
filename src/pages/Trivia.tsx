@@ -27,16 +27,23 @@ import {
   LogIn,
   Play,
   UserCheck,
-  Lock
+  Lock,
+  Gavel,
+  BookOpen,
+  Briefcase
 } from "lucide-react";
 import { 
   TRIVIA_QUESTIONS, 
   CATEGORIAS_TRIVIA, 
   MOCK_LEADERBOARD,
+  RANGOS_JURIDICOS,
+  calcularRango,
   TriviaQuestion, 
-  LeaderboardEntry 
+  LeaderboardEntry,
+  RangoJuridico
 } from "@/data/triviaData";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const ICON_MAP: Record<string, any> = {
   Scale,
@@ -45,7 +52,10 @@ const ICON_MAP: Record<string, any> = {
   FileText,
   MapPin,
   Building2,
-  GraduationCap
+  GraduationCap,
+  BookOpen,
+  Briefcase,
+  Gavel
 };
 
 export default function Trivia() {
@@ -77,15 +87,32 @@ export default function Trivia() {
   // User Stats & Leaderboard
   const [leaderboardFilter, setLeaderboardFilter] = useState<string>("todas");
   const [leaderboardList, setLeaderboardList] = useState<LeaderboardEntry[]>([]);
-  const [userStats, setUserStats] = useState({
+  const [userStats, setUserStats] = useState<{
+    totalJugadas: number;
+    totalCorrectas: number;
+    puntosTotales: number;
+    mejorRacha: number;
+    puntosPorCategoria: Record<string, number>;
+  }>({
     totalJugadas: 0,
     totalCorrectas: 0,
     puntosTotales: 0,
-    mejorRacha: 0
+    mejorRacha: 0,
+    puntosPorCategoria: {}
   });
 
   const userName = profile?.full_name || user?.email?.split("@")[0] || "Estudiante Jursoc";
   const isAdmin = profile?.role === "admin";
+
+  const rangoActual = calcularRango(userStats.puntosTotales);
+  const RangoIcon = ICON_MAP[rangoActual.iconoNombre] || BookOpen;
+
+  const proximoRangoIndex = RANGOS_JURIDICOS.findIndex(r => r.id === rangoActual.id) + 1;
+  const proximoRango = proximoRangoIndex < RANGOS_JURIDICOS.length ? RANGOS_JURIDICOS[proximoRangoIndex] : null;
+
+  const puntosEnNivel = userStats.puntosTotales - rangoActual.minPuntos;
+  const puntosSiguienteNivel = proximoRango ? (proximoRango.minPuntos - rangoActual.minPuntos) : 1;
+  const porcentajeRango = proximoRango ? Math.min(100, Math.round((puntosEnNivel / Math.max(1, puntosSiguienteNivel)) * 100)) : 100;
 
   const fetchLeaderboardAndStats = async () => {
     if (!user) return;
@@ -95,6 +122,7 @@ export default function Trivia() {
     if (savedStats) {
       try {
         currentStats = JSON.parse(savedStats);
+        if (!currentStats.puntosPorCategoria) currentStats.puntosPorCategoria = {};
         setUserStats(currentStats);
       } catch (e) {}
     }
@@ -112,7 +140,8 @@ export default function Trivia() {
           totalJugadas: (statsData as any).partidas_jugadas || 0,
           totalCorrectas: (statsData as any).total_aciertos || 0,
           puntosTotales: (statsData as any).puntos_totales || 0,
-          mejorRacha: (statsData as any).mejor_racha || 0
+          mejorRacha: (statsData as any).mejor_racha || 0,
+          puntosPorCategoria: (statsData as any).puntos_por_categoria || currentStats.puntosPorCategoria || {}
         };
         setUserStats(currentStats);
       }
@@ -135,9 +164,11 @@ export default function Trivia() {
               facultad: "Jursoc UNLP",
               materiaFav: "Derecho General",
               puntos: currentStats.puntosTotales,
+              puntosPorCategoria: currentStats.puntosPorCategoria,
               aciertosPorcentaje: Math.round((currentStats.totalCorrectas / Math.max(1, currentStats.totalJugadas)) * 100),
               racha: currentStats.mejorRacha,
-              avatarUrl: profile?.avatar_url
+              avatarUrl: profile?.avatar_url,
+              rangoNombre: calcularRango(currentStats.puntosTotales).nombre
             }
           ]);
         } else {
@@ -155,9 +186,11 @@ export default function Trivia() {
             facultad: "Jursoc UNLP",
             materiaFav: "Derecho General",
             puntos: currentStats.puntosTotales,
+            puntosPorCategoria: currentStats.puntosPorCategoria,
             aciertosPorcentaje: Math.round((currentStats.totalCorrectas / Math.max(1, currentStats.totalJugadas)) * 100),
             racha: currentStats.mejorRacha,
-            avatarUrl: profile?.avatar_url
+            avatarUrl: profile?.avatar_url,
+            rangoNombre: calcularRango(currentStats.puntosTotales).nombre
           }
         ]);
       }
@@ -176,15 +209,25 @@ export default function Trivia() {
     const newPuntosTotales = userStats.puntosTotales + newScore;
     const newMejorRacha = Math.max(userStats.mejorRacha, finalStreak);
 
+    const prevCatPoints = (userStats.puntosPorCategoria && userStats.puntosPorCategoria[selectedCategoria]) || 0;
+    const newCatPoints = prevCatPoints + newScore;
+    const newPuntosPorCategoria = {
+      ...(userStats.puntosPorCategoria || {}),
+      [selectedCategoria]: newCatPoints
+    };
+
     const updatedStats = {
       totalJugadas: newTotalJugadas,
       totalCorrectas: newTotalCorrectas,
       puntosTotales: newPuntosTotales,
-      mejorRacha: newMejorRacha
+      mejorRacha: newMejorRacha,
+      puntosPorCategoria: newPuntosPorCategoria
     };
 
     setUserStats(updatedStats);
     localStorage.setItem(`dnd_trivia_stats_${user.id}`, JSON.stringify(updatedStats));
+
+    const updatedRango = calcularRango(newPuntosTotales);
 
     const myEntry: LeaderboardEntry = {
       id: user.id,
@@ -193,9 +236,11 @@ export default function Trivia() {
       facultad: "Jursoc UNLP",
       materiaFav: selectedCategoria === "todas" ? "Derecho General" : (CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre || "Derecho"),
       puntos: newPuntosTotales,
+      puntosPorCategoria: newPuntosPorCategoria,
       aciertosPorcentaje: Math.round((newTotalCorrectas / Math.max(1, newTotalJugadas)) * 100),
       racha: newMejorRacha,
-      avatarUrl: profile?.avatar_url
+      avatarUrl: profile?.avatar_url,
+      rangoNombre: updatedRango.nombre
     };
 
     // Actualización inmediata en pantalla
@@ -205,7 +250,7 @@ export default function Trivia() {
       return combined.map((e, idx) => ({ ...e, posicion: idx + 1 }));
     });
 
-    // Guardado resiliente en Supabase (partida + upsert directo a estadísticas)
+    // Guardado en Supabase
     try {
       await supabase.from("trivia_partidas" as any).insert({
         user_id: user.id,
@@ -225,6 +270,8 @@ export default function Trivia() {
         total_aciertos: newTotalCorrectas,
         mejor_racha: newMejorRacha,
         materia_favorita: selectedCategoria === "todas" ? "Derecho General" : (CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre || "Derecho"),
+        puntos_por_categoria: newPuntosPorCategoria,
+        rango_nombre: updatedRango.nombre,
         updated_at: new Date().toISOString()
       });
 
@@ -421,34 +468,68 @@ export default function Trivia() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6 md:space-y-8"
           >
-            {/* USER PROFILE INFO BANNER */}
-            <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-3">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt={userName} className="w-10 h-10 rounded-full object-cover border border-red-500/40" />
-                ) : (
-                  <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
-                    <UserCheck className="w-5 h-5" />
+            {/* USER PROFILE INFO & RANGO JURIDICO BANNER */}
+            <div className="bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                <div className="flex items-center gap-4">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt={userName} className="w-12 h-12 rounded-full object-cover border-2 border-amber-500/50 shadow-md" />
+                  ) : (
+                    <div className="p-3 bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 rounded-2xl text-amber-400">
+                      <RangoIcon className="w-6 h-6" />
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="text-lg font-black text-white">{userName}</h2>
+                      <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border tracking-wider", rangoActual.badgeStyle)}>
+                        {rangoActual.nombre}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-0.5">{rangoActual.descripcion}</p>
                   </div>
-                )}
-                <div>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Usuario Vinculado</p>
-                  <p className="text-sm font-black text-white">{userName}</p>
+                </div>
+
+                {/* STATS RAPIDAS */}
+                <div className="flex items-center gap-4 text-xs font-bold text-slate-300 w-full md:w-auto justify-between md:justify-end bg-white/[0.02] p-2.5 rounded-2xl border border-white/5">
+                  <div>
+                    <span className="text-slate-500 block text-[9px] uppercase font-black">Partidas</span>
+                    <span className="text-sm text-white font-black">{userStats.totalJugadas}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[9px] uppercase font-black">Aciertos</span>
+                    <span className="text-sm text-emerald-400 font-black">{userStats.totalCorrectas}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[9px] uppercase font-black">Puntuación</span>
+                    <span className="text-sm text-amber-400 font-black">{userStats.puntosTotales} PTS</span>
+                  </div>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-4 text-xs font-bold text-slate-300 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-white/5 pt-2 sm:pt-0">
-                <div>
-                  <span className="text-slate-500 block text-[9px] uppercase">Partidas</span>
-                  <span className="text-sm text-white font-black">{userStats.totalJugadas}</span>
+
+              {/* BARRA DE PROGRESO DE RANGO JURIDICO */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-slate-300 flex items-center gap-1.5">
+                    <RangoIcon className="w-4 h-4 text-amber-400" />
+                    <span>Progreso de Rango: <strong className="text-white">{rangoActual.nombre}</strong></span>
+                  </span>
+                  <span className="text-slate-400 text-[11px]">
+                    {proximoRango ? (
+                      <>Siguiente Rango: <strong className="text-amber-300">{proximoRango.nombre}</strong> ({proximoRango.minPuntos - userStats.puntosTotales} PTS restantes)</>
+                    ) : (
+                      <span className="text-amber-400 font-black">¡Magistratura Máxima Alcanzada!</span>
+                    )}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-slate-500 block text-[9px] uppercase">Aciertos</span>
-                  <span className="text-sm text-emerald-400 font-black">{userStats.totalCorrectas}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 block text-[9px] uppercase">Puntos</span>
-                  <span className="text-sm text-amber-400 font-black">{userStats.puntosTotales} PTS</span>
+
+                <div className="w-full bg-slate-950/60 rounded-full h-3 p-0.5 border border-white/10 overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${porcentajeRango}%` }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className={cn("h-full rounded-full bg-gradient-to-r shadow-lg", rangoActual.colorGradient)}
+                  />
                 </div>
               </div>
             </div>
@@ -601,111 +682,153 @@ export default function Trivia() {
           </motion.div>
         )}
 
-        {/* PESTAÑA: TOP RANKINGS */}
+        {/* PESTAÑA: TOP RANKINGS E INDEPENDIENTES POR RAMA */}
         {!inGame && activeTab === "ranking" && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-4 md:space-y-6"
           >
-            {/* FILTROS LEADERBOARD */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white/[0.02] border border-white/10 p-3.5 md:p-4 rounded-2xl">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-400" />
-                <h2 className="font-bold text-sm md:text-base text-white">Tabla de Posiciones Universitarias</h2>
+            {/* FILTROS Y SELECTOR DE LEADERBOARD POR RAMA */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white/[0.02] border border-white/10 p-3.5 md:p-4 rounded-2xl">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-amber-400" />
+                  <div>
+                    <h2 className="font-bold text-sm md:text-base text-white">Tabla de Posiciones Universitarias</h2>
+                    <p className="text-[11px] text-slate-400">Puntuación {leaderboardFilter === "todas" ? "General Acumulada" : `específica de ${CATEGORIAS_TRIVIA.find(c => c.id === leaderboardFilter)?.nombre || "la rama"}`}</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-1.5 w-full sm:w-auto">
+              {/* TABS SELECTORAS DE RAMAS INDEPENDIENTES */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
                 <button
                   onClick={() => setLeaderboardFilter("todas")}
                   className={cn(
-                    "px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer min-h-[32px]",
-                    leaderboardFilter === "todas" ? "bg-amber-500 text-slate-950" : "bg-white/10 text-slate-300 hover:bg-white/20"
+                    "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer border min-h-[36px] flex items-center gap-1.5",
+                    leaderboardFilter === "todas" 
+                      ? "bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20" 
+                      : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
                   )}
                 >
-                  Top General
+                  <Trophy className="w-3.5 h-3.5" />
+                  <span>Ranking General</span>
                 </button>
-                {CATEGORIAS_TRIVIA.slice(0, 3).map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setLeaderboardFilter(cat.id)}
-                    className={cn(
-                      "px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer min-h-[32px]",
-                      leaderboardFilter === cat.id ? "bg-amber-500 text-slate-950" : "bg-white/10 text-slate-300 hover:bg-white/20"
-                    )}
-                  >
-                    Top {cat.nombre}
-                  </button>
-                ))}
+                {CATEGORIAS_TRIVIA.map(cat => {
+                  const CatIcon = ICON_MAP[cat.icono] || Scale;
+                  const isSelected = leaderboardFilter === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setLeaderboardFilter(cat.id)}
+                      className={cn(
+                        "px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border min-h-[36px] flex items-center gap-1.5",
+                        isSelected 
+                          ? "bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20" 
+                          : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
+                      )}
+                    >
+                      <CatIcon className="w-3.5 h-3.5" />
+                      <span>{cat.nombre}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* TABLA RESPONSIVA DE POSICIONES */}
+            {/* TABLA RESPONSIVA DE POSICIONES CON RANGOS JURÍDICOS */}
             <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-3 md:p-6 overflow-x-auto shadow-2xl">
-              {filteredLeaderboard.length === 0 ? (
-                <div className="text-center py-12 space-y-3">
-                  <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                    <Trophy className="w-6 h-6" />
-                  </div>
-                  <p className="text-sm font-bold text-white">Aún no hay puntuaciones en esta clasificación.</p>
-                  <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                    ¡Sé el primero en jugar y registrar tus puntos oficiales en la tabla de posiciones!
-                  </p>
-                </div>
-              ) : (
-                <table className="w-full text-left text-xs md:text-sm">
-                  <thead>
-                    <tr className="border-b border-white/10 text-slate-400 text-[10px] md:text-xs font-black uppercase">
-                      <th className="pb-3 px-2 text-center">Pos</th>
-                      <th className="pb-3 px-2">Estudiante</th>
-                      <th className="pb-3 px-2 hidden sm:table-cell">Materia Fav</th>
-                      <th className="pb-3 px-2 text-center">Aciertos</th>
-                      <th className="pb-3 px-2 text-right">Puntos</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {filteredLeaderboard.map((u) => {
-                      const isTop1 = u.posicion === 1;
-                      const isTop2 = u.posicion === 2;
-                      const isTop3 = u.posicion === 3;
-                      const isMe = u.id === user.id || u.nombre === userName;
+              {(() => {
+                const processedList = [...leaderboardList]
+                  .map(e => {
+                    const eCatPoints = e.puntosPorCategoria || {};
+                    const displayPts = leaderboardFilter === "todas" 
+                      ? e.puntos 
+                      : (eCatPoints[leaderboardFilter] !== undefined 
+                          ? eCatPoints[leaderboardFilter] 
+                          : (e.materiaFav.toLowerCase().includes(CATEGORIAS_TRIVIA.find(c => c.id === leaderboardFilter)?.nombre.toLowerCase() || "___") ? e.puntos : 0));
+                    return {
+                      ...e,
+                      displayPts,
+                      rango: calcularRango(e.puntos)
+                    };
+                  })
+                  .filter(e => leaderboardFilter === "todas" || e.displayPts > 0 || e.id === user?.id)
+                  .sort((a, b) => b.displayPts - a.displayPts)
+                  .map((e, idx) => ({ ...e, posicion: idx + 1 }));
 
-                      return (
-                        <tr key={u.id} className={cn("hover:bg-white/[0.02] transition-colors", isMe && "bg-red-500/10")}>
-                          <td className="py-3 px-2 text-center">
-                            <span className={cn(
-                              "inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-xs",
-                              isTop1 && "bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20",
-                              isTop2 && "bg-slate-300 text-slate-950",
-                              isTop3 && "bg-amber-700 text-white",
-                              !isTop1 && !isTop2 && !isTop3 && "bg-white/10 text-slate-300"
-                            )}>
-                              {u.posicion}
-                            </span>
-                          </td>
-                          <td className="py-3 px-2 font-bold text-white">
-                            <div className="flex items-center gap-2">
-                              <span>{u.nombre}</span>
-                              {isMe && (
-                                <span className="text-[8px] bg-red-500/30 text-red-300 px-1.5 py-0.5 rounded-full font-black uppercase">Tú</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-3 px-2 text-slate-400 hidden sm:table-cell">
-                            {u.materiaFav}
-                          </td>
-                          <td className="py-3 px-2 text-center font-bold text-emerald-400">
-                            {u.aciertosPorcentaje}%
-                          </td>
-                          <td className="py-3 px-2 text-right font-black text-white text-sm md:text-base">
-                            {u.puntos} PTS
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
+                if (processedList.length === 0) {
+                  return (
+                    <div className="text-center py-12 space-y-3">
+                      <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <Trophy className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm font-bold text-white">Aún no hay puntuaciones registradas en esta rama.</p>
+                      <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                        ¡Jugá una partida en esta materia para inaugurar la tabla de posiciones oficiales!
+                      </p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <table className="w-full text-left text-xs md:text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10 text-slate-400 text-[10px] md:text-xs font-black uppercase">
+                        <th className="pb-3 px-2 text-center">Pos</th>
+                        <th className="pb-3 px-2">Estudiante</th>
+                        <th className="pb-3 px-2 text-center">Rango Jurídico</th>
+                        <th className="pb-3 px-2 text-center hidden sm:table-cell">Aciertos</th>
+                        <th className="pb-3 px-2 text-right">Puntos</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {processedList.map((u) => {
+                        const isTop1 = u.posicion === 1;
+                        const isTop2 = u.posicion === 2;
+                        const isTop3 = u.posicion === 3;
+                        const isMe = u.id === user?.id || u.nombre === userName;
+
+                        return (
+                          <tr key={u.id} className={cn("hover:bg-white/[0.02] transition-colors", isMe && "bg-red-500/10")}>
+                            <td className="py-3 px-2 text-center">
+                              <span className={cn(
+                                "inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-xs",
+                                isTop1 && "bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20",
+                                isTop2 && "bg-slate-300 text-slate-950",
+                                isTop3 && "bg-amber-700 text-white",
+                                !isTop1 && !isTop2 && !isTop3 && "bg-white/10 text-slate-300"
+                              )}>
+                                {u.posicion}
+                              </span>
+                            </td>
+                            <td className="py-3 px-2 font-bold text-white">
+                              <div className="flex items-center gap-2">
+                                <span>{u.nombre}</span>
+                                {isMe && (
+                                  <span className="text-[8px] bg-red-500/30 text-red-300 px-1.5 py-0.5 rounded-full font-black uppercase">Tú</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-2 text-center">
+                              <span className={cn("inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border tracking-wider", u.rango.badgeStyle)}>
+                                {u.rango.nombre}
+                              </span>
+                            </td>
+                            <td className="py-3 px-2 text-center font-bold text-emerald-400 hidden sm:table-cell">
+                              {u.aciertosPorcentaje}%
+                            </td>
+                            <td className="py-3 px-2 text-right font-black text-amber-400 text-sm md:text-base">
+                              {u.displayPts} PTS
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                );
+              })()}
             </div>
           </motion.div>
         )}
