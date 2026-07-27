@@ -83,6 +83,23 @@ export default function Trivia() {
   const [maxStreak, setMaxStreak] = useState(0);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   
+  // Comodines de Cátedra (Lifelines)
+  const [lifelines, setLifelines] = useState({
+    used5050: false,
+    usedHint: false,
+    usedExtraTime: false
+  });
+  const [disabledOptions, setDisabledOptions] = useState<number[]>([]);
+  const [showHint, setShowHint] = useState(false);
+
+  // Historial de la Partida (Modo Repaso de Errores)
+  const [gameHistory, setGameHistory] = useState<Array<{
+    question: TriviaQuestion;
+    userOptionIndex: number | null;
+    isCorrect: boolean;
+  }>>([]);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  
   // Timer por pregunta (15s)
   const [timeLeft, setTimeLeft] = useState(15);
   const [gameOver, setGameOver] = useState(false);
@@ -360,9 +377,37 @@ export default function Trivia() {
     setTimeLeft(15);
     setGameOver(false);
     setInGame(true);
+    setLifelines({ used5050: false, usedHint: false, usedExtraTime: false });
+    setDisabledOptions([]);
+    setShowHint(false);
+    setGameHistory([]);
+    setShowReviewModal(false);
   };
 
   const currentQuestion = questionsPool[currentIndex];
+
+  // Handlers para Comodines
+  const use5050 = () => {
+    if (lifelines.used5050 || isAnswered || !currentQuestion) return;
+    const correctIdx = currentQuestion.respuesta_correcta_index;
+    const incorrectIndices = [0, 1, 2, 3].filter(idx => idx !== correctIdx);
+    const shuffled = [...incorrectIndices].sort(() => Math.random() - 0.5);
+    const disabledTwo = shuffled.slice(0, 2);
+    setDisabledOptions(disabledTwo);
+    setLifelines(prev => ({ ...prev, used5050: true }));
+  };
+
+  const useHint = () => {
+    if (lifelines.usedHint || isAnswered || !currentQuestion) return;
+    setShowHint(true);
+    setLifelines(prev => ({ ...prev, usedHint: true }));
+  };
+
+  const useExtraTime = () => {
+    if (lifelines.usedExtraTime || isAnswered || !currentQuestion) return;
+    setTimeLeft(prev => prev + 10);
+    setLifelines(prev => ({ ...prev, usedExtraTime: true }));
+  };
 
   const handleSelectOption = (index: number) => {
     if (isAnswered) return;
@@ -370,6 +415,16 @@ export default function Trivia() {
     setIsAnswered(true);
 
     const isCorrect = index === currentQuestion.respuesta_correcta_index;
+
+    // Registrar respuesta para el modo repaso
+    setGameHistory(prev => [
+      ...prev,
+      {
+        question: currentQuestion,
+        userOptionIndex: index,
+        isCorrect
+      }
+    ]);
 
     if (isCorrect) {
       setCorrectAnswersCount(prev => prev + 1);
@@ -392,6 +447,8 @@ export default function Trivia() {
       setSelectedOption(null);
       setIsAnswered(false);
       setTimeLeft(15);
+      setDisabledOptions([]);
+      setShowHint(false);
     } else {
       setGameOver(true);
       saveStats(correctAnswersCount, score, maxStreak);
@@ -905,6 +962,73 @@ export default function Trivia() {
               </div>
             </div>
 
+            {/* COMODINES DE CÁTEDRA */}
+            {!isAnswered && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 rounded-2xl bg-white/[0.02] border border-white/10">
+                <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Comodines de Cátedra:</span>
+                </span>
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-between">
+                  <button
+                    onClick={use5050}
+                    disabled={lifelines.used5050}
+                    className={cn(
+                      "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 cursor-pointer border min-h-[34px]",
+                      lifelines.used5050
+                        ? "bg-white/5 text-slate-600 border-white/5 cursor-not-allowed"
+                        : "bg-indigo-500/20 text-indigo-300 border-indigo-500/40 hover:bg-indigo-500/30"
+                    )}
+                    title="Elimina 2 opciones incorrectas"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>50:50</span>
+                  </button>
+
+                  <button
+                    onClick={useHint}
+                    disabled={lifelines.usedHint}
+                    className={cn(
+                      "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 cursor-pointer border min-h-[34px]",
+                      lifelines.usedHint
+                        ? "bg-white/5 text-slate-600 border-white/5 cursor-not-allowed"
+                        : "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                    )}
+                    title="Muestra la norma o jurisprudencia de la pregunta"
+                  >
+                    <BookOpenCheck className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Pista</span>
+                  </button>
+
+                  <button
+                    onClick={useExtraTime}
+                    disabled={lifelines.usedExtraTime}
+                    className={cn(
+                      "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-1.5 cursor-pointer border min-h-[34px]",
+                      lifelines.usedExtraTime
+                        ? "bg-white/5 text-slate-600 border-white/5 cursor-not-allowed"
+                        : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
+                    )}
+                    title="Suma +10 segundos al temporizador"
+                  >
+                    <Timer className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>+10s</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* PISTA MOSTRADA */}
+            {showHint && !isAnswered && (
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-start gap-2">
+                <BookOpenCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold text-[10px] uppercase text-amber-400">Pista de Cátedra:</p>
+                  <p className="italic text-[11px]">{currentQuestion.fundamento_juridico}</p>
+                </div>
+              </div>
+            )}
+
             {/* ENUNCIADO DE LA PREGUNTA */}
             <div className="py-1">
               <h2 className="text-base md:text-xl font-bold leading-relaxed text-white">
@@ -917,10 +1041,13 @@ export default function Trivia() {
               {currentQuestion.opciones.map((opcion, idx) => {
                 const isSelected = selectedOption === idx;
                 const isCorrect = idx === currentQuestion.respuesta_correcta_index;
+                const isDisabledBy5050 = disabledOptions.includes(idx);
                 
                 let btnStyle = "bg-white/[0.02] border-white/10 text-slate-200 active:bg-white/10";
 
-                if (isAnswered) {
+                if (isDisabledBy5050) {
+                  btnStyle = "bg-white/[0.01] border-white/5 opacity-20 pointer-events-none text-slate-600 line-through";
+                } else if (isAnswered) {
                   if (isCorrect) {
                     btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-200 font-bold shadow-md shadow-emerald-500/10";
                   } else if (isSelected && !isCorrect) {
@@ -933,7 +1060,7 @@ export default function Trivia() {
                 return (
                   <button
                     key={idx}
-                    disabled={isAnswered}
+                    disabled={isAnswered || isDisabledBy5050}
                     onClick={() => handleSelectOption(idx)}
                     className={cn(
                       "w-full p-3.5 md:p-4 rounded-xl border text-left transition-all duration-150 flex items-start gap-3 cursor-pointer text-xs md:text-sm min-h-[48px]",
@@ -1017,6 +1144,15 @@ export default function Trivia() {
                 <RotateCcw className="w-4 h-4" />
                 <span>Jugar Otra Vez</span>
               </button>
+
+              <button
+                onClick={() => setShowReviewModal(true)}
+                className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-5 rounded-xl shadow-lg transition-all cursor-pointer min-h-[44px] text-xs uppercase"
+              >
+                <BookOpenCheck className="w-4 h-4 text-indigo-300" />
+                <span>Repasar Explicaciones</span>
+              </button>
+
               <button
                 onClick={() => { setInGame(false); setActiveTab("ranking"); }}
                 className="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-5 rounded-xl shadow-lg transition-all cursor-pointer min-h-[44px] text-xs uppercase"
@@ -1106,6 +1242,109 @@ export default function Trivia() {
                     className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
                   >
                     Cerrar
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* MODAL DE REPASO DE ERRORES Y FUNDAMENTOS */}
+        <AnimatePresence>
+          {showReviewModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="bg-slate-900 border border-white/15 rounded-3xl p-5 md:p-6 max-w-3xl w-full space-y-5 shadow-2xl overflow-y-auto max-h-[90vh]"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-indigo-500/20 border border-indigo-500/30 rounded-2xl text-indigo-400">
+                      <BookOpenCheck className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h2 className="text-base md:text-lg font-black text-white">Repaso de la Partida</h2>
+                      <p className="text-xs text-slate-400">Revisión de respuestas y fundamentos jurídicos oficiales</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowReviewModal(false)}
+                    className="p-2 text-slate-400 hover:text-white rounded-full bg-white/5 hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {gameHistory.map((item, qIdx) => {
+                    const q = item.question;
+                    return (
+                      <div 
+                        key={qIdx}
+                        className={cn(
+                          "p-4 rounded-2xl border space-y-3",
+                          item.isCorrect 
+                            ? "bg-emerald-500/[0.03] border-emerald-500/30" 
+                            : "bg-red-500/[0.03] border-red-500/30"
+                        )}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "px-2 py-0.5 rounded-full text-[10px] font-black uppercase border",
+                              item.isCorrect ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" : "bg-red-500/20 text-red-300 border-red-500/40"
+                            )}>
+                              {item.isCorrect ? "Correcta ✓" : "Incorrecta ✕"}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-bold uppercase">{q.categoria_nombre}</span>
+                          </div>
+                          <span className="text-xs font-mono font-bold text-slate-400">Pregunta {qIdx + 1}</span>
+                        </div>
+
+                        <p className="font-bold text-sm text-white">{q.pregunta}</p>
+
+                        <div className="space-y-1.5 text-xs">
+                          {q.opciones.map((op, oIdx) => {
+                            const isCorrectOpt = oIdx === q.respuesta_correcta_index;
+                            const isUserSelected = oIdx === item.userOptionIndex;
+
+                            return (
+                              <div 
+                                key={oIdx}
+                                className={cn(
+                                  "p-2.5 rounded-xl border flex items-center justify-between text-xs",
+                                  isCorrectOpt && "bg-emerald-500/20 border-emerald-500/50 text-emerald-200 font-bold",
+                                  isUserSelected && !isCorrectOpt && "bg-red-500/20 border-red-500/50 text-red-200 line-through",
+                                  !isCorrectOpt && !isUserSelected && "bg-white/[0.01] border-white/5 text-slate-400 opacity-60"
+                                )}
+                              >
+                                <span>{String.fromCharCode(65 + oIdx)}. {op}</span>
+                                {isCorrectOpt && <span className="text-[10px] uppercase font-black text-emerald-400 ml-2">Correcta</span>}
+                                {isUserSelected && !isCorrectOpt && <span className="text-[10px] uppercase font-black text-red-400 ml-2">Tu Elección</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-xs space-y-1">
+                          <p className="font-black text-[10px] uppercase text-indigo-400 flex items-center gap-1">
+                            <BookOpenCheck className="w-3.5 h-3.5" /> Fundamento Jurídico Oficial:
+                          </p>
+                          <p className="italic text-[11px] leading-relaxed">{q.fundamento_juridico}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="pt-2 flex justify-end">
+                  <button
+                    onClick={() => setShowReviewModal(false)}
+                    className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all cursor-pointer"
+                  >
+                    Cerrar Repaso
                   </button>
                 </div>
               </motion.div>
