@@ -70,6 +70,9 @@ export interface RangoJuridico {
   descripcion: string;
 }
 
+// =========================================================================
+// ESCALA OFICIAL DE 12 RANGOS JURÍDICOS
+// =========================================================================
 export const RANGOS_JURIDICOS: RangoJuridico[] = [
   {
     id: "ingresante",
@@ -79,57 +82,117 @@ export const RANGOS_JURIDICOS: RangoJuridico[] = [
     iconoNombre: "BookOpen",
     colorGradient: "from-slate-500 to-zinc-600",
     badgeStyle: "bg-slate-500/20 text-slate-300 border-slate-500/30",
-    descripcion: "Dando los primeros pasos en las aulas de abogacía."
+    descripcion: "Dando los primeros pasos en las aulas de la FCJyS y adaptándose al ingreso."
+  },
+  {
+    id: "practicante",
+    nombre: "Practicante",
+    minPuntos: 100,
+    maxPuntos: 249,
+    iconoNombre: "Building2",
+    colorGradient: "from-blue-500 to-cyan-600",
+    badgeStyle: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+    descripcion: "Recorriendo mesas de entradas, pasillos de Tribunales y con el Plan al día."
   },
   {
     id: "estudiante_avanzado",
     nombre: "Estudiante Avanzado",
-    minPuntos: 100,
-    maxPuntos: 299,
+    minPuntos: 250,
+    maxPuntos: 499,
     iconoNombre: "GraduationCap",
-    colorGradient: "from-blue-500 to-cyan-600",
-    badgeStyle: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    descripcion: "Con los codos gastados y el Plan de Estudios al día."
+    colorGradient: "from-cyan-500 to-teal-600",
+    badgeStyle: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
+    descripcion: "Con las materias más pesadas metidas y los codos gastados en la biblioteca."
+  },
+  {
+    id: "graduado_reciente",
+    nombre: "Graduado Reciente",
+    minPuntos: 500,
+    maxPuntos: 899,
+    iconoNombre: "FileText",
+    colorGradient: "from-teal-500 to-emerald-600",
+    badgeStyle: "bg-teal-500/20 text-teal-300 border-teal-500/30",
+    descripcion: "Título en mano, juramento cumplido y esperando la habilitación del diploma."
   },
   {
     id: "abogado_joven",
     nombre: "Abogado Joven",
-    minPuntos: 300,
-    maxPuntos: 699,
+    minPuntos: 900,
+    maxPuntos: 1499,
     iconoNombre: "Briefcase",
-    colorGradient: "from-emerald-500 to-teal-600",
+    colorGradient: "from-emerald-500 to-green-600",
     badgeStyle: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
-    descripcion: "Matriculado con la chapa en la mano litiga sus primeros expedientes."
+    descripcion: "Matriculado con sello fresco, token en mano y los primeros escritos ingresados."
+  },
+  {
+    id: "especialista_docente",
+    nombre: "Especialista / Docente Adscripto",
+    minPuntos: 1500,
+    maxPuntos: 2299,
+    iconoNombre: "Award",
+    colorGradient: "from-green-500 to-lime-600",
+    badgeStyle: "bg-green-500/20 text-green-300 border-green-500/30",
+    descripcion: "Dominio de cátedra, posgrados en marcha y sólidas estrategias en el fuero."
   },
   {
     id: "abogado_experto",
     nombre: "Abogado Experto",
-    minPuntos: 700,
-    maxPuntos: 1299,
-    iconoNombre: "Award",
+    minPuntos: 2300,
+    maxPuntos: 3499,
+    iconoNombre: "Scale",
     colorGradient: "from-amber-500 to-orange-600",
     badgeStyle: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    descripcion: "Dominio de expedientes, recursos de apelación y alegatos."
+    descripcion: "Litigante de peso, referencia de doctrina, jurisprudencia y casos complejos."
   },
   {
-    id: "juez",
-    nombre: "Juez de Cámara",
-    minPuntos: 1300,
-    maxPuntos: 2499,
+    id: "secretario_juzgado",
+    nombre: "Secretario de Juzgado",
+    minPuntos: 3500,
+    maxPuntos: 4999,
+    iconoNombre: "BookOpenCheck",
+    colorGradient: "from-orange-500 to-rose-600",
+    badgeStyle: "bg-orange-500/20 text-orange-300 border-orange-500/30",
+    descripcion: "Brazo ejecutor del despacho judicial, despachando expedientes con rigor técnico."
+  },
+  {
+    id: "juez_primera_instancia",
+    nombre: "Juez de Primera Instancia",
+    minPuntos: 5000,
+    maxPuntos: 6999,
     iconoNombre: "Gavel",
-    colorGradient: "from-violet-500 to-purple-600",
-    badgeStyle: "bg-violet-500/20 text-violet-300 border-violet-500/30",
-    descripcion: "Prestigioso magistrado que dicta sentencias y sienta doctrina."
+    colorGradient: "from-rose-500 to-red-600",
+    badgeStyle: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+    descripcion: "Titular de juzgado con solvencia jurídica, imparcialidad y firma decisiva."
   },
   {
-    id: "doctrinario_leyenda",
-    nombre: "Doctrinario Leyenda",
-    minPuntos: 2500,
+    id: "camarista",
+    nombre: "Camarista / Juez",
+    minPuntos: 7000,
+    maxPuntos: 9999,
+    iconoNombre: "Landmark",
+    colorGradient: "from-purple-500 to-violet-600",
+    badgeStyle: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+    descripcion: "Integrante de Cámara de Apelaciones revisando fallos y sentando jurisprudencia."
+  },
+  {
+    id: "ministro_scba",
+    nombre: "Ministro de la Suprema Corte Provincial",
+    minPuntos: 10000,
+    maxPuntos: 14999,
+    iconoNombre: "Medal",
+    colorGradient: "from-violet-500 to-indigo-600",
+    badgeStyle: "bg-violet-500/20 text-violet-300 border-violet-500/30",
+    descripcion: "Máxima autoridad jurisprudencial a nivel provincial con impacto institucional."
+  },
+  {
+    id: "juez_csjn",
+    nombre: "Juez de la Corte Suprema de la Nación",
+    minPuntos: 15000,
     maxPuntos: 999999,
     iconoNombre: "Sparkles",
-    colorGradient: "from-yellow-400 via-amber-500 to-red-500",
+    colorGradient: "from-yellow-400 via-amber-500 to-orange-500",
     badgeStyle: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 font-black",
-    descripcion: "Autor de tratados jurídicos consultado por la Suprema Corte."
+    descripcion: "Cúspide de la magistratura constitucional de la República Argentina."
   }
 ];
 
@@ -397,11 +460,16 @@ export const CATEGORIAS_TRIVIA: CategoriaTrivia[] = [
   }
 ];
 
-export const MOCK_LEADERBOARD: LeaderboardEntry[] = [];
+export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
+  { id: "lead_1", posicion: 1, nombre: "Dr. Gonzalo Arrua", facultad: "FCJyS - UNLP", materiaFav: "Derecho Procesal Civil", puntos: 1850, aciertosPorcentaje: 94, racha: 18 },
+  { id: "lead_2", posicion: 2, nombre: "Dra. Sofía Benítez", facultad: "FCJyS - UNLP", materiaFav: "Derecho Penal II", puntos: 1420, aciertosPorcentaje: 89, racha: 12 },
+  { id: "lead_3", posicion: 3, nombre: "Esteban Quiroga", facultad: "FCJyS - UNLP", materiaFav: "Derecho Constitucional", puntos: 980, aciertosPorcentaje: 82, racha: 8 },
+  { id: "lead_4", posicion: 4, nombre: "Camila Fernández", facultad: "FCJyS - UNLP", materiaFav: "Derecho Privado III", puntos: 720, aciertosPorcentaje: 78, racha: 6 },
+  { id: "lead_5", posicion: 5, nombre: "Mateo Rossi", facultad: "FCJyS - UNLP", materiaFav: "Derecho Administrativo I", puntos: 450, aciertosPorcentaje: 74, racha: 4 }
+];
 
 // =========================================================================
 // BANCO COMPLETO DE PREGUNTAS CLASIFICADAS POR MATERIA DEL PLAN DE ESTUDIOS
-// (SE REMUERE COMPLETAMENTE CUALQUIER PREGUNTA INSTITUCIONAL DE LA UNLP)
 // =========================================================================
 export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
   // --- 1ER AÑO: INTRODUCCIÓN AL DERECHO ---
@@ -508,22 +576,6 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     fundamento_juridico: "Art. 25 del Código Civil y Comercial de la Nación (Ley 26.994).",
     puntos_base: 10
   },
-  {
-    id: "priv1-m-01",
-    id_categoria: "derecho_privado1",
-    categoria_nombre: "Derecho Privado I (Civil Gral)",
-    dificultad: "media",
-    pregunta: "¿Cuáles son los tres vicios propios de los actos jurídicos en el Código Civil y Comercial?",
-    opciones: [
-      "Lesión, Simulación y Fraude.",
-      "Error, Dolo y Violencia.",
-      "Mora, Culpa y Dolo contractual.",
-      "Vicio redhibitorio, evicción y frustración."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "CCyCN, Libro Primero, Título IV, Capítulos 6, 7 y 8 (Arts. 332, 333 y 338).",
-    puntos_base: 25
-  },
 
   // --- 2DO AÑO: DERECHO PENAL I ---
   {
@@ -554,22 +606,6 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     respuesta_correcta_index: 0,
     fundamento_juridico: "Art. 865 del Código Civil y Comercial de la Nación.",
     puntos_base: 10
-  },
-  {
-    id: "priv2-m-01",
-    id_categoria: "derecho_privado2",
-    categoria_nombre: "Derecho Privado II (Obligaciones)",
-    dificultad: "media",
-    pregunta: "¿Qué exige el Código Civil y Comercial para configurar la mora del deudor en obligaciones a plazo determinado expreso?",
-    opciones: [
-      "La mora se produce por el solo vencimiento del plazo sin necesidad de interpelación previa (mora automática).",
-      "Es obligatoria una carta documento de intimación formal con 15 días.",
-      "Requiere una mediación judicial obligatoria.",
-      "Requiere la homologación de un Juez de Comercio."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 886 CCyCN: 'La mora del deudor se produce por el solo transcurso del tiempo fijado para el cumplimiento'.",
-    puntos_base: 25
   },
 
   // --- 3ER AÑO: DERECHO PENAL II ---
@@ -637,22 +673,6 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     respuesta_correcta_index: 0,
     fundamento_juridico: "Art. 971 del Código Civil y Comercial de la Nación.",
     puntos_base: 10
-  },
-  {
-    id: "priv3-m-01",
-    id_categoria: "derecho_privado3",
-    categoria_nombre: "Derecho Privado III (Contratos)",
-    dificultad: "media",
-    pregunta: "¿Qué figura jurídica del Art. 1091 CCyCN autoriza a resolver o adecuar un contrato cuando la prestación se torna excesivamente onerosa por acontecimientos extraordinarios e imprevisibles?",
-    opciones: [
-      "Teoría de la Imprevisión.",
-      "Pacto Comisorio Implícito.",
-      "Señal o Arras probatoria.",
-      "Evicción procesal."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 1091 CCyCN sobre Imprevisión e Imposibilidad de Cumplimiento.",
-    puntos_base: 25
   },
 
   // --- 4TO AÑO: DERECHO PROCESAL CIVIL ---

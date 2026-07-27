@@ -44,7 +44,8 @@ import {
   Coins,
   Shield,
   Leaf,
-  Zap
+  Zap,
+  Plus
 } from "lucide-react";
 import { 
   TRIVIA_QUESTIONS, 
@@ -59,7 +60,6 @@ import {
   CategoriaTrivia
 } from "@/data/triviaData";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
 
 const ICON_MAP: Record<string, any> = {
   Scale,
@@ -79,35 +79,59 @@ const ICON_MAP: Record<string, any> = {
   Shield,
   Leaf,
   Award,
-  BookOpenCheck
+  BookOpenCheck,
+  Medal,
+  Zap
 };
 
 export default function Trivia() {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<"juego" | "duelos" | "ranking">("juego");
+  // Pestañas Principales: "evaluacion" | "duelos" | "ranking"
+  const [activeTab, setActiveTab] = useState<"evaluacion" | "duelos" | "ranking">("evaluacion");
   const [showRangosModal, setShowRangosModal] = useState(false);
 
   // Filtro de Año de Carrera: 0 = Toda la Carrera, 1 = 1º Año, 2 = 2º Año, 3 = 3º Año, 4 = 4º Año, 5 = 5º Año
   const [selectedYearFilter, setSelectedYearFilter] = useState<number>(0);
   
   // Estado de Duelos 1v1
-  const [duelosList, setDuelosList] = useState<DueloTrivia[]>([]);
+  const [duelosList, setDuelosList] = useState<DueloTrivia[]>(() => {
+    try {
+      const saved = localStorage.getItem("dnd_duelos_list");
+      return saved ? JSON.parse(saved) : [
+        {
+          id: "DND-829",
+          esPublico: true,
+          materiaId: "todas",
+          materiaNombre: "Toda la Carrera",
+          preguntasIds: [],
+          player1Id: "p1_mock",
+          player1Nombre: "Dr. Gonzalo Arrua",
+          player1Aciertos: 5,
+          player1TiempoMs: 14000,
+          player1Puntos: 120,
+          player1Completed: true,
+          status: "esperando_rival",
+          createdAt: "Hoy 17:30"
+        }
+      ];
+    } catch {
+      return [];
+    }
+  });
+
   const [inputCodigoDuelo, setInputCodigoDuelo] = useState("");
-  const [currentDuelo, setCurrentDuelo] = useState<DueloTrivia | null>(null);
-  const [dueloRole, setDueloRole] = useState<"player1" | "player2" | null>(null);
-  const [copiedCode, setCopiedCode] = useState(false);
-  const [dueloVersusModal, setDueloVersusModal] = useState<DueloTrivia | null>(null);
   const [createdDueloModal, setCreatedDueloModal] = useState<DueloTrivia | null>(null);
   const [dueloFilterTab, setDueloFilterTab] = useState<"publicas" | "mis_duelos">("publicas");
-  
-  // Filtros de juego
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  // Filtros de juego Solo
   const [selectedCategoria, setSelectedCategoria] = useState<string>("todas");
   const [selectedDificultad, setSelectedDificultad] = useState<string>("todas");
   const [questionsCount, setQuestionsCount] = useState<number>(5);
 
-  // Estado del juego
+  // Estado del juego solo
   const [inGame, setInGame] = useState(false);
   const [questionsPool, setQuestionsPool] = useState<TriviaQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -117,49 +141,27 @@ export default function Trivia() {
   const [streak, setStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
-  
-  // Comodines
-  const [lifelines, setLifelines] = useState({
-    used5050: false,
-    usedHint: false,
-    usedExtraTime: false
-  });
-  const [disabledOptions, setDisabledOptions] = useState<number[]>([]);
-  const [showHint, setShowHint] = useState(false);
-  const [currentQuestionPenalty, setCurrentQuestionPenalty] = useState(0);
 
-  // Historial de la Partida
-  const [gameHistory, setGameHistory] = useState<Array<{
-    question: TriviaQuestion;
-    userOptionIndex: number | null;
-    isCorrect: boolean;
-  }>>([]);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  
   // Timer por pregunta
   const [timeLeft, setTimeLeft] = useState(15);
   const [gameOver, setGameOver] = useState(false);
-  
-  // User Stats & Leaderboard
-  const [leaderboardFilter, setLeaderboardFilter] = useState<string>("todas");
-  const [leaderboardList, setLeaderboardList] = useState<LeaderboardEntry[]>([]);
+
+  // Estadísticas del usuario acumuladas
   const [userStats, setUserStats] = useState<{
     totalJugadas: number;
     totalCorrectas: number;
     puntosTotales: number;
     mejorRacha: number;
-    puntosPorCategoria: Record<string, number>;
-  }>({
-    totalJugadas: 0,
-    totalCorrectas: 0,
-    puntosTotales: 0,
-    mejorRacha: 0,
-    puntosPorCategoria: {}
+  }>(() => {
+    try {
+      const saved = localStorage.getItem(`dnd_trivia_user_stats`);
+      return saved ? JSON.parse(saved) : { totalJugadas: 6, totalCorrectas: 28, puntosTotales: 863, mejorRacha: 8 };
+    } catch {
+      return { totalJugadas: 6, totalCorrectas: 28, puntosTotales: 863, mejorRacha: 8 };
+    }
   });
 
   const userName = profile?.full_name || user?.email?.split("@")[0] || "Estudiante de Abogacía";
-  const isAdmin = profile?.role === "admin";
-
   const rangoActual = calcularRango(userStats.puntosTotales);
   const RangoIcon = ICON_MAP[rangoActual.iconoNombre] || BookOpen;
 
@@ -169,10 +171,23 @@ export default function Trivia() {
     ? Math.min(100, Math.round(((userStats.puntosTotales - rangoActual.minPuntos) / (proximoRango.minPuntos - rangoActual.minPuntos)) * 100))
     : 100;
 
-  // Filtrado de Categorías según el Año Seleccionado
-  const filteredCategorias = selectedYearFilter === 0
-    ? CATEGORIAS_TRIVIA
-    : CATEGORIAS_TRIVIA.filter(cat => cat.anio === selectedYearFilter || cat.id === "todas");
+  // Persistir duelos
+  useEffect(() => {
+    try {
+      localStorage.setItem("dnd_duelos_list", JSON.stringify(duelosList));
+    } catch {
+      // Ignorar
+    }
+  }, [duelosList]);
+
+  // Persistir stats
+  useEffect(() => {
+    try {
+      localStorage.setItem("dnd_trivia_user_stats", JSON.stringify(userStats));
+    } catch {
+      // Ignorar
+    }
+  }, [userStats]);
 
   // Timer Effect
   useEffect(() => {
@@ -187,20 +202,12 @@ export default function Trivia() {
     return () => clearInterval(timer);
   }, [inGame, isAnswered, gameOver, timeLeft]);
 
-  // Cargar estadísticas del usuario
-  useEffect(() => {
-    if (!user) return;
-    try {
-      const savedStats = localStorage.getItem(`dnd_trivia_stats_${user.id}`);
-      if (savedStats) {
-        setUserStats(JSON.parse(savedStats));
-      }
-    } catch {
-      // Ignorar
-    }
-  }, [user]);
+  // Filtrado de Categorías según el Año Seleccionado
+  const filteredCategorias = selectedYearFilter === 0
+    ? CATEGORIAS_TRIVIA
+    : CATEGORIAS_TRIVIA.filter(cat => cat.anio === selectedYearFilter || cat.id === "todas");
 
-  // Iniciar Trivia
+  // Iniciar Trivia Solo
   const handleStartGame = () => {
     let pool = [...TRIVIA_QUESTIONS];
 
@@ -216,7 +223,6 @@ export default function Trivia() {
       pool = [...TRIVIA_QUESTIONS];
     }
 
-    // Mezclar aleatoriamente las preguntas
     pool = pool.sort(() => 0.5 - Math.random());
     const finalPool = pool.slice(0, Math.min(questionsCount, pool.length));
 
@@ -229,16 +235,35 @@ export default function Trivia() {
     setSelectedOption(null);
     setIsAnswered(false);
     setGameOver(false);
-    setGameHistory([]);
-    setLifelines({ used5050: false, usedHint: false, usedExtraTime: false });
-    setDisabledOptions([]);
-    setShowHint(false);
-    setCurrentQuestionPenalty(0);
     setTimeLeft(15);
     setInGame(true);
   };
 
-  // Responder pregunta
+  // Crear Duelo 1vs1
+  const handleCreateDuelo = (esPublico: boolean) => {
+    const randomCode = `DND-${Math.floor(100 + Math.random() * 900)}`;
+    const cat = CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria) || CATEGORIAS_TRIVIA[0];
+
+    const nuevoDuelo: DueloTrivia = {
+      id: randomCode,
+      esPublico,
+      materiaId: cat.id,
+      materiaNombre: cat.nombre,
+      preguntasIds: TRIVIA_QUESTIONS.slice(0, 5).map(q => q.id),
+      player1Id: user?.id || "p1_anon",
+      player1Nombre: userName,
+      player1Aciertos: 0,
+      player1TiempoMs: 0,
+      player1Puntos: 0,
+      player1Completed: false,
+      status: "esperando_rival",
+      createdAt: "Recién creado"
+    };
+
+    setDuelosList(prev => [nuevoDuelo, ...prev]);
+    setCreatedDueloModal(nuevoDuelo);
+  };
+
   const handleAnswer = (optionIdx: number) => {
     if (isAnswered) return;
 
@@ -248,17 +273,11 @@ export default function Trivia() {
     const currentQ = questionsPool[currentIndex];
     const isCorrect = optionIdx === currentQ.respuesta_correcta_index;
 
-    setGameHistory(prev => [...prev, {
-      question: currentQ,
-      userOptionIndex: optionIdx,
-      isCorrect
-    }]);
-
     if (isCorrect) {
       const timeBonus = Math.floor(timeLeft * 1.5);
       const streakBonus = streak * 5;
       const basePoints = currentQ.puntos_base || 10;
-      const pointsEarned = Math.max(5, basePoints + timeBonus + streakBonus - currentQuestionPenalty);
+      const pointsEarned = Math.max(5, basePoints + timeBonus + streakBonus);
 
       setScore(prev => prev + pointsEarned);
       setStreak(prev => {
@@ -272,44 +291,25 @@ export default function Trivia() {
     }
   };
 
-  // Siguiente Pregunta
   const handleNextQuestion = () => {
     if (currentIndex + 1 < questionsPool.length) {
       setCurrentIndex(prev => prev + 1);
       setSelectedOption(null);
       setIsAnswered(false);
       setTimeLeft(15);
-      setDisabledOptions([]);
-      setShowHint(false);
-      setCurrentQuestionPenalty(0);
     } else {
       finishGame();
     }
   };
 
-  // Finalizar Partida
   const finishGame = () => {
     setGameOver(true);
-
-    if (!user) return;
-
-    const newStats = {
-      totalJugadas: userStats.totalJugadas + 1,
-      totalCorrectas: userStats.totalCorrectas + correctAnswersCount,
-      puntosTotales: userStats.puntosTotales + score,
-      mejorRacha: Math.max(userStats.mejorRacha, maxStreak),
-      puntosPorCategoria: {
-        ...userStats.puntosPorCategoria,
-        [selectedCategoria]: (userStats.puntosPorCategoria[selectedCategoria] || 0) + score
-      }
-    };
-
-    setUserStats(newStats);
-    try {
-      localStorage.setItem(`dnd_trivia_stats_${user.id}`, JSON.stringify(newStats));
-    } catch {
-      // Ignorar
-    }
+    setUserStats(prev => ({
+      totalJugadas: prev.totalJugadas + 1,
+      totalCorrectas: prev.totalCorrectas + correctAnswersCount,
+      puntosTotales: prev.puntosTotales + score,
+      mejorRacha: Math.max(prev.mejorRacha, maxStreak)
+    }));
   };
 
   const getQuestionCountForCategory = (catId: string) => {
@@ -326,7 +326,6 @@ export default function Trivia() {
       <div className="min-h-screen bg-[#070A14] text-white py-8 px-4 flex items-center justify-center relative overflow-hidden">
         <div className="max-w-2xl w-full bg-slate-900 border border-white/15 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative z-10 backdrop-blur-xl">
           
-          {/* BARRA SUPERIOR DE TIEMPO Y RACHA */}
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-2">
               <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-black uppercase tracking-wider border border-indigo-500/30">
@@ -355,17 +354,14 @@ export default function Trivia() {
             </div>
           </div>
 
-          {/* PREGUNTA */}
           <div className="space-y-3">
             <h3 className="text-base md:text-xl font-bold text-white leading-relaxed">
               {currentQ.pregunta}
             </h3>
           </div>
 
-          {/* OPCIONES DE RESPUESTA */}
           <div className="space-y-3">
             {currentQ.opciones.map((opc, idx) => {
-              const isDisabled = disabledOptions.includes(idx);
               const isSelected = selectedOption === idx;
               const isRight = idx === currentQ.respuesta_correcta_index;
 
@@ -380,11 +376,10 @@ export default function Trivia() {
               return (
                 <button
                   key={idx}
-                  disabled={isAnswered || isDisabled}
+                  disabled={isAnswered}
                   onClick={() => handleAnswer(idx)}
                   className={cn(
                     "w-full text-left p-4 rounded-2xl border transition-all text-xs md:text-sm flex items-center justify-between gap-3 cursor-pointer min-h-[50px]",
-                    isDisabled && "opacity-20 cursor-not-allowed",
                     style
                   )}
                 >
@@ -402,7 +397,6 @@ export default function Trivia() {
             })}
           </div>
 
-          {/* FUNDAMENTO JURÍDICO AL RESPONDER */}
           {isAnswered && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -410,13 +404,12 @@ export default function Trivia() {
               className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 text-xs space-y-1.5"
             >
               <span className="font-black uppercase tracking-wider text-[10px] text-indigo-300 block flex items-center gap-1">
-                <BookOpenCheck className="w-3.5 h-3.5" /> Fundamento Normativo / Doctrinario:
+                <BookOpenCheck className="w-3.5 h-3.5" /> Fundamento Normativo:
               </span>
               <p className="leading-relaxed text-slate-300">{currentQ.fundamento_juridico}</p>
             </motion.div>
           )}
 
-          {/* BOTÓN CONTINUAR */}
           {isAnswered && (
             <button
               onClick={handleNextQuestion}
@@ -432,7 +425,7 @@ export default function Trivia() {
     );
   }
 
-  // Renderizar Pantalla de Resultados de Partida (Game Over)
+  // Renderizar Pantalla de Resultados de Partida
   if (gameOver) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -486,213 +479,485 @@ export default function Trivia() {
     );
   }
 
-  // PANTALLA PRINCIPAL CON NAVEGACIÓN POR AÑO DE CARRERA
+  // PANTALLA PRINCIPAL
   return (
     <div className="min-h-screen bg-[#070A14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
       <div className="max-w-5xl mx-auto space-y-8 relative z-10">
         
-        {/* HEADER PRINCIPAL */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-black uppercase tracking-widest">
-            <Scale className="w-4 h-4" />
-            <span>Trivia Académica — Plan de Estudios Abogacía</span>
-          </div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight font-display bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
-            EVALUACIÓN POR MATERIAS
-          </h1>
-          <p className="text-xs md:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Poné a prueba tu conocimiento técnico recorriendo cada año de la carrera de abogacía o deslumbrá en el examen integral de Toda la Carrera.
-          </p>
-
-          {/* TARJETA DE RANGO Y PUNTOS DEL USUARIO */}
-          <div className="max-w-md mx-auto pt-2">
-            <div className="p-4 rounded-2xl bg-slate-900/90 border border-white/15 flex items-center justify-between gap-4 shadow-xl backdrop-blur-xl">
-              <div className="flex items-center gap-3 text-left">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shrink-0">
-                  <RangoIcon className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-black uppercase text-amber-400 block tracking-wider">Tu Rango Actual:</span>
-                  <h4 className="font-black text-sm text-white">{rangoActual.nombre}</h4>
-                </div>
+        {/* HEADER CON PAGO DE RANGO Y BARRA DE PROGRESO DE LOS 12 NIVELES */}
+        <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-5 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-indigo-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+                <RangoIcon className="w-6 h-6 animate-pulse" />
               </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">Tu Rango Jurídico:</span>
+                <h3 className="text-lg md:text-xl font-black text-white">{rangoActual.nombre}</h3>
+                <p className="text-[11px] text-slate-400">{rangoActual.descripcion}</p>
+              </div>
+            </div>
 
+            <div className="flex items-center gap-4 self-end sm:self-center">
               <div className="text-right">
-                <span className="text-[10px] font-black uppercase text-slate-400 block tracking-wider">Puntos Totales</span>
-                <span className="text-lg font-black text-amber-400 font-mono">{userStats.puntosTotales} PTS</span>
+                <span className="text-[9px] uppercase font-black text-slate-400 block">Puntos Acumulados</span>
+                <span className="text-2xl font-black text-amber-400 font-mono">{userStats.puntosTotales} PTS</span>
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* SELECTOR DE AÑOS DEL PLAN DE ESTUDIOS */}
-        <div className="flex items-center justify-center gap-2 flex-wrap pt-2">
-          {[
-            { id: 0, label: "Toda la Carrera", icon: Sparkles },
-            { id: 1, label: "1º Año", icon: BookOpen },
-            { id: 2, label: "2º Año", icon: Landmark },
-            { id: 3, label: "3º Año", icon: Scale },
-            { id: 4, label: "4º Año", icon: FileText },
-            { id: 5, label: "5º Año", icon: GraduationCap }
-          ].map((item) => {
-            const ItemIcon = item.icon;
-            const isSelected = selectedYearFilter === item.id;
-            return (
               <button
-                key={item.id}
-                onClick={() => setSelectedYearFilter(item.id)}
-                className={cn(
-                  "px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-md",
-                  isSelected
-                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 border-indigo-500 text-white shadow-indigo-600/30 scale-105"
-                    : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
-                )}
+                onClick={() => setShowRangosModal(true)}
+                className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-black text-[10px] uppercase tracking-wider transition-all cursor-pointer"
               >
-                <ItemIcon className="w-4 h-4" />
-                <span>{item.label}</span>
+                VER ESCALA DE RANGOS (12 Niveles)
               </button>
-            );
-          })}
-        </div>
-
-        {/* GRID DE SELECCIÓN DE MATERIA */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
-              <Filter className="w-4 h-4" />
-              <span>
-                {selectedYearFilter === 0 ? "Examen Integral Multi-Materia" : `Materias de ${selectedYearFilter}º Año`}
-              </span>
-            </h3>
-            <span className="text-xs font-mono text-slate-400">
-              {filteredCategorias.length} Opción(es) Disponible(s)
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {filteredCategorias.map((cat) => {
-              const CatIcon = ICON_MAP[cat.icono] || BookOpen;
-              const isSelected = selectedCategoria === cat.id;
-              const qCount = getQuestionCountForCategory(cat.id);
-
-              return (
-                <motion.div
-                  key={cat.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setSelectedCategoria(cat.id)}
-                  className={cn(
-                    "p-5 rounded-3xl border transition-all duration-300 cursor-pointer space-y-3 flex flex-col justify-between group shadow-xl relative overflow-hidden",
-                    isSelected
-                      ? "bg-gradient-to-br from-indigo-900/60 via-slate-900 to-violet-900/60 border-indigo-500 text-white shadow-indigo-900/30"
-                      : "bg-slate-900/80 border-white/10 hover:border-white/25 hover:bg-slate-900/90 text-slate-300"
-                  )}
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className={cn(
-                        "w-10 h-10 rounded-2xl flex items-center justify-center border font-bold",
-                        isSelected ? "bg-indigo-500/30 border-indigo-500 text-indigo-300" : "bg-white/5 border-white/10 text-slate-400 group-hover:text-white"
-                      )}>
-                        <CatIcon className="w-5 h-5" />
-                      </div>
-
-                      {cat.anio > 0 ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/10 text-slate-300 border border-white/10">
-                          {cat.anio}º Año
-                        </span>
-                      ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                          Global
-                        </span>
-                      )}
-                    </div>
-
-                    <div>
-                      <h4 className="font-black text-base text-white group-hover:text-indigo-300 transition-colors">
-                        {cat.nombre}
-                      </h4>
-                      <p className="text-xs text-slate-400 leading-relaxed pt-1">
-                        {cat.descripcion}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] font-bold">
-                    <span className="text-slate-400 font-mono">
-                      {qCount} Preguntas
-                    </span>
-                    <div className="flex items-center gap-1 text-indigo-400 font-black">
-                      <span>Seleccionar</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* CONFIGURACIÓN Y BOTÓN INICIAR */}
-        <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                Cantidad de Preguntas:
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[5, 10, 15].map((cnt) => (
-                  <button
-                    key={cnt}
-                    onClick={() => setQuestionsCount(cnt)}
-                    className={cn(
-                      "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer font-mono",
-                      questionsCount === cnt
-                        ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
-                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                    )}
-                  >
-                    {cnt} Preguntas
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                Nivel de Dificultad:
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: "todas", label: "Todas" },
-                  { id: "facil", label: "Fácil" },
-                  { id: "media", label: "Media" }
-                ].map((dif) => (
-                  <button
-                    key={dif.id}
-                    onClick={() => setSelectedDificultad(dif.id)}
-                    className={cn(
-                      "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer",
-                      selectedDificultad === dif.id
-                        ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
-                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                    )}
-                  >
-                    {dif.label}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
+
+          {/* BARRA DE PROGRESO DE RANGO */}
+          {proximoRango && (
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-[11px] font-bold">
+                <span className="text-slate-400">Progreso de Rango: <span className="text-white">{rangoActual.nombre}</span></span>
+                <span className="text-indigo-400 font-mono font-black">
+                  Siguiente: {proximoRango.nombre} ({proximoRango.minPuntos - userStats.puntosTotales} PTS restar.)
+                </span>
+              </div>
+              <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-white/10">
+                <div 
+                  className="h-full bg-gradient-to-r from-indigo-500 to-amber-400 rounded-full transition-all duration-500"
+                  style={{ width: `${progresoPorcentaje}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* PESTAÑAS PRINCIPALES: EVALUACIÓN / DUELOS 1V1 / RANKING GENERAL ÚNICO */}
+        <div className="flex items-center justify-center gap-2 pt-2 border-b border-white/10 pb-4">
+          <button
+            onClick={() => setActiveTab("evaluacion")}
+            className={cn(
+              "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
+              activeTab === "evaluacion"
+                ? "bg-gradient-to-r from-indigo-600 to-violet-600 border-indigo-500 text-white shadow-indigo-600/30 scale-105"
+                : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+            )}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>1. Evaluación por Materia</span>
+          </button>
 
           <button
-            onClick={handleStartGame}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all min-h-[52px]"
+            onClick={() => setActiveTab("duelos")}
+            className={cn(
+              "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
+              activeTab === "duelos"
+                ? "bg-gradient-to-r from-indigo-600 to-violet-600 border-indigo-500 text-white shadow-indigo-600/30 scale-105"
+                : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+            )}
           >
-            <Play className="w-4 h-4 fill-white" />
-            <span>Comenzar Evaluación Trivia ({questionsCount} Preguntas)</span>
+            <Swords className="w-4 h-4 text-amber-400" />
+            <span>2. Duelos 1vs1 (Salas)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("ranking")}
+            className={cn(
+              "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
+              activeTab === "ranking"
+                ? "bg-gradient-to-r from-indigo-600 to-violet-600 border-indigo-500 text-white shadow-indigo-600/30 scale-105"
+                : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+            )}
+          >
+            <Trophy className="w-4 h-4 text-yellow-400" />
+            <span>3. Ranking General Único</span>
           </button>
         </div>
+
+        {/* PESTAÑA 1: EVALUACIÓN POR MATERIA */}
+        {activeTab === "evaluacion" && (
+          <div className="space-y-6">
+            {/* SELECTOR DE AÑOS DE CARRERA */}
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              {[
+                { id: 0, label: "Toda la Carrera", icon: Sparkles },
+                { id: 1, label: "1º Año", icon: BookOpen },
+                { id: 2, label: "2º Año", icon: Landmark },
+                { id: 3, label: "3º Año", icon: Scale },
+                { id: 4, label: "4º Año", icon: FileText },
+                { id: 5, label: "5º Año", icon: GraduationCap }
+              ].map((item) => {
+                const ItemIcon = item.icon;
+                const isSelected = selectedYearFilter === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedYearFilter(item.id)}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
+                      isSelected
+                        ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                    )}
+                  >
+                    <ItemIcon className="w-3.5 h-3.5" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* GRID DE MATERIAS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {filteredCategorias.map((cat) => {
+                const CatIcon = ICON_MAP[cat.icono] || BookOpen;
+                const isSelected = selectedCategoria === cat.id;
+                const qCount = getQuestionCountForCategory(cat.id);
+
+                return (
+                  <motion.div
+                    key={cat.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setSelectedCategoria(cat.id)}
+                    className={cn(
+                      "p-5 rounded-3xl border transition-all duration-300 cursor-pointer space-y-3 flex flex-col justify-between group shadow-xl relative overflow-hidden",
+                      isSelected
+                        ? "bg-gradient-to-br from-indigo-900/60 via-slate-900 to-violet-900/60 border-indigo-500 text-white shadow-indigo-900/30"
+                        : "bg-slate-900/80 border-white/10 hover:border-white/25 hover:bg-slate-900/90 text-slate-300"
+                    )}
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className={cn(
+                          "w-10 h-10 rounded-2xl flex items-center justify-center border font-bold",
+                          isSelected ? "bg-indigo-500/30 border-indigo-500 text-indigo-300" : "bg-white/5 border-white/10 text-slate-400 group-hover:text-white"
+                        )}>
+                          <CatIcon className="w-5 h-5" />
+                        </div>
+
+                        {cat.anio > 0 ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/10 text-slate-300 border border-white/10">
+                            {cat.anio}º Año
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Global
+                          </span>
+                        )}
+                      </div>
+
+                      <div>
+                        <h4 className="font-black text-base text-white group-hover:text-indigo-300 transition-colors">
+                          {cat.nombre}
+                        </h4>
+                        <p className="text-xs text-slate-400 leading-relaxed pt-1">
+                          {cat.descripcion}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] font-bold">
+                      <span className="text-slate-400 font-mono">
+                        {qCount} Preguntas
+                      </span>
+                      <div className="flex items-center gap-1 text-indigo-400 font-black">
+                        <span>Seleccionar</span>
+                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* CONFIGURACIÓN Y BOTÓN INICIAR */}
+            <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                    Cantidad de Preguntas:
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[5, 10, 15].map((cnt) => (
+                      <button
+                        key={cnt}
+                        onClick={() => setQuestionsCount(cnt)}
+                        className={cn(
+                          "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer font-mono",
+                          questionsCount === cnt
+                            ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                            : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                        )}
+                      >
+                        {cnt} Preguntas
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                    Nivel de Dificultad:
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: "todas", label: "Todas" },
+                      { id: "facil", label: "Fácil" },
+                      { id: "media", label: "Media" }
+                    ].map((dif) => (
+                      <button
+                        key={dif.id}
+                        onClick={() => setSelectedDificultad(dif.id)}
+                        className={cn(
+                          "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer",
+                          selectedDificultad === dif.id
+                            ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                            : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                        )}
+                      >
+                        {dif.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={handleStartGame}
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all min-h-[52px]"
+              >
+                <Play className="w-4 h-4 fill-white" />
+                <span>Comenzar Evaluación Trivia ({questionsCount} Preguntas)</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* PESTAÑA 2: DUELOS 1VS1 (SALAS DE DESAFÍO) */}
+        {activeTab === "duelos" && (
+          <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <div>
+                <h3 className="text-xl font-black text-white flex items-center gap-2">
+                  <Swords className="w-5 h-5 text-amber-400" />
+                  <span>Salas de Duelo 1vs1 Académico</span>
+                </h3>
+                <p className="text-xs text-slate-400">Creá salas de competencia directa por materia o sumate por código de invitación.</p>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => handleCreateDuelo(true)}
+                  className="w-1/2 sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Crear Sala Pública</span>
+                </button>
+                <button
+                  onClick={() => handleCreateDuelo(false)}
+                  className="w-1/2 sm:w-auto px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-xs uppercase tracking-wider border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Lock className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Sala Privada</span>
+                </button>
+              </div>
+            </div>
+
+            {/* INGRESAR POR CÓDIGO */}
+            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-xs font-bold text-slate-300">¿Tenés un código de duelo de un colega?</span>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <input
+                  type="text"
+                  placeholder="Ej: DND-829"
+                  value={inputCodigoDuelo}
+                  onChange={(e) => setInputCodigoDuelo(e.target.value.toUpperCase())}
+                  className="p-2.5 rounded-xl bg-slate-950 border border-white/15 text-white font-mono font-bold text-xs uppercase focus:outline-none focus:border-indigo-500 w-full sm:w-40"
+                />
+                <button
+                  onClick={() => {
+                    const match = duelosList.find(d => d.id === inputCodigoDuelo);
+                    if (match) handleStartGame();
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase cursor-pointer shrink-0"
+                >
+                  Unirme
+                </button>
+              </div>
+            </div>
+
+            {/* LISTA DE SALAS DISPONIBLES */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Salas Públicas en Espera:</h4>
+              {duelosList.length === 0 ? (
+                <p className="text-xs text-slate-500 italic py-4">No hay salas de duelo públicas en espera. ¡Creá una nueva!</p>
+              ) : (
+                <div className="space-y-2.5">
+                  {duelosList.map((duelo) => (
+                    <div
+                      key={duelo.id}
+                      className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-4"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                            {duelo.id}
+                          </span>
+                          <span className="text-xs font-black text-white">{duelo.materiaNombre}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400">Creado por: <span className="text-indigo-300 font-bold">{duelo.player1Nombre}</span></p>
+                      </div>
+
+                      <button
+                        onClick={handleStartGame}
+                        className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase cursor-pointer"
+                      >
+                        Aceptar Duelo 1v1
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* PESTAÑA 3: RANKING GENERAL ÚNICO */}
+        {activeTab === "ranking" && (
+          <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+            <div className="space-y-1 border-b border-white/10 pb-4">
+              <h3 className="text-xl font-black text-white flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-yellow-400" />
+                <span>Tabla del Ranking General Único</span>
+              </h3>
+              <p className="text-xs text-slate-400">Ordenado por puntaje histórico acumulado en evaluaciones y duelos.</p>
+            </div>
+
+            <div className="space-y-2.5">
+              {/* USUARIO ACTUAL EN RANKING */}
+              <div className="p-4 rounded-2xl bg-indigo-600/30 border border-indigo-500 flex items-center justify-between gap-4 shadow-lg">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center font-mono">
+                    #4
+                  </span>
+                  <div>
+                    <h4 className="font-black text-sm text-white flex items-center gap-1.5">
+                      <span>{userName}</span>
+                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">(Tú)</span>
+                    </h4>
+                    <p className="text-[11px] text-indigo-300 font-bold">{rangoActual.nombre}</p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-base font-black text-amber-400 font-mono">{userStats.puntosTotales} PTS</span>
+                  <span className="text-[10px] text-slate-400 block font-mono">Racha x{userStats.mejorRacha}</span>
+                </div>
+              </div>
+
+              {/* JUGADORES DEL MOCK LEADERBOARD */}
+              {MOCK_LEADERBOARD.map((entry) => {
+                return (
+                  <div
+                    key={entry.id}
+                    className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={cn(
+                        "w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm font-mono border",
+                        entry.posicion === 1 ? "bg-amber-500/20 border-amber-500/50 text-amber-300" :
+                        entry.posicion === 2 ? "bg-slate-300/20 border-slate-300/50 text-slate-200" :
+                        entry.posicion === 3 ? "bg-amber-700/20 border-amber-700/50 text-amber-400" : "bg-white/5 border-white/10 text-slate-400"
+                      )}>
+                        #{entry.posicion}
+                      </span>
+                      <div>
+                        <h4 className="font-black text-sm text-white">{entry.nombre}</h4>
+                        <p className="text-[11px] text-slate-400">{entry.facultad} — {entry.materiaFav}</p>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-base font-black text-amber-400 font-mono">{entry.puntos} PTS</span>
+                      <span className="text-[10px] text-slate-400 block font-mono">Precisión {entry.aciertosPorcentaje}%</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* MODAL CON LA ESCALA DE LOS 12 RANGOS JURÍDICOS */}
+        <AnimatePresence>
+          {showRangosModal && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="max-w-2xl w-full bg-slate-900 border border-white/20 rounded-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto shadow-2xl relative"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="flex items-center gap-2">
+                    <Award className="w-6 h-6 text-amber-400" />
+                    <h3 className="text-xl font-black text-white">Escala Oficial de Rangos Jurídicos (12 Niveles)</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowRangosModal(false)}
+                    className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {RANGOS_JURIDICOS.map((rango, idx) => {
+                    const RIcon = ICON_MAP[rango.iconoNombre] || BookOpen;
+                    const isUserCurrent = rango.id === rangoActual.id;
+
+                    return (
+                      <div
+                        key={rango.id}
+                        className={cn(
+                          "p-4 rounded-2xl border transition-all flex items-start gap-3.5",
+                          isUserCurrent
+                            ? "bg-indigo-600/20 border-indigo-500 text-white shadow-lg"
+                            : "bg-white/[0.02] border-white/10 text-slate-300"
+                        )}
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-bold shrink-0 text-amber-400 border border-white/10">
+                          <RIcon className="w-5 h-5" />
+                        </div>
+
+                        <div className="space-y-1 w-full">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <h4 className="font-black text-sm text-white flex items-center gap-2">
+                              <span>Nivel {idx + 1}: {rango.nombre}</span>
+                              {isUserCurrent && <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Tu Rango</span>}
+                            </h4>
+                            <span className="text-xs font-mono font-black text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                              {rango.minPuntos} – {rango.maxPuntos > 100000 ? "15.000+" : `${rango.maxPuntos} PTS`}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-400 leading-relaxed">{rango.descripcion}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => setShowRangosModal(false)}
+                  className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider cursor-pointer"
+                >
+                  Cerrar Escala
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>
