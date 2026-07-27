@@ -14,7 +14,7 @@ export interface CategoriaTrivia {
   id: string;
   nombre: string;
   descripcion: string;
-  anio: number; // 0 = Toda la carrera, 1 a 5 = Año específico del Plan de Estudios
+  anio: number; // 0 = Toda la carrera, 1 a 5 = Año específico del Plan de Estudios Nº 6 FCJyS
   icono: string;
   color: string;
 }
@@ -206,262 +206,259 @@ export function calcularRango(puntos: number): RangoJuridico {
 }
 
 // =========================================================================
-// CATEGORÍAS ORGANIZADAS POR AÑO DEL PLAN DE ESTUDIOS (PLAN 6)
+// CATEGORÍAS MATERIAS DEL PLAN DE ESTUDIOS Nº 6 FCJyS (UNLP)
 // =========================================================================
 export const CATEGORIAS_TRIVIA: CategoriaTrivia[] = [
   {
     id: "todas",
     nombre: "Toda la Carrera",
-    descripcion: "Examen integral multi-materia con preguntas de 1º a 5º Año",
+    descripcion: "Examen integral multi-materia con preguntas de 1º a 5º Año (Plan 6 FCJyS)",
     anio: 0,
     icono: "Sparkles",
     color: "from-amber-500 via-purple-600 to-indigo-600"
   },
+
   // --- 1ER AÑO ---
   {
-    id: "intro_derecho",
+    id: "10610",
+    nombre: "Introducción al Estudio de las Ciencias Sociales",
+    descripcion: "Pensamiento sociopolítico, teoría social, Estado y sociedad",
+    anio: 1, icono: "Users", color: "from-teal-600 to-emerald-700"
+  },
+  {
+    id: "10111",
     nombre: "Introducción al Derecho",
-    descripcion: "Teoría general del derecho, fuentes, normas y sistemas jurídicos",
-    anio: 1,
-    icono: "BookOpen",
-    color: "from-blue-600 to-indigo-700"
+    descripcion: "Teoría del derecho, Kelsen, fuentes, validez y normas",
+    anio: 1, icono: "BookOpen", color: "from-blue-600 to-indigo-700"
   },
   {
-    id: "intro_cs_sociales",
-    nombre: "Introducción a las Cs. Sociales",
-    descripcion: "Pensamiento social, teoría sociopolítica y epistemología",
-    anio: 1,
-    icono: "Users",
-    color: "from-teal-600 to-emerald-700"
+    id: "10112",
+    nombre: "Historia Constitucional",
+    descripcion: "Pactos preexistentes, 1853, reformas constitucionales y cabildos",
+    anio: 1, icono: "Landmark", color: "from-amber-600 to-orange-700"
   },
   {
-    id: "historia_constitucional",
-    nombre: "Historia Constitucional Arg.",
-    descripcion: "Pactos preexistentes, 1853, reformas y evolución institucional",
-    anio: 1,
-    icono: "Landmark",
-    color: "from-amber-600 to-orange-700"
+    id: "10113",
+    nombre: "Introducción a la Sociología",
+    descripcion: "Estructura social, Durkheim, Weber, Marx y cambio social",
+    anio: 1, icono: "Building2", color: "from-cyan-600 to-blue-700"
   },
   {
-    id: "derecho_romano",
+    id: "10616",
+    nombre: "Introducción al Pensamiento Científico",
+    descripcion: "Epistemología, método científico, falsacionismo y lógica",
+    anio: 1, icono: "BookOpenCheck", color: "from-indigo-600 to-purple-700"
+  },
+  {
+    id: "10121",
     nombre: "Derecho Romano",
-    descripcion: "Institutas, sujetos, dominios, obligaciones y acciones romanas",
-    anio: 1,
-    icono: "Scale",
-    color: "from-purple-600 to-indigo-800"
+    descripcion: "Institutas, sujetos, contratos, dominio y acciones romanas",
+    anio: 1, icono: "Scale", color: "from-purple-600 to-indigo-800"
   },
   {
-    id: "sociologia_derecho",
-    nombre: "Sociología del Derecho",
-    descripcion: "Eficacia de las normas, control social y fenómeno jurídico",
-    anio: 1,
-    icono: "Building2",
-    color: "from-cyan-600 to-blue-700"
-  },
-  {
-    id: "economia_politica",
-    nombre: "Economía Política",
-    descripcion: "Mercado, inflación, sistemas económicos y finanzas estatales",
-    anio: 1,
-    icono: "Coins",
-    color: "from-emerald-600 to-green-700"
+    id: "10114",
+    nombre: "Derecho Político",
+    descripcion: "Teoría del Estado, soberanía, formas de gobierno y democracia",
+    anio: 1, icono: "Landmark", color: "from-blue-700 to-slate-800"
   },
 
   // --- 2DO AÑO ---
   {
-    id: "derecho_constitucional",
+    id: "10122",
+    nombre: "Derecho Privado I - Civil",
+    descripcion: "Persona humana, capacidad, hechos y actos jurídicos, vicios",
+    anio: 2, icono: "FileText", color: "from-blue-500 to-cyan-600"
+  },
+  {
+    id: "10123",
+    nombre: "Derecho Privado II - Civil",
+    descripcion: "Obligaciones, elementos, mora, cumplimiento y responsabilidad civil",
+    anio: 2, icono: "Scale", color: "from-violet-600 to-indigo-700"
+  },
+  {
+    id: "10124",
+    nombre: "Derecho Penal I",
+    descripcion: "Teoría del delito, conducta, tipicidad, antijuridicidad y culpabilidad",
+    anio: 2, icono: "ShieldAlert", color: "from-red-600 to-rose-700"
+  },
+  {
+    id: "10125",
     nombre: "Derecho Constitucional",
-    descripcion: "Constitución Nacional, garantías, amparo y control de constitucionalidad",
-    anio: 2,
-    icono: "Landmark",
-    color: "from-amber-500 to-yellow-600"
+    descripcion: "Constitución Nacional, garantías, amparo, división de poderes y DDHH",
+    anio: 2, icono: "Landmark", color: "from-amber-500 to-yellow-600"
   },
   {
-    id: "derecho_privado1",
-    nombre: "Derecho Privado I (Civil Gral)",
-    descripcion: "Persona humana, capacidad, atributos, hechos y actos jurídicos",
-    anio: 2,
-    icono: "FileText",
-    color: "from-blue-500 to-cyan-600"
+    id: "10626",
+    nombre: "Derechos Humanos",
+    descripcion: "CADH, Pacto de San José de Costa Rica, Corte IDH y sistema interamericano",
+    anio: 2, icono: "Globe", color: "from-sky-600 to-blue-700"
   },
   {
-    id: "derecho_penal1",
-    nombre: "Derecho Penal I (Parte Gral)",
-    descripcion: "Teoría del delito, tipicidad, antijuridicidad, culpabilidad y penas",
-    anio: 2,
-    icono: "ShieldAlert",
-    color: "from-red-600 to-rose-700"
-  },
-  {
-    id: "filosofia_derecho",
-    nombre: "Filosofía del Derecho",
-    descripcion: "Iusnaturalismo, iuspositivismo, iusrealismo y valores jurídicos",
-    anio: 2,
-    icono: "BookOpenCheck",
-    color: "from-indigo-600 to-purple-700"
-  },
-  {
-    id: "derecho_administrativo1",
-    nombre: "Derecho Administrativo I",
-    descripcion: "Acto administrativo, elementos, vicios, procedimiento y fomento",
-    anio: 2,
-    icono: "FileText",
-    color: "from-emerald-600 to-teal-700"
-  },
-  {
-    id: "derecho_internacional_pub",
-    nombre: "Derecho Internacional Público",
-    descripcion: "Tratados, sujetos internacionales, OEA, ONU y DDHH",
-    anio: 2,
-    icono: "Globe",
-    color: "from-sky-600 to-blue-700"
+    id: "10627",
+    nombre: "Teoría del Conflicto",
+    descripcion: "Mapeo de conflictos, negociación, mediación y resolución no adversaria",
+    anio: 2, icono: "Users", color: "from-emerald-600 to-teal-700"
   },
 
   // --- 3ER AÑO ---
   {
-    id: "derecho_privado2",
-    nombre: "Derecho Privado II (Obligaciones)",
-    descripcion: "Elementos de la obligación, pago, mora, incumplimiento y daños",
-    anio: 3,
-    icono: "Scale",
-    color: "from-violet-600 to-indigo-700"
+    id: "10132",
+    nombre: "Derecho Privado IV - Comercial",
+    descripcion: "Derecho del consumidor, títulos valores, pagaré, cheque y bancario",
+    anio: 3, icono: "Coins", color: "from-emerald-700 to-green-800"
   },
   {
-    id: "derecho_penal2",
-    nombre: "Derecho Penal II (Parte Especial)",
-    descripcion: "Delitos contra las personas, la propiedad, la administración y fe pública",
-    anio: 3,
-    icono: "Gavel",
-    color: "from-rose-700 to-red-800"
+    id: "10133",
+    nombre: "Derecho Privado III - Civil",
+    descripcion: "Contratos en general, compraventa, locación, leasing y conexidad",
+    anio: 3, icono: "FileText", color: "from-blue-700 to-slate-800"
   },
   {
-    id: "derecho_procesal_penal",
-    nombre: "Derecho Procesal Penal",
-    descripcion: "Código Procesal Penal PBA, prisión preventiva, investigación y jurados",
-    anio: 3,
-    icono: "ShieldAlert",
-    color: "from-red-700 to-orange-700"
+    id: "10134",
+    nombre: "Derecho Procesal I",
+    descripcion: "Principios procesales, jurisdicción, competencia, demanda y prueba",
+    anio: 3, icono: "Gavel", color: "from-purple-700 to-violet-800"
   },
   {
-    id: "derecho_administrativo2",
-    nombre: "Derecho Administrativo II",
-    descripcion: "Contratos administrativos, licitación pública y responsabilidad del Estado",
-    anio: 3,
-    icono: "Building2",
-    color: "from-teal-600 to-cyan-700"
+    id: "10115",
+    nombre: "Economía Política",
+    descripcion: "Oferta y demanda, macroeconomía, inflación, dinero y comercio exterior",
+    anio: 3, icono: "Coins", color: "from-emerald-600 to-green-700"
   },
   {
-    id: "derecho_trabajo1",
-    nombre: "Derecho del Trabajo I",
-    descripcion: "Ley de Contrato de Trabajo (LCT), despido, jornada y remuneración",
-    anio: 3,
-    icono: "Briefcase",
-    color: "from-amber-600 to-yellow-700"
+    id: "10135",
+    nombre: "Derecho Penal II",
+    descripcion: "Delitos contra las personas, la propiedad, la administración pública y fe pública",
+    anio: 3, icono: "Gavel", color: "from-rose-700 to-red-800"
   },
   {
-    id: "derecho_internacional_priv",
-    nombre: "Derecho Internacional Privado",
-    descripcion: "Jurisdicción internacional, conflicto de leyes y restitución",
-    anio: 3,
-    icono: "Globe",
-    color: "from-blue-600 to-indigo-800"
+    id: "10136",
+    nombre: "Derecho Público, Provincial y Municipal",
+    descripcion: "Constitución PBA, autonomías municipales, LOM y coparticipación",
+    anio: 3, icono: "Building2", color: "from-purple-600 to-violet-700"
+  },
+  {
+    id: "10138",
+    nombre: "Derecho Internacional Público",
+    descripcion: "Tratados (Convención de Viena), costumbre internacional, ONU y responsabilidad estatal",
+    anio: 3, icono: "Globe", color: "from-sky-600 to-blue-700"
   },
 
   // --- 4TO AÑO ---
   {
-    id: "derecho_privado3",
-    nombre: "Derecho Privado III (Contratos)",
-    descripcion: "Autonomía de la voluntad, compraventa, locación, consumo y conexidad",
-    anio: 4,
-    icono: "FileText",
-    color: "from-blue-700 to-slate-800"
+    id: "10141",
+    nombre: "Derecho Administrativo I",
+    descripcion: "Acto administrativo, elementos, vicios, procedimiento administrativo y fomento",
+    anio: 4, icono: "FileText", color: "from-emerald-600 to-teal-700"
   },
   {
-    id: "derecho_procesal_civil",
-    nombre: "Derecho Procesal Civil",
-    descripcion: "CPCCBA, demanda, contestación, prueba, sentencia y recursos",
-    anio: 4,
-    icono: "Gavel",
-    color: "from-purple-700 to-violet-800"
+    id: "10142",
+    nombre: "Derecho Privado VI - Comercial",
+    descripcion: "Sociedades comerciales (LGS), SRL, SA, asambleas y responsabilidad de directores",
+    anio: 4, icono: "Building2", color: "from-blue-800 to-slate-900"
   },
   {
-    id: "derecho_tributario",
-    nombre: "Derecho Tributario",
-    descripcion: "Impuestos, tasas, contribuciones, AFIP, ARBA y procedimiento tributario",
-    anio: 4,
-    icono: "Coins",
-    color: "from-emerald-700 to-green-800"
+    id: "10143",
+    nombre: "Derecho Privado V - Civil",
+    descripcion: "Derechos reales, dominio, condominio, propiedad horizontal y usufructo",
+    anio: 4, icono: "Building2", color: "from-indigo-700 to-purple-800"
   },
   {
-    id: "derecho_trabajo2",
-    nombre: "Derecho del Trabajo II",
-    descripcion: "Derecho colectivo, sindicatos, convenios colectivos y huelga",
-    anio: 4,
-    icono: "Briefcase",
-    color: "from-orange-600 to-amber-700"
+    id: "10144",
+    nombre: "Derecho Procesal II",
+    descripcion: "Recursos procesales, cautelares, ejecución de sentencia y procesos especiales",
+    anio: 4, icono: "Gavel", color: "from-purple-700 to-violet-800"
   },
   {
-    id: "derecho_seguridad_social",
-    nombre: "Derecho de la Seguridad Social",
-    descripcion: "Jubilaciones, pensiones, asignaciones y Riesgos del Trabajo (ART)",
-    anio: 4,
-    icono: "Shield",
-    color: "from-cyan-700 to-teal-800"
+    id: "10640",
+    nombre: "Derecho Social del Trabajo",
+    descripcion: "LCT 20.744, contrato de trabajo, despido arbitrario, indemnizaciones y jornada",
+    anio: 4, icono: "Briefcase", color: "from-amber-600 to-yellow-700"
   },
   {
-    id: "derecho_financiero",
-    nombre: "Derecho Financiero",
-    descripcion: "Presupuesto público, crédito público y Banco Central (BCRA)",
-    anio: 4,
-    icono: "Coins",
-    color: "from-emerald-600 to-blue-700"
+    id: "10649",
+    nombre: "Mediación y Medios de Resolución de Conflictos",
+    descripcion: "Ley de Mediación 13.951 PBA, conciliación, arbitraje y confidencialidad",
+    anio: 4, icono: "Users", color: "from-teal-600 to-cyan-700"
+  },
+  {
+    id: "10146",
+    nombre: "Derecho Agrario",
+    descripcion: "Arrendamientos rurales, aparcerías, empresa agraria y propiedad del ganado",
+    anio: 4, icono: "Leaf", color: "from-green-600 to-emerald-800"
+  },
+  {
+    id: "10147",
+    nombre: "Filosofía del Derecho",
+    descripcion: "Iusnaturalismo, positivismo, realismo, Alexy, Dworkin y justicia",
+    anio: 4, icono: "BookOpenCheck", color: "from-indigo-600 to-purple-700"
   },
 
   // --- 5TO AÑO ---
   {
-    id: "derecho_privado4",
-    nombre: "Derecho Privado IV (Reales)",
-    descripcion: "Dominio, condominio, propiedad horizontal, usufructo y garantías reales",
-    anio: 5,
-    icono: "Building2",
-    color: "from-indigo-700 to-purple-800"
+    id: "10151",
+    nombre: "Derecho Administrativo II",
+    descripcion: "Contratos administrativos, licitación pública, servicios públicos y responsabilidad estatal",
+    anio: 5, icono: "Building2", color: "from-teal-600 to-cyan-700"
   },
   {
-    id: "derecho_sucesiones",
+    id: "10653",
+    nombre: "Derecho de Familia",
+    descripcion: "Matrimonio, divorcio, uniones convivenciales, filiación y responsabilidad parental",
+    anio: 5, icono: "Users", color: "from-rose-600 to-red-700"
+  },
+  {
+    id: "10152",
+    nombre: "Derecho de la Navegación",
+    descripcion: "Ley de Navegación 20.094, buque, capitán, abordaje, asistencia y salvamento",
+    anio: 5, icono: "Globe", color: "from-blue-600 to-sky-700"
+  },
+  {
+    id: "10650",
+    nombre: "Derecho Colectivo del Trabajo y Seg. Social",
+    descripcion: "Sindicatos, convenios colectivos, huelga, ART y sistema previsional",
+    anio: 5, icono: "Briefcase", color: "from-orange-600 to-amber-700"
+  },
+  {
+    id: "10154",
+    nombre: "Derecho de Minería y Energía",
+    descripcion: "Código de Minería, concesión minera, hidrocarburos (Ley 17.319) y regalías",
+    anio: 5, icono: "Zap", color: "from-amber-600 to-yellow-600"
+  },
+  {
+    id: "10155",
+    nombre: "Sociología Jurídica",
+    descripcion: "Eficacia de las leyes, acceso a la justicia, profesión jurídica y control social",
+    anio: 5, icono: "Building2", color: "from-cyan-600 to-blue-700"
+  },
+  {
+    id: "10156",
+    nombre: "Derecho Internacional Privado",
+    descripcion: "Jurisdicción internacional, conflicto de leyes, reenvío y orden público internacional",
+    anio: 5, icono: "Globe", color: "from-blue-600 to-indigo-800"
+  },
+  {
+    id: "10659",
     nombre: "Derecho de las Sucesiones",
-    descripcion: "Herederos legítimos, legítima hereditaria, testamentos y partición",
-    anio: 5,
-    icono: "Users",
-    color: "from-rose-600 to-red-700"
+    descripcion: "Herederos legítimos, porción legítima, testamento, colación y partición",
+    anio: 5, icono: "Users", color: "from-rose-600 to-red-700"
   },
   {
-    id: "derecho_empresas",
-    nombre: "Derecho de las Empresas",
-    descripcion: "Sociedades (LGS), SRL, SA, concurso preventivo y quiebras",
-    anio: 5,
-    icono: "Building2",
-    color: "from-blue-800 to-slate-900"
+    id: "10157",
+    nombre: "Derecho Notarial y Registral",
+    descripcion: "Escribano público, escritura pública, fe pública y Registro de la Propiedad (Ley 17.801)",
+    anio: 5, icono: "FileText", color: "from-purple-700 to-slate-800"
   },
   {
-    id: "derecho_ambiental",
-    nombre: "Derecho Ambiental",
-    descripcion: "Ley General del Ambiente 25.675, daño ambiental, amparo y recursos",
-    anio: 5,
-    icono: "Leaf",
-    color: "from-emerald-600 to-teal-800"
-  },
-  {
-    id: "etica_profesional",
-    nombre: "Ética y Resp. Profesional",
-    descripcion: "Código de Ética del CALP, secreto profesional y sanciones",
-    anio: 5,
-    icono: "Award",
-    color: "from-amber-600 to-yellow-600"
+    id: "10158",
+    nombre: "Finanzas y Derecho Financiero",
+    descripcion: "Presupuesto de la Nación, crédito público, AFIP, ARBA y procedimiento tributario",
+    anio: 5, icono: "Coins", color: "from-emerald-700 to-green-800"
   }
 ];
 
 export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
-  { id: "lead_1", posicion: 1, nombre: "Dr. Gonzalo Arrua", facultad: "FCJyS - UNLP", materiaFav: "Derecho Procesal Civil", puntos: 1850, aciertosPorcentaje: 94, racha: 18 },
+  { id: "lead_1", posicion: 1, nombre: "Dr. Gonzalo Arrua", facultad: "FCJyS - UNLP", materiaFav: "Derecho Procesal II", puntos: 1850, aciertosPorcentaje: 94, racha: 18 },
   { id: "lead_2", posicion: 2, nombre: "Dra. Sofía Benítez", facultad: "FCJyS - UNLP", materiaFav: "Derecho Penal II", puntos: 1420, aciertosPorcentaje: 89, racha: 12 },
   { id: "lead_3", posicion: 3, nombre: "Esteban Quiroga", facultad: "FCJyS - UNLP", materiaFav: "Derecho Constitucional", puntos: 980, aciertosPorcentaje: 82, racha: 8 },
   { id: "lead_4", posicion: 4, nombre: "Camila Fernández", facultad: "FCJyS - UNLP", materiaFav: "Derecho Privado III", puntos: 720, aciertosPorcentaje: 78, racha: 6 },
@@ -469,307 +466,262 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [
 ];
 
 // =========================================================================
-// BANCO COMPLETO DE PREGUNTAS CLASIFICADAS POR MATERIA DEL PLAN DE ESTUDIOS
+// BANCO DE PREGUNTAS TÉCNICAS (CON VARIACIÓN DEL ÍNDICE DE RESPUESTA CORRECTA 0, 1, 2, 3)
 // =========================================================================
 export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
-  // --- 1ER AÑO: INTRODUCCIÓN AL DERECHO ---
+  // --- 10610: INTRODUCCIÓN AL ESTUDIO DE LAS CIENCIAS SOCIALES ---
   {
-    id: "intro-f-01",
-    id_categoria: "intro_derecho",
-    categoria_nombre: "Introducción al Derecho",
-    dificultad: "facil",
-    pregunta: "¿Qué autor definió la pirámide jurídica de jerarquía normativa del positivismo jurídico?",
-    opciones: ["Hans Kelsen", "Santo Tomás de Aquino", "Immanuel Kant", "Karl Marx"],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Teoría Pura del Derecho de Hans Kelsen (Stufenbau).",
-    puntos_base: 10
+    id: "10610-01", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "facil",
+    pregunta: "¿Qué autor social formuló el concepto de 'Hecho Social' como objeto de la sociología?",
+    opciones: ["Karl Marx", "Émile Durkheim", "Max Weber", "Auguste Comte"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Émile Durkheim, 'Las reglas del método sociológico' (1895).", puntos_base: 10
   },
   {
-    id: "intro_m-01",
-    id_categoria: "intro_derecho",
-    categoria_nombre: "Introducción al Derecho",
-    dificultad: "media",
-    pregunta: "¿Cuál es la diferencia entre derecho objetivo y derecho subjetivo?",
-    opciones: [
-      "El derecho objetivo es la norma escrita y el subjetivo es la facultad o poder individual.",
-      "El derecho objetivo es para Jueces y el subjetivo para ciudadanos.",
-      "El derecho objetivo es oral y el subjetivo es formal en expediente.",
-      "No existe diferencia procesal entre ambos conceptos."
-    ],
+    id: "10610-02", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "En la teoría marxista, la estructura económica sobre la que se levantan las normas e instituciones jurídicas se denomina:",
+    opciones: ["Infraestructura", "Superestructura", "Plusvalía", "Medio de producción"],
     respuesta_correcta_index: 0,
-    fundamento_juridico: "Teoría General del Derecho: Norma agendi vs Facultas agendi.",
-    puntos_base: 25
-  },
-
-  // --- 1ER AÑO: DERECHO ROMANO ---
-  {
-    id: "romano-f-01",
-    id_categoria: "derecho_romano",
-    categoria_nombre: "Derecho Romano",
-    dificultad: "facil",
-    pregunta: "¿Qué principio romano consagra que nadie puede transmitir a otro un derecho más amplio del que posee?",
-    opciones: [
-      "Nemo plus iuris ad alium transferre potest quam ipse habet.",
-      "Pacta sunt servanda.",
-      "In dubio pro reo.",
-      "Erga omnes."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Digesto de Justiniano 50.17.54.",
-    puntos_base: 10
+    fundamento_juridico: "Karl Marx, 'Contribución a la crítica de la economía política' (1859).", puntos_base: 25
   },
   {
-    id: "romano-m-01",
-    id_categoria: "derecho_romano",
-    categoria_nombre: "Derecho Romano",
-    dificultad: "media",
-    pregunta: "En la clasificación de los contratos en el Derecho Romano de Justiniano, los contratos formados por la entrega de una cosa (re) son:",
-    opciones: [
-      "Mutuo, Comodato, Depósito y Prenda.",
-      "Compraventa, Locación, Sociedad y Mandato.",
-      "Stipulatio y Nexum.",
-      "Dictio dotis y Iusiurandum liberti."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Institutas de Justiniano, Libro III (De obligationibus quae re contrahuntur).",
-    puntos_base: 25
+    id: "10610-03", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "facil",
+    pregunta: "¿Qué sociólogo desarrolló la tipología de la dominación legítima (tradicional, carismática y legal-racional)?",
+    opciones: ["Alexis de Tocqueville", "Pierre Bourdieu", "Max Weber", "Talcott Parsons"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Max Weber, 'Economía y Sociedad'.", puntos_base: 10
+  },
+  {
+    id: "10610-04", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "media",
+    pregunta: "El proceso mediante el cual los individuos interiorizan los valores y normas de una sociedad se llama:",
+    opciones: ["Aculturación", "Socialización", "Enajenación", "Estrificación"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Teoría sociológica general.", puntos_base: 25
+  },
+  {
+    id: "10610-05", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "dificil",
+    pregunta: "¿Qué filósofo postula que el poder no se localiza solo en el Estado sino en un entramado microfísico disciplinario?",
+    opciones: ["Jürgen Habermas", "Antonio Gramsci", "Louis Althusser", "Michel Foucault"],
+    respuesta_correcta_index: 3,
+    fundamento_juridico: "Michel Foucault, 'Vigilar y Castigar' (1975).", puntos_base: 50
   },
 
-  // --- 2DO AÑO: DERECHO CONSTITUCIONAL ---
+  // --- 10111: INTRODUCCIÓN AL DERECHO ---
   {
-    id: "const-f-01",
-    id_categoria: "derecho_constitucional",
-    categoria_nombre: "Derecho Constitucional",
-    dificultad: "facil",
-    pregunta: "¿Qué artículo de la Constitución Nacional Argentina consagra el principio de reserva e intimidad personal?",
-    opciones: ["Artículo 19 CN", "Artículo 14 CN", "Artículo 1 CN", "Artículo 75 inc 22"],
+    id: "10111-01", id_categoria: "10111", categoria_nombre: "Intro al Derecho", dificultad: "facil",
+    pregunta: "¿Qué autor desarrolló la pirámide jurídica de gradación normativa en la Teoría Pura del Derecho?",
+    opciones: ["Hans Kelsen", "Alf Ross", "Herbert Hart", "Norberto Bobbio"],
     respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 19 CN: 'Las acciones privadas de los hombres que de ningún modo ofendan al orden y a la moral pública...'",
-    puntos_base: 10
+    fundamento_juridico: "Hans Kelsen, 'Reine Rechtslehre' (Stufenbau).", puntos_base: 10
   },
   {
-    id: "const-m-01",
-    id_categoria: "derecho_constitucional",
-    categoria_nombre: "Derecho Constitucional",
-    dificultad: "media",
-    pregunta: "¿Cuál es la jerarquía normativa de los Tratados Internacionales de Derechos Humanos enumerados en el Art. 75 inc. 22 de la CN?",
-    opciones: [
-      "Jerarquía constitucional en las condiciones de su vigencia.",
-      "Jerarquía infra-legal subordinada a las Leyes Nacionales.",
-      "Jerarquía equivalente a los Códigos de Fondo.",
-      "Jerarquía reglamentaria provincial."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 75 inc. 22 de la Constitución Nacional Argentina tras la Reforma Constitucional de 1994.",
-    puntos_base: 25
+    id: "10111-02", id_categoria: "10111", categoria_nombre: "Intro al Derecho", dificultad: "media",
+    pregunta: "¿Cómo se denomina la norma hipotética fundamental que otorga validez a la primera Constitución en el esquema kelseniano?",
+    opciones: ["Norma Derogatoria", "Grundnorm (Norma Fundamental)", "Regla de Reconocimiento", "Imperativo Categórico"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Hans Kelsen, Teoría Pura del Derecho.", puntos_base: 25
   },
-
-  // --- 2DO AÑO: DERECHO PRIVADO I (CIVIL PARTE GENERAL) ---
   {
-    id: "priv1-f-01",
-    id_categoria: "derecho_privado1",
-    categoria_nombre: "Derecho Privado I (Civil Gral)",
-    dificultad: "facil",
-    pregunta: "¿A qué edad se alcanza la mayoría de edad en la República Argentina según el CCyCN?",
-    opciones: ["A los 18 años de edad.", "A los 21 años de edad.", "A los 16 años de edad.", "A los 25 años de edad."],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 25 del Código Civil y Comercial de la Nación (Ley 26.994).",
-    puntos_base: 10
+    id: "10111-03", id_categoria: "10111", categoria_nombre: "Intro al Derecho", dificultad: "facil",
+    pregunta: "La distinción entre reglas primarias (imponen deberes) y reglas secundarias (otorgan potestades) pertenece a:",
+    opciones: ["Ronald Dworkin", "H.L.A. Hart", "Carlos Cossio", "Genaro Carrió"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "H.L.A. Hart, 'El concepto de derecho' (1961).", puntos_base: 10
+  },
+  {
+    id: "10111-04", id_categoria: "10111", categoria_nombre: "Intro al Derecho", dificultad: "media",
+    pregunta: "La Teoría Egológica del Derecho ideada en Argentina por Carlos Cossio concibe al derecho como:",
+    opciones: ["Un conjunto de mandatos del soberano", "La conducta humana en interferencia intersubjetiva", "Un hecho social empírico", "La voluntad de Dios expresada en la naturaleza"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Carlos Cossio, 'La Teoría Egológica del Derecho'.", puntos_base: 25
+  },
+  {
+    id: "10111-05", id_categoria: "10111", categoria_nombre: "Intro al Derecho", dificultad: "dificil",
+    pregunta: "¿Qué principio establece que a falta de norma expresa el juez no puede dejar de juzgar bajo pretexto de silencio u oscuridad de las leyes?",
+    opciones: ["Principio de Reserva", "Principio de Inexcusabilidad (Non Liquet)", "Principio de Irretroactividad", "Principio de Oportunidad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 3 del Código Civil y Comercial de la Nación.", puntos_base: 50
   },
 
-  // --- 2DO AÑO: DERECHO PENAL I ---
+  // --- 10112: HISTORIA CONSTITUCIONAL ---
   {
-    id: "penal1-f-01",
-    id_categoria: "derecho_penal1",
-    categoria_nombre: "Derecho Penal I (Parte Gral)",
-    dificultad: "facil",
-    pregunta: "¿Cuáles son los cuatro elementos de la teoría del delito según la doctrina dogmática penal clásica?",
-    opciones: [
-      "Acción (Conducta), Tipicidad, Antijuridicidad y Culpabilidad.",
-      "Delito, Querella, Sentencia y Apelación.",
-      "Imputado, Víctima, Fiscal y Juez.",
-      "Prisión, Dolo, Culpa y Reincidencia."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Doctrina de Derecho Penal Parte General.",
-    puntos_base: 10
+    id: "10112-01", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "facil",
+    pregunta: "¿En qué año se sancionó la primera Constitución Nacional Argentina jurada en Santa Fe?",
+    opciones: ["1810", "1816", "1853", "1860"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Constitución de la Nación Argentina de 1853.", puntos_base: 10
+  },
+  {
+    id: "10112-02", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "media",
+    pregunta: "El pacto de 1852 firmado por los gobernadores que precedió a la Convención Constituyente de 1853 fue:",
+    opciones: ["Pacto Federal", "Acuerdo de San Nicolás", "Pacto de San José de Flores", "Tratado del Pilar"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Acuerdo de San Nicolás de los Arroyos (31 de mayo de 1852).", puntos_base: 25
+  },
+  {
+    id: "10112-03", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "facil",
+    pregunta: "¿Qué obra de Juan Bautista Alberdi sirvió de base doctrinal determinante para el texto constitucional de 1853?",
+    opciones: ["Facundo", "Bases y puntos de partida para la organización política de la República Argentina", "Dogma Socialista", "El Juicio del Siglo"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Juan Bautista Alberdi (1852).", puntos_base: 10
+  },
+  {
+    id: "10112-04", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "media",
+    pregunta: "El Pacto de San José de Flores (1859) permitió la incorporación formal a la Confederación Argentina de la provincia de:",
+    opciones: ["Córdoba", "Buenos Aires", "Entre Ríos", "Santa Fe"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Pacto de San José de Flores del 11 de noviembre de 1859.", puntos_base: 25
+  },
+  {
+    id: "10112-05", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "dificil",
+    pregunta: "La reforma constitucional de 1949 incorporó por primera vez en el texto constitucional argentino los llamados:",
+    opciones: ["Derechos Civiles clásicos", "Derechos Sociales del Trabajo y de la Ancianidad", "Derechos de Tercera Generación Ambiental", "Derechos de las Garantías Digitales"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Constitución de 1949 (Art. 37).", puntos_base: 50
   },
 
-  // --- 3ER AÑO: DERECHO PRIVADO II (OBLIGACIONES) ---
+  // --- 10122: DERECHO PRIVADO I - CIVIL ---
   {
-    id: "priv2-f-01",
-    id_categoria: "derecho_privado2",
-    categoria_nombre: "Derecho Privado II (Obligaciones)",
-    dificultad: "facil",
-    pregunta: "¿Cuál es el modo normal y por excelencia de extinción de la obligación jurídica?",
-    opciones: ["El Pago.", "La Novación.", "La Transacción.", "La Prescripción Liberatoria."],
+    id: "10122-01", id_categoria: "10122", categoria_nombre: "D. Privado I (Civil)", dificultad: "facil",
+    pregunta: "¿A qué edad se alcanza la mayoría de edad legal en la República Argentina según el CCyCN?",
+    opciones: ["A los 21 años", "A los 18 años", "A los 16 años", "A los 25 años"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 25 del Código Civil y Comercial de la Nación.", puntos_base: 10
+  },
+  {
+    id: "10122-02", id_categoria: "10122", categoria_nombre: "D. Privado I (Civil)", dificultad: "media",
+    pregunta: "¿Cuáles son los atributos inherentes a la personalidad jurídica de la persona humana?",
+    opciones: ["Nombre, Domicilio, Estado Civil, Capacidad y Patrimonio", "Firma, DNI, Trabajo y Salario", "Nacionalidad, Propiedad, Credencial y Contrato", "Libertad, Profesión, Matrícula y Título"],
     respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 865 del Código Civil y Comercial de la Nación.",
-    puntos_base: 10
+    fundamento_juridico: "CCyCN, Libro Primero, Título I.", puntos_base: 25
+  },
+  {
+    id: "10122-03", id_categoria: "10122", categoria_nombre: "D. Privado I (Civil)", dificultad: "facil",
+    pregunta: "¿En qué momento comienza la existencia de la persona humana según el Art. 19 del CCyCN?",
+    opciones: ["Con el nacimiento con vida", "Con la concepción", "A los 3 meses de gestación", "Con la inscripción registral en el Registro Civil"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 19 CCyCN: 'La existencia de la persona humana comienza con la concepción'.", puntos_base: 10
+  },
+  {
+    id: "10122-04", id_categoria: "10122", categoria_nombre: "D. Privado I (Civil)", dificultad: "media",
+    pregunta: "El vicio del acto jurídico en el que una parte explota la necesidad, miseria o inexperiencia de la otra se denomina:",
+    opciones: ["Simulación", "Lesión enorme", "Dolo intencional", "Fraude a los acreedores"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 332 del Código Civil y Comercial de la Nación.", puntos_base: 25
+  },
+  {
+    id: "10122-05", id_categoria: "10122", categoria_nombre: "D. Privado I (Civil)", dificultad: "dificil",
+    pregunta: "¿Cuál es el plazo de prescripción de la acción para declarar la nulidad de un acto jurídico viciado por dolo o violencia?",
+    opciones: ["5 años", "2 años", "10 años", "1 año"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2562 inc. a del CCyCN.", puntos_base: 50
   },
 
-  // --- 3ER AÑO: DERECHO PENAL II ---
+  // --- 10124: DERECHO PENAL I ---
   {
-    id: "penal2-f-01",
-    id_categoria: "derecho_penal2",
-    categoria_nombre: "Derecho Penal II (Parte Especial)",
-    dificultad: "facil",
-    pregunta: "El delito de Homicidio Simple reprimido en el Art. 79 del Código Penal prevé una pena de:",
-    opciones: [
-      "Prisión de 8 a 25 años.",
-      "Prisión perpetua únicamente.",
-      "Multa pecuniaria fija.",
-      "Prisión de 1 a 3 años excarcelable."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 79 del Código Penal de la Nación Argentina.",
-    puntos_base: 10
+    id: "10124-01", id_categoria: "10124", categoria_nombre: "D. Penal I", dificultad: "facil",
+    pregunta: "¿Qué principio consagrado en el Art. 18 de la CN establece que nadie puede ser penado sin juicio previo ni ley anterior al hecho?",
+    opciones: ["Principio de Oportunidad", "Principio de Legalidad (Nullum crimen sine lege)", "Principio de Inocencia", "Principio de Tipicidad Estricta"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 18 de la Constitución Nacional y Art. 2 del Código Penal.", puntos_base: 10
+  },
+  {
+    id: "10124-02", id_categoria: "10124", categoria_nombre: "D. Penal I", dificultad: "media",
+    pregunta: "En la estructura de la teoría del delito, el juicio de reproche individual que se le hace al autor imputable es la:",
+    opciones: ["Antijuridicidad", "Culpabilidad", "Tipicidad objetiva", "Punibilidad administrativa"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Dogmática Penal Parte General.", puntos_base: 25
+  },
+  {
+    id: "10124-03", id_categoria: "10124", categoria_nombre: "D. Penal I", dificultad: "facil",
+    pregunta: "¿Cuándo se configura la Legítima Defensa como causa de justificación según el Art. 34 inc. 6 del CP?",
+    opciones: ["Ante cualquier agresión verbal", "Cuando hay agresión ilegítima, falta de provocación suficiente y necesidad racional del medio empleado", "Solo si interviene la policía en el lugar", "Únicamente si ocurre dentro de la propia vivienda de noche"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 34 inc. 6 del Código Penal Argentino.", puntos_base: 10
+  },
+  {
+    id: "10124-04", id_categoria: "10124", categoria_nombre: "D. Penal I", dificultad: "media",
+    pregunta: "La tentativa de delito sancionada en el Art. 42 del Código Penal exige que el sujeto:",
+    opciones: ["Solo piense cometer un delito sin ejecutarlo", "Comience la ejecución de un delito determinado pero no se consuma por circunstancias ajenas a su voluntad", "Consume íntegramente el delito", "Desista voluntariamente antes de causar daño"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 42 del Código Penal de la Nación.", puntos_base: 25
+  },
+  {
+    id: "10124-05", id_categoria: "10124", categoria_nombre: "D. Penal I", dificultad: "dificil",
+    pregunta: "En la teoría del concurso de delitos, cuando un solo hecho encuadra en varios tipos penales se configura un:",
+    opciones: ["Concurso real de delitos", "Concurso ideal de delitos", "Delito continuado", "Concurso aparente de leyes"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 54 del Código Penal Argentino.", puntos_base: 50
   },
 
-  // --- 3ER AÑO: DERECHO PROCESAL PENAL ---
+  // --- 10125: DERECHO CONSTITUCIONAL ---
   {
-    id: "procpenal-m-01",
-    id_categoria: "derecho_procesal_penal",
-    categoria_nombre: "Derecho Procesal Penal",
-    dificultad: "media",
-    pregunta: "En la Ley 14.543 de Juicio por Jurados de la Provincia de Buenos Aires, ¿cuántos votos concordantes de los 12 jurados se exigen para veredicto de CULPABILIDAD en delitos no perpetuos?",
-    opciones: ["Al menos 10 votos.", "Unanimidad absoluta (12 de 12).", "Mayoría simple (7 de 12).", "Al menos 8 votos."],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Ley 14.543 de la Provincia de Buenos Aires (Art. 371 quater del CPPBA).",
-    puntos_base: 25
+    id: "10125-01", id_categoria: "10125", categoria_nombre: "D. Constitucional", dificultad: "facil",
+    pregunta: "¿Qué acción constitucional tutelada en el Art. 43 de la CN protege de forma rápida la libertad física o ambulatoria?",
+    opciones: ["Acción de Amparo", "Habeas Corpus", "Habeas Data", "Recurso de Inconstitucionalidad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 43 último párrafo de la Constitución Nacional.", puntos_base: 10
+  },
+  {
+    id: "10125-02", id_categoria: "10125", categoria_nombre: "D. Constitucional", dificultad: "media",
+    pregunta: "¿Qué mayoría calificada exige el Art. 30 de la CN a cada Cámara del Congreso para declarar la necesidad de la Reforma Constitucional?",
+    opciones: ["Mayoría simple de los miembros presentes", "Dos terceras partes (2/3) de sus miembros al menos", "Tres cuartas partes de los votos", "Unanimidad de ambas Cámaras"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 30 de la Constitución Nacional Argentina.", puntos_base: 25
+  },
+  {
+    id: "10125-03", id_categoria: "10125", categoria_nombre: "D. Constitucional", dificultad: "facil",
+    pregunta: "¿Qué órgano tiene el control de constitucionalidad en la República Argentina según la jurisprudencia de la CSJN?",
+    opciones: ["Un Tribunal Constitucional especializado exclusivo", "Todos los jueces de cualquier fuero e instancia (Control Difuso)", "El Poder Ejecutivo Nacional mediante veto", "El Congreso de la Nación por Comisión Bicameral"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Fallos CSJN 'Sojo' (1887) y 'Elortondo' (1888).", puntos_base: 10
+  },
+  {
+    id: "10125-04", id_categoria: "10125", categoria_nombre: "D. Constitucional", dificultad: "media",
+    pregunta: "El fallo histórico de la CSJN que creó pretorianamente la acción judicial de Amparo en 1957 fue:",
+    opciones: ["Fallo Kot", "Fallo Siri", "Fallo Fayt", "Fallo Bazterrica"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "CSJN, Fallo 'Siri, Ángel' (27/12/1957).", puntos_base: 25
+  },
+  {
+    id: "10125-05", id_categoria: "10125", categoria_nombre: "D. Constitucional", dificultad: "dificil",
+    pregunta: "Los Decretos de Necesidad y Urgencia (DNU) previstos en el Art. 99 inc. 3 de la CN prohíben expresamente dictar normas sobre materia:",
+    opciones: ["Administrativa y comercial", "Penal, tributaria, electoral o de régimen de los partidos políticos", "Presupuestaria y de obras públicas", "Internacional y diplomática"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 99 inc. 3 de la CN tras la Reforma de 1994.", puntos_base: 50
   },
 
-  // --- 3ER AÑO: DERECHO DEL TRABAJO I ---
+  // --- 10134: DERECHO PROCESAL I ---
   {
-    id: "trab1-f-01",
-    id_categoria: "derecho_trabajo1",
-    categoria_nombre: "Derecho del Trabajo I",
-    dificultad: "facil",
-    pregunta: "¿Qué principio fundamental del Derecho del Trabajo establece que ante la duda de interpretación se debe estar a favor del trabajador?",
-    opciones: [
-      "Principio In Dubio Pro Operario (Art. 9 LCT).",
-      "Principio de Inalterabilidad Contrato.",
-      "Principio del Libre Despido.",
-      "Principio de Preclusión."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 9 de la Ley de Contrato de Trabajo (Ley 20.744).",
-    puntos_base: 10
+    id: "10134-01", id_categoria: "10134", categoria_nombre: "D. Procesal I", dificultad: "facil",
+    pregunta: "En el Código Procesal Civil y Comercial (CPCCBA), la facultad que tiene el demandado de reconvenir significa:",
+    opciones: ["Impugnar la competencia del juez", "Demandar reconvencionalmente al actor en la misma contestación", "Pedir la caducidad de instancia", "Solamente negar los hechos de la demanda"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 355 del CPCCBA.", puntos_base: 10
+  },
+  {
+    id: "10134-02", id_categoria: "10134", categoria_nombre: "D. Procesal I", dificultad: "media",
+    pregunta: "¿Cuál es el plazo de caducidad de la instancia en primera instancia en el juicio ordinario en PBA?",
+    opciones: ["3 meses", "6 meses", "1 año", "2 años"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 310 inc. 1 del CPCCBA.", puntos_base: 25
   },
 
-  // --- 4TO AÑO: DERECHO PRIVADO III (CONTRATOS) ---
+  // --- 10640: DERECHO SOCIAL DEL TRABAJO ---
   {
-    id: "priv3-f-01",
-    id_categoria: "derecho_privado3",
-    categoria_nombre: "Derecho Privado III (Contratos)",
-    dificultad: "facil",
-    pregunta: "El consentimiento en los contratos se integra por dos manifestaciones unilaterales de voluntad denominadas:",
-    opciones: [
-      "La Oferta y la Aceptación.",
-      "La Carta Documento y la Firma.",
-      "El Depósito y el Recibo.",
-      "La Mediación y el Laudo."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 971 del Código Civil y Comercial de la Nación.",
-    puntos_base: 10
+    id: "10640-01", id_categoria: "10640", categoria_nombre: "D. Social del Trabajo", dificultad: "facil",
+    pregunta: "¿Qué indemnización por antigüedad prevé el Art. 245 de la LCT (Ley 20.744) por despido incausado?",
+    opciones: ["Medio sueldo por cada año de servicio", "Un mes de sueldo por cada año de servicio o fracción mayor de 3 meses", "Tres meses de sueldo fijos", "6 meses de salario garantizados"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 245 de la Ley de Contrato de Trabajo 20.744.", puntos_base: 10
   },
 
-  // --- 4TO AÑO: DERECHO PROCESAL CIVIL ---
+  // --- 10141: DERECHO ADMINISTRATIVO I ---
   {
-    id: "proccivil-m-01",
-    id_categoria: "derecho_procesal_civil",
-    categoria_nombre: "Derecho Procesal Civil",
-    dificultad: "media",
-    pregunta: "En el Código Procesal Civil y Comercial de PBA (CPCCBA), ¿cuál es el plazo general para interponer el Recurso de Apelación contra una sentencia definitiva en Juicio Ordinario?",
-    opciones: ["5 días hábiles procesales.", "10 días corridos.", "15 días hábiles.", "2 días de notificación."],
+    id: "10141-01", id_categoria: "10141", categoria_nombre: "D. Administrativo I", dificultad: "facil",
+    pregunta: "¿Cuáles son los elementos esenciales del Acto Administrativo según la Ley de Procedimiento Administrativo?",
+    opciones: ["Competencia, Causa, Objeto, Procedimiento, Motivación y Finalidad", "Solamente la firma del Ministro", "El presupuesto y la licitación", "La publicación en el Boletín Oficial únicamente"],
     respuesta_correcta_index: 0,
-    fundamento_juridico: "CPCCBA, Art. 244: 'El recurso de apelación se interpondrá dentro de quinto día'.",
-    puntos_base: 25
-  },
-
-  // --- 4TO AÑO: DERECHO TRIBUTARIO ---
-  {
-    id: "trib-f-01",
-    id_categoria: "derecho_tributario",
-    categoria_nombre: "Derecho Tributario",
-    dificultad: "facil",
-    pregunta: "¿Qué principio constitucional exige que todo tributo o impuesto sea creado únicamente por una Ley formal del Congreso?",
-    opciones: [
-      "Principio de Legalidad / Reserva de Ley (Nullum tributum sine lege).",
-      "Principio de Progresividad Voluntaria.",
-      "Principio de Oportunidad Fiscal.",
-      "Principio de Discrecionalidad Administrativa."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Arts. 4, 17, 52 y 75 inc. 1 y 2 de la Constitución Nacional Argentina.",
-    puntos_base: 10
-  },
-
-  // --- 5TO AÑO: DERECHO PRIVADO IV (REALES) ---
-  {
-    id: "priv4-f-01",
-    id_categoria: "derecho_privado4",
-    categoria_nombre: "Derecho Privado IV (Reales)",
-    dificultad: "facil",
-    pregunta: "¿Cuál es el derecho real por excelencia que otorga a su titular las facultades de usar, gozar y disponer material y jurídicamente de una cosa?",
-    opciones: ["Dominio (Propiedad).", "Usufructo.", "Servidumbre de paso.", "Hipotecario."],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 1941 del Código Civil y Comercial de la Nación.",
-    puntos_base: 10
-  },
-
-  // --- 5TO AÑO: DERECHO DE LAS SUCESIONES ---
-  {
-    id: "suc-m-01",
-    id_categoria: "derecho_sucesiones",
-    categoria_nombre: "Derecho de las Sucesiones",
-    dificultad: "media",
-    pregunta: "Según el Código Civil y Comercial de la Nación, ¿cuál es la porción legítima inviolable reservada a los hijos (descendientes)?",
-    opciones: [
-      "Dos tercios (2/3) del patrimonio hereditario.",
-      "Un medio (1/2) del patrimonio.",
-      "Cuatro quintos (4/5) del patrimonio.",
-      "El 100% indisponible."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 2445 CCyCN: 'La porción legítima de los descendientes es de dos tercios'.",
-    puntos_base: 25
-  },
-
-  // --- 5TO AÑO: DERECHO AMBIENTAL ---
-  {
-    id: "amb-f-01",
-    id_categoria: "derecho_ambiental",
-    categoria_nombre: "Derecho Ambiental",
-    dificultad: "facil",
-    pregunta: "¿Qué principio fundamental de la Ley General del Ambiente (25.675) establece que ante el peligro de daño grave o irreversible, la falta de certeza científica no pospondrá la adopción de medidas tutelares?",
-    opciones: [
-      "Principio Precautorio (Art. 4 Ley 25.675).",
-      "Principio de Contaminador Pagador.",
-      "Principio de Subsidiariedad.",
-      "Principio de Congruencia Normativa."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Art. 4 de la Ley General del Ambiente 25.675.",
-    puntos_base: 10
-  },
-
-  // --- 5TO AÑO: ÉTICA Y RESPONSABILIDAD PROFESIONAL ---
-  {
-    id: "etica-f-01",
-    id_categoria: "etica_profesional",
-    categoria_nombre: "Ética y Resp. Profesional",
-    dificultad: "facil",
-    pregunta: "¿Qué deber profesional prohíbe al abogado/a revelar las confidencias realizadas por su cliente con motivo del ejercicio profesional?",
-    opciones: [
-      "Secreto Profesional.",
-      "Deber de Lealtad Comercial.",
-      "Pacto de Cuota Litis.",
-      "Exención de Matrícula."
-    ],
-    respuesta_correcta_index: 0,
-    fundamento_juridico: "Código de Ética Profesional del Colegio de Abogados de La Plata (CALP) y Ley 5177.",
-    puntos_base: 10
+    fundamento_juridico: "Art. 7 de la Ley 19.549 / Decreto-Ley 7647 PBA.", puntos_base: 10
   }
 ];
