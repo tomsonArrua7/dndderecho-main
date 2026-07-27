@@ -5,7 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import { 
   ETAPAS_CARRERA, 
   SKILLS_DISPONIBLES, 
-  CIUDADES_ORIGEN,
+  PROVINCIAS_ARGENTINA,
+  MUNICIPIOS_PBA,
   LOGROS_JUEGO,
   SkillDefinition, 
   EtapaVida, 
@@ -16,7 +17,6 @@ import {
   LogroDefinition
 } from "@/data/haceTuHistoriaData";
 import { 
-  ShieldAlert, 
   Scale, 
   RotateCcw, 
   CheckCircle2, 
@@ -33,14 +33,24 @@ import {
   TrendingUp,
   Award,
   Dice5,
-  Home,
   MapPin,
   Clock,
   Lock,
   Coins,
-  HeartPulse
+  Building2,
+  UserPlus,
+  UserCheck,
+  TrendingDown,
+  ChevronDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface StaffConfig {
+  expertoCount: number;
+  juniorCount: number;
+  hasContador: boolean;
+  estudioNombre: string;
+}
 
 export default function HaceTuHistoria() {
   const { user, profile, loading } = useAuth();
@@ -48,9 +58,11 @@ export default function HaceTuHistoria() {
   // Verificación estricta de Admin
   const isAdminUser = profile?.role === "admin";
 
-  // Setup Inicial de Personaje
-  const [selectedCity, setSelectedCity] = useState(CIUDADES_ORIGEN[0]); // La Plata por defecto
-  const [selectedEdadInicial, setSelectedEdadInicial] = useState<18 | 25>(18); // 18 o 25 años
+  // Setup Inicial de Personaje: Selector de Provincia y Ciudad
+  const [selectedProvincia, setSelectedProvincia] = useState("Buenos Aires");
+  const [selectedMunicipioPBA, setSelectedMunicipioPBA] = useState("La Plata (Capital)");
+  const [customCiudadNatal, setCustomCiudadNatal] = useState("");
+  const [selectedEdadInicial, setSelectedEdadInicial] = useState<18 | 25>(18);
   const [selectedSkill, setSelectedSkill] = useState<SkillDefinition | null>(null);
   
   // Estado del Juego
@@ -61,11 +73,26 @@ export default function HaceTuHistoria() {
   const [prestigio, setPrestigio] = useState(50);
   const [contactos, setContactos] = useState(50);
   const [etica, setEtica] = useState(50);
-  const [templanza, setTemplanza] = useState(75); // Reemplaza a Salud Mental
-  const [dineroPesos, setDineroPesos] = useState(35000); // Pesos Argentinos Reales
+  const [templanza, setTemplanza] = useState(75);
+  const [dineroPesos, setDineroPesos] = useState(35000);
 
-  // Logros Desbloqueados
-  const [unlockedLogros, setUnlockedLogros] = useState<string[]>([]);
+  // Gestión de Empleados y Gastos Fijos (Etapa 7+)
+  const [staff, setStaff] = useState<StaffConfig>({
+    expertoCount: 0,
+    juniorCount: 0,
+    hasContador: false,
+    estudioNombre: "DND & Asociados"
+  });
+
+  // Logros Desbloqueados (Persistidos en localStorage)
+  const [unlockedLogros, setUnlockedLogros] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("dnd_historia_logros");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [newLogroAlert, setNewLogroAlert] = useState<LogroDefinition | null>(null);
 
   // Evento Inesperado Activo de la Etapa
@@ -89,6 +116,15 @@ export default function HaceTuHistoria() {
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [isVictory, setIsVictory] = useState(false);
 
+  // Guardar logros desbloqueados en localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("dnd_historia_logros", JSON.stringify(unlockedLogros));
+    } catch {
+      // Ignorar
+    }
+  }, [unlockedLogros]);
+
   // Al iniciar o cambiar de etapa, seleccionar un Evento Inesperado aleatorio (1 de entre 5)
   useEffect(() => {
     if (gameStarted && ETAPAS_CARRERA[currentEtapaIdx]) {
@@ -99,7 +135,7 @@ export default function HaceTuHistoria() {
         setActiveRandomEvent(selectedEvent);
         setHasDismissedEvent(false);
 
-        // Aplicar el impacto del evento inmediatamente con rendimientos decrecientes
+        // Aplicar impacto del evento con rendimientos decrecientes
         const imp = selectedEvent.impacto;
         setPrestigio(p => applyStatChange(p, imp.prestigio));
         setContactos(c => applyStatChange(c, imp.contactos));
@@ -115,7 +151,15 @@ export default function HaceTuHistoria() {
     return <Navigate to="/mi-espacio" replace />;
   }
 
-  // RENDIMIENTOS DECRECIENTES: Si la stat > 70, las ganancias sufren un 50% de saturacion
+  // Nombre de Ciudad Natal Definitivo
+  const getCiudadNatalNombre = () => {
+    if (selectedProvincia === "Buenos Aires") {
+      return selectedMunicipioPBA;
+    }
+    return customCiudadNatal.trim() ? `${customCiudadNatal.trim()} (${selectedProvincia})` : selectedProvincia;
+  };
+
+  // RENDIMIENTOS DECRECIENTES: Si stat >= 70, ganancias sufren 50% de nerfeo
   function applyStatChange(currentVal: number, change: number): number {
     if (change > 0 && currentVal >= 70) {
       const nerfedGain = Math.round(change * 0.5);
@@ -148,7 +192,6 @@ export default function HaceTuHistoria() {
     };
   };
 
-  // Determinar la Rama del Derecho Predominante y su OVR
   const getDominantBranch = () => {
     const ovrs = calculateOVRRamas();
     const scores = [
@@ -161,6 +204,16 @@ export default function HaceTuHistoria() {
     return scores[0];
   };
 
+  // Cálculo de Gastos Fijos Bianuales (Etapa 7+)
+  const calculateGastosFijosBianuales = () => {
+    if (currentEtapaIdx < 6) return 0; // Pre-graduación no paga
+    const costoMatriculaCALP = 250000;
+    const costoExpertos = staff.expertoCount * 2400000;
+    const costoJuniors = staff.juniorCount * 900000;
+    const costoContador = staff.hasContador ? 700000 : 0;
+    return costoMatriculaCALP + costoExpertos + costoJuniors + costoContador;
+  };
+
   // Comprobar Desbloqueo de Logros
   const checkLogrosUnlock = (newPrestigio: number, newContactos: number, newEtica: number, newDinero: number, currentStageIdx: number) => {
     LOGROS_JUEGO.forEach((logro) => {
@@ -170,8 +223,9 @@ export default function HaceTuHistoria() {
       if (logro.id === "logro_honores" && currentStageIdx === 5 && newPrestigio >= 75) isUnlocked = true;
       if (logro.id === "logro_magnate" && newDinero >= 25000000) isUnlocked = true;
       if (logro.id === "logro_incorruptible" && currentStageIdx >= 10 && newEtica >= 85) isUnlocked = true;
-      if (logro.id === "logro_calle13" && currentStageIdx <= 8 && newContactos >= 80) isUnlocked = true;
-      if (logro.id === "logro_patria_chica" && !selectedCity.esLocal && currentStageIdx >= 6) isUnlocked = true;
+      if (logro.id === "logro_estrellas" && currentStageIdx >= 7) isUnlocked = true;
+      if (logro.id === "logro_dnd_socio" && currentStageIdx >= 8) isUnlocked = true;
+      if (logro.id === "logro_patria_chica" && selectedProvincia !== "Buenos Aires" && currentStageIdx >= 6) isUnlocked = true;
 
       if (isUnlocked) {
         setUnlockedLogros(prev => [...prev, logro.id]);
@@ -189,10 +243,9 @@ export default function HaceTuHistoria() {
     setTemplanza(selectedEdadInicial === 25 ? 65 : 80);
     setDineroPesos(selectedEdadInicial === 25 ? 450000 : 35000);
     setRamas({ penal: 0, civilComercial: 0, administrativoPublico: 0, cibertech: 0 });
+    setStaff({ expertoCount: 0, juniorCount: 0, hasContador: false, estudioNombre: "DND & Asociados" });
     
-    // Si inicia con +25 años, arranca en la Etapa 2 (20-22) adaptada
     setCurrentEtapaIdx(selectedEdadInicial === 25 ? 1 : 0);
-    setUnlockedLogros([]);
     setNewLogroAlert(null);
     setLastFeedback(null);
     setLastImpact(null);
@@ -203,7 +256,6 @@ export default function HaceTuHistoria() {
   };
 
   const handleMakeChoice = (opcion: OpcionDilema) => {
-    // Comprobar si requiere dinero que no se tiene
     if (opcion.costoPesosRequerido && dineroPesos < opcion.costoPesosRequerido) {
       return;
     }
@@ -211,11 +263,20 @@ export default function HaceTuHistoria() {
     const impact = opcion.impacto;
     setLastImpact(impact);
 
-    const newPrestigio = applyStatChange(prestigio, impact.prestigio);
-    const newContactos = applyStatChange(contactos, impact.contactos);
-    const newEtica = applyStatChange(etica, impact.etica);
-    const newTemplanza = applyStatChange(templanza, impact.templanza);
-    const newDinero = Math.max(0, dineroPesos + impact.dineroPesos);
+    let newPrestigio = applyStatChange(prestigio, impact.prestigio);
+    let newContactos = applyStatChange(contactos, impact.contactos);
+    let newEtica = applyStatChange(etica, impact.etica);
+    let newTemplanza = applyStatChange(templanza, impact.templanza);
+
+    // DEDUCCIÓN DE GASTOS FIOS DE EMPLEADOS Y MATRÍCULA (ETAPA 7+)
+    const gastosFijos = calculateGastosFijosBianuales();
+    let netDineroChange = impact.dineroPesos - gastosFijos;
+
+    // Beneficios adicionales de staff
+    if (staff.expertoCount > 0) newPrestigio = Math.min(100, newPrestigio + (staff.expertoCount * 5));
+    if (staff.hasContador) netDineroChange += 500000; // Facturación eficiente
+
+    const newDinero = dineroPesos + netDineroChange;
 
     setPrestigio(newPrestigio);
     setContactos(newContactos);
@@ -233,29 +294,22 @@ export default function HaceTuHistoria() {
     }
 
     setLastFeedback(opcion.feedbackNarrativo);
-
-    // Chequear logros
     checkLogrosUnlock(newPrestigio, newContactos, newEtica, newDinero, currentEtapaIdx);
 
-    // Verificar Game Over (Muerte Súbita)
+    // Muerte Súbita o Bancarrota
     if (newTemplanza <= 0) {
-      setGameOverReason("🧠 BURNOUT TOTAL / COLAPSO POR ESTRÉS: El nivel de estrés extremo, insomnio y agotamiento destruyeron tu templanza. Tuviste que abandonar la abogacía por indicación médica urgente.");
+      setGameOverReason("🧠 BURNOUT TOTAL / COLAPSO POR ESTRÉS: El nivel de estrés extremo y la presión mediática destruyeron tu templanza. Tuviste que abandonar la abogacía.");
       return;
     }
     if (newEtica <= 0) {
-      setGameOverReason("🏛️ RETIRO DE MATRÍCULA: El Tribunal de Disciplina del Colegio de Abogados de La Plata (CALP) resolvió retirarte la matrícula profesional por faltas graves a la ética.");
+      setGameOverReason("🏛️ RETIRO DE MATRÍCULA: El Tribunal de Disciplina del Colegio de Abogados de La Plata (CALP) resolvió retirarte la matrícula profesional por faltas graves.");
       return;
     }
     if (newDinero <= 0 && currentEtapaIdx >= 6) {
-      setGameOverReason("💰 QUIEBRA Y DESAHUCIO FINANCIERO: Te quedaste sin un solo peso para saldar el alquiler del estudio y los aportes a la Caja Previsional. Tuviste que abandonar el ejercicio de la abogacía.");
-      return;
-    }
-    if (newPrestigio <= 0) {
-      setGameOverReason("⚖️ ESCARNIO PÚBLICO EN LA PLATA: Perdiste todo tu prestigio técnico. Los magistrados desestiman tus escritos por defecto y los clientes no confían en tu firma.");
+      setGameOverReason(`💰 BANCARROTA Y EMBARGO: Te quedaste sin liquidez para saldar la matrícula del CALP y los sueldos del personal de tu estudio (${formatPesos(gastosFijos)} bianuales). Sufriste la quiebra procesal.`);
       return;
     }
 
-    // Mostrar Resumen Bi-Anual antes de pasar a la siguiente etapa
     setShowBiAnnualSummary(true);
   };
 
@@ -278,9 +332,10 @@ export default function HaceTuHistoria() {
 
   const currentEtapa: EtapaVida = ETAPAS_CARRERA[currentEtapaIdx];
   const dominantBranch = getDominantBranch();
-  const ovrRamas = calculateOVRRamas();
+  const currentOVRGeneral = calculateOVRGeneral();
+  const gastosFijosActuales = calculateGastosFijosBianuales();
 
-  // 1. SETUP DE PERSONAJE (CONFIGURACIÓN INICIAL DE PARTIDA)
+  // 1. SETUP DE PERSONAJE CON SELECTOR AVANZADO DE CIUDADES
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
@@ -289,48 +344,80 @@ export default function HaceTuHistoria() {
           <div className="text-center space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-black uppercase tracking-widest">
               <GraduationCap className="w-4 h-4" />
-              <span>Configuración de Personaje — UNLP & La Plata</span>
+              <span>Simulador de Carrera — DND & Asociados / UNLP</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight font-display bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">
               HACÉ TU HISTORIA
             </h1>
             <p className="text-xs md:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Configurá el origen de tu personaje, tu edad de inicio y tu especialidad técnica inicial para iniciar la simulación de carrera jurídica.
+              Configurá tu lugar de nacimiento, edad de inicio y especialidad técnica para comenzar la aventura profesional.
             </p>
           </div>
 
           <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
             
-            {/* CIUDAD DE ORIGEN */}
-            <div className="space-y-3">
+            {/* SELECTOR DE PROVINCIA Y CIUDAD */}
+            <div className="space-y-4">
               <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                <span>1. Ciudad de Origen (Patria Chica)</span>
+                <span>1. OrigenGeográfico (Provincia y Ciudad Natal)</span>
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {CIUDADES_ORIGEN.map((city) => (
-                  <button
-                    key={city.id}
-                    onClick={() => setSelectedCity(city)}
-                    className={cn(
-                      "p-3 rounded-2xl border text-xs font-bold transition-all text-left flex items-center justify-between cursor-pointer",
-                      selectedCity.id === city.id
-                        ? "bg-indigo-600/30 border-indigo-500 text-white shadow-lg"
-                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                    )}
-                  >
-                    <span>{city.nombre}</span>
-                    {selectedCity.id === city.id && <CheckCircle2 className="w-4 h-4 text-indigo-400 shrink-0" />}
-                  </button>
-                ))}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* DROPDOWN 1: PROVINCIA */}
+                <div className="space-y-1.5">
+                  <span className="text-[11px] text-slate-400 font-bold">Provincia:</span>
+                  <div className="relative">
+                    <select
+                      value={selectedProvincia}
+                      onChange={(e) => setSelectedProvincia(e.target.value)}
+                      className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer pr-10"
+                    >
+                      {PROVINCIAS_ARGENTINA.map((prov) => (
+                        <option key={prov} value={prov}>{prov}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3.5 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* DROPDOWN 2 / CAMPO LIBRE: CIUDAD */}
+                <div className="space-y-1.5">
+                  <span className="text-[11px] text-slate-400 font-bold">
+                    {selectedProvincia === "Buenos Aires" ? "Municipio / Ciudad de PBA:" : "Escribí tu Ciudad Natal:"}
+                  </span>
+
+                  {selectedProvincia === "Buenos Aires" ? (
+                    <div className="relative">
+                      <select
+                        value={selectedMunicipioPBA}
+                        onChange={(e) => setSelectedMunicipioPBA(e.target.value)}
+                        className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs appearance-none focus:outline-none focus:border-indigo-500 cursor-pointer pr-10"
+                      >
+                        {MUNICIPIOS_PBA.map((muni) => (
+                          <option key={muni} value={muni}>{muni}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3.5 pointer-events-none" />
+                    </div>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="Ej: Villa María, Rosario, San Rafael..."
+                      value={customCiudadNatal}
+                      onChange={(e) => setCustomCiudadNatal(e.target.value)}
+                      className="w-full p-3 rounded-2xl bg-slate-950 border border-white/15 text-white font-bold text-xs focus:outline-none focus:border-indigo-500"
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
             {/* EDAD DE INICIO */}
-            <div className="space-y-3 pt-3 border-t border-white/10">
+            <div className="space-y-3 pt-4 border-t border-white/10">
               <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span>2. Edad al Iniciar la Carrera</span>
+                <span>2. Edad al Comenzar</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
@@ -343,10 +430,10 @@ export default function HaceTuHistoria() {
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-black text-sm text-white">🎓 18 Años (Estudiante Tradicional)</span>
+                    <span className="font-black text-sm text-white">🎓 18 Años (Ingresante UNLP)</span>
                     {selectedEdadInicial === 18 && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
                   </div>
-                  <p className="text-[11px] text-slate-400">Inicio desde 1er año. Ahorros iniciales de $35.000 y Templanza de 80.</p>
+                  <p className="text-[11px] text-slate-400">Inicio desde 1er año. Ahorros iniciales de $35.000 y Templanza 80.</p>
                 </button>
 
                 <button
@@ -368,7 +455,7 @@ export default function HaceTuHistoria() {
             </div>
 
             {/* SELECCIÓN DE SKILL INICIAL */}
-            <div className="space-y-3 pt-3 border-t border-white/10">
+            <div className="space-y-3 pt-4 border-t border-white/10">
               <label className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
                 <span>3. Especialidad Técnica Inicial</span>
@@ -435,13 +522,23 @@ export default function HaceTuHistoria() {
             <h2 className="text-xl md:text-2xl font-black text-white pt-1">Impacto Directo de Tu Elección</h2>
           </div>
 
-          {/* ULTIMO FEEDBACK */}
           <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-xs md:text-sm space-y-1">
             <p className="font-bold text-indigo-300 text-[11px] uppercase flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" /> Consecuencia Procesal / Personal:
             </p>
             <p className="italic leading-relaxed text-slate-300">{lastFeedback}</p>
           </div>
+
+          {/* DEDUCCIÓN DE GASTOS FIJOS DE PERSONAL Y MATRÍCULA */}
+          {currentEtapaIdx >= 6 && (
+            <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-amber-500/30 text-xs font-bold space-y-1">
+              <div className="flex items-center justify-between text-amber-300">
+                <span className="flex items-center gap-1.5"><Building2 className="w-4 h-4" /> Deducción de Gastos Fijos (Matrícula + Staff):</span>
+                <span className="text-red-400 font-mono">-{formatPesos(gastosFijosActuales)}</span>
+              </div>
+              <p className="text-[10px] text-slate-400 font-normal">Incluye Matrícula CALP ($250k) y liquidación de sueldos de empleados contratados.</p>
+            </div>
+          )}
 
           {/* ALERT NUEVO LOGRO DESBLOQUEADO */}
           <AnimatePresence>
@@ -461,7 +558,7 @@ export default function HaceTuHistoria() {
             )}
           </AnimatePresence>
 
-          {/* VARIACIÓN VOLÁTIL DE STATS */}
+          {/* VARIACIÓN DE STATS SIN /100 */}
           <div className="grid grid-cols-2 gap-3 text-xs font-bold">
             <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
               <span className="text-slate-400">⚖️ Prestigio:</span>
@@ -490,13 +587,6 @@ export default function HaceTuHistoria() {
                 {lastImpact.templanza >= 0 ? `+${lastImpact.templanza}` : lastImpact.templanza}
               </span>
             </div>
-
-            <div className="col-span-2 p-3 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
-              <span className="text-slate-400">💰 Variación Financiera ($):</span>
-              <span className={cn("font-mono font-black text-sm", lastImpact.dineroPesos >= 0 ? "text-emerald-400" : "text-red-400")}>
-                {lastImpact.dineroPesos >= 0 ? `+${formatPesos(lastImpact.dineroPesos)}` : formatPesos(lastImpact.dineroPesos)}
-              </span>
-            </div>
           </div>
 
           <button
@@ -511,7 +601,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 3. PANTALLA GAME OVER (MUERTE SÚBITA)
+  // 3. PANTALLA GAME OVER (MUERTE SÚBITA O BANCARROTA)
   if (gameOverReason) {
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
@@ -551,7 +641,6 @@ export default function HaceTuHistoria() {
 
   // 4. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS
   if (isVictory) {
-    const finalOVR = calculateOVRGeneral();
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
         <div className="max-w-xl w-full bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
@@ -564,41 +653,22 @@ export default function HaceTuHistoria() {
               ¡JUBILACIÓN COMPLETADA A LOS 65 AÑOS!
             </span>
             <h2 className="text-2xl md:text-3xl font-black text-white pt-2">Leyenda Jurídica de La Plata</h2>
-            <p className="text-xs text-slate-400">Origen: {selectedCity.nombre} — FCJyS UNLP</p>
+            <p className="text-xs text-slate-400">Origen: {getCiudadNatalNombre()} — FCJyS UNLP</p>
           </div>
 
-          {/* STATS FINALES */}
           <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <span className="text-xs font-bold text-slate-400 uppercase">Patrimonio Neto Final ($)</span>
               <span className="text-xl font-black text-emerald-400 font-mono">{formatPesos(dineroPesos)}</span>
             </div>
             
+            {/* STATS FINALES LIMPIAS */}
             <div className="grid grid-cols-4 gap-2 text-xs font-bold text-center">
-              <div className="p-2 rounded-xl bg-white/5">⚖️ Prestigio: <span className="text-amber-400 block font-mono text-sm">{prestigio}</span></div>
+              <div className="p-2 rounded-xl bg-white/5">⚖️ Pres.: <span className="text-amber-400 block font-mono text-sm">{prestigio}</span></div>
               <div className="p-2 rounded-xl bg-white/5">🤝 Contactos: <span className="text-indigo-400 block font-mono text-sm">{contactos}</span></div>
               <div className="p-2 rounded-xl bg-white/5">🏛️ Ética: <span className="text-emerald-400 block font-mono text-sm">{etica}</span></div>
               <div className="p-2 rounded-xl bg-white/5">🧠 Templanza: <span className="text-rose-400 block font-mono text-sm">{templanza}</span></div>
             </div>
-
-            <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-xs font-bold flex items-center justify-between">
-              <span className="text-indigo-300">Perfil de Rama Definitivo:</span>
-              <span className="text-white uppercase font-black">{dominantBranch.name} (OVR {dominantBranch.ovr})</span>
-            </div>
-
-            {/* LOGROS ALCANZADOS */}
-            {unlockedLogros.length > 0 && (
-              <div className="pt-2 border-t border-white/10 space-y-2 text-left">
-                <span className="text-[10px] font-black uppercase text-amber-400 block">Logros Desbloqueados ({unlockedLogros.length}):</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {LOGROS_JUEGO.filter(l => unlockedLogros.includes(l.id)).map(l => (
-                    <span key={l.id} className="px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-bold">
-                      🏆 {l.nombre}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="flex flex-col gap-3">
@@ -607,7 +677,7 @@ export default function HaceTuHistoria() {
               className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
-              <span>Jugar Otra Historia</span>
+              <span>Jugar Otra Carrera</span>
             </button>
             <Link
               to="/mi-espacio"
@@ -621,16 +691,14 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 5. PANTALLA PRINCIPAL DE JUEGO
-  const currentOVRGeneral = calculateOVRGeneral();
-
+  // 5. PANTALLA PRINCIPAL DE JUEGO CON OVR GIGANTE Y PANEL DE EMPLEADOS
   return (
     <div className="min-h-screen bg-[#070A14] text-white py-6 md:py-10 px-3 md:px-8 relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10 space-y-6">
         
-        {/* HEADER DE ESTADO Y OVR POR RAMA */}
+        {/* HEADER DE ESTADO CON OVR GIGANTE VISUAL */}
         <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-4 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-black uppercase tracking-wider border border-amber-500/30">
@@ -638,21 +706,21 @@ export default function HaceTuHistoria() {
                 </span>
                 <span className="px-2.5 py-1 rounded-full bg-white/10 text-slate-300 text-[10px] font-bold border border-white/10 flex items-center gap-1">
                   <MapPin className="w-3 h-3 text-indigo-400" />
-                  {selectedCity.nombre}
+                  {getCiudadNatalNombre()}
                 </span>
               </div>
               <h2 className="text-lg md:text-xl font-black text-white mt-1">{currentEtapa.puesto}</h2>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <span className="text-[9px] uppercase font-black tracking-wider text-slate-400 block">OVR General</span>
-                <span className="text-xl font-black text-amber-400 font-mono">{currentOVRGeneral}</span>
+            {/* OVR NUMERO GIGANTE Y VISTOSO */}
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3 bg-gradient-to-br from-amber-500/20 via-slate-950 to-indigo-500/20 p-3 rounded-2xl border border-amber-500/40 shadow-inner">
+                <div className="text-right">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-amber-300 block">OVR GENERAL</span>
+                  <span className="text-3xl md:text-4xl font-black text-amber-400 font-mono tracking-tight drop-shadow-md">{currentOVRGeneral}</span>
+                </div>
               </div>
-              <div className="text-right border-l border-white/10 pl-4">
-                <span className="text-[9px] uppercase font-black tracking-wider text-slate-400 block">OVR {dominantBranch.name.split("&")[0]}</span>
-                <span className="text-xl font-black text-indigo-400 font-mono">{dominantBranch.ovr}</span>
-              </div>
+
               <div className="text-right border-l border-white/10 pl-4 hidden sm:block">
                 <span className="text-[9px] uppercase font-black tracking-wider text-slate-400 block">Patrimonio ($)</span>
                 <span className="text-lg font-black text-emerald-400 font-mono">{formatPesos(dineroPesos)}</span>
@@ -660,30 +728,102 @@ export default function HaceTuHistoria() {
             </div>
           </div>
 
-          {/* TABLERO DE STATS & LOGROS */}
+          {/* TABLERO DE STATS LIMPIAS SIN /100 */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-            <div className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black block">⚖️ Prestigio</span>
-              <span className="font-mono font-black text-sm text-amber-400">{prestigio}/100</span>
+            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400 uppercase font-black">⚖️ Prestigio</span>
+              <span className="font-mono font-black text-base text-amber-400">{prestigio}</span>
             </div>
 
-            <div className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black block">🤝 Contactos</span>
-              <span className="font-mono font-black text-sm text-indigo-400">{contactos}/100</span>
+            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400 uppercase font-black">🤝 Contactos</span>
+              <span className="font-mono font-black text-base text-indigo-400">{contactos}</span>
             </div>
 
-            <div className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black block">🏛️ Ética</span>
-              <span className="font-mono font-black text-sm text-emerald-400">{etica}/100</span>
+            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400 uppercase font-black">🏛️ Ética</span>
+              <span className="font-mono font-black text-base text-emerald-400">{etica}</span>
             </div>
 
-            <div className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-black block">🧠 Templanza</span>
-              <span className={cn("font-mono font-black text-sm", templanza < 30 ? "text-red-400 animate-pulse" : "text-rose-400")}>
-                {templanza}/100
+            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400 uppercase font-black">🧠 Templanza</span>
+              <span className={cn("font-mono font-black text-base", templanza < 30 ? "text-red-400 animate-pulse" : "text-rose-400")}>
+                {templanza}
               </span>
             </div>
           </div>
+
+          {/* PANEL DE GESTIÓN DE EMPLEADOS Y GASTOS FIJOS (ETAPA 7+) */}
+          {currentEtapaIdx >= 6 && (
+            <div className="pt-3 border-t border-white/10 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                  <UserPlus className="w-4 h-4" />
+                  <span>Gestión de Personal & Gastos Fijos de {staff.estudioNombre}</span>
+                </span>
+                <span className="text-xs font-mono font-bold text-red-400">
+                  Gastos Fijos Bianuales: {formatPesos(gastosFijosActuales)}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                {/* EXPERTO */}
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-white text-[11px]">👨‍⚖️ Abogado Experto</p>
+                    <p className="text-[9px] text-slate-400">$2.400.000/2 años (+15 Pres)</p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setStaff(s => ({ ...s, expertoCount: Math.max(0, s.expertoCount - 1) }))}
+                      className="w-6 h-6 rounded-lg bg-white/10 text-white font-bold cursor-pointer hover:bg-white/20"
+                    >-</button>
+                    <span className="font-mono font-bold text-white text-xs">{staff.expertoCount}</span>
+                    <button
+                      onClick={() => setStaff(s => ({ ...s, expertoCount: s.expertoCount + 1 }))}
+                      className="w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold cursor-pointer hover:bg-indigo-500"
+                    >+</button>
+                  </div>
+                </div>
+
+                {/* JUNIOR */}
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-white text-[11px]">💼 Abogado Junior</p>
+                    <p className="text-[9px] text-slate-400">$900.000/2 años (Económico)</p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setStaff(s => ({ ...s, juniorCount: Math.max(0, s.juniorCount - 1) }))}
+                      className="w-6 h-6 rounded-lg bg-white/10 text-white font-bold cursor-pointer hover:bg-white/20"
+                    >-</button>
+                    <span className="font-mono font-bold text-white text-xs">{staff.juniorCount}</span>
+                    <button
+                      onClick={() => setStaff(s => ({ ...s, juniorCount: s.juniorCount + 1 }))}
+                      className="w-6 h-6 rounded-lg bg-indigo-600 text-white font-bold cursor-pointer hover:bg-indigo-500"
+                    >+</button>
+                  </div>
+                </div>
+
+                {/* CONTADOR */}
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-white text-[11px]">📊 Contador Público</p>
+                    <p className="text-[9px] text-slate-400">$700.000/2 años (Optimiza $)</p>
+                  </div>
+                  <button
+                    onClick={() => setStaff(s => ({ ...s, hasContador: !s.hasContador }))}
+                    className={cn(
+                      "px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition-all",
+                      staff.hasContador ? "bg-emerald-600 text-white" : "bg-white/10 text-slate-400"
+                    )}
+                  >
+                    {staff.hasContador ? "Contratado ✓" : "Contratar"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* TARJETA DE EVENTO INESPERADO (RANDOM EVENT) */}
@@ -735,7 +875,7 @@ export default function HaceTuHistoria() {
             <p className="text-sm md:text-base font-bold text-white leading-snug">{currentEtapa.dilemaTexto}</p>
           </div>
 
-          {/* OPCIONES DE ACCIÓN CON VERIFICACIÓN DE FONDOS $ Y ORIGEN */}
+          {/* OPCIONES DE ACCIÓN */}
           <div className="space-y-3 pt-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
               ¿Qué decisión tomás?
@@ -746,7 +886,7 @@ export default function HaceTuHistoria() {
                 const isSkillLocked = opcion.requiereSkillId && opcion.requiereSkillId !== selectedSkill?.id;
                 if (isSkillLocked) return null;
 
-                const isOriginLocked = opcion.requiereOrigenFueraLaPlata && selectedCity.esLocal;
+                const isOriginLocked = opcion.requiereOrigenFueraLaPlata && selectedProvincia === "Buenos Aires" && selectedMunicipioPBA.includes("La Plata");
                 if (isOriginLocked) return null;
 
                 const isSkillOption = Boolean(opcion.requiereSkillId && opcion.requiereSkillId === selectedSkill?.id);

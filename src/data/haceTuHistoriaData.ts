@@ -25,7 +25,7 @@ export interface ImpactoStats {
   prestigio: number;
   contactos: number;
   etica: number;
-  templanza: number; // Reemplaza a Salud Mental (0-100)
+  templanza: number;
   dineroPesos: number;
   impactoRamas?: Partial<RamasPuntuacion>;
 }
@@ -41,10 +41,10 @@ export interface EventoInesperado {
 export interface OpcionDilema {
   id: string;
   texto: string;
-  costoPesosRequerido?: number; // Para Cursos Arancelados o Posgrados
+  costoPesosRequerido?: number;
   impacto: ImpactoStats;
   requiereSkillId?: string;
-  requiereOrigenFueraLaPlata?: boolean; // Para dilemas de volver a la ciudad natal
+  requiereOrigenFueraLaPlata?: boolean;
   feedbackNarrativo: string;
 }
 
@@ -85,18 +85,18 @@ export const LOGROS_JUEGO: LogroDefinition[] = [
     requisitoTexto: "Llegar a la jubilación con 85+ en Ética Profesional"
   },
   {
-    id: "logro_calle13",
-    nombre: "Dueño de los Pasillos",
-    icono: "Users",
-    descripcion: "Te convertiste en una figura clave con influencias en Tribunales y la política.",
-    requisitoTexto: "Alcanzar 80+ en Contactos antes de los 30 años"
+    id: "logro_estrellas",
+    nombre: "Abogado de las Estrellas",
+    icono: "Sparkles",
+    descripcion: "Representaste o llevaste a juicio a famosos argentinos mediáticos.",
+    requisitoTexto: "Completar la causa de un famoso o futbolista argentino"
   },
   {
-    id: "logro_doctor",
-    nombre: "Doctor en Ciencias Jurídicas",
-    icono: "Award",
-    descripcion: "Completaste y defendiste con éxito tu Tesis Doctoral en la UNLP.",
-    requisitoTexto: "Completar el Posgrado/Doctorado en la UNLP"
+    id: "logro_dnd_socio",
+    nombre: "Socio Principal de DND & Asociados",
+    icono: "Briefcase",
+    descripcion: "Alcanzaste el liderazgo ejecutivo de la firma jurídica DND & Asociados.",
+    requisitoTexto: "Consolidarte como socio en DND & Asociados"
   },
   {
     id: "logro_patria_chica",
@@ -138,16 +138,62 @@ export const SKILLS_DISPONIBLES: SkillDefinition[] = [
   }
 ];
 
-export const CIUDADES_ORIGEN = [
-  { id: "la_plata", nombre: "La Plata (Capital Bonaerense)", esLocal: true },
-  { id: "mar_del_plata", nombre: "Mar del Plata (Interior PBA)", esLocal: false },
-  { id: "bahia_blanca", nombre: "Bahía Blanca (Interior PBA)", esLocal: false },
-  { id: "tandil", nombre: "Tandil (Interior PBA)", esLocal: false },
-  { id: "pergamino", nombre: "Pergamino (Interior PBA)", esLocal: false },
-  { id: "azul", nombre: "Azul (Interior PBA)", esLocal: false },
-  { id: "cordoba", nombre: "Córdoba (Interior del País)", esLocal: false },
-  { id: "rosario", nombre: "Rosario (Interior del País)", esLocal: false },
-  { id: "mendoza", nombre: "Mendoza (Interior del País)", esLocal: false }
+export const PROVINCIAS_ARGENTINA = [
+  "Buenos Aires",
+  "Ciudad Autónoma de Buenos Aires (CABA)",
+  "Córdoba",
+  "Santa Fe",
+  "Mendoza",
+  "Tucumán",
+  "Entre Ríos",
+  "Salta",
+  "Misiones",
+  "Chaco",
+  "Corrientes",
+  "San Juan",
+  "Jujuy",
+  "Río Negro",
+  "Neuquén",
+  "Formosa",
+  "Chubut",
+  "San Luis",
+  "Catamarca",
+  "La Rioja",
+  "La Pampa",
+  "Santa Cruz",
+  "Tierra del Fuego"
+];
+
+export const MUNICIPIOS_PBA = [
+  "La Plata (Capital)",
+  "Mar del Plata (General Pueyrredón)",
+  "Bahía Blanca",
+  "Tandil",
+  "Azul",
+  "Pergamino",
+  "Olavarría",
+  "Junín",
+  "San Nicolás",
+  "Quilmes",
+  "Lomas de Zamora",
+  "San Isidro",
+  "San Martín",
+  "Morón",
+  "La Matanza",
+  "Tigre",
+  "Pilar",
+  "Necochea",
+  "Tres Arroyos",
+  "Chivilcoy",
+  "Mercedes",
+  "Campana",
+  "Zárate",
+  "Trenque Lauquen",
+  "Pehuajó",
+  "Balcarce",
+  "Chascomús",
+  "Luján",
+  "Escobar"
 ];
 
 export const ETAPAS_CARRERA: EtapaVida[] = [
@@ -563,7 +609,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 7: PRIMER DESTINO PROFESIONAL (24 A 26 AÑOS)
+  // ETAPA 7: PRIMER DESTINO PROFESIONAL EN DND & ASOCIADOS (24 A 26 AÑOS)
   {
     id: 7,
     edadInicio: 24,
@@ -583,10 +629,10 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       },
       {
         id: "e7_ev2",
-        titulo: "🔴 Aumento Sorpresivo de la Cuota Anual CALP",
-        descripcion: "El Colegio de Abogados actualizó el valor del Jus y la matrícula profesional.",
+        titulo: "🔴 Pago Obligatorio de Matrícula Anual CALP",
+        descripcion: "Deducción automática de la cuota bianual obligatoria del Colegio de Abogados ($250.000).",
         tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -8, dineroPesos: -150000 }
+        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -8, dineroPesos: -250000 }
       },
       {
         id: "e7_ev3",
@@ -613,15 +659,15 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     opciones: [
       {
         id: "empleo_op1",
-        texto: "🏢 Estudio Corporativo 'Antigravity': Innovación, contratos tech y sueldo de $1.400.000/mes.",
+        texto: "🏢 Estudio Corporativo 'DND & Asociados': Innovación, contratos tech y sueldo de $1.400.000/mes.",
         impacto: { prestigio: 15, contactos: 12, etica: 6, templanza: -10, dineroPesos: 3500000, impactoRamas: { cibertech: 20, civilComercial: 15 } },
-        feedbackNarrativo: "Ingresaste a Antigravity en pleno centro platense."
+        feedbackNarrativo: "Ingresaste a DND & Asociados en pleno centro platense."
       },
       {
         id: "empleo_op2",
-        texto: "⚖️ Estudio Penalista Tradicional de calle 13: Defensa en querellas y juicios orales.",
-        impacto: { prestigio: 18, contactos: 15, etica: 3, templanza: -12, dineroPesos: 2900000, impactoRamas: { penal: 25 } },
-        feedbackNarrativo: "Te curtiste en las barandillas de la fiscalía y juicios penales."
+        texto: "⚽ [Causa de Famosos] Defender a un Futbolista Estrella de La Plata en un accidente de tránsito nocturno.",
+        impacto: { prestigio: 22, contactos: 25, etica: -10, templanza: -15, dineroPesos: 4500000, impactoRamas: { penal: 25 } },
+        feedbackNarrativo: "Asumiste la causa mediática del futbolista platense. Saliste en las portadas de todos los diarios deportivos."
       },
       {
         id: "empleo_op3",
@@ -639,15 +685,15 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 8: EL PRIMER SOBORNO O POSGRADO MAESTRÍA (26 A 28 AÑOS)
+  // ETAPA 8: CAUSAS TURBIAS Y FAMOSOS (26 A 28 AÑOS)
   {
     id: 8,
     edadInicio: 26,
     edadFin: 28,
     puesto: "Abogado/a Senior de Litigios",
-    titulo: "8. El Dilema del Soborno vs La Maestría Académica",
-    contextoEscenario: "Tenés 26 años. Un importante cliente acusado de fraude impositivo te ofrece una abultada suma en dólares en efectivo ($5.000.000 equivalentes) si lográs 'extraviar' una pericia contable comprometedora. En simultáneo abre la inscripción a la Maestría en Derecho de la UNLP ($1.500.000).",
-    dilemaTexto: "¿Aceptás la maniobra límite para enriquecerte o invertís en la Maestría oficial?",
+    titulo: "8. El Caso del Cantante de Cumbia 420 y el Dinero Turbio",
+    contextoEscenario: "Tenés 26 años. Un famoso cantante de Cumbia 420 / Trap argentino te busca de urgencia por un escándalo con destrozos en un hotel y acusaciones graves. En paralelo, un cliente turbio ofrece $8.000.000 en efectivo por limpiar fondos.",
+    dilemaTexto: "¿Aceptás la causa mediática del cantante o el dinero turbio corporativo?",
     eventosInesperados: [
       {
         id: "e8_ev1",
@@ -688,42 +734,42 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     opciones: [
       {
         id: "e8_op1",
-        texto: "❌ Rechazar la maniobra e inscribirte a la Maestría en Derecho UNLP ($1.500.000).",
-        costoPesosRequerido: 1500000,
-        impacto: { prestigio: 25, contactos: 10, etica: 25, templanza: 5, dineroPesos: -1500000 },
-        feedbackNarrativo: "Mantuviste tu ética e invertiste en la Maestría. Tu prestigio dio un salto impresionante."
+        texto: "🎤 Defender al Cantante de Cumbia 420: Lograr un acuerdo de conciliación rápido ($4.000.000).",
+        impacto: { prestigio: 15, contactos: 30, etica: -10, templanza: -15, dineroPesos: 4000000, impactoRamas: { penal: 20 } },
+        feedbackNarrativo: "Cerraste el conflicto del cantante en 48 horas. Las redes sociales y programas de TV no paran de nombrarte."
       },
       {
         id: "e8_op2",
-        texto: "💰 Aceptar el sobre en efectivo e interponer recusaciones para paralizar la causa.",
-        impacto: { prestigio: -15, contactos: 8, etica: -35, templanza: -15, dineroPesos: 5000000 },
-        feedbackNarrativo: "Cobraste $5.000.000 en efectivo. Financieramente volás, pero tu ética sufrió un golpe duro."
+        texto: "💰 Aceptar el dinero turbio ($8.000.000) e interponer recursos dilatorios.",
+        impacto: { prestigio: -20, contactos: 10, etica: -40, templanza: -20, dineroPesos: 8000000 },
+        feedbackNarrativo: "Cobraste $8.000.000 en efectivo de una sola vez. Financieramente volás, pero la fiscalía investiga tu firma."
       },
       {
-        id: "e8_op3_skill",
-        texto: "⭐ [Skill Especialista] Demostrar la inconsistencia legal del peritaje sin violar la ley.",
-        impacto: { prestigio: 28, contactos: 14, etica: 18, templanza: 0, dineroPesos: 2800000 },
-        feedbackNarrativo: "¡Jugada maestra! Anulaste el informe contable usando la doctrina más avanzada."
+        id: "e8_op3",
+        texto: "❌ Rechazar ambos casos e inscribirte a la Maestría en Derecho UNLP ($1.500.000).",
+        costoPesosRequerido: 1500000,
+        impacto: { prestigio: 25, contactos: 10, etica: 25, templanza: 5, dineroPesos: -1500000 },
+        feedbackNarrativo: "Mantuviste tu ética intachable e invertiste en la Maestría oficial de la UNLP."
       }
     ]
   },
 
-  // ETAPA 9: ESTUDIO JURÍDICO PROPIO O SOCIEDAD (28 A 32 AÑOS)
+  // ETAPA 9: ESTUDIO JURÍDICO PROPIO Y EMPLEADOS (28 A 32 AÑOS)
   {
     id: 9,
     edadInicio: 28,
     edadFin: 32,
     puesto: "Director/a de Firma Jurídica",
-    titulo: "9. ¿Fundar tu propio Estudio Jurídico Independiente?",
-    contextoEscenario: "A los 28 años tenés capital acumulado y prestigio. Se presenta la oportunidad de alquilar un piso en calle 12 y fundar tu propio **Estudio Jurídico Independiente**, o bien hacerte Socio Principal en Antigravity.",
-    dilemaTexto: "¿Darás el salto hacia la independencia profesional absoluta?",
+    titulo: "9. ¿Fundar tu propio Estudio Jurídico e Invertir en Empleados?",
+    contextoEscenario: "A los 28 años tenés capital acumulado y prestigio. Se presenta la oportunidad de alquilar un piso en calle 12, poner tu chapa y contratar personal (Abogados Expertos, Junior y Contador), o bien hacerte Socio Principal en DND & Asociados.",
+    dilemaTexto: "¿Darás el salto hacia la independencia profesional contratando tu propio equipo?",
     eventosInesperados: [
       {
         id: "e9_ev1",
-        titulo: "🟢 Incorporación de Procurador Brillante",
-        descripcion: "Contrataste a un estudiante estrella de Jursoc UNLP que duplicó la eficiencia.",
+        titulo: "🟢 Auditoría Contable Exitosa",
+        descripcion: "Tu contador optimizó las declaraciones juradas ahorrando impuestos.",
         tipo: "positivo",
-        impacto: { prestigio: 15, contactos: 10, etica: 8, templanza: 10, dineroPesos: 900000 }
+        impacto: { prestigio: 10, contactos: 5, etica: 10, templanza: 10, dineroPesos: 600000 }
       },
       {
         id: "e9_ev2",
@@ -748,25 +794,25 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       },
       {
         id: "e9_ev5",
-        titulo: "🔴 Paro Judicial de 48 Horas",
-        descripcion: "Se suspendieron términos procesales y se postergaron ejecuciones de honorarios.",
+        titulo: "🔴 Torpeza Procesal de Abogado Junior",
+        descripcion: "Un abogado junior del estudio omitió adjuntar una cédula provocando un apercibimiento.",
         tipo: "negativo",
-        impacto: { prestigio: -3, contactos: 0, etica: 0, templanza: -8, dineroPesos: -150000 }
+        impacto: { prestigio: -8, contactos: 0, etica: 0, templanza: -12, dineroPesos: -150000 }
       }
     ],
     opciones: [
       {
         id: "e9_op1",
-        texto: "🚀 Abrir tu propio Estudio Jurídico en La Plata invirtiendo $3.000.000 de tus ahorros.",
-        costoPesosRequerido: 3000000,
-        impacto: { prestigio: 22, contactos: 20, etica: 10, templanza: -15, dineroPesos: 5500000, impactoRamas: { civilComercial: 18, penal: 18 } },
+        texto: "🚀 Abrir tu propio Estudio Jurídico en La Plata e Invertir $4.000.000 en equipo y chapa.",
+        costoPesosRequerido: 4000000,
+        impacto: { prestigio: 25, contactos: 20, etica: 10, templanza: -15, dineroPesos: 7500000, impactoRamas: { civilComercial: 20, penal: 20 } },
         feedbackNarrativo: "¡Pusiste la chapa con tu nombre en la puerta! Tus ingresos netos despegaron."
       },
       {
         id: "e9_op2",
-        texto: "🏢 Consolidarte como Socio Managing Principal de Antigravity.",
+        texto: "🏢 Consolidarte como Socio Managing Principal de DND & Asociados.",
         impacto: { prestigio: 20, contactos: 25, etica: 8, templanza: -8, dineroPesos: 6800000, impactoRamas: { cibertech: 22, administrativoPublico: 15 } },
-        feedbackNarrativo: "Tomaste el liderazgo de la firma corporativa más innovadora de La Plata."
+        feedbackNarrativo: "Tomaste el liderazgo ejecutivo de la firma corporativa DND & Asociados."
       },
       {
         id: "e9_op3",
