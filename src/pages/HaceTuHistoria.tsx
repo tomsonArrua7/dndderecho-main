@@ -44,7 +44,12 @@ import {
   ChevronDown,
   History,
   XCircle,
-  LogOut
+  LogOut,
+  Zap,
+  Leaf,
+  Shield,
+  Home,
+  Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -74,6 +79,9 @@ export default function HaceTuHistoria() {
   // Estado del Juego
   const [gameStarted, setGameStarted] = useState(false);
   const [currentEtapaIdx, setCurrentEtapaIdx] = useState(0);
+
+  // Opciones Aleatorias Seleccionadas para la Etapa Actual
+  const [currentRandomOpciones, setCurrentRandomOpciones] = useState<OpcionDilema[]>([]);
 
   // Estadísticas del jugador
   const [prestigio, setPrestigio] = useState(50);
@@ -124,12 +132,16 @@ export default function HaceTuHistoria() {
   const [activeRandomEvent, setActiveRandomEvent] = useState<EventoInesperado | null>(null);
   const [hasDismissedEvent, setHasDismissedEvent] = useState(false);
 
-  // Puntuación acumulativa por rama del derecho
+  // Puntuación acumulativa por 8 ramas del derecho
   const [ramas, setRamas] = useState<RamasPuntuacion>({
     penal: 0,
     civilComercial: 0,
     administrativoPublico: 0,
-    cibertech: 0
+    cibertech: 0,
+    laboral: 0,
+    ambiental: 0,
+    familia: 0,
+    internacional: 0
   });
 
   // Resumen Bi-Anual
@@ -157,12 +169,15 @@ export default function HaceTuHistoria() {
     }
   }, [carrerasPasadas]);
 
+  // Al cambiar de etapa, seleccionar evento inesperado y SELECCIONAR OPCIONES ALEATORIAS DEL POOL
   useEffect(() => {
     if (gameStarted && ETAPAS_CARRERA[currentEtapaIdx]) {
-      const stageEvents = ETAPAS_CARRERA[currentEtapaIdx].eventosInesperados;
-      if (stageEvents && stageEvents.length > 0) {
-        const randomIndex = Math.floor(Math.random() * stageEvents.length);
-        const selectedEvent = stageEvents[randomIndex];
+      const stage = ETAPAS_CARRERA[currentEtapaIdx];
+
+      // 1. Evento inesperado
+      if (stage.eventosInesperados && stage.eventosInesperados.length > 0) {
+        const randomIndex = Math.floor(Math.random() * stage.eventosInesperados.length);
+        const selectedEvent = stage.eventosInesperados[randomIndex];
         setActiveRandomEvent(selectedEvent);
         setHasDismissedEvent(false);
 
@@ -173,6 +188,12 @@ export default function HaceTuHistoria() {
         setTemplanza(s => applyStatChange(s, imp.templanza));
         setDineroPesos(d => Math.max(0, d + imp.dineroPesos));
       }
+
+      // 2. Seleccionar 4-5 opciones aleatorias del pool de la etapa
+      const pool = [...stage.opciones];
+      const shuffled = pool.sort(() => 0.5 - Math.random());
+      const selectedCount = Math.min(shuffled.length, 4 + Math.floor(Math.random() * 2));
+      setCurrentRandomOpciones(shuffled.slice(0, selectedCount));
     }
   }, [currentEtapaIdx, gameStarted]);
 
@@ -208,11 +229,11 @@ export default function HaceTuHistoria() {
 
     let nerfedGain = change;
     if (currentVal >= 90) {
-      nerfedGain = Math.round(change * 0.15); // 85% nerfeo
+      nerfedGain = Math.round(change * 0.15);
     } else if (currentVal >= 80) {
-      nerfedGain = Math.round(change * 0.30); // 70% nerfeo
+      nerfedGain = Math.round(change * 0.30);
     } else if (currentVal >= 70) {
-      nerfedGain = Math.round(change * 0.50); // 50% nerfeo
+      nerfedGain = Math.round(change * 0.50);
     }
 
     nerfedGain = Math.max(1, nerfedGain);
@@ -236,23 +257,30 @@ export default function HaceTuHistoria() {
       penal: Math.min(100, Math.round((prestigio * 0.35) + (contactos * 0.25) + (ramas.penal * 0.40))),
       civil: Math.min(100, Math.round((prestigio * 0.35) + (etica * 0.25) + (ramas.civilComercial * 0.40))),
       publico: Math.min(100, Math.round((contactos * 0.40) + (etica * 0.20) + (ramas.administrativoPublico * 0.40))),
-      tech: Math.min(100, Math.round((prestigio * 0.35) + (templanza * 0.25) + (ramas.cibertech * 0.40)))
+      tech: Math.min(100, Math.round((prestigio * 0.35) + (templanza * 0.25) + (ramas.cibertech * 0.40))),
+      laboral: Math.min(100, Math.round((contactos * 0.35) + (etica * 0.25) + (ramas.laboral * 0.40))),
+      ambiental: Math.min(100, Math.round((prestigio * 0.35) + (etica * 0.25) + (ramas.ambiental * 0.40))),
+      familia: Math.min(100, Math.round((etica * 0.40) + (templanza * 0.20) + (ramas.familia * 0.40))),
+      internacional: Math.min(100, Math.round((prestigio * 0.40) + (contactos * 0.20) + (ramas.internacional * 0.40)))
     };
   };
 
   const getDominantBranch = () => {
     const ovrs = calculateOVRRamas();
     const scores = [
-      { name: "Penalista & Garantías", ovr: ovrs.penal, icon: Scale },
-      { name: "Civilista & Comercial", ovr: ovrs.civil, icon: FileText },
-      { name: "Derecho Público & Administrativo", ovr: ovrs.publico, icon: Users },
-      { name: "Ciberderecho & Tech", ovr: ovrs.tech, icon: ShieldCheck }
+      { name: "Penalista & Garantías", ovr: ovrs.penal },
+      { name: "Civilista & Comercial", ovr: ovrs.civil },
+      { name: "Derecho Público & Administrativo", ovr: ovrs.publico },
+      { name: "Ciberderecho & Tech", ovr: ovrs.tech },
+      { name: "Derecho del Trabajo & Laboral", ovr: ovrs.laboral },
+      { name: "Derecho Ambiental & Recursos", ovr: ovrs.ambiental },
+      { name: "Derecho de Familia & Sucesiones", ovr: ovrs.familia },
+      { name: "Derecho Internacional & DDHH", ovr: ovrs.internacional }
     ];
     scores.sort((a, b) => b.ovr - a.ovr);
     return scores[0];
   };
 
-  // CÁLCULO DE TÍTULO FINAL PERSONALIZADO SEGÚN ESTADÍSTICA DESTACADA
   const getCustomCareerTitle = () => {
     if (dineroPesos >= 20000000) {
       return {
@@ -293,7 +321,7 @@ export default function HaceTuHistoria() {
     return costoMatriculaCALP + costoExpertos + costoJuniors + costoContador;
   };
 
-  const checkLogrosUnlock = (newPrestigio: number, newContactos: number, newEtica: number, newDinero: number, currentStageIdx: number) => {
+  const checkLogrosUnlock = (newPrestigio: number, newContactos: number, newEtica: number, newTemplanza: number, newDinero: number, currentStageIdx: number) => {
     LOGROS_JUEGO.forEach((logro) => {
       if (unlockedLogros.includes(logro.id)) return;
 
@@ -304,6 +332,8 @@ export default function HaceTuHistoria() {
       if (logro.id === "logro_estrellas" && currentStageIdx >= 7) isUnlocked = true;
       if (logro.id === "logro_dnd_socio" && currentStageIdx >= 8) isUnlocked = true;
       if (logro.id === "logro_patria_chica" && selectedProvincia !== "Buenos Aires" && currentStageIdx >= 6) isUnlocked = true;
+      if (logro.id === "logro_mente_acero" && newTemplanza >= 85) isUnlocked = true;
+      if (logro.id === "logro_operador" && newContactos >= 85) isUnlocked = true;
 
       if (isUnlocked) {
         setUnlockedLogros(prev => [...prev, logro.id]);
@@ -320,7 +350,7 @@ export default function HaceTuHistoria() {
     setEtica(50);
     setTemplanza(selectedEdadInicial === 25 ? 65 : 80);
     setDineroPesos(selectedEdadInicial === 25 ? 450000 : 35000);
-    setRamas({ penal: 0, civilComercial: 0, administrativoPublico: 0, cibertech: 0 });
+    setRamas({ penal: 0, civilComercial: 0, administrativoPublico: 0, cibertech: 0, laboral: 0, ambiental: 0, familia: 0, internacional: 0 });
     setStaff({ expertoCount: 0, juniorCount: 0, hasContador: false, estudioNombre: "DND & Asociados" });
     
     setCurrentEtapaIdx(selectedEdadInicial === 25 ? 1 : 0);
@@ -395,7 +425,11 @@ export default function HaceTuHistoria() {
         penal: prev.penal + (impact.impactoRamas?.penal || 0),
         civilComercial: prev.civilComercial + (impact.impactoRamas?.civilComercial || 0),
         administrativoPublico: prev.administrativoPublico + (impact.impactoRamas?.administrativoPublico || 0),
-        cibertech: prev.cibertech + (impact.impactoRamas?.cibertech || 0)
+        cibertech: prev.cibertech + (impact.impactoRamas?.cibertech || 0),
+        laboral: prev.laboral + (impact.impactoRamas?.laboral || 0),
+        ambiental: prev.ambiental + (impact.impactoRamas?.ambiental || 0),
+        familia: prev.familia + (impact.impactoRamas?.familia || 0),
+        internacional: prev.internacional + (impact.impactoRamas?.internacional || 0)
       }));
     }
 
@@ -404,7 +438,7 @@ export default function HaceTuHistoria() {
       : `❌ Cometiste un error técnico en el fundamento jurídico. Sufriste impugnación procesal y pérdida de prestigio.`;
 
     setLastFeedback(finalFeedback);
-    checkLogrosUnlock(newPrestigio, newContactos, newEtica, newDinero, currentEtapaIdx);
+    checkLogrosUnlock(newPrestigio, newContactos, newEtica, newTemplanza, newDinero, currentEtapaIdx);
 
     if (newTemplanza <= 0) {
       const reason = "🧠 BURNOUT TOTAL / COLAPSO POR ESTRÉS: El nivel de estrés extremo destruyó tu templanza. Tuviste que abandonar la profesión.";
@@ -675,7 +709,7 @@ export default function HaceTuHistoria() {
               <div className="space-y-1">
                 <h3 className="text-xl font-black text-white flex items-center gap-2">
                   <Trophy className="w-5 h-5 text-amber-400" />
-                  <span>Galería de Logros Desbloqueables</span>
+                  <span>Galería de Logros Desbloqueables ({LOGROS_JUEGO.length} Logros Totales)</span>
                 </h3>
                 <p className="text-xs text-slate-400">Los logros conseguidos se acumulan entre todas tus carreras jugadas.</p>
               </div>
@@ -1084,7 +1118,7 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 6. PANTALLA PRINCIPAL DE JUEGO (CON BOTÓN DE RENUNCIA VOLUNTARIA)
+  // 6. PANTALLA PRINCIPAL DE JUEGO (CON OPCIONES ALEATORIAS DEL POOL)
   return (
     <div className="min-h-screen bg-[#070A14] text-white py-6 md:py-10 px-3 md:px-8 relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10 space-y-6">
@@ -1268,14 +1302,15 @@ export default function HaceTuHistoria() {
             <p className="text-sm md:text-base font-bold text-white leading-snug">{currentEtapa.dilemaTexto}</p>
           </div>
 
-          {/* OPCIONES DE ACCIÓN */}
+          {/* OPCIONES DE ACCIÓN SELECCIONADAS ALEATORIAMENTE PARA ESTA PARTIDA */}
           <div className="space-y-3 pt-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-              ¿Qué decisión tomás?
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+              <span>¿Qué decisión tomás? (Variables generadas para esta carrera)</span>
+              <span className="text-[10px] text-indigo-400 font-mono">🎲 Variedad Aleatoria</span>
             </span>
 
             <div className="space-y-2.5">
-              {currentEtapa.opciones.map((opcion) => {
+              {currentRandomOpciones.map((opcion) => {
                 const isSkillLocked = opcion.requiereSkillId && opcion.requiereSkillId !== selectedSkill?.id;
                 if (isSkillLocked) return null;
 

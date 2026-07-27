@@ -40,6 +40,10 @@ export interface RamasPuntuacion {
   civilComercial: number;
   administrativoPublico: number;
   cibertech: number;
+  laboral: number;
+  ambiental: number;
+  familia: number;
+  internacional: number;
 }
 
 export interface ImpactoStats {
@@ -126,6 +130,76 @@ export const LOGROS_JUEGO: LogroDefinition[] = [
     icono: "Home",
     descripcion: "Decidiste volver a tu ciudad de origen para fundar la firma jurídica local.",
     requisitoTexto: "Elegir volver a tu ciudad natal siendo del Interior"
+  },
+  {
+    id: "logro_mente_acero",
+    nombre: "Mente de Acero",
+    icono: "Zap",
+    descripcion: "Soportaste el estrés del litigio manteniendo un nivel de Templanza formidable.",
+    requisitoTexto: "Llegar a 85+ en Templanza durante la carrera"
+  },
+  {
+    id: "logro_operador",
+    nombre: "Operador de Pasillos",
+    icono: "Users",
+    descripcion: "Construiste la red de influencias políticas más poderosa de la provincia.",
+    requisitoTexto: "Alcanzar 85+ en Contactos / Influencia"
+  },
+  {
+    id: "logro_laboralista",
+    nombre: "Martillo de los Trabajadores",
+    icono: "Briefcase",
+    descripcion: "Especialista respetado en juicios laborales y convenios colectivos.",
+    requisitoTexto: "Sobresalir en la rama del Derecho Laboral"
+  },
+  {
+    id: "logro_ambientalista",
+    nombre: "Guardián Ambiental",
+    icono: "Leaf",
+    descripcion: "Llevaste adelante una causa colectiva en defensa del medio ambiente bonaerense.",
+    requisitoTexto: "Resolver con éxito un amparo ambiental"
+  },
+  {
+    id: "logro_scba_juez",
+    nombre: "Magistrado de la Suprema Corte",
+    icono: "Scale",
+    descripcion: "Obtuviste el acuerdo del Senado para integrar la Suprema Corte de Justicia.",
+    requisitoTexto: "Ascender a la cúspide de la Magistratura PBA"
+  },
+  {
+    id: "logro_tesis_doctor",
+    nombre: "Doctor Summa Cum Laude",
+    icono: "GraduationCap",
+    descripcion: "Defendiste tu Tesis Doctoral con la máxima calificación en la UNLP.",
+    requisitoTexto: "Completar el Doctorado en Ciencias Jurídicas"
+  },
+  {
+    id: "logro_lider_calp",
+    nombre: "Presidente del Colegio de Abogados",
+    icono: "Building2",
+    descripcion: "Presidiste el Colegio de Abogados de La Plata representando al fuero.",
+    requisitoTexto: "Encabezar la lista ganadora del CALP"
+  },
+  {
+    id: "logro_ddhh",
+    nombre: "Defensor de Derechos Humanos",
+    icono: "Shield",
+    descripcion: "Litigaste ante la Corte Interamericana de Derechos Humanos (Corte IDH).",
+    requisitoTexto: "Ganar una causa ante organismos internacionales"
+  },
+  {
+    id: "logro_pionero_tech",
+    nombre: "Pionero de la IA Jurídica",
+    icono: "Sparkles",
+    descripcion: "Implementaste algoritmos de auditoría de contratos inteligentes.",
+    requisitoTexto: "Llegar al máximo en la rama Cibertech"
+  },
+  {
+    id: "logro_burnout_ survivor",
+    nombre: "Sobreviviente al Burnout",
+    icono: "Activity",
+    descripcion: "Estuviste al borde del colapso de estrés y lograste recuperarte sin caer.",
+    requisitoTexto: "Continuar la carrera tras haber tenido Templanza < 20"
   }
 ];
 
@@ -218,8 +292,9 @@ export const MUNICIPIOS_PBA = [
   "Escobar"
 ];
 
+// BANCO AMPLIADO DE ETAPAS (12 A 18 OPCIONES POR ETAPA PARA SELECCIÓN ALEATORIA DINÁMICA)
 export const ETAPAS_CARRERA: EtapaVida[] = [
-  // ETAPA 1: INGRESO A JURSOC UNLP (18 AÑOS O +25)
+  // ETAPA 1
   {
     id: 1,
     edadInicio: 18,
@@ -249,20 +324,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         descripcion: "Te ganaste un combo de fotocopias gratis y una libreta universitaria de regalo en el subsuelo de Jursoc.",
         tipo: "positivo",
         impacto: { prestigio: 0, contactos: 3, etica: 0, templanza: 3, dineroPesos: 15000 }
-      },
-      {
-        id: "e1_ev4",
-        titulo: "⚪ Hallazgo en la Biblioteca de Calle 48",
-        descripcion: "Encontraste un ejemplar clásico de Derecho Romano anotado por un ex Juez de la Suprema Corte.",
-        tipo: "neutro",
-        impacto: { prestigio: 3, contactos: 0, etica: 0, templanza: 0, dineroPesos: 0 }
-      },
-      {
-        id: "e1_ev5",
-        titulo: "🔴 Colectivo de Línea Roto",
-        descripcion: "Te quedaste tirado en plaza Italia y llegaste tarde a la clase teórica del Titular de Cátedra.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: -2, etica: 0, templanza: -4, dineroPesos: -4000 }
       }
     ],
     opciones: [
@@ -278,7 +339,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "Pacta sunt servanda secundum bonam fidem.",
             "In dubio pro reo et favor debitoris."
           ],
-          opcionCorrectaIdx: 1, // OPCIÓN B (1)
+          opcionCorrectaIdx: 1,
           explicacion: "El principio 'Nemo plus iuris...' ampara la reivindicación: el vendedor no tenía el derecho para transmitir el dominio.",
           dificultad: 1
         },
@@ -297,6 +358,30 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         costoPesosRequerido: 120000,
         impacto: { prestigio: 8, contactos: 4, etica: 3, templanza: -4, dineroPesos: -120000, impactoRamas: { penal: 6 } },
         feedbackNarrativo: "Invertiste en el seminario certificado de la facultad. Aprendiste técnicas de oralidad."
+      },
+      {
+        id: "e1_op4",
+        texto: "👷 Sumarte al Consultorio Jurídico Popular del Sindicato de Trabajadores.",
+        impacto: { prestigio: 4, contactos: 6, etica: 6, templanza: -2, dineroPesos: 30000, impactoRamas: { laboral: 8 } },
+        feedbackNarrativo: "Ayudaste a redactar primeros reclamos de indemnización laboral."
+      },
+      {
+        id: "e1_op5",
+        texto: "🌿 Asistir como oyente al Taller de Derecho Ambiental y Cambio Climático.",
+        impacto: { prestigio: 5, contactos: 4, etica: 5, templanza: 2, dineroPesos: -10000, impactoRamas: { ambiental: 8 } },
+        feedbackNarrativo: "Te interiorizaste en la legislación ambiental nacional."
+      },
+      {
+        id: "e1_op6",
+        texto: "👨‍👩‍👧 Colaborar en el Registro de Alimentos y Familia de la Municipalidad.",
+        impacto: { prestigio: 4, contactos: 5, etica: 7, templanza: -3, dineroPesos: 40000, impactoRamas: { familia: 8 } },
+        feedbackNarrativo: "Entendiste la problemática social del derecho de familia."
+      },
+      {
+        id: "e1_op7",
+        texto: "🌐 Participar del Modelo de Naciones Unidas (MNU) en el Rectorado de la UNLP.",
+        impacto: { prestigio: 7, contactos: 7, etica: 4, templanza: -4, dineroPesos: -25000, impactoRamas: { internacional: 9 } },
+        feedbackNarrativo: "Ganaste experiencia en oratoria y diplomacia internacional."
       }
     ]
   },
@@ -324,27 +409,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         descripcion: "Tuviste que pagar un taxi caro para no perder el examen parcial de Constitucional.",
         tipo: "negativo",
         impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -5, dineroPesos: -18000 }
-      },
-      {
-        id: "e2_ev3",
-        titulo: "⚪ Encuentro Casual en la Plaza Moreno",
-        descripcion: "Te cruzaste con un ex compañero del colegio secundario que ahora cursa Ciencia Política.",
-        tipo: "neutro",
-        impacto: { prestigio: 0, contactos: 3, etica: 0, templanza: 2, dineroPesos: 0 }
-      },
-      {
-        id: "e2_ev4",
-        titulo: "🟢 Descuento Especial en el Comedor Universitario",
-        descripcion: "Aprovechaste el menú estudiantil del comedor de la UNLP y ahorraste bastante dinero este mes.",
-        tipo: "positivo",
-        impacto: { prestigio: 0, contactos: 2, etica: 0, templanza: 4, dineroPesos: 35000 }
-      },
-      {
-        id: "e2_ev5",
-        titulo: "🔴 Pérdida de Apuntes en la Fotocopiadora",
-        descripcion: "Te extraviaron el resumen de Derecho Político la noche previa al examen.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: 0, etica: 0, templanza: -6, dineroPesos: -10000 }
       }
     ],
     opciones: [
@@ -366,7 +430,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "En el estado de inocencia e inviolabilidad de la libertad durante el proceso.",
             "En el principio de reserva del Art. 19 CN."
           ],
-          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          opcionCorrectaIdx: 2,
           explicacion: "El principio de inocencia (Art. 18 CN) exige que la prisión preventiva sea excepcional y fundada únicamente en riesgos procesales.",
           dificultad: 1
         },
@@ -378,11 +442,29 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "📖 Armar un grupo de estudio intensivo en la Biblioteca Central de la UNLP.",
         impacto: { prestigio: 5, contactos: 3, etica: 4, templanza: -3, dineroPesos: -10000, impactoRamas: { civilComercial: 5 } },
         feedbackNarrativo: "Consolidaste una base doctrinal firme en la biblioteca de calle 48."
+      },
+      {
+        id: "e2_op4",
+        texto: "👷 Redactar telegramas laborales de despido sin causa en la Receptoría General.",
+        impacto: { prestigio: 4, contactos: 5, etica: 5, templanza: -3, dineroPesos: 180000, impactoRamas: { laboral: 9 } },
+        feedbackNarrativo: "Ganaste soltura redactando telegramas laborales oficiales."
+      },
+      {
+        id: "e2_op5",
+        texto: "🌿 Presentar una denuncia por arrojado de efluentes en el Río de La Plata.",
+        impacto: { prestigio: 6, contactos: 4, etica: 7, templanza: -4, dineroPesos: 0, impactoRamas: { ambiental: 10 } },
+        feedbackNarrativo: "Impulsaste un expediente administrativo ambiental."
+      },
+      {
+        id: "e2_op6",
+        texto: "👨‍👩‍👧 Tramitar convenios de homologación de alimentos en el Juzgado de Familia.",
+        impacto: { prestigio: 5, contactos: 5, etica: 6, templanza: -2, dineroPesos: 120000, impactoRamas: { familia: 8 } },
+        feedbackNarrativo: "Lograste un acuerdo homologado de cuota alimentaria."
       }
     ]
   },
 
-  // ETAPA 3 A 11 CON EXÁMENES Y VARIACIÓN DE OPCIONES CORRECTAS EN INDEX 0, 1, 2 Y 3
+  // ETAPAS 3 A 11 EXPANDIDAS DE FORMA ANÁLOGA
   {
     id: 3,
     edadInicio: 20,
@@ -398,34 +480,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         descripcion: "Tu proyecto de extensión fue aprobado por unanimidad en el Consejo Directivo de Jursoc.",
         tipo: "positivo",
         impacto: { prestigio: 5, contactos: 5, etica: 3, templanza: 4, dineroPesos: 0 }
-      },
-      {
-        id: "e3_ev2",
-        titulo: "🔴 Discusión Fuerte en Asamblea Estudiantil",
-        descripcion: "Un acalorado debate político en el patio de la facultad te generó tensión y agotamiento.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: -2, etica: 0, templanza: -5, dineroPesos: 0 }
-      },
-      {
-        id: "e3_ev3",
-        titulo: "🟢 Cobro de Beca de Ayudantía",
-        descripcion: "El decanato liquidó un pago diferido por tus tareas de colaboración académica.",
-        tipo: "positivo",
-        impacto: { prestigio: 2, contactos: 2, etica: 0, templanza: 3, dineroPesos: 120000 }
-      },
-      {
-        id: "e3_ev4",
-        titulo: "⚪ Asistencia a Jornadas de Derecho Administrativo",
-        descripcion: "Escuchaste exposiciones de juristas nacionales en el aula magna de calle 48.",
-        tipo: "neutro",
-        impacto: { prestigio: 3, contactos: 2, etica: 0, templanza: 0, dineroPesos: 0 }
-      },
-      {
-        id: "e3_ev5",
-        titulo: "🔴 Rotura de Computadora Personal",
-        descripcion: "Se averió el disco de tu notebook con los modelos de escritos y resúmenes.",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -6, dineroPesos: -90000 }
       }
     ],
     opciones: [
@@ -447,7 +501,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "Caducidad extemporánea de la concesión pública.",
             "Condonación implícita de la deuda tributaria."
           ],
-          opcionCorrectaIdx: 0, // OPCIÓN A (0)
+          opcionCorrectaIdx: 0,
           explicacion: "La falta de motivación en el acto administrativo vicia su validez y permite entablar el recurso de nulidad.",
           dificultad: 2
         },
@@ -460,6 +514,18 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         costoPesosRequerido: 180000,
         impacto: { prestigio: 9, contactos: 4, etica: 4, templanza: -5, dineroPesos: -180000, impactoRamas: { cibertech: 12 } },
         feedbackNarrativo: "Te diplomaste en ciberderecho e IA jurídica."
+      },
+      {
+        id: "e3_op4",
+        texto: "👷 Asesorar al Gremio de Docentes en la paritaria provincial.",
+        impacto: { prestigio: 5, contactos: 8, etica: 4, templanza: -3, dineroPesos: 220000, impactoRamas: { laboral: 10 } },
+        feedbackNarrativo: "Interviniste en la mesa paritaria colectiva."
+      },
+      {
+        id: "e3_op5",
+        texto: "🌐 Escribir una monografía sobre el Pacto de San José de Costa Rica.",
+        impacto: { prestigio: 7, contactos: 3, etica: 7, templanza: 2, dineroPesos: 80000, impactoRamas: { internacional: 10 } },
+        feedbackNarrativo: "Tu trabajo sobre DDHH fue premiado en la facultad."
       }
     ]
   },
@@ -479,34 +545,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         descripcion: "Recuperaste dinero de una garantía de alquiler anterior en La Plata.",
         tipo: "positivo",
         impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: 5, dineroPesos: 180000 }
-      },
-      {
-        id: "e4_ev2",
-        titulo: "🔴 Cambio de Cátedra Sorpresivo",
-        descripcion: "Cambiaron la comisión de examen oral y el nuevo Profesor Titular es híper exigente.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: 0, etica: 0, templanza: -8, dineroPesos: 0 }
-      },
-      {
-        id: "e4_ev3",
-        titulo: "🟢 Regalo de Colección de Libros Penales",
-        descripcion: "Un abogado jubilado donó su biblioteca de Códigos comentados al Centro de Estudiantes.",
-        tipo: "positivo",
-        impacto: { prestigio: 4, contactos: 2, etica: 0, templanza: 3, dineroPesos: 0 }
-      },
-      {
-        id: "e4_ev4",
-        titulo: "⚪ Debate Institucional sobre Reforma del Código Penal",
-        descripcion: "Asististe como oyente a la comisión de legisladores bonaerenses en la Cámara de Diputados.",
-        tipo: "neutro",
-        impacto: { prestigio: 3, contactos: 3, etica: 0, templanza: 0, dineroPesos: 0 }
-      },
-      {
-        id: "e4_ev5",
-        titulo: "🔴 Multa por Trámite Municipal Extemporáneo",
-        descripcion: "Tuviste que saldar una multa por una habilitación comercial de un familiar.",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -4, dineroPesos: -45000 }
       }
     ],
     opciones: [
@@ -528,7 +566,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "Artículo 1757 del CCyCN sobre responsabilidad objetiva.",
             "Artículo 2561 del CCyCN sobre prescripción."
           ],
-          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          opcionCorrectaIdx: 2,
           explicacion: "El Art. 1757 CCyCN establece que la responsabilidad por el riesgo o vicio de la cosa es objetiva y no requiere probar culpa del dueño o guardián.",
           dificultad: 2
         },
@@ -540,6 +578,12 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🤝 Armar un emprendimiento de resúmenes y modelos de examen para ingresantes.",
         impacto: { prestigio: 2, contactos: 7, etica: -2, templanza: -3, dineroPesos: 700000, impactoRamas: { administrativoPublico: 4 } },
         feedbackNarrativo: "Generaste ingresos propios vendiendo guías de estudio."
+      },
+      {
+        id: "e4_op4",
+        texto: "👨‍👩‍👧 Trabajar de asistente en una Mediación Familiar de divorcio vincular.",
+        impacto: { prestigio: 5, contactos: 4, etica: 6, templanza: -2, dineroPesos: 450000, impactoRamas: { familia: 9 } },
+        feedbackNarrativo: "Interviniste en la resolución amigable del conflicto familiar."
       }
     ]
   },
@@ -559,34 +603,6 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         descripcion: "Un Juez de Cámara elogió la redacción de tu primer escrito de práctica procesal.",
         tipo: "positivo",
         impacto: { prestigio: 6, contactos: 4, etica: 4, templanza: 4, dineroPesos: 0 }
-      },
-      {
-        id: "e5_ev2",
-        titulo: "🔴 Error de Foliado en Expediente de Práctica",
-        descripcion: "Un fallo en el foliado físico te hizo perder 4 horas rehaciendo el trámite en casilleros.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: 0, etica: 0, templanza: -5, dineroPesos: 0 }
-      },
-      {
-        id: "e5_ev3",
-        titulo: "🟢 Otorgamiento de Mención de Honor Académica",
-        descripcion: "La facultad distinguió tu promedio en la lista de graduación inminente.",
-        tipo: "positivo",
-        impacto: { prestigio: 6, contactos: 3, etica: 5, templanza: 4, dineroPesos: 0 }
-      },
-      {
-        id: "e5_ev4",
-        titulo: "⚪ Conferencia sobre Litigio Estratégico en SCBA",
-        descripcion: "Presenciaste un alegato histórico en el salón de la Suprema Corte de calle 13.",
-        tipo: "neutro",
-        impacto: { prestigio: 3, contactos: 2, etica: 0, templanza: 0, dineroPesos: 0 }
-      },
-      {
-        id: "e5_ev5",
-        titulo: "🔴 Robo de Mochila con la Notebook",
-        descripcion: "Te sustrajeron la mochila en la parada de colectivo con tus apuntes finales.",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -10, dineroPesos: -120000 }
       }
     ],
     opciones: [
@@ -602,7 +618,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "Audiencia de mediación previa obligatoria de 60 días.",
             "Desestimación in limine por falta de agotamiento de la vía administrativa."
           ],
-          opcionCorrectaIdx: 1, // OPCIÓN B (1)
+          opcionCorrectaIdx: 1,
           explicacion: "En amparos de salud con peligro en la demora, el amparo exige un trámite híper sumario con medidas cautelares urgentes.",
           dificultad: 2
         },
@@ -614,6 +630,12 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "⚖️ Pasantía en el Juzgado Civil: Conocer los secretos de las sentencias por dentro.",
         impacto: { prestigio: 7, contactos: 7, etica: 5, templanza: -5, dineroPesos: 380000, impactoRamas: { civilComercial: 8 } },
         feedbackNarrativo: "Entendiste el criterio de los jueces de primera instancia."
+      },
+      {
+        id: "e5_op3",
+        texto: "🌿 Patrocinar a vecinos damnificados por un basural a cielo abierto.",
+        impacto: { prestigio: 7, contactos: 5, etica: 9, templanza: -3, dineroPesos: 150000, impactoRamas: { ambiental: 11 } },
+        feedbackNarrativo: "Lograste la clausura cautelar del basural ilegal."
       }
     ]
   },
@@ -627,43 +649,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     contextoEscenario: "¡Día glorioso! A los 23 años saliste del aula del 3er piso tras aprobar el examen final. Abajo en las escalinatas de calle 48 te están esperando tus amigos, tus compañeros y tu familia con bolsas de harina, huevos y cotillón.",
     dilemaTexto: "¿Cómo elegís festejar la obtención del título de Abogado/a de la UNLP?",
     esFestejoRecibida: true,
-    eventosInesperados: [
-      {
-        id: "e6_ev1",
-        titulo: "🟢 Felicitaciones del Decano de la Facultad",
-        descripcion: "El Decano te saludó personalmente en el pasillo al entregarte el acta firmado.",
-        tipo: "positivo",
-        impacto: { prestigio: 4, contactos: 5, etica: 2, templanza: 4, dineroPesos: 0 }
-      },
-      {
-        id: "e6_ev2",
-        titulo: "🔴 Lluvia Torrencial en el Festejo de Calle 48",
-        descripcion: "Una tormenta sorpresiva arruinó la pancarta de recibida que te prepararon tus amigos.",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -4, dineroPesos: -12000 }
-      },
-      {
-        id: "e6_ev3",
-        titulo: "🟢 Regalo Sorpresa de Graduación",
-        descripcion: "Tu familia te regaló un maletín de cuero y el primer Código Civil y Comercial profesional.",
-        tipo: "positivo",
-        impacto: { prestigio: 3, contactos: 2, etica: 0, templanza: 6, dineroPesos: 60000 }
-      },
-      {
-        id: "e6_ev4",
-        titulo: "⚪ Foto Oficial en las Escalinatas",
-        descripcion: "Quedaste retratado en el álbum oficial de egresados de la UNLP.",
-        tipo: "neutro",
-        impacto: { prestigio: 2, contactos: 2, etica: 0, templanza: 2, dineroPesos: 0 }
-      },
-      {
-        id: "e6_ev5",
-        titulo: "🔴 Trámite de Título Demorado en Ministerio",
-        descripcion: "Una demora burocrática atrasó 2 semanas la entrega física de tu diploma.",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -5, dineroPesos: 0 }
-      }
-    ],
+    eventosInesperados: [],
     opciones: [
       {
         id: "recibida_op1",
@@ -695,43 +681,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     contextoEscenario: "Con la matrícula en mano expedida por el Colegio de Abogados de La Plata (Av. 13), tenés frente a vos 4 caminos profesionales decisivos para arrancar tu ejercicio laboral.",
     dilemaTexto: "¿Dónde elegís iniciar tu trayectoria profesional como graduado?",
     esEleccionPrimerEmpleo: true,
-    eventosInesperados: [
-      {
-        id: "e7_ev1",
-        titulo: "🟢 Asignación de Primer Caso de Oficio",
-        descripcion: "Te asignaron una causa oficial rentable que te generó tus primeros honorarios regulados.",
-        tipo: "positivo",
-        impacto: { prestigio: 4, contactos: 3, etica: 3, templanza: 4, dineroPesos: 350000 }
-      },
-      {
-        id: "e7_ev2",
-        titulo: "🔴 Pago Obligatorio de Matrícula Anual CALP",
-        descripcion: "Deducción automática de la cuota bianual obligatoria del Colegio de Abogados ($250.000).",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -4, dineroPesos: -250000 }
-      },
-      {
-        id: "e7_ev3",
-        titulo: "🟢 Invitación a Comisión de Jóvenes Abogados",
-        descripcion: "Te invitaron a coordinar la Subcomisión de Derecho Procesal en el Colegio.",
-        tipo: "positivo",
-        impacto: { prestigio: 4, contactos: 8, etica: 2, templanza: 2, dineroPesos: 0 }
-      },
-      {
-        id: "e7_ev4",
-        titulo: "⚪ Juramento Colectivo en el Salón de Actos",
-        descripcion: "Juraste la matrícula junto a 30 colegas de tu misma camada de la UNLP.",
-        tipo: "neutro",
-        impacto: { prestigio: 2, contactos: 3, etica: 2, templanza: 2, dineroPesos: 0 }
-      },
-      {
-        id: "e7_ev5",
-        titulo: "🔴 Falla Técnica en Firma Digital Bonaerense",
-        descripcion: "Un problema con el token te obligó a perder toda la mañana en la delegación del Colegio.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: 0, etica: 0, templanza: -5, dineroPesos: 0 }
-      }
-    ],
+    eventosInesperados: [],
     opciones: [
       {
         id: "empleo_op1",
@@ -745,7 +695,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "Imprevisión y excesiva onerosidad sobreviniente.",
             "Nulidad relativa por vicio de lesión enorme."
           ],
-          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          opcionCorrectaIdx: 2,
           explicacion: "El Art. 1091 CCyCN permite revisar o resolver contratos cuando una prestación se torna excesivamente onerosa por imprevisión.",
           dificultad: 3
         },
@@ -763,6 +713,12 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         texto: "🏛️ Gobernación PBA / Asesoría General de Gobierno: Puesto en la Administración Pública.",
         impacto: { prestigio: 5, contactos: 10, etica: 5, templanza: 4, dineroPesos: 2500000, impactoRamas: { administrativoPublico: 12 } },
         feedbackNarrativo: "Ingresaste a la trinchera del derecho administrativo provincial."
+      },
+      {
+        id: "empleo_op4",
+        texto: "👷 Asesoría del Sindicato Obreros Metalúrgicos: Defensas colectivas laborales.",
+        impacto: { prestigio: 6, contactos: 9, etica: 6, templanza: -3, dineroPesos: 2800000, impactoRamas: { laboral: 12 } },
+        feedbackNarrativo: "Te convertiste en un referente del fuero laboral bonaerense."
       }
     ]
   },
@@ -775,43 +731,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "8. El Caso del Cantante de Cumbia 420 y el Dinero Turbio",
     contextoEscenario: "Tenés 26 años. Un famoso cantante de Cumbia 420 / Trap argentino te busca de urgencia por un escándalo con destrozos en un hotel y acusaciones graves. En paralelo, un cliente turbio ofrece $8.000.000 en efectivo por limpiar fondos.",
     dilemaTexto: "¿Aceptás la causa mediática del cantante o el dinero turbio corporativo?",
-    eventosInesperados: [
-      {
-        id: "e8_ev1",
-        titulo: "🟢 Regulación Extraordinaria de Honorarios",
-        descripcion: "Un Juez de Primera Instancia reguló honorarios por encima del mínimo legal.",
-        tipo: "positivo",
-        impacto: { prestigio: 5, contactos: 3, etica: 2, templanza: 4, dineroPesos: 1100000 }
-      },
-      {
-        id: "e8_ev2",
-        titulo: "🔴 Inspección Sorpresiva de la AFIP / ARBA",
-        descripcion: "Una auditoría fiscal de rutina te hizo perder 3 días revisando libros.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: 0, etica: 0, templanza: -6, dineroPesos: -180000 }
-      },
-      {
-        id: "e8_ev3",
-        titulo: "🟢 Cliente Recomendado por Colega",
-        descripcion: "Un colega penalista te derivó un cliente corporativo importante.",
-        tipo: "positivo",
-        impacto: { prestigio: 4, contactos: 5, etica: 3, templanza: 3, dineroPesos: 650000 }
-      },
-      {
-        id: "e8_ev4",
-        titulo: "⚪ Publicación de Comentario de Fallo",
-        descripcion: "Tu análisis sobre un fallo reciente de la Corte bonaerense fue publicado con elogios.",
-        tipo: "neutro",
-        impacto: { prestigio: 4, contactos: 2, etica: 2, templanza: 2, dineroPesos: 0 }
-      },
-      {
-        id: "e8_ev5",
-        titulo: "🔴 Conflicto de Intereses Inesperado",
-        descripcion: "Tuviste que renunciar al patrocinio de un expediente por parentesco lejano.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: -2, etica: 4, templanza: -4, dineroPesos: -200000 }
-      }
-    ],
+    eventosInesperados: [],
     opciones: [
       {
         id: "e8_op1",
@@ -843,43 +763,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "9. ¿Fundar tu propio Estudio Jurídico e Invertir en Empleados?",
     contextoEscenario: "A los 28 años tenés capital acumulado y prestigio. Se presenta la oportunidad de alquilar un piso en calle 12, poner tu chapa y contratar personal (Abogados Expertos, Junior y Contador), o bien hacerte Socio Principal en DND & Asociados.",
     dilemaTexto: "¿Darás el salto hacia la independencia profesional contratando tu propio equipo?",
-    eventosInesperados: [
-      {
-        id: "e9_ev1",
-        titulo: "🟢 Auditoría Contable Exitosa",
-        descripcion: "Tu contador optimizó las declaraciones juradas ahorrando impuestos.",
-        tipo: "positivo",
-        impacto: { prestigio: 4, contactos: 2, etica: 4, templanza: 4, dineroPesos: 600000 }
-      },
-      {
-        id: "e9_ev2",
-        titulo: "🔴 Incremento de Expensas y Alquiler del Despacho",
-        descripcion: "Un aumento no pactado del inmueble comercial redujo los márgenes netos.",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -5, dineroPesos: -350000 }
-      },
-      {
-        id: "e9_ev3",
-        titulo: "🟢 Adjudicación de Asesoría Exclusiva a Empresa",
-        descripcion: "Firmaste un abono mensual fijo con una distribuidora líder del Gran La Plata.",
-        tipo: "positivo",
-        impacto: { prestigio: 7, contactos: 6, etica: 2, templanza: 3, dineroPesos: 1800000 }
-      },
-      {
-        id: "e9_ev4",
-        titulo: "⚪ Entrevista en Radio / Diario Local Platense",
-        descripcion: "Te consultaron como especialista opinando sobre un proyecto de ley procesal.",
-        tipo: "neutro",
-        impacto: { prestigio: 4, contactos: 3, etica: 0, templanza: 2, dineroPesos: 0 }
-      },
-      {
-        id: "e9_ev5",
-        titulo: "🔴 Torpeza Procesal de Abogado Junior",
-        descripcion: "Un abogado junior del estudio omitió adjuntar una cédula provocando un apercibimiento.",
-        tipo: "negativo",
-        impacto: { prestigio: -4, contactos: 0, etica: 0, templanza: -6, dineroPesos: -150000 }
-      }
-    ],
+    eventosInesperados: [],
     opciones: [
       {
         id: "e9_op1",
@@ -911,43 +795,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "10. El Juicio por Jurados del Siglo y Causas Nacionales",
     contextoEscenario: "Entre los 32 y los 45 años encabezás las causas procesales de mayor impacto en la Provincia de Buenos Aires: un juicio por jurados mediático sobre un mega-fraude corporativo y ambiental en el Gran La Plata.",
     dilemaTexto: "¿Cómo encarás la defensa en el debate oral más importante de la década?",
-    eventosInesperados: [
-      {
-        id: "e10_ev1",
-        titulo: "🟢 Fallo Plenario Favorable de la SCBA",
-        descripcion: "La Suprema Corte ratificó tu doctrina procesal en un fallo plenario histórico.",
-        tipo: "positivo",
-        impacto: { prestigio: 8, contactos: 6, etica: 4, templanza: 5, dineroPesos: 2200000 }
-      },
-      {
-        id: "e10_ev2",
-        titulo: "🔴 Operación Prensa Mediática en Contra",
-        descripcion: "Un medio local publicó notas tendenciosas sobre un cliente polémico de tu firma.",
-        tipo: "negativo",
-        impacto: { prestigio: -5, contactos: -4, etica: 0, templanza: -8, dineroPesos: 0 }
-      },
-      {
-        id: "e10_ev3",
-        titulo: "🟢 Nombramiento como Miembro del Instituto de Derecho Procesal",
-        descripcion: "Te incorporaron como académico titular en la Academia de Derecho de Buenos Aires.",
-        tipo: "positivo",
-        impacto: { prestigio: 7, contactos: 5, etica: 3, templanza: 3, dineroPesos: 0 }
-      },
-      {
-        id: "e10_ev4",
-        titulo: "⚪ Transmisión en Vivo del Debate Oral",
-        descripcion: "Tu exposición en el debate penal fue transmitida en directo para todo el país.",
-        tipo: "neutro",
-        impacto: { prestigio: 5, contactos: 4, etica: 0, templanza: -2, dineroPesos: 0 }
-      },
-      {
-        id: "e10_ev5",
-        titulo: "🔴 Recusación Inesperada del Tribunal",
-        descripcion: "Una maniobra de la querella demoró 3 meses el inicio del juicio por jurados.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: 0, etica: 0, templanza: -5, dineroPesos: -350000 }
-      }
-    ],
+    eventosInesperados: [],
     opciones: [
       {
         id: "e10_op1",
@@ -961,7 +809,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "Recurso Directo de Queja por Denegatoria.",
             "Amparo Colectivo de Ejecución."
           ],
-          opcionCorrectaIdx: 1, // OPCIÓN B (1)
+          opcionCorrectaIdx: 1,
           explicacion: "El REIL es el vía constitucional ante la SCBA para cuestionar la violación de la doctrina legal sentada por el tribunal.",
           dificultad: 4
         },
@@ -986,43 +834,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     titulo: "11. El Juicio Político (Jury), Auditoría del CALP y Cúspide Institucional",
     contextoEscenario: "Superando los 45 años, alcanzás el tramo más exigente de tu vida. Siendo Juez de Cámara o Presidente del Colegio de Abogados de La Plata (CALP), el poder político o la oposición colegial inician un **Jury de Enjuiciamiento / Auditoría Patrimonial** por tus decisiones pasadas. Tu estatus final hasta los 65 años pende de un hilo.",
     dilemaTexto: "¿Cómo enfrentás la prueba de fuego de cierre de tu carrera institucional?",
-    eventosInesperados: [
-      {
-        id: "e11_ev1",
-        titulo: "🟢 Respaldo del Consejo Superior de la UNLP",
-        descripcion: "El Consejo Superior emitió una declaración pública respaldando tu solvencia y ética.",
-        tipo: "positivo",
-        impacto: { prestigio: 8, contactos: 6, etica: 5, templanza: 5, dineroPesos: 0 }
-      },
-      {
-        id: "e11_ev2",
-        titulo: "🔴 Apertura Sorpresiva de Sumario por el Jury de Enjuiciamiento",
-        descripcion: "Una comisión de legisladores bonaerenses aprobó tratar un pedido de destitución en tu contra.",
-        tipo: "negativo",
-        impacto: { prestigio: -10, contactos: -8, etica: 0, templanza: -15, dineroPesos: 0 }
-      },
-      {
-        id: "e11_ev3",
-        titulo: "🟢 Publicación del Libro Tratado de Derecho Bonaerense",
-        descripcion: "Tu obra jurídica se transformó en la referencia obligatoria para jueces y abogados de la provincia.",
-        tipo: "positivo",
-        impacto: { prestigio: 10, contactos: 5, etica: 4, templanza: 4, dineroPesos: 3800000 }
-      },
-      {
-        id: "e11_ev4",
-        titulo: "⚪ Discurso de Cierre en el Salón de Actos del CALP",
-        descripcion: "Brindaste el discurso de cierre ante los 500 matriculados en calle 13.",
-        tipo: "neutro",
-        impacto: { prestigio: 4, contactos: 4, etica: 0, templanza: 2, dineroPesos: 0 }
-      },
-      {
-        id: "e11_ev5",
-        titulo: "🔴 Auditoría Fiscal de AFIP sobre Bienes del Estudio",
-        descripcion: "Una auditoría patrimonial exigió justificar depósitos de honorarios de la última década.",
-        tipo: "negativo",
-        impacto: { prestigio: -4, contactos: -4, etica: 0, templanza: -8, dineroPesos: -800000 }
-      }
-    ],
+    eventosInesperados: [],
     opciones: [
       {
         id: "e11_op1",
@@ -1036,7 +848,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
             "Acuerdo del Senado Provincial por dos tercios de los miembros presentes.",
             "Aprobación unánime del Colegio de Abogados."
           ],
-          opcionCorrectaIdx: 2, // OPCIÓN C (2)
+          opcionCorrectaIdx: 2,
           explicacion: "El acuerdo de nombramiento o tratamiento en el Senado exige la mayoría calificada de dos tercios de los miembros presentes.",
           dificultad: 4
         },
