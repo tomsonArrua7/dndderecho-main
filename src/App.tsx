@@ -22,7 +22,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
 import { AppProvider } from "@/context/AppContext";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { AlertCircle, ExternalLink, RefreshCw, Loader2 } from "lucide-react";
 import { DndMark } from "@/components/DndMark";
@@ -221,9 +221,9 @@ const AppContent = () => {
         <Route path="/asistente"       element={<AsistenteDND />} />
         <Route path="/ingresantes"     element={<Ingresantes />} />
         <Route path="/quienes-somos"   element={<QuienesSomos />} />
-        <Route path="/trivia"          element={<ProtectedRoute><Trivia /></ProtectedRoute>} />
-        <Route path="/juegos"          element={<ProtectedRoute><Juegos /></ProtectedRoute>} />
-        <Route path="/hace-tu-historia" element={<ProtectedRoute><HaceTuHistoria /></ProtectedRoute>} />
+        <Route path="/trivia"          element={<AdminRoute><Trivia /></AdminRoute>} />
+        <Route path="/juegos"          element={<AdminRoute><Juegos /></AdminRoute>} />
+        <Route path="/hace-tu-historia" element={<AdminRoute><HaceTuHistoria /></AdminRoute>} />
 
         {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
         <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
