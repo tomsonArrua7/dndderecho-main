@@ -901,5 +901,846 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     opciones: ["Hans Kelsen", "Gustav Radbruch", "Robert Alexy", "John Finnis"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Gustav Radbruch, 'Gesetzliches Unrecht und übergesetzliches Recht' (1946).", puntos_base: 25
+  },
+
+  // =====================================================
+  // EXPANSIÓN MASIVA DE PREGUNTAS - PLAN DE ESTUDIOS Nº 6
+  // =====================================================
+
+  // --- 10113: INTRODUCCIÓN A LA SOCIOLOGÍA (Expansión) ---
+  {
+    id: "10113-02", id_categoria: "10113", categoria_nombre: "Intro Sociología", dificultad: "facil",
+    pregunta: "¿Qué tipo de solidaridad predomina en las sociedades modernas con alta división del trabajo según Durkheim?",
+    opciones: ["Mecánica", "Orgánica", "Tradicional", "Carismática"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Émile Durkheim, 'La división del trabajo social'.", puntos_base: 10
+  },
+  {
+    id: "10113-03", id_categoria: "10113", categoria_nombre: "Intro Sociología", dificultad: "media",
+    pregunta: "Para Max Weber, el Estado moderno se define fundamentalmente por:",
+    opciones: ["Garantizar la igualdad económica", "El monopolio de la violencia física legítima", "La administración de la justicia divina", "Su capacidad de redistribuir la riqueza"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Max Weber, 'El político y el científico'.", puntos_base: 25
+  },
+  {
+    id: "10113-04", id_categoria: "10113", categoria_nombre: "Intro Sociología", dificultad: "dificil",
+    pregunta: "En la teoría de Karl Marx, el concepto de 'alienación' en el trabajo capitalista implica que:",
+    opciones: ["El trabajador se siente realizado", "El Estado protege los medios de producción", "El empleador comparte las ganancias equitativamente", "El trabajador pierde el control sobre el producto de su trabajo"],
+    respuesta_correcta_index: 3,
+    fundamento_juridico: "Karl Marx, 'Manuscritos económicos y filosóficos de 1844'.", puntos_base: 50
+  },
+  {
+    id: "10113-05", id_categoria: "10113", categoria_nombre: "Intro Sociología", dificultad: "media",
+    pregunta: "¿Qué concepto utiliza Pierre Bourdieu para describir el conocimiento y habilidades culturales que confieren poder y estatus?",
+    opciones: ["Capital económico", "Plusvalía", "Capital cultural", "Acción racional"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Pierre Bourdieu, 'Los tres estados del capital cultural'.", puntos_base: 25
+  },
+  {
+    id: "10113-06", id_categoria: "10113", categoria_nombre: "Intro Sociología", dificultad: "facil",
+    pregunta: "¿A quién se considera el creador del positivismo y acuñador del término 'sociología'?",
+    opciones: ["Karl Marx", "Auguste Comte", "Talcott Parsons", "Georg Simmel"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Auguste Comte, 'Curso de filosofía positiva'.", puntos_base: 10
+  },
+
+  // --- 10112: HISTORIA CONSTITUCIONAL (Expansión) ---
+  {
+    id: "10112-02", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "facil",
+    pregunta: "¿En qué año se sancionó la primera Constitución Nacional Argentina?",
+    opciones: ["1810", "1816", "1853", "1860"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "La Constitución Nacional fue sancionada el 1 de mayo de 1853 por el Congreso General Constituyente de Santa Fe.", puntos_base: 10
+  },
+  {
+    id: "10112-03", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "media",
+    pregunta: "El Pacto de San José de Flores (1859) permitió:",
+    opciones: ["La declaración de independencia", "La incorporación de Buenos Aires a la Confederación", "La creación del Banco Central", "La abolición de la esclavitud"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Pacto de San José de Flores, 11 de noviembre de 1859.", puntos_base: 25
+  },
+  {
+    id: "10112-04", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "dificil",
+    pregunta: "Juan Bautista Alberdi planteó en 'Bases y Puntos de Partida' que la constitución debía fomentar:",
+    opciones: ["El proteccionismo industrial", "La inmigración europea y el comercio libre", "Un Estado centralizado y unitario", "La restauración de la monarquía"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Juan B. Alberdi, 'Bases y Puntos de Partida para la Organización Política de la República Argentina' (1852).", puntos_base: 50
+  },
+  {
+    id: "10112-05", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "media",
+    pregunta: "La reforma constitucional de 1994 fue posible gracias a:",
+    opciones: ["Un golpe de Estado", "El Pacto de Olivos entre Menem y Alfonsín", "Un referéndum popular vinculante", "Una decisión unilateral del Senado"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Pacto de Olivos (1993) y Ley 24.309 de necesidad de reforma.", puntos_base: 25
+  },
+  {
+    id: "10112-06", id_categoria: "10112", categoria_nombre: "Historia Constitucional", dificultad: "facil",
+    pregunta: "¿Qué forma de gobierno adoptó la Constitución de 1853?",
+    opciones: ["Unitaria y monárquica", "Federal y parlamentaria", "Representativa, republicana y federal", "Confederal y presidencialista"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Art. 1 de la Constitución Nacional: 'La Nación Argentina adopta para su gobierno la forma representativa republicana federal'.", puntos_base: 10
+  },
+
+  // --- 10121: DERECHO ROMANO (Expansión) ---
+  {
+    id: "10121-02", id_categoria: "10121", categoria_nombre: "Derecho Romano", dificultad: "facil",
+    pregunta: "¿Qué emperador mandó compilar el Corpus Iuris Civilis?",
+    opciones: ["Augusto", "Justiniano", "Constantino", "Trajano"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Corpus Iuris Civilis, compilado por orden de Justiniano I (527-565 d.C.).", puntos_base: 10
+  },
+  {
+    id: "10121-03", id_categoria: "10121", categoria_nombre: "Derecho Romano", dificultad: "media",
+    pregunta: "En el derecho romano, la 'manus' era:",
+    opciones: ["Un tipo de contrato", "El poder del marido sobre la mujer", "Una forma de adquirir la ciudadanía", "El derecho a votar en el Senado"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Instituciones de Gayo, Libro I.", puntos_base: 25
+  },
+  {
+    id: "10121-04", id_categoria: "10121", categoria_nombre: "Derecho Romano", dificultad: "dificil",
+    pregunta: "La 'stipulatio' en el derecho romano era un contrato que se perfeccionaba mediante:",
+    opciones: ["La entrega de la cosa", "El consenso de las partes", "La pregunta solemne y la respuesta congruente", "La inscripción en el registro público"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Gayo, Instituciones III.92: 'Verbis obligatio fit ex interrogatione et responsione'.", puntos_base: 50
+  },
+  {
+    id: "10121-05", id_categoria: "10121", categoria_nombre: "Derecho Romano", dificultad: "media",
+    pregunta: "¿Qué era la 'patria potestad' en Roma?",
+    opciones: ["El poder del Estado sobre los ciudadanos", "El poder absoluto del pater familias sobre los miembros de su familia", "El derecho de propiedad sobre esclavos únicamente", "La autoridad del pretor sobre los litigantes"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Instituciones de Gayo, Libro I. La patria potestas era perpetua y solo correspondía al pater familias.", puntos_base: 25
+  },
+  {
+    id: "10121-06", id_categoria: "10121", categoria_nombre: "Derecho Romano", dificultad: "facil",
+    pregunta: "La Ley de las XII Tablas (451-450 a.C.) fue importante porque:",
+    opciones: ["Abolió la esclavitud", "Fue la primera codificación escrita del derecho romano", "Estableció la república", "Otorgó la ciudadanía a todos los habitantes del Imperio"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Lex Duodecim Tabularum (451-450 a.C.), primera compilación escrita de normas jurídicas romanas.", puntos_base: 10
+  },
+
+  // --- 10616: PENSAMIENTO CIENTÍFICO (Expansión) ---
+  {
+    id: "10616-02", id_categoria: "10616", categoria_nombre: "Pensamiento Científico", dificultad: "facil",
+    pregunta: "¿Qué filósofo propuso el concepto de 'paradigma' en la filosofía de la ciencia?",
+    opciones: ["Karl Popper", "Thomas Kuhn", "Paul Feyerabend", "Imre Lakatos"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Thomas Kuhn, 'La estructura de las revoluciones científicas' (1962).", puntos_base: 10
+  },
+  {
+    id: "10616-03", id_categoria: "10616", categoria_nombre: "Pensamiento Científico", dificultad: "media",
+    pregunta: "Según Karl Popper, una teoría es científica si:",
+    opciones: ["Puede ser verificada empíricamente", "Puede ser falsada o refutada", "Es aceptada por la comunidad académica", "Es deducida de axiomas lógicos"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Karl Popper, 'La lógica de la investigación científica' (1934).", puntos_base: 25
+  },
+  {
+    id: "10616-04", id_categoria: "10616", categoria_nombre: "Pensamiento Científico", dificultad: "dificil",
+    pregunta: "El 'anarquismo epistemológico' de Paul Feyerabend plantea que:",
+    opciones: ["La ciencia debe seguir un único método universal", "No existe un método científico privilegiado y 'todo vale'", "Solo las ciencias naturales producen conocimiento verdadero", "La inducción es el único método válido"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Paul Feyerabend, 'Contra el método' (1975).", puntos_base: 50
+  },
+  {
+    id: "10616-05", id_categoria: "10616", categoria_nombre: "Pensamiento Científico", dificultad: "facil",
+    pregunta: "El positivismo lógico del Círculo de Viena sostenía que los enunciados con sentido deben ser:",
+    opciones: ["Metafísicos", "Verificables empíricamente o tautológicos", "Intuitivos", "Basados en la autoridad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Manifiesto del Círculo de Viena (1929), 'La concepción científica del mundo'.", puntos_base: 10
+  },
+  {
+    id: "10616-06", id_categoria: "10616", categoria_nombre: "Pensamiento Científico", dificultad: "media",
+    pregunta: "¿Qué es una 'revolución científica' según Thomas Kuhn?",
+    opciones: ["Un progreso lineal del conocimiento", "El reemplazo de un paradigma dominante por otro nuevo e inconmensurable", "La acumulación gradual de datos empíricos", "Un método experimental específico"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Kuhn, 'La estructura de las revoluciones científicas', Cap. IX.", puntos_base: 25
+  },
+
+  // --- 10123: DERECHO POLÍTICO (Expansión) ---
+  {
+    id: "10123-02", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "facil",
+    pregunta: "¿Quién es considerado el padre de la teoría de la separación de poderes?",
+    opciones: ["Jean-Jacques Rousseau", "John Locke", "Montesquieu", "Thomas Hobbes"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Montesquieu, 'El Espíritu de las Leyes' (1748).", puntos_base: 10
+  },
+  {
+    id: "10123-03", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "media",
+    pregunta: "En la teoría de Thomas Hobbes, el 'estado de naturaleza' se caracteriza por:",
+    opciones: ["La armonía social", "La guerra de todos contra todos", "La propiedad privada absoluta", "La democracia directa"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Thomas Hobbes, 'Leviatán' (1651), Capítulo XIII.", puntos_base: 25
+  },
+  {
+    id: "10123-04", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "dificil",
+    pregunta: "La 'voluntad general' de Rousseau se distingue de la 'voluntad de todos' porque:",
+    opciones: ["Es la suma de las voluntades individuales", "Busca el interés común y no la mera agregación de intereses particulares", "Es decidida por un monarca ilustrado", "Se forma solo en asambleas representativas"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Jean-Jacques Rousseau, 'El Contrato Social' (1762), Libro II, Cap. III.", puntos_base: 50
+  },
+  {
+    id: "10123-05", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "facil",
+    pregunta: "¿Cuál es la forma de Estado en la que el poder se distribuye territorialmente entre un gobierno central y gobiernos locales?",
+    opciones: ["Estado unitario", "Estado federal", "Confederación", "Monarquía constitucional"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 1 CN: forma federal de gobierno.", puntos_base: 10
+  },
+  {
+    id: "10123-06", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "media",
+    pregunta: "El concepto de 'soberanía popular' implica que la autoridad suprema del Estado reside en:",
+    opciones: ["El monarca", "Los jueces", "El pueblo", "El parlamento exclusivamente"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Art. 33 CN: soberanía del pueblo. Rousseau, 'El Contrato Social'.", puntos_base: 25
+  },
+
+  // --- 10124: DERECHO PENAL I (Expansión) ---
+  {
+    id: "10124-02", id_categoria: "10124", categoria_nombre: "Derecho Penal I", dificultad: "facil",
+    pregunta: "El principio de legalidad penal ('nullum crimen, nulla poena sine lege') está consagrado en:",
+    opciones: ["El Art. 14 CN", "El Art. 18 CN", "El Art. 75 inc. 12 CN", "El Art. 1 del Código Civil"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 18 CN: 'Ningún habitante de la Nación puede ser penado sin juicio previo fundado en ley anterior al hecho del proceso'.", puntos_base: 10
+  },
+  {
+    id: "10124-03", id_categoria: "10124", categoria_nombre: "Derecho Penal I", dificultad: "media",
+    pregunta: "En la teoría del delito, la 'antijuridicidad' significa que:",
+    opciones: ["El autor obró con dolo", "La conducta es contraria al ordenamiento jurídico y no está justificada", "El delito es grave", "El imputado es inimputable"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Teoría general del delito. La antijuridicidad es el juicio de contrariedad entre la conducta típica y el ordenamiento jurídico.", puntos_base: 25
+  },
+  {
+    id: "10124-04", id_categoria: "10124", categoria_nombre: "Derecho Penal I", dificultad: "dificil",
+    pregunta: "La legítima defensa como causa de justificación requiere, entre otros elementos:",
+    opciones: ["Solo la voluntad de defenderse", "Agresión ilegítima actual o inminente, necesidad racional del medio empleado y falta de provocación suficiente", "Que el agresor sea mayor de edad", "Que el hecho ocurra en la vía pública"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 34 inc. 6 del Código Penal de la Nación.", puntos_base: 50
+  },
+  {
+    id: "10124-05", id_categoria: "10124", categoria_nombre: "Derecho Penal I", dificultad: "media",
+    pregunta: "¿Cuál es la diferencia entre dolo directo y dolo eventual?",
+    opciones: ["No hay diferencia", "En el dolo directo el autor quiere el resultado; en el eventual, lo acepta como posible y actúa igual", "En el dolo eventual hay intención directa", "El dolo eventual solo se aplica a contravenciones"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Teoría general del delito. El dolo eventual implica representación y aceptación del resultado típico.", puntos_base: 25
+  },
+  {
+    id: "10124-06", id_categoria: "10124", categoria_nombre: "Derecho Penal I", dificultad: "facil",
+    pregunta: "¿Cuál es la edad mínima de imputabilidad penal plena en Argentina?",
+    opciones: ["14 años", "16 años", "18 años", "21 años"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 22.278, Régimen Penal de Menores. A los 16 años son punibles por delitos graves.", puntos_base: 10
+  },
+
+  // --- 10122: DERECHO CIVIL I - PRIVADO II (Expansión) ---
+  {
+    id: "10122-07", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "facil",
+    pregunta: "Según el CCyCN, ¿desde cuándo comienza la existencia de la persona humana?",
+    opciones: ["Desde el nacimiento", "Desde la concepción", "Desde la inscripción en el Registro Civil", "Desde la mayoría de edad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 19 CCyCN: 'La existencia de la persona humana comienza con la concepción'.", puntos_base: 10
+  },
+  {
+    id: "10122-08", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "media",
+    pregunta: "¿Cuál es la edad para alcanzar la mayoría de edad según el CCyCN?",
+    opciones: ["21 años", "18 años", "16 años", "25 años"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 25 CCyCN: 'Mayor de edad es la persona que cumple dieciocho años'.", puntos_base: 25
+  },
+  {
+    id: "10122-09", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "dificil",
+    pregunta: "La teoría del abuso del derecho está consagrada en el Art. 10 del CCyCN y establece que:",
+    opciones: ["Todo ejercicio de un derecho es abusivo", "El ejercicio de un derecho es abusivo cuando contraría los fines del ordenamiento o excede los límites de la buena fe", "Solo los jueces pueden abusar del derecho", "El abuso del derecho solo se aplica a contratos"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 10 CCyCN: Abuso del derecho.", puntos_base: 50
+  },
+  {
+    id: "10122-10", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "media",
+    pregunta: "Los atributos de la personalidad según la doctrina son:",
+    opciones: ["Nombre, domicilio, capacidad, estado y patrimonio", "Solo nombre y domicilio", "Patrimonio y nacionalidad", "Edad y profesión"],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Doctrina general. Los atributos de la personalidad son nombre, domicilio, capacidad, estado civil y patrimonio.", puntos_base: 25
+  },
+  {
+    id: "10122-11", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "facil",
+    pregunta: "¿Qué tipo de persona jurídica es una sociedad anónima?",
+    opciones: ["Persona humana", "Persona jurídica privada", "Persona jurídica pública", "No es persona jurídica"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 148 inc. a) CCyCN: Las sociedades son personas jurídicas privadas.", puntos_base: 10
+  },
+
+  // --- 10131: DERECHO PRIVADO III - CONTRATOS (Expansión) ---
+  {
+    id: "10131-02", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "facil",
+    pregunta: "Según el CCyCN, el contrato es:",
+    opciones: ["Un acuerdo unilateral", "El acto jurídico mediante el cual dos o más partes manifiestan su consentimiento para crear, regular, modificar, transferir o extinguir relaciones jurídicas patrimoniales", "Una declaración de voluntad sin efectos jurídicos", "Un acto ilícito que genera obligaciones"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 957 CCyCN.", puntos_base: 10
+  },
+  {
+    id: "10131-03", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "media",
+    pregunta: "La 'lesión subjetiva' como vicio del acto jurídico requiere:",
+    opciones: ["Solo ventaja patrimonial desproporcionada", "Explotación de la necesidad, debilidad o inexperiencia de la otra parte y desproporción de las prestaciones", "Que ambas partes sean menores de edad", "Que el contrato sea verbal"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 332 CCyCN: Lesión.", puntos_base: 25
+  },
+  {
+    id: "10131-04", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "dificil",
+    pregunta: "La teoría de la imprevisión (Art. 1091 CCyCN) permite la resolución o adecuación del contrato cuando:",
+    opciones: ["Una parte se arrepiente", "Eventos extraordinarios e imprevisibles alteran la ecuación económica de modo excesivo", "El contrato es nulo de nulidad absoluta", "El deudor simplemente no quiere pagar"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 1091 CCyCN: Imprevisión.", puntos_base: 50
+  },
+  {
+    id: "10131-05", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "media",
+    pregunta: "¿Cuáles son los elementos esenciales del contrato?",
+    opciones: ["Capacidad, consentimiento, objeto y causa", "Solo consentimiento y objeto", "Plazo y precio", "Escritura pública y testigos"],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Arts. 957 a 1065 CCyCN: Elementos esenciales del contrato.", puntos_base: 25
+  },
+  {
+    id: "10131-06", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "facil",
+    pregunta: "La seña (arras) en un contrato de compraventa, ¿permite arrepentirse del negocio?",
+    opciones: ["Nunca", "Sí, perdiendo la seña o devolviéndola doblada, salvo pacto en contrario", "Solo si lo autoriza un juez", "Solo en contratos de locación"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 1059 CCyCN: Seña o arras.", puntos_base: 10
+  },
+
+  // --- 10133: DERECHO PENAL II (Expansión) ---
+  {
+    id: "10133-02", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "facil",
+    pregunta: "El delito de homicidio simple está tipificado en el Art. 79 del Código Penal con una pena de:",
+    opciones: ["3 a 6 años de prisión", "8 a 25 años de reclusión o prisión", "Prisión perpetua", "1 a 3 años de prisión"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 79 del Código Penal: 'Se aplicará reclusión o prisión de ocho a veinticinco años'.", puntos_base: 10
+  },
+  {
+    id: "10133-03", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "media",
+    pregunta: "El delito de estafa (Art. 172 CP) requiere como elemento típico:",
+    opciones: ["Violencia física", "Ardid o engaño que induzca en error a la víctima", "Uso de armas", "Coacción psicológica únicamente"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 172 del Código Penal de la Nación.", puntos_base: 25
+  },
+  {
+    id: "10133-04", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "dificil",
+    pregunta: "La tentativa de delito (Art. 42 CP) se configura cuando el autor:",
+    opciones: ["Piensa en cometer un delito", "Con el fin de cometer un delito determinado, comienza su ejecución pero no lo consuma por circunstancias ajenas a su voluntad", "Realiza actos preparatorios", "Confiesa su intención"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 42 del Código Penal de la Nación.", puntos_base: 50
+  },
+  {
+    id: "10133-05", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "media",
+    pregunta: "¿Cuál es la diferencia entre hurto y robo en el Código Penal argentino?",
+    opciones: ["No existe diferencia", "El robo involucra fuerza en las cosas o violencia en las personas", "El hurto es más grave que el robo", "El hurto solo se aplica a bienes inmuebles"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Arts. 162 (hurto) y 164 (robo) del Código Penal.", puntos_base: 25
+  },
+  {
+    id: "10133-06", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "facil",
+    pregunta: "La pena de prisión perpetua en Argentina se aplica, entre otros, al delito de:",
+    opciones: ["Lesiones leves", "Homicidio agravado (Art. 80 CP)", "Daño simple", "Calumnias"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 80 del Código Penal: homicidios agravados.", puntos_base: 10
+  },
+
+  // --- 10134: DERECHO PROCESAL I (Expansión) ---
+  {
+    id: "10134-02", id_categoria: "10134", categoria_nombre: "D. Procesal I", dificultad: "facil",
+    pregunta: "¿Qué principio procesal establece que el juez debe resolver según lo alegado y probado por las partes?",
+    opciones: ["Principio inquisitivo", "Principio dispositivo", "Principio de oficiosidad", "Principio de oralidad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Principio dispositivo: Art. 163 inc. 6 del CPCCBA.", puntos_base: 10
+  },
+  {
+    id: "10134-03", id_categoria: "10134", categoria_nombre: "D. Procesal I", dificultad: "media",
+    pregunta: "La 'litispendencia' como excepción procesal se configura cuando:",
+    opciones: ["El juez es incompetente", "Existe otro proceso pendiente entre las mismas partes, por el mismo objeto y la misma causa", "El demandado no contesta la demanda", "El actor desiste de la acción"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 345 inc. 4 del CPCCBA.", puntos_base: 25
+  },
+  {
+    id: "10134-04", id_categoria: "10134", categoria_nombre: "D. Procesal I", dificultad: "dificil",
+    pregunta: "La 'cosa juzgada material' implica que:",
+    opciones: ["La sentencia puede ser revisada en cualquier momento", "La sentencia firme es inmutable e irrevocable respecto de las cuestiones decididas", "Solo se aplica a sentencias de primera instancia", "Equivale a la perención de instancia"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Principio de cosa juzgada material. Art. 278 del CPCCBA.", puntos_base: 50
+  },
+  {
+    id: "10134-05", id_categoria: "10134", categoria_nombre: "D. Procesal I", dificultad: "media",
+    pregunta: "¿Qué recurso procesal se interpone contra sentencias definitivas de primera instancia?",
+    opciones: ["Recurso de reposición", "Recurso de apelación", "Recurso de queja", "Recurso extraordinario federal"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Arts. 242 y ss. del CPCCBA: Recurso de apelación.", puntos_base: 25
+  },
+  {
+    id: "10134-06", id_categoria: "10134", categoria_nombre: "D. Procesal I", dificultad: "facil",
+    pregunta: "La demanda judicial debe contener, como mínimo:",
+    opciones: ["Solo el nombre del actor", "Los hechos, el derecho invocado, la cosa demandada y la petición", "Una oferta de mediación", "La sentencia esperada"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 330 del CPCCBA: requisitos de la demanda.", puntos_base: 10
+  },
+
+  // --- 10135: DERECHO PROCESAL II - PENAL (Expansión) ---
+  {
+    id: "10135-02", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "facil",
+    pregunta: "¿Quién ejerce la acción penal pública en Argentina?",
+    opciones: ["El juez de instrucción", "El Ministerio Público Fiscal", "La víctima exclusivamente", "El abogado defensor"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 120 CN y Art. 5 CPPN: El Ministerio Público Fiscal promueve la acción penal pública.", puntos_base: 10
+  },
+  {
+    id: "10135-03", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "media",
+    pregunta: "El principio 'in dubio pro reo' significa que:",
+    opciones: ["El acusado siempre es culpable", "En caso de duda, se debe estar a favor del imputado", "El fiscal puede modificar la acusación en cualquier momento", "El juez puede presumir la culpabilidad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Principio derivado de la presunción de inocencia (Art. 18 CN y Art. 8.2 CADH).", puntos_base: 25
+  },
+  {
+    id: "10135-04", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "dificil",
+    pregunta: "La suspensión del juicio a prueba ('probation') del Art. 76 bis del Código Penal es aplicable cuando:",
+    opciones: ["El delito tiene pena de prisión perpetua", "El máximo de la pena no excede de 3 años y el imputado no tiene condenas anteriores", "El imputado es reincidente", "Solo en delitos de acción privada"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 76 bis del Código Penal de la Nación.", puntos_base: 50
+  },
+  {
+    id: "10135-05", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "media",
+    pregunta: "¿Qué es el 'juicio abreviado' en el proceso penal?",
+    opciones: ["Un juicio sin abogado defensor", "Un procedimiento donde el imputado admite el hecho y se acuerda la pena con el fiscal", "Un juicio sin prueba testimonial", "Un juicio ante la Corte Suprema"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 431 bis del CPPN.", puntos_base: 25
+  },
+  {
+    id: "10135-06", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "facil",
+    pregunta: "La prisión preventiva es una medida:",
+    opciones: ["Punitiva", "Cautelar de carácter excepcional", "Definitiva", "Administrativa"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 280 del CPPN. La prisión preventiva es excepcional y cautelar.", puntos_base: 10
+  },
+
+  // --- 10626: DERECHOS HUMANOS (Expansión) ---
+  {
+    id: "10626-02", id_categoria: "10626", categoria_nombre: "Derechos Humanos", dificultad: "facil",
+    pregunta: "¿En qué año fue adoptada la Declaración Universal de Derechos Humanos?",
+    opciones: ["1945", "1948", "1966", "1969"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "DUDH, adoptada por la Asamblea General de la ONU el 10 de diciembre de 1948.", puntos_base: 10
+  },
+  {
+    id: "10626-03", id_categoria: "10626", categoria_nombre: "Derechos Humanos", dificultad: "media",
+    pregunta: "La Convención Americana sobre Derechos Humanos (Pacto de San José de Costa Rica) fue suscripta en:",
+    opciones: ["1948", "1966", "1969", "1994"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "CADH, suscripta en San José, Costa Rica, el 22 de noviembre de 1969.", puntos_base: 25
+  },
+  {
+    id: "10626-04", id_categoria: "10626", categoria_nombre: "Derechos Humanos", dificultad: "dificil",
+    pregunta: "¿Qué artículo de la Constitución Nacional otorga jerarquía constitucional a los tratados de derechos humanos?",
+    opciones: ["Art. 14 bis", "Art. 43", "Art. 75 inc. 22", "Art. 116"],
+    respuesta_correcta_index: 2,
+    fundamento_juridico: "Art. 75 inc. 22 CN (reforma de 1994): tratados internacionales de DDHH con jerarquía constitucional.", puntos_base: 50
+  },
+  {
+    id: "10626-05", id_categoria: "10626", categoria_nombre: "Derechos Humanos", dificultad: "media",
+    pregunta: "¿Ante qué órgano se puede presentar una petición individual contra un Estado parte de la CADH?",
+    opciones: ["La Asamblea General de la ONU", "La Comisión Interamericana de Derechos Humanos", "El Tribunal Penal Internacional", "El Consejo de Europa"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Arts. 44 y 45 de la CADH: Peticiones ante la CIDH.", puntos_base: 25
+  },
+  {
+    id: "10626-06", id_categoria: "10626", categoria_nombre: "Derechos Humanos", dificultad: "facil",
+    pregunta: "El principio 'pro homine' o 'pro persona' en materia de derechos humanos implica:",
+    opciones: ["Aplicar la norma más restrictiva", "Interpretar y aplicar la norma que sea más favorable a la persona", "Que los derechos humanos son absolutos", "Que solo se aplica en tribunales internacionales"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Principio pro persona: Art. 29 de la CADH.", puntos_base: 10
+  },
+
+  // --- 10640: DERECHO SOCIAL DEL TRABAJO (Expansión) ---
+  {
+    id: "10640-02", id_categoria: "10640", categoria_nombre: "D. Social del Trabajo", dificultad: "facil",
+    pregunta: "El principio protectorio del derecho del trabajo se manifiesta en tres reglas. ¿Cuáles son?",
+    opciones: ["In dubio pro operario, norma más favorable y condición más beneficiosa", "Igualdad, buena fe y razonabilidad", "Irrenunciabilidad, continuidad y primacía de la realidad", "Gratuidad, celeridad y oralidad"],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Art. 9 de la Ley 20.744 (LCT): Principio protectorio.", puntos_base: 10
+  },
+  {
+    id: "10640-03", id_categoria: "10640", categoria_nombre: "D. Social del Trabajo", dificultad: "media",
+    pregunta: "¿Cuántos meses de antigüedad necesita un trabajador para acceder a la indemnización por despido sin causa del Art. 245 LCT?",
+    opciones: ["1 mes", "3 meses", "6 meses", "1 año"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Arts. 245 y 92 bis de la LCT: período de prueba de 3 meses.", puntos_base: 25
+  },
+  {
+    id: "10640-04", id_categoria: "10640", categoria_nombre: "D. Social del Trabajo", dificultad: "dificil",
+    pregunta: "La 'primacía de la realidad' como principio laboral significa que:",
+    opciones: ["Los contratos escritos prevalecen siempre", "En caso de discordancia entre lo documentado y lo realmente ocurrido, prevalecen los hechos", "El trabajador siempre tiene razón", "Las normas laborales no admiten interpretación"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 14 LCT y doctrina del derecho del trabajo.", puntos_base: 50
+  },
+  {
+    id: "10640-05", id_categoria: "10640", categoria_nombre: "D. Social del Trabajo", dificultad: "media",
+    pregunta: "La jornada legal máxima de trabajo para adultos es de:",
+    opciones: ["6 horas diarias", "8 horas diarias o 48 semanales", "10 horas diarias", "12 horas diarias"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 11.544 y Art. 196 LCT: 8 horas diarias o 48 semanales.", puntos_base: 25
+  },
+  {
+    id: "10640-06", id_categoria: "10640", categoria_nombre: "D. Social del Trabajo", dificultad: "facil",
+    pregunta: "El Art. 14 bis de la Constitución Nacional establece la protección de:",
+    opciones: ["Los derechos patrimoniales", "El trabajo en todas sus formas gozará de la protección de las leyes", "El comercio internacional", "La propiedad intelectual"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 14 bis CN: derechos del trabajador, gremiales y de la seguridad social.", puntos_base: 10
+  },
+
+  // --- 10143: DERECHO ADMINISTRATIVO II (Expansión) ---
+  {
+    id: "10143-01", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "facil",
+    pregunta: "¿Qué tipo de responsabilidad tiene el Estado por los daños causados por la actividad legítima?",
+    opciones: ["Responsabilidad subjetiva", "Responsabilidad objetiva y directa", "Ninguna responsabilidad", "Solo responsabilidad contractual"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 26.944 de Responsabilidad del Estado.", puntos_base: 10
+  },
+  {
+    id: "10143-02", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "media",
+    pregunta: "El recurso jerárquico en sede administrativa se interpone ante:",
+    opciones: ["El mismo funcionario que dictó el acto", "El superior jerárquico del funcionario que dictó el acto", "Un tribunal judicial", "El Defensor del Pueblo"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 89 del Reglamento de Procedimientos Administrativos (Dto. 1759/72).", puntos_base: 25
+  },
+  {
+    id: "10143-03", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "dificil",
+    pregunta: "La teoría de los 'actos separables' en materia de contratos administrativos permite:",
+    opciones: ["Impugnar judicialmente los actos administrativos del procedimiento contractual de forma autónoma", "Modificar el contrato unilateralmente sin límites", "Anular todo el contrato por un vicio en un acto preparatorio", "Que el contratista se retire sin consecuencias"],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "CSJN, 'Mevopal S.A.' y doctrina de los actos separables.", puntos_base: 50
+  },
+  {
+    id: "10143-04", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "media",
+    pregunta: "El 'ius variandi' en los contratos administrativos faculta a la Administración a:",
+    opciones: ["Rescindir el contrato sin indemnización", "Modificar unilateralmente las condiciones del contrato dentro de ciertos límites", "Celebrar contratos sin licitación", "Suspender todos los pagos al contratista"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Doctrina del contrato administrativo. Prerrogativa de la Administración.", puntos_base: 25
+  },
+  {
+    id: "10143-05", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "facil",
+    pregunta: "La acción de amparo contra actos de autoridad pública está regulada en:",
+    opciones: ["El Código Penal", "El Art. 43 de la Constitución Nacional", "La Ley de Procedimientos Administrativos", "El Código de Comercio"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 43 CN: Acción de amparo.", puntos_base: 10
+  },
+
+  // --- 10144: DERECHO INTERNACIONAL PÚBLICO (Expansión) ---
+  {
+    id: "10144-01", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "facil",
+    pregunta: "¿Cuál es la fuente principal del derecho internacional público según el Art. 38 del Estatuto de la CIJ?",
+    opciones: ["Las resoluciones de la ONU", "Los tratados internacionales, la costumbre internacional y los principios generales del derecho", "Solo la doctrina de los publicistas", "Las decisiones de los tribunales nacionales"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 38 del Estatuto de la Corte Internacional de Justicia.", puntos_base: 10
+  },
+  {
+    id: "10144-02", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "media",
+    pregunta: "El principio 'pacta sunt servanda' en el derecho internacional significa:",
+    opciones: ["Los tratados pueden ser modificados unilateralmente", "Los tratados deben cumplirse de buena fe", "Los Estados no están obligados por tratados", "Solo se aplica a tratados bilaterales"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 26 de la Convención de Viena sobre el Derecho de los Tratados (1969).", puntos_base: 25
+  },
+  {
+    id: "10144-03", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "dificil",
+    pregunta: "Las normas de 'ius cogens' en el derecho internacional son:",
+    opciones: ["Normas dispositivas que los Estados pueden modificar", "Normas imperativas aceptadas por la comunidad internacional que no admiten derogación", "Costumbres locales", "Resoluciones de organismos internacionales"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 53 de la Convención de Viena sobre el Derecho de los Tratados (1969).", puntos_base: 50
+  },
+  {
+    id: "10144-04", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "media",
+    pregunta: "La inmunidad diplomática está regulada principalmente por:",
+    opciones: ["La Carta de la ONU", "La Convención de Viena sobre Relaciones Diplomáticas de 1961", "El Tratado de Versalles", "La Convención Americana de DDHH"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Convención de Viena sobre Relaciones Diplomáticas (1961).", puntos_base: 25
+  },
+  {
+    id: "10144-05", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "facil",
+    pregunta: "¿Cuál es el principal órgano judicial de las Naciones Unidas?",
+    opciones: ["El Tribunal Penal Internacional", "La Corte Internacional de Justicia", "La Corte Interamericana de DDHH", "El Tribunal de Justicia de la Unión Europea"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 92 de la Carta de las Naciones Unidas.", puntos_base: 10
+  },
+
+  // --- 10145: DERECHO PRIVADO V - REALES (Expansión) ---
+  {
+    id: "10145-01", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "facil",
+    pregunta: "Según el CCyCN, los derechos reales son:",
+    opciones: ["Derechos relativos", "Derechos absolutos que recaen sobre cosas determinadas y son oponibles erga omnes", "Derechos que solo surgen de contratos", "Derechos que no requieren publicidad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 1882 CCyCN: Concepto de derecho real.", puntos_base: 10
+  },
+  {
+    id: "10145-02", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "media",
+    pregunta: "¿Cuáles de los siguientes son derechos reales enumerados en el CCyCN?",
+    opciones: ["Dominio, condominio, usufructo, uso, habitación, servidumbre, hipoteca, prenda, anticresis", "Solo dominio y posesión", "Solo hipoteca y prenda", "Locación y comodato"],
+    respuesta_correcta_index: 0,
+    fundamento_juridico: "Art. 1887 CCyCN: Enumeración taxativa de los derechos reales.", puntos_base: 25
+  },
+  {
+    id: "10145-03", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "dificil",
+    pregunta: "El principio de 'numerus clausus' en materia de derechos reales significa que:",
+    opciones: ["Las partes pueden crear cualquier derecho real que deseen", "Los derechos reales solo pueden ser creados por la ley y su número es cerrado", "Los derechos reales no necesitan inscripción", "Solo existen dos derechos reales: dominio y posesión"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 1884 CCyCN: Estructura y numerus clausus.", puntos_base: 50
+  },
+  {
+    id: "10145-04", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "media",
+    pregunta: "La prescripción adquisitiva (usucapión) larga requiere posesión pública, pacífica y continua durante:",
+    opciones: ["5 años", "10 años", "15 años", "20 años"],
+    respuesta_correcta_index: 3,
+    fundamento_juridico: "Art. 1899 CCyCN: Prescripción adquisitiva larga de 20 años.", puntos_base: 25
+  },
+  {
+    id: "10145-05", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "facil",
+    pregunta: "El dominio es el derecho real que otorga:",
+    opciones: ["Solo el uso de la cosa", "Todas las facultades de usar, gozar y disponer material y jurídicamente de una cosa", "Solo el goce de los frutos", "La tenencia temporal de la cosa"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 1941 CCyCN: Dominio perfecto.", puntos_base: 10
+  },
+
+  // --- 10146: DERECHO SOCIAL DE LA SEGURIDAD SOCIAL (Expansión) ---
+  {
+    id: "10146-01", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "facil",
+    pregunta: "El sistema de seguridad social en Argentina cubre contingencias como:",
+    opciones: ["Solo accidentes de trabajo", "Vejez, invalidez, muerte, enfermedad, desempleo y cargas de familia", "Exclusivamente jubilaciones", "Solo riesgos del trabajo"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 14 bis CN y Ley 24.241 (SIPA).", puntos_base: 10
+  },
+  {
+    id: "10146-02", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "media",
+    pregunta: "¿Cuál es la edad jubilatoria ordinaria para hombres y mujeres en Argentina?",
+    opciones: ["60 y 55 años respectivamente", "65 y 60 años respectivamente", "70 y 65 años respectivamente", "60 para ambos"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 19 de la Ley 24.241: 65 años para hombres y 60 para mujeres.", puntos_base: 25
+  },
+  {
+    id: "10146-03", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "dificil",
+    pregunta: "El caso 'Badaro' de la CSJN (2006/2007) fue relevante para la seguridad social porque:",
+    opciones: ["Declaró inconstitucional el sistema jubilatorio", "Ordenó la movilidad de los haberes jubilatorios ante la falta de actualización por el Congreso", "Eliminó las contribuciones patronales", "Privatizó las jubilaciones"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "CSJN, 'Badaro, Adolfo V. c/ ANSES' (2006/2007).", puntos_base: 50
+  },
+  {
+    id: "10146-04", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "media",
+    pregunta: "Las asignaciones familiares son prestaciones de la seguridad social que:",
+    opciones: ["Reemplazan el salario", "Compensan las cargas de familia del trabajador sin contraprestación", "Solo se pagan a trabajadores autónomos", "Son optativas para el empleador"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 24.714 de Asignaciones Familiares.", puntos_base: 25
+  },
+  {
+    id: "10146-05", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "facil",
+    pregunta: "Las ART (Aseguradoras de Riesgos del Trabajo) fueron creadas por:",
+    opciones: ["La Ley 20.744", "La Ley 24.557", "La Constitución Nacional", "El Código Civil"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 24.557 de Riesgos del Trabajo (1995).", puntos_base: 10
+  },
+
+  // --- 10148: DERECHO PRIVADO VII - CONCURSOS (Expansión) ---
+  {
+    id: "10148-01", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "facil",
+    pregunta: "¿Qué ley regula los concursos y quiebras en Argentina?",
+    opciones: ["Ley 19.550", "Ley 24.522", "Ley 20.744", "Ley 26.994"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 24.522 de Concursos y Quiebras.", puntos_base: 10
+  },
+  {
+    id: "10148-02", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "media",
+    pregunta: "El concurso preventivo tiene como finalidad principal:",
+    opciones: ["Liquidar el patrimonio del deudor", "Permitir al deudor reestructurar sus pasivos y evitar la quiebra", "Castigar al deudor incumplidor", "Repartir los bienes entre los acreedores"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 5 de la Ley 24.522: Concurso preventivo.", puntos_base: 25
+  },
+  {
+    id: "10148-03", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "dificil",
+    pregunta: "El 'cramdown' o salvataje empresarial (Art. 48 LCQ) se aplica cuando:",
+    opciones: ["El deudor obtiene las mayorías necesarias", "El deudor no obtiene las mayorías para el acuerdo y terceros pueden ofertar", "El deudor declara su quiebra voluntaria", "Solo en empresas con más de 100 empleados"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 48 de la Ley 24.522: Supuesto especial (cramdown).", puntos_base: 50
+  },
+  {
+    id: "10148-04", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "media",
+    pregunta: "¿Qué es el 'período de exclusividad' en el concurso preventivo?",
+    opciones: ["El plazo para que el juez dicte sentencia", "El plazo que tiene el deudor para negociar y obtener conformidades de los acreedores", "El plazo de prescripción de las deudas", "El período de investigación penal"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 43 de la Ley 24.522.", puntos_base: 25
+  },
+  {
+    id: "10148-05", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "facil",
+    pregunta: "La quiebra tiene como principal efecto sobre el deudor:",
+    opciones: ["Le permite seguir administrando sus bienes", "Le produce el desapoderamiento de sus bienes", "Solo le impide viajar al exterior", "Le otorga un plazo de gracia para pagar"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 107 de la Ley 24.522: Desapoderamiento.", puntos_base: 10
+  },
+
+  // --- 10149: DERECHO INTERNACIONAL PRIVADO (Expansión) ---
+  {
+    id: "10149-01", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "facil",
+    pregunta: "El Derecho Internacional Privado se ocupa principalmente de:",
+    opciones: ["Las relaciones entre Estados", "Los conflictos de leyes derivados de relaciones jurídicas con elementos internacionales", "El derecho penal internacional", "Los tratados de paz"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Doctrina general del DIPr. Goldschmidt, 'Derecho Internacional Privado'.", puntos_base: 10
+  },
+  {
+    id: "10149-02", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "media",
+    pregunta: "La 'norma de conflicto' o 'norma indirecta' del DIPr tiene como función:",
+    opciones: ["Resolver directamente el caso", "Señalar el derecho aplicable a una relación jurídica con elemento extranjero", "Impedir la aplicación de derecho extranjero", "Solo regular la competencia judicial"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Doctrina del DIPr. Arts. 2594 a 2671 del CCyCN.", puntos_base: 25
+  },
+  {
+    id: "10149-03", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "dificil",
+    pregunta: "El 'orden público internacional' como límite a la aplicación del derecho extranjero opera cuando:",
+    opciones: ["Siempre que se aplique derecho extranjero", "La ley extranjera es incompatible con los principios fundamentales del foro", "El derecho extranjero es más favorable al actor", "Solo en materia comercial"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2600 CCyCN: Orden público.", puntos_base: 50
+  },
+  {
+    id: "10149-04", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "media",
+    pregunta: "¿Qué es el 'reenvío' en el DIPr?",
+    opciones: ["La remisión de un tribunal a otro", "Cuando la norma de conflicto del foro remite al derecho extranjero y éste, a su vez, remite a otro derecho", "La devolución de una mercadería importada", "El recurso ante un tribunal internacional"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2596 CCyCN: Reenvío.", puntos_base: 25
+  },
+  {
+    id: "10149-05", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "facil",
+    pregunta: "En materia de contratos internacionales, el CCyCN permite la autonomía de la voluntad para elegir:",
+    opciones: ["Solo la jurisdicción", "El derecho aplicable al contrato", "Solo las cláusulas penales", "Nada, todo lo decide el juez"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2651 CCyCN: Autonomía de la voluntad en contratos internacionales.", puntos_base: 10
+  },
+
+  // --- 10654: PRÁCTICA PROFESIONAL (Expansión) ---
+  {
+    id: "10654-01", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "facil",
+    pregunta: "Para ejercer la abogacía en la Provincia de Buenos Aires es necesario:",
+    opciones: ["Solo tener el título universitario", "Tener título habilitante e inscripción en el Colegio de Abogados del Departamento Judicial correspondiente", "Ser mayor de 25 años", "Aprobar un examen del Poder Judicial"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 5177 de Ejercicio de la Abogacía (Prov. Bs. As.).", puntos_base: 10
+  },
+  {
+    id: "10654-02", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "media",
+    pregunta: "¿Qué es la mediación prejudicial obligatoria en la Provincia de Buenos Aires?",
+    opciones: ["Un juicio abreviado", "Un procedimiento de resolución de conflictos previo a la demanda judicial", "Una audiencia ante el juez", "Una pericia contable"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 13.951 de Mediación Prejudicial Obligatoria (Prov. Bs. As.).", puntos_base: 25
+  },
+  {
+    id: "10654-03", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "dificil",
+    pregunta: "El secreto profesional del abogado implica que:",
+    opciones: ["El abogado puede revelar la información del cliente si le conviene", "El abogado tiene el deber y el derecho de guardar secreto sobre los hechos conocidos en el ejercicio profesional", "Solo aplica en causas penales", "Es optativo para el abogado"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 6 de la Ley 5177 y Código de Ética del COLPROBA.", puntos_base: 50
+  },
+  {
+    id: "10654-04", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "media",
+    pregunta: "Los honorarios del abogado en la Provincia de Buenos Aires se regulan por:",
+    opciones: ["Solo lo que acuerden las partes", "La Ley 14.967 de Honorarios Profesionales", "El Código Civil", "Las tablas del Poder Ejecutivo"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 14.967 de Honorarios Profesionales de Abogados y Procuradores (Prov. Bs. As.).", puntos_base: 25
+  },
+  {
+    id: "10654-05", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "facil",
+    pregunta: "¿Qué documento da inicio formal a un proceso judicial civil?",
+    opciones: ["La carta documento", "La demanda judicial", "El alegato", "La sentencia"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 330 del CPCCBA: Demanda.", puntos_base: 10
+  },
+
+  // --- 10147: FILOSOFÍA DEL DERECHO (Expansión) ---
+  {
+    id: "10147-02", id_categoria: "10147", categoria_nombre: "Filosofía del Derecho", dificultad: "facil",
+    pregunta: "Hans Kelsen, en su 'Teoría Pura del Derecho', sostiene que el derecho debe estudiarse:",
+    opciones: ["Desde una perspectiva moral y religiosa", "Separado de la moral, la política y la sociología", "Solo a través de la jurisprudencia", "Exclusivamente desde la sociología"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Hans Kelsen, 'Teoría Pura del Derecho' (1934/1960).", puntos_base: 10
+  },
+  {
+    id: "10147-03", id_categoria: "10147", categoria_nombre: "Filosofía del Derecho", dificultad: "media",
+    pregunta: "¿Qué es el 'iusnaturalismo'?",
+    opciones: ["Una corriente que niega la existencia del derecho natural", "Una corriente que sostiene la existencia de un derecho natural superior y anterior al derecho positivo", "Lo mismo que el positivismo jurídico", "Una teoría exclusivamente procesal"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Corriente iusnaturalista: Santo Tomás de Aquino, Hugo Grocio, John Finnis.", puntos_base: 25
+  },
+  {
+    id: "10147-04", id_categoria: "10147", categoria_nombre: "Filosofía del Derecho", dificultad: "dificil",
+    pregunta: "La 'regla de reconocimiento' en la teoría de H.L.A. Hart es:",
+    opciones: ["Una norma penal", "La norma secundaria que establece los criterios para identificar qué normas pertenecen al sistema jurídico", "Un contrato entre ciudadanos", "La constitución nacional"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "H.L.A. Hart, 'El concepto de derecho' (1961), Capítulo V.", puntos_base: 50
+  },
+  {
+    id: "10147-05", id_categoria: "10147", categoria_nombre: "Filosofía del Derecho", dificultad: "media",
+    pregunta: "El 'realismo jurídico' norteamericano sostiene que el derecho es fundamentalmente:",
+    opciones: ["Lo que dice la ley escrita", "Lo que los tribunales efectivamente deciden", "Lo que establece la moral", "Lo que determina la costumbre"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Oliver W. Holmes, Karl Llewellyn. Realismo jurídico estadounidense.", puntos_base: 25
+  },
+  {
+    id: "10147-06", id_categoria: "10147", categoria_nombre: "Filosofía del Derecho", dificultad: "facil",
+    pregunta: "La justicia distributiva según Aristóteles se refiere a:",
+    opciones: ["La justicia en los intercambios entre particulares", "La distribución de bienes, honores y cargas según el mérito", "La venganza proporcional", "La justicia procesal exclusivamente"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Aristóteles, 'Ética a Nicómaco', Libro V.", puntos_base: 10
+  },
+
+  // --- 10653: DERECHO DE FAMILIA (Expansión) ---
+  {
+    id: "10653-02", id_categoria: "10653", categoria_nombre: "Derecho de Familia", dificultad: "media",
+    pregunta: "El CCyCN reconoce como régimen patrimonial del matrimonio:",
+    opciones: ["Solo la comunidad de bienes", "Comunidad de bienes o separación de bienes, a elección de los cónyuges", "Solo la separación de bienes", "El régimen dotal"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Arts. 446 a 508 CCyCN: Régimen patrimonial del matrimonio.", puntos_base: 25
+  },
+  {
+    id: "10653-03", id_categoria: "10653", categoria_nombre: "Derecho de Familia", dificultad: "dificil",
+    pregunta: "La responsabilidad parental en el CCyCN se ejerce por:",
+    opciones: ["Solo el padre", "Ambos progenitores, sea que convivan o no", "Solo la madre hasta los 5 años del hijo", "El Estado"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 641 CCyCN: Ejercicio de la responsabilidad parental.", puntos_base: 50
+  },
+  {
+    id: "10653-04", id_categoria: "10653", categoria_nombre: "Derecho de Familia", dificultad: "facil",
+    pregunta: "¿Desde cuándo es legal el matrimonio igualitario en Argentina?",
+    opciones: ["2003", "2010", "2015", "2020"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Ley 26.618 de Matrimonio Igualitario (2010).", puntos_base: 10
+  },
+  {
+    id: "10653-05", id_categoria: "10653", categoria_nombre: "Derecho de Familia", dificultad: "media",
+    pregunta: "La compensación económica post-divorcio del Art. 441 CCyCN procede cuando:",
+    opciones: ["Siempre, en todos los divorcios", "El divorcio produce un desequilibrio económico manifiesto para uno de los cónyuges", "Solo si hay hijos menores", "Solo en matrimonios de más de 20 años"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 441 CCyCN: Compensación económica.", puntos_base: 25
+  },
+
+  // --- 10659: DERECHO DE LAS SUCESIONES (Expansión) ---
+  {
+    id: "10659-02", id_categoria: "10659", categoria_nombre: "D. Sucesiones", dificultad: "facil",
+    pregunta: "¿Quiénes son los herederos forzosos según el CCyCN?",
+    opciones: ["Solo los hijos", "Los descendientes, ascendientes y el cónyuge", "Solo el cónyuge", "Los hermanos y sobrinos"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2444 CCyCN: Herederos legitimarios.", puntos_base: 10
+  },
+  {
+    id: "10659-03", id_categoria: "10659", categoria_nombre: "D. Sucesiones", dificultad: "dificil",
+    pregunta: "La porción legítima reservada a los descendientes es de:",
+    opciones: ["Un medio (1/2)", "Dos tercios (2/3)", "Tres cuartos (3/4)", "Un cuarto (1/4)"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2445 CCyCN: La legítima de los descendientes es de 2/3.", puntos_base: 50
+  },
+  {
+    id: "10659-04", id_categoria: "10659", categoria_nombre: "D. Sucesiones", dificultad: "media",
+    pregunta: "La sucesión se abre con:",
+    opciones: ["La declaración de los herederos", "La muerte del causante", "La lectura del testamento", "La inscripción en el Registro de Propiedad"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Art. 2277 CCyCN: 'La muerte real... de una persona causa la apertura de su sucesión'.", puntos_base: 25
+  },
+  {
+    id: "10659-05", id_categoria: "10659", categoria_nombre: "D. Sucesiones", dificultad: "facil",
+    pregunta: "¿Qué tipos de testamento reconoce el CCyCN?",
+    opciones: ["Solo ológrafo", "Ológrafo y por acto público", "Solo notarial", "Solo verbal"],
+    respuesta_correcta_index: 1,
+    fundamento_juridico: "Arts. 2477 (ológrafo) y 2479 (por acto público) del CCyCN.", puntos_base: 10
   }
 ];

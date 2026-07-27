@@ -323,12 +323,12 @@ export default function Trivia() {
     const isLastQuestion = currentIndex + 1 === questionsPool.length;
 
     return (
-      <div className="min-h-screen bg-[#070A14] text-white py-8 px-4 flex items-center justify-center relative overflow-hidden">
-        <div className="max-w-2xl w-full bg-slate-900 border border-white/15 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative z-10 backdrop-blur-xl">
+      <div className="min-h-screen bg-[#050B14] text-white py-8 px-4 flex items-center justify-center relative overflow-hidden">
+        <div className="max-w-2xl w-full bg-[#0D1527] border border-white/15 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative z-10 backdrop-blur-xl">
           
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-black uppercase tracking-wider border border-indigo-500/30">
+              <span className="px-3 py-1 rounded-full bg-[#0A1C3D]/40 text-blue-300 text-xs font-black uppercase tracking-wider border border-[#0F2A5C]/50">
                 Pregunta {currentIndex + 1} de {questionsPool.length}
               </span>
               <span className="text-xs text-slate-400 font-mono hidden sm:inline">
@@ -401,9 +401,9 @@ export default function Trivia() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 text-xs space-y-1.5"
+              className="p-4 rounded-2xl bg-[#0A1C3D]/20 border border-[#0F2A5C]/40 text-blue-200 text-xs space-y-1.5"
             >
-              <span className="font-black uppercase tracking-wider text-[10px] text-indigo-300 block flex items-center gap-1">
+              <span className="font-black uppercase tracking-wider text-[10px] text-blue-300 block flex items-center gap-1">
                 <BookOpenCheck className="w-3.5 h-3.5" /> Fundamento Normativo:
               </span>
               <p className="leading-relaxed text-slate-300">{currentQ.fundamento_juridico}</p>
@@ -413,7 +413,7 @@ export default function Trivia() {
           {isAnswered && (
             <button
               onClick={handleNextQuestion}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs uppercase tracking-wider shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
               <span>{isLastQuestion ? "Ver Resultados de Partida" : "Siguiente Pregunta"}</span>
               <ArrowRight className="w-4 h-4" />
@@ -428,18 +428,18 @@ export default function Trivia() {
   // Renderizar Pantalla de Resultados de Partida
   if (gameOver) {
     return (
-      <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
-        <div className="max-w-lg w-full bg-slate-900 border border-indigo-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
-          <div className="w-20 h-20 mx-auto rounded-full bg-indigo-500/20 border border-indigo-500/50 flex items-center justify-center text-indigo-400 shadow-inner">
+      <div className="min-h-screen bg-[#050B14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
+        <div className="max-w-lg w-full bg-[#0D1527] border border-red-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
+          <div className="w-20 h-20 mx-auto rounded-full bg-red-500/15 border border-red-500/40 flex items-center justify-center text-red-400 shadow-inner">
             <Trophy className="w-10 h-10" />
           </div>
 
           <div className="space-y-1">
-            <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-widest border border-indigo-500/30">
+            <span className="px-3 py-1 rounded-full bg-red-500/15 text-red-300 text-[10px] font-black uppercase tracking-widest border border-red-500/30">
               PARTIDA FINALIZADA
             </span>
             <h2 className="text-2xl md:text-3xl font-black text-white pt-2">Resumen de Evaluación</h2>
-            <p className="text-xs text-slate-400">Puntaje obtenido: <span className="text-amber-400 font-mono font-black text-base">+{score} PTS</span></p>
+            <p className="text-xs text-slate-400">Puntaje obtenido: <span className="text-red-400 font-mono font-black text-base">+{score} PTS</span></p>
           </div>
 
           <div className="grid grid-cols-3 gap-3 text-xs font-bold">
@@ -449,20 +449,20 @@ export default function Trivia() {
             </div>
             <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10">
               <span className="text-[10px] text-slate-400 block uppercase font-black">Precisión</span>
-              <span className="text-lg font-black text-amber-400 font-mono">
+              <span className="text-lg font-black text-red-400 font-mono">
                 {Math.round((correctAnswersCount / questionsPool.length) * 100)}%
               </span>
             </div>
             <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10">
               <span className="text-[10px] text-slate-400 block uppercase font-black">Mejor Racha</span>
-              <span className="text-lg font-black text-indigo-400 font-mono">x{maxStreak}</span>
+              <span className="text-lg font-black text-blue-400 font-mono">x{maxStreak}</span>
             </div>
           </div>
 
           <div className="flex flex-col gap-3">
             <button
               onClick={handleStartGame}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Jugar Otra Partida</span>
@@ -484,18 +484,18 @@ export default function Trivia() {
 
   // PANTALLA PRINCIPAL
   return (
-    <div className="min-h-screen bg-[#070A14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#050B14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
       <div className="max-w-5xl mx-auto space-y-8 relative z-10">
         
         {/* HEADER CON PAGO DE RANGO Y BARRA DE PROGRESO DE LOS 12 NIVELES */}
-        <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-5 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
+        <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-5 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-indigo-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500/20 to-[#0A1C3D]/40 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
                 <RangoIcon className="w-6 h-6 animate-pulse" />
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">Tu Rango Jurídico:</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-red-400 block">Tu Rango Jurídico:</span>
                 <h3 className="text-lg md:text-xl font-black text-white">{rangoActual.nombre}</h3>
                 <p className="text-[11px] text-slate-400">{rangoActual.descripcion}</p>
               </div>
@@ -504,12 +504,12 @@ export default function Trivia() {
             <div className="flex items-center gap-4 self-end sm:self-center">
               <div className="text-right">
                 <span className="text-[9px] uppercase font-black text-slate-400 block">Puntos Acumulados</span>
-                <span className="text-2xl font-black text-amber-400 font-mono">{userStats.puntosTotales} PTS</span>
+                <span className="text-2xl font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
               </div>
 
               <button
                 onClick={() => setShowRangosModal(true)}
-                className="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-black text-[10px] uppercase tracking-wider transition-all cursor-pointer"
+                className="px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 font-black text-[10px] uppercase tracking-wider transition-all cursor-pointer"
               >
                 VER ESCALA DE RANGOS (12 Niveles)
               </button>
@@ -521,13 +521,13 @@ export default function Trivia() {
             <div className="space-y-1.5 pt-1">
               <div className="flex items-center justify-between text-[11px] font-bold">
                 <span className="text-slate-400">Progreso de Rango: <span className="text-white">{rangoActual.nombre}</span></span>
-                <span className="text-indigo-400 font-mono font-black">
+                <span className="text-red-400 font-mono font-black">
                   Siguiente: {proximoRango.nombre} ({proximoRango.minPuntos - userStats.puntosTotales} PTS restar.)
                 </span>
               </div>
               <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-white/10">
                 <div 
-                  className="h-full bg-gradient-to-r from-indigo-500 to-amber-400 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-[#0A1C3D] via-[#0F2A5C] to-red-500 rounded-full transition-all duration-500"
                   style={{ width: `${progresoPorcentaje}%` }}
                 />
               </div>
@@ -542,7 +542,7 @@ export default function Trivia() {
             className={cn(
               "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
               activeTab === "evaluacion"
-                ? "bg-gradient-to-r from-indigo-600 to-violet-600 border-indigo-500 text-white shadow-indigo-600/30 scale-105"
+                ? "bg-gradient-to-r from-[#0A1C3D] to-[#0F2A5C] border-[#0F2A5C] text-white shadow-[#0A1C3D]/30 scale-105"
                 : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
             )}
           >
@@ -555,7 +555,7 @@ export default function Trivia() {
             className={cn(
               "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
               activeTab === "duelos"
-                ? "bg-gradient-to-r from-indigo-600 to-violet-600 border-indigo-500 text-white shadow-indigo-600/30 scale-105"
+                ? "bg-gradient-to-r from-[#0A1C3D] to-[#0F2A5C] border-[#0F2A5C] text-white shadow-[#0A1C3D]/30 scale-105"
                 : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
             )}
           >
@@ -568,7 +568,7 @@ export default function Trivia() {
             className={cn(
               "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
               activeTab === "ranking"
-                ? "bg-gradient-to-r from-indigo-600 to-violet-600 border-indigo-500 text-white shadow-indigo-600/30 scale-105"
+                ? "bg-gradient-to-r from-[#0A1C3D] to-[#0F2A5C] border-[#0F2A5C] text-white shadow-[#0A1C3D]/30 scale-105"
                 : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
             )}
           >
@@ -580,102 +580,124 @@ export default function Trivia() {
         {/* PESTAÑA 1: EVALUACIÓN POR MATERIA */}
         {activeTab === "evaluacion" && (
           <div className="space-y-6">
-            {/* SELECTOR DE AÑOS DE CARRERA */}
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              {[
-                { id: 0, label: "Toda la Carrera", icon: Sparkles },
-                { id: 1, label: "1º Año", icon: BookOpen },
-                { id: 2, label: "2º Año", icon: Landmark },
-                { id: 3, label: "3º Año", icon: Scale },
-                { id: 4, label: "4º Año", icon: FileText },
-                { id: 5, label: "5º Año", icon: GraduationCap }
-              ].map((item) => {
-                const ItemIcon = item.icon;
-                const isSelected = selectedYearFilter === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelectedYearFilter(item.id)}
-                    className={cn(
-                      "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
-                      isSelected
-                        ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
-                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                    )}
-                  >
-                    <ItemIcon className="w-3.5 h-3.5" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
+            {/* BOTÓN TODA LA CARRERA + SELECTOR DE AÑOS */}
+            <div className="flex flex-col items-center gap-4">
+              {/* Botón Toda la Carrera - standalone */}
+              <button
+                onClick={() => {
+                  setSelectedYearFilter(0);
+                  setSelectedCategoria("todas");
+                }}
+                className={cn(
+                  "px-8 py-3.5 rounded-2xl text-sm font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-3 border shadow-xl",
+                  selectedYearFilter === 0
+                    ? "bg-gradient-to-r from-red-600 to-red-500 border-red-500 text-white shadow-red-600/30 scale-105"
+                    : "bg-[#0D1527] border-white/10 text-slate-300 hover:bg-[#0F2A5C]/30 hover:border-red-500/30"
+                )}
+              >
+                <Sparkles className="w-5 h-5" />
+                <span>🎓 Toda la Carrera</span>
+              </button>
+
+              {/* Separador */}
+              <div className="flex items-center gap-3 w-full max-w-md">
+                <div className="flex-1 h-px bg-white/10" />
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">O elegí por año</span>
+                <div className="flex-1 h-px bg-white/10" />
+              </div>
+
+              {/* Tabs de Años */}
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                {[
+                  { id: 1, label: "1º Año", icon: BookOpen },
+                  { id: 2, label: "2º Año", icon: Landmark },
+                  { id: 3, label: "3º Año", icon: Scale },
+                  { id: 4, label: "4º Año", icon: FileText },
+                  { id: 5, label: "5º Año", icon: GraduationCap }
+                ].map((item) => {
+                  const ItemIcon = item.icon;
+                  const isSelected = selectedYearFilter === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelectedYearFilter(item.id)}
+                      className={cn(
+                        "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
+                        isSelected
+                          ? "bg-[#0A1C3D] border-[#0F2A5C] text-white shadow-lg"
+                          : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                      )}
+                    >
+                      <ItemIcon className="w-3.5 h-3.5" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* GRID DE MATERIAS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {filteredCategorias.map((cat) => {
-                const CatIcon = ICON_MAP[cat.icono] || BookOpen;
-                const isSelected = selectedCategoria === cat.id;
-                const qCount = getQuestionCountForCategory(cat.id);
+            {/* GRID DE MATERIAS - Solo visible cuando se selecciona un año específico (1-5) */}
+            {selectedYearFilter > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {filteredCategorias.filter(cat => cat.id !== "todas").map((cat) => {
+                  const CatIcon = ICON_MAP[cat.icono] || BookOpen;
+                  const isSelected = selectedCategoria === cat.id;
+                  const qCount = getQuestionCountForCategory(cat.id);
 
-                return (
-                  <motion.div
-                    key={cat.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelectedCategoria(cat.id)}
-                    className={cn(
-                      "p-5 rounded-3xl border transition-all duration-300 cursor-pointer space-y-3 flex flex-col justify-between group shadow-xl relative overflow-hidden",
-                      isSelected
-                        ? "bg-gradient-to-br from-indigo-900/60 via-slate-900 to-violet-900/60 border-indigo-500 text-white shadow-indigo-900/30"
-                        : "bg-slate-900/80 border-white/10 hover:border-white/25 hover:bg-slate-900/90 text-slate-300"
-                    )}
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className={cn(
-                          "w-10 h-10 rounded-2xl flex items-center justify-center border font-bold",
-                          isSelected ? "bg-indigo-500/30 border-indigo-500 text-indigo-300" : "bg-white/5 border-white/10 text-slate-400 group-hover:text-white"
-                        )}>
-                          <CatIcon className="w-5 h-5" />
-                        </div>
+                  return (
+                    <motion.div
+                      key={cat.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedCategoria(cat.id)}
+                      className={cn(
+                        "p-5 rounded-3xl border transition-all duration-300 cursor-pointer space-y-3 flex flex-col justify-between group shadow-xl relative overflow-hidden",
+                        isSelected
+                          ? "bg-gradient-to-br from-[#0A1C3D]/80 via-[#0D1527] to-[#1F0B12]/40 border-red-500/60 text-white shadow-red-900/20"
+                          : "bg-[#0D1527]/80 border-white/10 hover:border-red-500/30 hover:bg-[#0D1527] text-slate-300"
+                      )}
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className={cn(
+                            "w-10 h-10 rounded-2xl flex items-center justify-center border font-bold",
+                            isSelected ? "bg-red-500/20 border-red-500/50 text-red-300" : "bg-white/5 border-white/10 text-slate-400 group-hover:text-white"
+                          )}>
+                            <CatIcon className="w-5 h-5" />
+                          </div>
 
-                        {cat.anio > 0 ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/10 text-slate-300 border border-white/10">
+                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-[#0A1C3D]/50 text-blue-300 border border-[#0F2A5C]/50">
                             {cat.anio}º Año
                           </span>
-                        ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                            Global
-                          </span>
-                        )}
+                        </div>
+
+                        <div>
+                          <h4 className="font-black text-base text-white group-hover:text-red-300 transition-colors">
+                            {cat.nombre}
+                          </h4>
+                          <p className="text-xs text-slate-400 leading-relaxed pt-1">
+                            {cat.descripcion}
+                          </p>
+                        </div>
                       </div>
 
-                      <div>
-                        <h4 className="font-black text-base text-white group-hover:text-indigo-300 transition-colors">
-                          {cat.nombre}
-                        </h4>
-                        <p className="text-xs text-slate-400 leading-relaxed pt-1">
-                          {cat.descripcion}
-                        </p>
+                      <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] font-bold">
+                        <span className="text-slate-400 font-mono">
+                          {qCount} Preguntas
+                        </span>
+                        <div className="flex items-center gap-1 text-red-400 font-black">
+                          <span>Seleccionar</span>
+                          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] font-bold">
-                      <span className="text-slate-400 font-mono">
-                        {qCount} Preguntas
-                      </span>
-                      <div className="flex items-center gap-1 text-indigo-400 font-black">
-                        <span>Seleccionar</span>
-                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* CONFIGURACIÓN Y BOTÓN INICIAR */}
-            <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+            <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
@@ -689,7 +711,7 @@ export default function Trivia() {
                         className={cn(
                           "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer font-mono",
                           questionsCount === cnt
-                            ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                            ? "bg-[#0A1C3D] border-[#0F2A5C] text-white shadow-lg"
                             : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
                         )}
                       >
@@ -715,7 +737,7 @@ export default function Trivia() {
                         className={cn(
                           "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer",
                           selectedDificultad === dif.id
-                            ? "bg-indigo-600 border-indigo-500 text-white shadow-lg"
+                            ? "bg-[#0A1C3D] border-[#0F2A5C] text-white shadow-lg"
                             : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
                         )}
                       >
@@ -728,7 +750,7 @@ export default function Trivia() {
 
               <button
                 onClick={handleStartGame}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all min-h-[52px]"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all min-h-[52px]"
               >
                 <Play className="w-4 h-4 fill-white" />
                 <span>Comenzar Evaluación Trivia ({questionsCount} Preguntas)</span>
@@ -739,7 +761,7 @@ export default function Trivia() {
 
         {/* PESTAÑA 2: DUELOS 1VS1 (SALAS DE DESAFÍO) */}
         {activeTab === "duelos" && (
-          <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+          <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-xl font-black text-white flex items-center gap-2">
@@ -752,7 +774,7 @@ export default function Trivia() {
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => handleCreateDuelo(true)}
-                  className="w-1/2 sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-1/2 sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Crear Sala Pública</span>
@@ -776,14 +798,14 @@ export default function Trivia() {
                   placeholder="Ej: DND-829"
                   value={inputCodigoDuelo}
                   onChange={(e) => setInputCodigoDuelo(e.target.value.toUpperCase())}
-                  className="p-2.5 rounded-xl bg-slate-950 border border-white/15 text-white font-mono font-bold text-xs uppercase focus:outline-none focus:border-indigo-500 w-full sm:w-40"
+                  className="p-2.5 rounded-xl bg-slate-950 border border-white/15 text-white font-mono font-bold text-xs uppercase focus:outline-none focus:border-red-500 w-full sm:w-40"
                 />
                 <button
                   onClick={() => {
                     const match = duelosList.find(d => d.id === inputCodigoDuelo);
                     if (match) handleStartGame();
                   }}
-                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase cursor-pointer shrink-0"
+                  className="px-4 py-2.5 rounded-xl bg-[#0A1C3D] hover:bg-[#0F2A5C] text-white font-black text-xs uppercase cursor-pointer shrink-0"
                 >
                   Unirme
                 </button>
@@ -812,7 +834,7 @@ export default function Trivia() {
                             </span>
                             <span className="text-xs font-black text-white">{duelo.materiaNombre}</span>
                           </div>
-                          <p className="text-[11px] text-slate-400">Creado por: <span className="text-indigo-300 font-bold">{duelo.player1Nombre}</span></p>
+                          <p className="text-[11px] text-slate-400">Creado por: <span className="text-blue-300 font-bold">{duelo.player1Nombre}</span></p>
                         </div>
 
                         {isOwnRoom ? (
@@ -831,7 +853,7 @@ export default function Trivia() {
                         ) : (
                           <button
                             onClick={handleStartGame}
-                            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase cursor-pointer"
+                            className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase cursor-pointer"
                           >
                             Aceptar Duelo 1v1
                           </button>
@@ -847,7 +869,7 @@ export default function Trivia() {
 
         {/* PESTAÑA 3: RANKING GENERAL ÚNICO */}
         {activeTab === "ranking" && (
-          <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+          <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
             <div className="space-y-1 border-b border-white/10 pb-4">
               <h3 className="text-xl font-black text-white flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-yellow-400" />
@@ -858,9 +880,9 @@ export default function Trivia() {
 
             <div className="space-y-2.5">
               {/* USUARIO ACTUAL EN RANKING */}
-              <div className="p-4 rounded-2xl bg-indigo-600/30 border border-indigo-500 flex items-center justify-between gap-4 shadow-lg">
+              <div className="p-4 rounded-2xl bg-[#0A1C3D]/40 border border-[#0F2A5C] flex items-center justify-between gap-4 shadow-lg">
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center font-mono">
+                  <span className="w-8 h-8 rounded-xl bg-red-600 text-white font-black text-sm flex items-center justify-center font-mono">
                     #1
                   </span>
                   <div>
@@ -868,12 +890,12 @@ export default function Trivia() {
                       <span>{userName}</span>
                       <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">(Tú)</span>
                     </h4>
-                    <p className="text-[11px] text-indigo-300 font-bold">{rangoActual.nombre}</p>
+                    <p className="text-[11px] text-blue-300 font-bold">{rangoActual.nombre}</p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-base font-black text-amber-400 font-mono">{userStats.puntosTotales} PTS</span>
+                  <span className="text-base font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
                   <span className="text-[10px] text-slate-400 block font-mono">Racha x{userStats.mejorRacha}</span>
                 </div>
               </div>
@@ -923,7 +945,7 @@ export default function Trivia() {
                         className={cn(
                           "p-4 rounded-2xl border transition-all flex items-start gap-3.5",
                           isUserCurrent
-                            ? "bg-indigo-600/20 border-indigo-500 text-white shadow-lg"
+                            ? "bg-[#0A1C3D]/30 border-red-500/60 text-white shadow-lg"
                             : "bg-white/[0.02] border-white/10 text-slate-300"
                         )}
                       >
