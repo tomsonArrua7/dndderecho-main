@@ -600,6 +600,25 @@ export default function Trivia() {
     setInGame(true);
   };
 
+  const handleDeleteDuelo = async (dueloId: string) => {
+    if (!confirm(`¿Estás seguro de cancelar y eliminar la sala ${dueloId}?`)) return;
+
+    try {
+      const { error } = await supabase
+        .from("trivia_duelos")
+        .delete()
+        .eq("id", dueloId);
+
+      if (error) throw error;
+
+      toast.success(`Sala ${dueloId} eliminada correctamente.`);
+      fetchDuelosFromSupabase();
+    } catch (err: any) {
+      console.error("Error al eliminar sala:", err);
+      toast.error("Error al cancelar la sala de duelo.");
+    }
+  };
+
   const handleAnswer = (optionIndex: number) => {
     if (isAnswered) return;
 
@@ -1357,14 +1376,33 @@ export default function Trivia() {
                                 >
                                   Entrar a tu Sala
                                 </button>
+                                <button
+                                  onClick={() => handleDeleteDuelo(duelo.id)}
+                                  className="p-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                                  title="Cancelar y Eliminar Sala"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <span className="hidden sm:inline">Eliminar</span>
+                                </button>
                               </div>
                             ) : (
-                              <button
-                                onClick={() => handleJoinDuelo(duelo)}
-                                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase cursor-pointer shadow-lg"
-                              >
-                                Aceptar Duelo 1v1
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleJoinDuelo(duelo)}
+                                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase cursor-pointer shadow-lg"
+                                >
+                                  Aceptar Duelo 1v1
+                                </button>
+                                {profile?.role === "admin" && (
+                                  <button
+                                    onClick={() => handleDeleteDuelo(duelo.id)}
+                                    className="p-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 text-xs font-bold transition-all cursor-pointer"
+                                    title="Eliminar Sala (Admin)"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
                             )}
                           </div>
                         );
