@@ -43,13 +43,13 @@ const Index = () => {
       {/* ════════════════════════════════════════════════════════════
           HERO SECTION
           ════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden w-full max-w-full">
         {/* Fondo fotográfico con zoom suave y capas duotono */}
         <motion.div 
           initial={{ scale: 1.05 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.8, ease: "easeOut" }}
-          className="absolute inset-0 z-0 pointer-events-none"
+          className="absolute inset-0 z-0 pointer-events-none overflow-hidden w-full max-w-full"
         >
           <img
             src={rectoradoNueva}

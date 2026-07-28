@@ -11,18 +11,18 @@ export const Layout = () => {
   const { isFocusMode } = useApp();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background selection:bg-accent/30">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-background selection:bg-accent/30">
       <LoadingBar />
       
       {!isFocusMode && <Navbar />}
       
-      <main className="flex-1 flex flex-col relative">
+      <main className="flex-1 flex flex-col relative w-full max-w-full overflow-x-hidden">
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="flex-1 flex flex-col"
+          className="flex-1 flex flex-col w-full max-w-full"
         >
           <Outlet />
         </motion.div>

@@ -274,32 +274,32 @@ const MiEspacio = () => {
   };
 
   return (
-    <div className="container py-12 max-w-6xl">
+    <div className="container py-6 md:py-12 max-w-6xl px-4 md:px-8 w-full max-w-full overflow-x-hidden">
       {/* Header */}
-      <div className="mb-10 flex items-start justify-between gap-4 flex-wrap">
+      <div className="mb-8 md:mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="text-xs uppercase tracking-widest text-accent font-semibold mb-2">
+          <div className="text-xs uppercase tracking-widest text-accent font-semibold mb-1 md:mb-2">
             Tu espacio personal
           </div>
-          <h1 className="font-display text-3xl md:text-5xl font-bold text-foreground">
+          <h1 className="font-display text-2xl sm:text-3xl md:text-5xl font-bold text-foreground">
             Hola, <span className="text-primary-glow" style={{ color: "hsl(222 80% 55%)" }}>{name}</span>
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-muted-foreground mt-1.5 text-xs md:text-sm">
             Todo lo tuyo en un vistazo — materias, eventos y permutas.
           </p>
         </div>
-        <div className="flex flex-col items-end gap-2 shrink-0">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl border border-border bg-card/80 shadow-sm">
+        <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl border border-border bg-card/80 shadow-sm w-full sm:w-auto">
             {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt={name} className="h-10 w-10 rounded-full object-cover border border-border" />
+              <img src={profile.avatar_url} alt={name} className="h-10 w-10 rounded-full object-cover border border-border shrink-0" />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center border border-border">
+              <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center border border-border shrink-0">
                 <User className="h-5 w-5 text-primary" />
               </div>
             )}
-            <div>
-              <p className="text-xs font-semibold text-foreground">{name}</p>
-              <p className="text-[10px] text-muted-foreground">{user?.email}</p>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-foreground truncate">{name}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
               {profile?.anio_ingreso && (
                 <p className="text-[9px] font-bold text-accent uppercase tracking-wider mt-0.5">Ingreso: {profile.anio_ingreso}</p>
               )}
@@ -309,7 +309,7 @@ const MiEspacio = () => {
             variant="outline" 
             size="sm" 
             onClick={() => setIsEditModalOpen(true)} 
-            className="text-[10px] uppercase tracking-widest font-black h-7 px-3 border border-border/80 hover:bg-muted/80"
+            className="text-[10px] uppercase tracking-widest font-black h-8 sm:h-7 px-3 border border-border/80 hover:bg-muted/80 w-full sm:w-auto"
           >
             Editar Perfil
           </Button>

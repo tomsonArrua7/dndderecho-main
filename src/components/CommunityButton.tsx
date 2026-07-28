@@ -10,17 +10,17 @@ export const CommunityButton = () => {
   const [showSpeechBubble, setShowSpeechBubble] = useState(true);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4 items-end pointer-events-none">
+    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex flex-col gap-3 items-end pointer-events-none">
       
       {/* Botón Flotante de la IA */}
       <div className="relative flex items-center pointer-events-auto">
-        {/* Cartelito flotante persistente */}
+        {/* Cartelito flotante (Visible sólo en pantallas medianas o superiores para evitar desbordes en celulares) */}
         {showSpeechBubble && (
           <motion.div
             initial={{ opacity: 0, x: 20, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ delay: 1, duration: 0.5 }}
-            className="absolute right-full mr-3 bg-white dark:bg-[#0D1224]/95 text-slate-900 dark:text-white border border-slate-200 dark:border-accent/30 px-3 py-2 rounded-2xl shadow-2xl flex items-center gap-2 text-[11px] md:text-xs font-black tracking-wide whitespace-nowrap"
+            className="hidden md:flex absolute right-full mr-3 bg-white dark:bg-[#0D1224]/95 text-slate-900 dark:text-white border border-slate-200 dark:border-accent/30 px-3 py-2 rounded-2xl shadow-2xl items-center gap-2 text-[11px] md:text-xs font-black tracking-wide whitespace-nowrap"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
@@ -39,9 +39,9 @@ export const CommunityButton = () => {
         <TooltipProvider delayDuration={200}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild className="w-14 h-14 p-0 bg-gradient-to-r from-accent to-[#C41E24] text-white rounded-full shadow-[0_4px_20px_rgba(229,9,20,0.4)] hover:shadow-accent-glow hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border border-accent/20">
+              <Button asChild className="w-12 h-12 md:w-14 md:h-14 p-0 bg-gradient-to-r from-accent to-[#C41E24] text-white rounded-full shadow-[0_4px_20px_rgba(229,9,20,0.4)] hover:shadow-accent-glow hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer border border-accent/20">
                 <Link to="/asistente" aria-label="Consultar Asistente Virtual">
-                  <Bot className="w-7 h-7" />
+                  <Bot className="w-6 h-6 md:w-7 md:h-7" />
                 </Link>
               </Button>
             </TooltipTrigger>
@@ -67,7 +67,7 @@ export const CommunityButton = () => {
                 whileTap={{ scale: 0.9 }}
                 onHoverStart={() => setIsHovered(true)}
                 onHoverEnd={() => setIsHovered(false)}
-                className="flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)] transition-all duration-300 group border border-[#25D366]/20 cursor-pointer"
+                className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-[#25D366] text-white rounded-full shadow-[0_4px_14px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.6)] transition-all duration-300 group border border-[#25D366]/20 cursor-pointer"
                 aria-label="Sumate al grupo de avisos"
               >
                 <svg 

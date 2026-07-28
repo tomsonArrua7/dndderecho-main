@@ -78,10 +78,10 @@ const getPPSHours = (estadoStr: string) => {
 
 const StatPill = ({ value, label, colorClass }: { value: number | string; label: string; colorClass: string }) => (
   <div
-    className="flex flex-col items-center justify-center rounded-xl border border-white/10 px-5 py-3 min-w-[110px] bg-card/60 backdrop-blur-sm transition-all"
+    className="flex flex-col items-center justify-center rounded-xl border border-white/10 px-2 sm:px-5 py-2 sm:py-3 min-w-0 flex-1 sm:min-w-[100px] bg-card/60 backdrop-blur-sm transition-all"
   >
-    <span className={cn("text-2xl font-serif font-bold tracking-tight", colorClass)}>{value}</span>
-    <span className="text-[9px] uppercase tracking-widest text-white/40 font-bold mt-1">{label}</span>
+    <span className={cn("text-lg sm:text-2xl font-serif font-bold tracking-tight", colorClass)}>{value}</span>
+    <span className="text-[8px] sm:text-[9px] uppercase tracking-widest text-white/40 font-bold mt-0.5 sm:mt-1 truncate max-w-full">{label}</span>
   </div>
 );
 
@@ -714,44 +714,46 @@ const PlanEstudios = () => {
 
   return (
     <div className={cn(
-      "min-h-screen bg-background transition-colors duration-200",
-      isFocusMode ? "fixed inset-0 z-[100] overflow-y-auto py-12 px-8" : "py-12 px-8"
+      "min-h-screen bg-background transition-colors duration-200 w-full max-w-full overflow-x-hidden",
+      isFocusMode ? "fixed inset-0 z-[100] overflow-y-auto py-6 px-4 md:py-12 md:px-8" : "py-6 px-4 md:py-12 md:px-8"
     )}>
-      <div className="max-w-[1800px] mx-auto">
+      <div className="max-w-[1800px] mx-auto w-full">
         {/* Academic Header Banner */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16 pb-8 border-b border-white/10">
-          <div className="flex items-start gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10 mb-8 md:mb-16 pb-6 md:pb-8 border-b border-white/10">
+          <div className="flex items-start gap-4 sm:gap-6">
             {!isFocusMode && (
               <button
                 onClick={() => handlePlanChange(null)}
-                className="h-12 w-12 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all shrink-0"
+                className="h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all shrink-0"
                 title="Cambiar Plan"
               >
-                <ArrowLeft size={20} />
+                <ArrowLeft size={18} />
               </button>
             )}
             <div>
-              <div className="flex items-center gap-3 mb-2 flex-wrap">
-                <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/30">Universidad Nacional de La Plata</span>
-                <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-                <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-red-500/80">Jursoc</span>
+              <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2 flex-wrap">
+                <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/30">Universidad Nacional de La Plata</span>
+                <span className="h-1 w-1 rounded-full bg-white/20" />
+                <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-red-500/80">Jursoc</span>
               </div>
-              <h1 className="font-serif text-4xl md:text-5xl font-bold text-white tracking-tight leading-none">
-                Abogacía <span className="text-white/20 font-sans text-xl md:text-2xl font-light">({planId === "plan6" ? "Plan 6" : "Plan 5"})</span>
+              <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-none">
+                Abogacía <span className="text-white/20 font-sans text-base sm:text-xl md:text-2xl font-light">({planId === "plan6" ? "Plan 6" : "Plan 5"})</span>
               </h1>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-6">
-            <StatPill value={parseFloat(average) > 0 ? average : "-"} label="Promedio" colorClass="text-amber-400" />
-            <StatPill value={stats.aprobadas} label="Aprobadas" colorClass="text-emerald-400" />
-            <StatPill value={stats.habilitadas} label="Habilitadas" colorClass="text-red-400" />
-            <div className="w-56">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-6 w-full md:w-auto">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <StatPill value={parseFloat(average) > 0 ? average : "-"} label="Promedio" colorClass="text-amber-400" />
+              <StatPill value={stats.aprobadas} label="Aprobadas" colorClass="text-emerald-400" />
+              <StatPill value={stats.habilitadas} label="Habilitadas" colorClass="text-red-400" />
+            </div>
+            <div className="w-full sm:w-56">
               <ProgressBar value={stats.pct} label="Plan Completado" />
             </div>
             <button
               onClick={() => setFocusMode(!isFocusMode)}
-              className="h-12 px-6 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white hover:border-white/20 transition-all flex items-center gap-2"
+              className="h-10 sm:h-12 px-4 sm:px-6 rounded-xl bg-white/5 border border-white/10 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white hover:border-white/20 transition-all flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               {isFocusMode ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               {isFocusMode ? "Vista Normal" : "Modo Foco"}
