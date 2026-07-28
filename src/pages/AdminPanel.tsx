@@ -5,15 +5,21 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Loader2, Trash2, Search, UserMinus, UserCheck, Mail, ShieldAlert } from "lucide-react";
+import { 
+  Loader2, Trash2, Search, UserMinus, UserCheck, Mail, ShieldAlert, 
+  Users, Repeat, Trophy, Sparkles, TrendingUp, ShieldCheck, Activity, GraduationCap 
+} from "lucide-react";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
   const [permutas, setPermutas] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [appSettings, setAppSettings] = useState<{ id: number; permutero_activo: boolean; modo_mantenimiento: boolean } | null>(null);
+  const [totalPartidasCount, setTotalPartidasCount] = useState<number>(0);
+  const [totalDuelosCount, setTotalDuelosCount] = useState<number>(0);
   
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -41,16 +47,22 @@ export default function AdminPanel() {
       const [
         { data: perms }, 
         { data: profs }, 
-        { data: settings }
+        { data: settings },
+        { count: partidasCount },
+        { count: duelosCount }
       ] = await Promise.all([
         supabase.from("permutas").select("*, materias(nombre)").order("created_at", { ascending: false }),
         supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-        supabase.from("app_settings").select("*").eq("id", 1).single()
+        supabase.from("app_settings").select("*").eq("id", 1).single(),
+        supabase.from("trivia_partidas").select("*", { count: "exact", head: true }),
+        supabase.from("trivia_duelos").select("*", { count: "exact", head: true })
       ]);
 
       setPermutas(perms || []);
       setProfiles(profs || []);
       setAppSettings(settings || { id: 1, permutero_activo: true, modo_mantenimiento: false });
+      setTotalPartidasCount(partidasCount || 0);
+      setTotalDuelosCount(duelosCount || 0);
     } catch (err) {
       console.error("Error loading admin data:", err);
       toast.error("Error al cargar datos del panel.");
@@ -147,7 +159,7 @@ export default function AdminPanel() {
       const userProfile = profiles.find(prof => prof.id === p.user_id);
       const userMatch = !searchUser || 
         userProfile?.full_name?.toLowerCase().includes(searchUser.toLowerCase()) ||
-        userProfile?.email?.toLowerCase().includes(searchUser.toLowerCase()); // Note: profiles might not have email, auth meta does
+        userProfile?.email?.toLowerCase().includes(searchUser.toLowerCase());
       return materiaMatch && userMatch;
     });
   }, [permutas, profiles, searchMateria, searchUser]);
@@ -169,15 +181,138 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="container py-12 max-w-6xl">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-3 bg-primary/10 rounded-2xl text-primary">
-          <ShieldAlert size={32} />
+    <div className="container py-8 max-w-6xl space-y-8">
+      {/* CABECERA OFICIAL */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        <div className="flex items-center gap-3.5">
+          <div className="p-3.5 bg-gradient-to-br from-[#0A1C3D] to-red-600/30 rounded-2xl border border-red-500/40 text-red-400 shadow-xl">
+            <ShieldAlert size={28} />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+              <span>Panel de Administración</span>
+              <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">Oficial</span>
+            </h1>
+            <p className="text-xs text-slate-400">Métricas en tiempo real, control de usuarios, permutas y configuración del sistema DND.</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Panel de Administración</h1>
-          <p className="text-muted-foreground">Control de integridad, usuarios y permutas.</p>
+
+        <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#0D1527] border border-white/15 text-xs text-slate-300 font-mono">
+          <Sparkles className="w-4 h-4 text-amber-400" />
+          <span>FCJyS • UNLP</span>
         </div>
+      </div>
+
+      {/* SECCIÓN MÉTRICAS DESTACADAS Y PUBLICABLES PARA SCREENSHOTS / REDES */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* TARJETA 1: ESTUDIANTES REGISTRADOS */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-br from-[#0A1C3D] via-[#0D1527] to-[#1F0B12]/80 border border-red-500/50 shadow-2xl space-y-3 group backdrop-blur-xl"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-12 h-12 rounded-2xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400 shadow-inner">
+              <Users className="w-6 h-6" />
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 font-mono font-black text-[10px] uppercase tracking-wider border border-red-500/40 flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" />
+              <span>Crecimiento</span>
+            </span>
+          </div>
+
+          <div>
+            <span className="text-4xl md:text-5xl font-black text-white tracking-tight font-mono">
+              {profiles.length}
+            </span>
+            <h3 className="text-sm font-black text-slate-200 mt-1 flex items-center gap-1.5">
+              <span>Estudiantes Registrados</span>
+            </h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">Cuentas creadas en la facultad</p>
+          </div>
+        </motion.div>
+
+        {/* TARJETA 2: PERMUTAS PUBLICADAS */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.05 }}
+          className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-br from-[#0D1527] via-[#0A1C3D]/60 to-slate-950 border border-blue-500/40 shadow-2xl space-y-3 group backdrop-blur-xl"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+              <Repeat className="w-6 h-6" />
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 font-mono font-black text-[10px] uppercase tracking-wider border border-blue-500/40">
+              Permutero
+            </span>
+          </div>
+
+          <div>
+            <span className="text-4xl md:text-5xl font-black text-white tracking-tight font-mono">
+              {permutas.length}
+            </span>
+            <h3 className="text-sm font-black text-slate-200 mt-1">
+              Permutas Publicadas
+            </h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">Intercambios académicos creados</p>
+          </div>
+        </motion.div>
+
+        {/* TARJETA 3: TRIVIA Y DUELOS JUGADOS */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-br from-[#0D1527] via-[#0A1C3D]/60 to-slate-950 border border-amber-500/40 shadow-2xl space-y-3 group backdrop-blur-xl"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <Trophy className="w-6 h-6" />
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono font-black text-[10px] uppercase tracking-wider border border-amber-500/40">
+              Trivia 1v1
+            </span>
+          </div>
+
+          <div>
+            <span className="text-4xl md:text-5xl font-black text-white tracking-tight font-mono">
+              {totalPartidasCount + totalDuelosCount}
+            </span>
+            <h3 className="text-sm font-black text-slate-200 mt-1">
+              Partidas & Duelos Jugados
+            </h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">Evaluaciones tomadas por alumnos</p>
+          </div>
+        </motion.div>
+
+        {/* TARJETA 4: ESTADO DEL SISTEMA */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.15 }}
+          className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-br from-[#0D1527] via-[#0A1C3D]/60 to-slate-950 border border-emerald-500/40 shadow-2xl space-y-3 group backdrop-blur-xl"
+        >
+          <div className="flex items-center justify-between">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+              <Activity className="w-6 h-6" />
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-black text-[10px] uppercase tracking-wider border border-emerald-500/40">
+              Activo
+            </span>
+          </div>
+
+          <div>
+            <span className="text-3xl md:text-4xl font-black text-emerald-400 tracking-tight">
+              100% Online
+            </span>
+            <h3 className="text-sm font-black text-slate-200 mt-1">
+              Servicio Operativo
+            </h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">Sistemas e integración Supabase</p>
+          </div>
+        </motion.div>
       </div>
 
       <Tabs defaultValue="general" className="space-y-8">
