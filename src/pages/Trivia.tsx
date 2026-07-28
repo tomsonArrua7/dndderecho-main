@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Trophy, 
   Timer, 
@@ -45,7 +46,8 @@ import {
   Shield,
   Leaf,
   Zap,
-  Plus
+  Plus,
+  RefreshCw
 } from "lucide-react";
 import { 
   TRIVIA_QUESTIONS, 
@@ -95,43 +97,24 @@ export default function Trivia() {
   // Filtro de Año de Carrera: 0 = Toda la Carrera, 1 = 1º Año, 2 = 2º Año, 3 = 3º Año, 4 = 4º Año, 5 = 5º Año
   const [selectedYearFilter, setSelectedYearFilter] = useState<number>(0);
   
-  // Estado de Duelos 1v1
-  const [duelosList, setDuelosList] = useState<DueloTrivia[]>(() => {
-    try {
-      const saved = localStorage.getItem("dnd_duelos_list");
-      return saved ? JSON.parse(saved) : [
-        {
-          id: "DND-829",
-          esPublico: true,
-          materiaId: "todas",
-          materiaNombre: "Toda la Carrera",
-          preguntasIds: [],
-          player1Id: "p1_mock",
-          player1Nombre: "Dr. Gonzalo Arrua",
-          player1Aciertos: 5,
-          player1TiempoMs: 14000,
-          player1Puntos: 120,
-          player1Completed: true,
-          status: "esperando_rival",
-          createdAt: "Hoy 17:30"
-        }
-      ];
-    } catch {
-      return [];
-    }
-  });
-
+  // Estado de Duelos 1v1 conectados a Supabase
+  const [duelosList, setDuelosList] = useState<DueloTrivia[]>([]);
+  const [loadingDuelos, setLoadingDuelos] = useState(false);
   const [inputCodigoDuelo, setInputCodigoDuelo] = useState("");
   const [createdDueloModal, setCreatedDueloModal] = useState<DueloTrivia | null>(null);
-  const [dueloFilterTab, setDueloFilterTab] = useState<"publicas" | "mis_duelos">("publicas");
+  const [activeDuelRoom, setActiveDuelRoom] = useState<DueloTrivia | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+
+  // Ranking conectado a Supabase
+  const [leaderboardList, setLeaderboardList] = useState<LeaderboardEntry[]>([]);
+  const [loadingRanking, setLoadingRanking] = useState(false);
 
   // Filtros de juego Solo
   const [selectedCategoria, setSelectedCategoria] = useState<string>("todas");
   const [selectedDificultad, setSelectedDificultad] = useState<string>("todas");
   const [questionsCount, setQuestionsCount] = useState<number>(5);
 
-  // Estado del juego solo
+  // Estado del juego solo / duelo
   const [inGame, setInGame] = useState(false);
   const [questionsPool, setQuestionsPool] = useState<TriviaQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -146,7 +129,7 @@ export default function Trivia() {
   const [timeLeft, setTimeLeft] = useState(15);
   const [gameOver, setGameOver] = useState(false);
 
-  // Estadísticas del usuario acumuladas
+  // Estadísticas del usuario acumuladas (sincronizadas con DB / LocalStorage)
   const [userStats, setUserStats] = useState<{
     totalJugadas: number;
     totalCorrectas: number;
@@ -155,9 +138,9 @@ export default function Trivia() {
   }>(() => {
     try {
       const saved = localStorage.getItem(`dnd_trivia_user_stats`);
-      return saved ? JSON.parse(saved) : { totalJugadas: 6, totalCorrectas: 28, puntosTotales: 863, mejorRacha: 8 };
+      return saved ? JSON.parse(saved) : { totalJugadas: 0, totalCorrectas: 0, puntosTotales: 0, mejorRacha: 0 };
     } catch {
-      return { totalJugadas: 6, totalCorrectas: 28, puntosTotales: 863, mejorRacha: 8 };
+      return { totalJugadas: 0, totalCorrectas: 0, puntosTotales: 0, mejorRacha: 0 };
     }
   });
 
@@ -171,16 +154,129 @@ export default function Trivia() {
     ? Math.min(100, Math.round(((userStats.puntosTotales - rangoActual.minPuntos) / (proximoRango.minPuntos - rangoActual.minPuntos)) * 100))
     : 100;
 
-  // Persistir duelos
-  useEffect(() => {
+  // 1. Cargar Estadísticas del usuario desde Supabase
+  const fetchUserStatsFromSupabase = async () => {
+    if (!user) return;
     try {
-      localStorage.setItem("dnd_duelos_list", JSON.stringify(duelosList));
-    } catch {
-      // Ignorar
-    }
-  }, [duelosList]);
+      const { data, error } = await supabase
+        .from("trivia_estadisticas_usuario")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
 
-  // Persistir stats
+      if (data && !error) {
+        setUserStats({
+          totalJugadas: data.partidas_jugadas || 0,
+          totalCorrectas: data.total_aciertos || 0,
+          puntosTotales: data.puntos_totales || 0,
+          mejorRacha: data.mejor_racha || 0,
+        });
+      }
+    } catch (err) {
+      console.error("Error cargando estadísticas desde Supabase:", err);
+    }
+  };
+
+  // 2. Cargar Ranking / Leaderboard General Real desde Supabase DB
+  const fetchRankingFromSupabase = async () => {
+    setLoadingRanking(true);
+    try {
+      const { data, error } = await supabase
+        .from("trivia_leaderboard")
+        .select("*")
+        .order("puntos", { ascending: false })
+        .limit(50);
+
+      if (data && !error && data.length > 0) {
+        const formatted: LeaderboardEntry[] = data.map((row: any, idx: number) => ({
+          id: row.user_id,
+          posicion: row.posicion || idx + 1,
+          nombre: row.nombre || "Estudiante de Abogacía",
+          facultad: "FCJyS - UNLP",
+          materiaFav: row.materia_fav || "Toda la Carrera",
+          puntos: row.puntos || 0,
+          aciertosPorcentaje: row.aciertos_porcentaje || 0,
+          racha: row.racha || 0,
+          avatarUrl: row.avatar_url || undefined,
+          rangoNombre: calcularRango(row.puntos || 0).nombre
+        }));
+        setLeaderboardList(formatted);
+      } else {
+        setLeaderboardList([]);
+      }
+    } catch (err) {
+      console.error("Error al obtener ranking en Supabase:", err);
+    } finally {
+      setLoadingRanking(false);
+    }
+  };
+
+  // 3. Cargar Salas de Duelo 1vs1 desde Supabase DB
+  const fetchDuelosFromSupabase = async () => {
+    setLoadingDuelos(true);
+    try {
+      const { data, error } = await supabase
+        .from("trivia_duelos")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (data && !error) {
+        const mapped: DueloTrivia[] = data.map((d: any) => ({
+          id: d.id,
+          esPublico: d.es_publico,
+          materiaId: d.materia_id,
+          materiaNombre: d.materia_nombre,
+          preguntasIds: Array.isArray(d.preguntas_ids) ? d.preguntas_ids : [],
+          player1Id: d.player1_id || "p1_anon",
+          player1Nombre: d.player1_nombre,
+          player1Aciertos: d.player1_aciertos || 0,
+          player1TiempoMs: d.player1_tiempo_ms || 0,
+          player1Puntos: d.player1_puntos || 0,
+          player1Completed: d.player1_completed || false,
+          player2Id: d.player2_id || undefined,
+          player2Nombre: d.player2_nombre || undefined,
+          player2Aciertos: d.player2_aciertos || 0,
+          player2TiempoMs: d.player2_tiempo_ms || 0,
+          player2Puntos: d.player2_puntos || 0,
+          player2Completed: d.player2_completed || false,
+          ganadorId: d.ganador_id || undefined,
+          status: d.status || "esperando_rival",
+          createdAt: d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Reciente"
+        }));
+        setDuelosList(mapped);
+      }
+    } catch (err) {
+      console.error("Error al obtener duelos de Supabase:", err);
+    } finally {
+      setLoadingDuelos(false);
+    }
+  };
+
+  // Escuchar cambios de autenticación y suscribirse a Realtime de Duelos
+  useEffect(() => {
+    fetchUserStatsFromSupabase();
+    fetchDuelosFromSupabase();
+    fetchRankingFromSupabase();
+
+    // Suscripción Realtime para actualización en tiempo real de salas de duelo
+    const channel = supabase
+      .channel("public:trivia_duelos")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trivia_duelos" },
+        () => {
+          fetchDuelosFromSupabase();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
+  // Persistir stats localmente como fallback
   useEffect(() => {
     try {
       localStorage.setItem("dnd_trivia_user_stats", JSON.stringify(userStats));
@@ -209,6 +305,7 @@ export default function Trivia() {
 
   // Iniciar Trivia Solo
   const handleStartGame = () => {
+    setActiveDuelRoom(null);
     let pool = [...TRIVIA_QUESTIONS];
 
     if (selectedCategoria !== "todas") {
@@ -239,17 +336,46 @@ export default function Trivia() {
     setInGame(true);
   };
 
-  // Crear Duelo 1vs1
-  const handleCreateDuelo = (esPublico: boolean) => {
+  // Crear Duelo 1vs1 en Supabase
+  const handleCreateDuelo = async (esPublico: boolean) => {
     const randomCode = `DND-${Math.floor(100 + Math.random() * 900)}`;
     const cat = CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria) || CATEGORIAS_TRIVIA[0];
 
-    const nuevoDuelo: DueloTrivia = {
+    let pool = TRIVIA_QUESTIONS;
+    if (cat.id !== "todas") {
+      pool = pool.filter(q => q.id_categoria === cat.id);
+    }
+    if (pool.length < 5) pool = TRIVIA_QUESTIONS;
+    const selectedQIds = [...pool].sort(() => 0.5 - Math.random()).slice(0, 5).map(q => q.id);
+
+    const dbRow = {
+      id: randomCode,
+      es_publico: esPublico,
+      materia_id: cat.id,
+      materia_nombre: cat.nombre,
+      preguntas_ids: selectedQIds,
+      player1_id: user?.id || null,
+      player1_nombre: userName,
+      player1_aciertos: 0,
+      player1_tiempo_ms: 0,
+      player1_puntos: 0,
+      player1_completed: false,
+      status: "esperando_rival"
+    };
+
+    try {
+      await supabase.from("trivia_duelos").insert(dbRow);
+      fetchDuelosFromSupabase();
+    } catch (err) {
+      console.error("Error al crear duelo en Supabase:", err);
+    }
+
+    const nuevoDueloFrontend: DueloTrivia = {
       id: randomCode,
       esPublico,
       materiaId: cat.id,
       materiaNombre: cat.nombre,
-      preguntasIds: TRIVIA_QUESTIONS.slice(0, 5).map(q => q.id),
+      preguntasIds: selectedQIds,
       player1Id: user?.id || "p1_anon",
       player1Nombre: userName,
       player1Aciertos: 0,
@@ -260,8 +386,47 @@ export default function Trivia() {
       createdAt: "Recién creado"
     };
 
-    setDuelosList(prev => [nuevoDuelo, ...prev]);
-    setCreatedDueloModal(nuevoDuelo);
+    setCreatedDueloModal(nuevoDueloFrontend);
+  };
+
+  // Unirse a un Duelo 1vs1 (por código o lista)
+  const handleJoinDuelo = async (duelo: DueloTrivia) => {
+    setActiveDuelRoom(duelo);
+
+    // Obtener preguntas seleccionadas de la sala
+    let duelQuestions = TRIVIA_QUESTIONS.filter(q => duelo.preguntasIds.includes(q.id));
+    if (duelQuestions.length === 0) {
+      duelQuestions = TRIVIA_QUESTIONS.slice(0, 5);
+    }
+
+    // Si entra como Rival (Jugador 2)
+    if (duelo.player1Id !== user?.id && !duelo.player2Id) {
+      try {
+        await supabase
+          .from("trivia_duelos")
+          .update({
+            player2_id: user?.id || null,
+            player2_nombre: userName,
+            status: "en_curso"
+          })
+          .eq("id", duelo.id);
+        fetchDuelosFromSupabase();
+      } catch (err) {
+        console.error("Error al unirse al duelo en Supabase:", err);
+      }
+    }
+
+    setQuestionsPool(duelQuestions);
+    setCurrentIndex(0);
+    setScore(0);
+    setStreak(0);
+    setMaxStreak(0);
+    setCorrectAnswersCount(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setGameOver(false);
+    setTimeLeft(15);
+    setInGame(true);
   };
 
   const handleAnswer = (optionIdx: number) => {
@@ -302,14 +467,52 @@ export default function Trivia() {
     }
   };
 
-  const finishGame = () => {
+  const finishGame = async () => {
     setGameOver(true);
-    setUserStats(prev => ({
-      totalJugadas: prev.totalJugadas + 1,
-      totalCorrectas: prev.totalCorrectas + correctAnswersCount,
-      puntosTotales: prev.puntosTotales + score,
-      mejorRacha: Math.max(prev.mejorRacha, maxStreak)
-    }));
+
+    const newStats = {
+      totalJugadas: userStats.totalJugadas + 1,
+      totalCorrectas: userStats.totalCorrectas + correctAnswersCount,
+      puntosTotales: userStats.puntosTotales + score,
+      mejorRacha: Math.max(userStats.mejorRacha, maxStreak)
+    };
+
+    setUserStats(newStats);
+
+    // Si el usuario está autenticado, registrar la partida en Supabase
+    if (user) {
+      try {
+        await supabase.from("trivia_partidas").insert({
+          user_id: user.id,
+          categoria_id: selectedCategoria,
+          dificultad: selectedDificultad,
+          puntos: score,
+          aciertos: correctAnswersCount,
+          total_preguntas: questionsPool.length,
+          racha_maxima: maxStreak
+        });
+
+        fetchRankingFromSupabase();
+        fetchUserStatsFromSupabase();
+      } catch (err) {
+        console.error("Error al registrar la partida en Supabase:", err);
+      }
+    }
+
+    // Si la partida pertenecía a un duelo 1v1
+    if (activeDuelRoom) {
+      try {
+        const isPlayer1 = activeDuelRoom.player1Id === user?.id || activeDuelRoom.player1Nombre === userName;
+        const updateData = isPlayer1
+          ? { player1_aciertos: correctAnswersCount, player1_puntos: score, player1_completed: true }
+          : { player2_aciertos: correctAnswersCount, player2_puntos: score, player2_completed: true };
+
+        await supabase.from("trivia_duelos").update(updateData).eq("id", activeDuelRoom.id);
+        fetchDuelosFromSupabase();
+      } catch (err) {
+        console.error("Error al actualizar sala de duelo en Supabase:", err);
+      }
+    }
   };
 
   const getQuestionCountForCategory = (catId: string) => {
@@ -803,7 +1006,7 @@ export default function Trivia() {
                 <button
                   onClick={() => {
                     const match = duelosList.find(d => d.id === inputCodigoDuelo);
-                    if (match) handleStartGame();
+                    if (match) handleJoinDuelo(match);
                   }}
                   className="px-4 py-2.5 rounded-xl bg-[#0A1C3D] hover:bg-[#0F2A5C] text-white font-black text-xs uppercase cursor-pointer shrink-0"
                 >
@@ -812,11 +1015,25 @@ export default function Trivia() {
               </div>
             </div>
 
-            {/* LISTA DE SALAS DISPONIBLES */}
+            {/* LISTA DE SALAS DISPONIBLES DE SUPABASE */}
             <div className="space-y-3">
-              <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Salas Públicas en Espera:</h4>
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Salas Públicas en Espera:</h4>
+                <button 
+                  onClick={fetchDuelosFromSupabase}
+                  className="flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  <RefreshCw className={cn("w-3 h-3", loadingDuelos && "animate-spin")} />
+                  <span>Actualizar</span>
+                </button>
+              </div>
+
               {duelosList.length === 0 ? (
-                <p className="text-xs text-slate-500 italic py-4">No hay salas de duelo públicas en espera. ¡Creá una nueva!</p>
+                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
+                  <Swords className="w-8 h-8 mx-auto text-red-500 opacity-60" />
+                  <p className="text-xs text-slate-400">No hay salas de duelo públicas en espera actualmente en la base de datos.</p>
+                  <p className="text-[11px] text-slate-500 font-bold">¡Hacé click en "Crear Sala Pública" para desafiar a colegas en tiempo real!</p>
+                </div>
               ) : (
                 <div className="space-y-2.5">
                   {duelosList.map((duelo) => {
@@ -829,7 +1046,7 @@ export default function Trivia() {
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500/20 text-red-300 border border-red-500/30 font-mono">
                               {duelo.id}
                             </span>
                             <span className="text-xs font-black text-white">{duelo.materiaNombre}</span>
@@ -843,17 +1060,16 @@ export default function Trivia() {
                               ⏳ Tu Sala (Esperando Rival)
                             </span>
                             <button
-                              onClick={() => setDuelosList(prev => prev.filter(d => d.id !== duelo.id))}
-                              className="p-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs font-bold transition-all cursor-pointer"
-                              title="Eliminar Sala"
+                              onClick={() => handleJoinDuelo(duelo)}
+                              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              Entrar a tu Sala
                             </button>
                           </div>
                         ) : (
                           <button
-                            onClick={handleStartGame}
-                            className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase cursor-pointer"
+                            onClick={() => handleJoinDuelo(duelo)}
+                            className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase cursor-pointer shadow-lg"
                           >
                             Aceptar Duelo 1v1
                           </button>
@@ -867,20 +1083,30 @@ export default function Trivia() {
           </div>
         )}
 
-        {/* PESTAÑA 3: RANKING GENERAL ÚNICO */}
+        {/* PESTAÑA 3: RANKING GENERAL ÚNICO DE SUPABASE */}
         {activeTab === "ranking" && (
           <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
-            <div className="space-y-1 border-b border-white/10 pb-4">
-              <h3 className="text-xl font-black text-white flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-yellow-400" />
-                <span>Tabla del Ranking General Único</span>
-              </h3>
-              <p className="text-xs text-slate-400">Ordenado por puntaje histórico acumulado de usuarios reales.</p>
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div>
+                <h3 className="text-xl font-black text-white flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-yellow-400" />
+                  <span>Tabla del Ranking General Único</span>
+                </h3>
+                <p className="text-xs text-slate-400">Puntajes acumulados y sincronizados en tiempo real con la base de datos de usuarios.</p>
+              </div>
+
+              <button
+                onClick={fetchRankingFromSupabase}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-slate-300 transition-all cursor-pointer"
+              >
+                <RefreshCw className={cn("w-3.5 h-3.5", loadingRanking && "animate-spin")} />
+                <span>Actualizar Tabla</span>
+              </button>
             </div>
 
             <div className="space-y-2.5">
               {/* USUARIO ACTUAL EN RANKING */}
-              <div className="p-4 rounded-2xl bg-[#0A1C3D]/40 border border-[#0F2A5C] flex items-center justify-between gap-4 shadow-lg">
+              <div className="p-4 rounded-2xl bg-[#0A1C3D]/60 border border-red-500/50 flex items-center justify-between gap-4 shadow-xl">
                 <div className="flex items-center gap-3">
                   <span className="w-8 h-8 rounded-xl bg-red-600 text-white font-black text-sm flex items-center justify-center font-mono">
                     #1
@@ -888,7 +1114,7 @@ export default function Trivia() {
                   <div>
                     <h4 className="font-black text-sm text-white flex items-center gap-1.5">
                       <span>{userName}</span>
-                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">(Tú)</span>
+                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">(Tú)</span>
                     </h4>
                     <p className="text-[11px] text-blue-300 font-bold">{rangoActual.nombre}</p>
                   </div>
@@ -900,16 +1126,105 @@ export default function Trivia() {
                 </div>
               </div>
 
-              {MOCK_LEADERBOARD.length === 0 && (
+              {/* LISTA REAL DE JUGADORES EN BASE DE DATOS */}
+              {leaderboardList.length > 0 ? (
+                <div className="space-y-2 pt-2">
+                  {leaderboardList.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className={cn(
+                        "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
+                        entry.id === user?.id
+                          ? "bg-red-500/10 border-red-500/40 text-white"
+                          : "bg-white/[0.02] border-white/10 text-slate-300 hover:bg-white/[0.04]"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center font-mono border border-white/10">
+                          #{entry.posicion}
+                        </span>
+                        <div>
+                          <h5 className="font-bold text-sm text-white">{entry.nombre}</h5>
+                          <span className="text-[11px] text-slate-400">{entry.rangoNombre || "Ingresante"}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-sm font-black text-red-400 font-mono">{entry.puntos} PTS</span>
+                        <span className="text-[10px] text-slate-400 block font-mono">Precisión: {entry.aciertosPorcentaje}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
                 <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
                   <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
-                  <h4 className="font-black text-sm text-white">¡Encabezás el Ranking General Único!</h4>
-                  <p className="text-xs text-slate-400">Se han eliminado todos los perfiles ficticios. ¡Sumá más puntos en evaluaciones y duelos para defender tu posición!</p>
+                  <h4 className="font-black text-sm text-white">¡Liderás la Tabla de Posiciones!</h4>
+                  <p className="text-xs text-slate-400">A medida que más estudiantes jueguen evaluaciones y duelos, sus puntajes aparecerán automáticamente aquí.</p>
                 </div>
               )}
             </div>
           </div>
         )}
+
+        {/* MODAL SALA DE DUELO CREADA */}
+        <AnimatePresence>
+          {createdDueloModal && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="max-w-md w-full bg-[#0D1527] border border-red-500/40 rounded-3xl p-6 space-y-6 shadow-2xl relative text-center"
+              >
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400">
+                  <Swords className="w-8 h-8" />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-xl font-black text-white">¡Sala de Duelo Creada en la Base de Datos!</h3>
+                  <p className="text-xs text-slate-300">Compartí este código con tu rival o inicien la partida directamente:</p>
+                  
+                  <div className="py-3 px-4 bg-slate-950 rounded-2xl border border-red-500/40 font-mono text-2xl font-black text-red-400 tracking-widest flex items-center justify-center gap-3 my-2">
+                    <span>{createdDueloModal.id}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(createdDueloModal.id);
+                        setCopiedCode(true);
+                        setTimeout(() => setCopiedCode(false), 2000);
+                      }}
+                      className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 text-xs transition-all cursor-pointer"
+                      title="Copiar Código"
+                    >
+                      {copiedCode ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {copiedCode && <span className="text-[10px] text-emerald-400 font-bold block">¡Código copiado al portapapeles!</span>}
+                </div>
+
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    onClick={() => {
+                      const duel = createdDueloModal;
+                      setCreatedDueloModal(null);
+                      handleJoinDuelo(duel);
+                    }}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg cursor-pointer"
+                  >
+                    Iniciar Duelo Ahora
+                  </button>
+
+                  <button
+                    onClick={() => setCreatedDueloModal(null)}
+                    className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs uppercase cursor-pointer"
+                  >
+                    Cerrar y Esperar Rival
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* MODAL CON LA ESCALA DE LOS 12 RANGOS JURÍDICOS */}
         <AnimatePresence>
