@@ -1653,7 +1653,7 @@ export default function Trivia() {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-black text-white">¡Sala de Duelo Creada en la Base de Datos!</h3>
+                  <h3 className="text-xl font-black text-white">¡Sala de Duelo Creada Exitosamente!</h3>
                   <p className="text-xs text-slate-300">Compartí este código con tu rival o inicien la partida directamente:</p>
                   
                   <div className="py-3 px-4 bg-slate-950 rounded-2xl border border-red-500/40 font-mono text-2xl font-black text-red-400 tracking-widest flex items-center justify-center gap-3 my-2">
@@ -1728,7 +1728,7 @@ export default function Trivia() {
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     {duelOutcomeModal.resultado === "esperando_rival"
-                      ? "Tu puntaje ha sido guardado en la sala de Supabase. El resultado final del duelo se computará cuando tu rival complete las preguntas."
+                      ? "Tu puntaje ha sido guardado exitosamente. El resultado final del duelo se computará cuando tu rival complete las preguntas."
                       : `Enfrentamiento directo contra ${duelOutcomeModal.rivalNombre}`}
                   </p>
 
