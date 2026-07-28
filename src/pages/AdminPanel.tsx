@@ -204,7 +204,7 @@ export default function AdminPanel() {
       </div>
 
       {/* SECCIÓN MÉTRICAS DESTACADAS Y PUBLICABLES PARA SCREENSHOTS / REDES */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* TARJETA 1: ESTUDIANTES REGISTRADOS */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -229,7 +229,7 @@ export default function AdminPanel() {
             <h3 className="text-sm font-black text-slate-200 mt-1 flex items-center gap-1.5">
               <span>Estudiantes Registrados</span>
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">Cuentas creadas en la facultad</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Cuentas creadas en DND Jursoc</p>
           </div>
         </motion.div>
 
@@ -260,38 +260,11 @@ export default function AdminPanel() {
           </div>
         </motion.div>
 
-        {/* TARJETA 3: TRIVIA Y DUELOS JUGADOS */}
+        {/* TARJETA 3: ESTADO DEL SISTEMA */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-br from-[#0D1527] via-[#0A1C3D]/60 to-slate-950 border border-amber-500/40 shadow-2xl space-y-3 group backdrop-blur-xl"
-        >
-          <div className="flex items-center justify-between">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-              <Trophy className="w-6 h-6" />
-            </div>
-            <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono font-black text-[10px] uppercase tracking-wider border border-amber-500/40">
-              Trivia 1v1
-            </span>
-          </div>
-
-          <div>
-            <span className="text-4xl md:text-5xl font-black text-white tracking-tight font-mono">
-              {totalPartidasCount + totalDuelosCount}
-            </span>
-            <h3 className="text-sm font-black text-slate-200 mt-1">
-              Partidas & Duelos Jugados
-            </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">Evaluaciones tomadas por alumnos</p>
-          </div>
-        </motion.div>
-
-        {/* TARJETA 4: ESTADO DEL SISTEMA */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
           className="relative overflow-hidden p-6 rounded-3xl bg-gradient-to-br from-[#0D1527] via-[#0A1C3D]/60 to-slate-950 border border-emerald-500/40 shadow-2xl space-y-3 group backdrop-blur-xl"
         >
           <div className="flex items-center justify-between">
@@ -310,7 +283,7 @@ export default function AdminPanel() {
             <h3 className="text-sm font-black text-slate-200 mt-1">
               Servicio Operativo
             </h3>
-            <p className="text-[11px] text-slate-400 mt-0.5">Sistemas e integración Supabase</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Sistemas e Integración</p>
           </div>
         </motion.div>
       </div>
