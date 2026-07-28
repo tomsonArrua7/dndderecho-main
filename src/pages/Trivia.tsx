@@ -105,9 +105,24 @@ export default function Trivia() {
   const [activeDuelRoom, setActiveDuelRoom] = useState<DueloTrivia | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
 
-  // Ranking conectado a Supabase
+  // Ranking conectado a Supabase (General y Duelistas)
+  const [rankingSubTab, setRankingSubTab] = useState<"global" | "duelistas">("global");
   const [leaderboardList, setLeaderboardList] = useState<LeaderboardEntry[]>([]);
+  const [duelistasLeaderboardList, setDuelistasLeaderboardList] = useState<any[]>([]);
   const [loadingRanking, setLoadingRanking] = useState(false);
+
+  // Modal de resultado final de Duelo 1v1
+  const [duelOutcomeModal, setDuelOutcomeModal] = useState<{
+    resultado: "victoria" | "derrota" | "empate" | "esperando_rival";
+    puntosGanados: number;
+    rivalNombre: string;
+    p1Nombre: string;
+    p1Puntos: number;
+    p1Aciertos: number;
+    p2Nombre: string;
+    p2Puntos: number;
+    p2Aciertos: number;
+  } | null>(null);
 
   // Filtros de juego Solo
   const [selectedCategoria, setSelectedCategoria] = useState<string>("todas");
@@ -135,12 +150,34 @@ export default function Trivia() {
     totalCorrectas: number;
     puntosTotales: number;
     mejorRacha: number;
+    victoriasDuelo: number;
+    derrotasDuelo: number;
+    empatesDuelo: number;
+    puntosDuelista: number;
   }>(() => {
     try {
       const saved = localStorage.getItem(`dnd_trivia_user_stats`);
-      return saved ? JSON.parse(saved) : { totalJugadas: 0, totalCorrectas: 0, puntosTotales: 0, mejorRacha: 0 };
+      return saved ? JSON.parse(saved) : { 
+        totalJugadas: 0, 
+        totalCorrectas: 0, 
+        puntosTotales: 0, 
+        mejorRacha: 0,
+        victoriasDuelo: 0,
+        derrotasDuelo: 0,
+        empatesDuelo: 0,
+        puntosDuelista: 0
+      };
     } catch {
-      return { totalJugadas: 0, totalCorrectas: 0, puntosTotales: 0, mejorRacha: 0 };
+      return { 
+        totalJugadas: 0, 
+        totalCorrectas: 0, 
+        puntosTotales: 0, 
+        mejorRacha: 0,
+        victoriasDuelo: 0,
+        derrotasDuelo: 0,
+        empatesDuelo: 0,
+        puntosDuelista: 0
+      };
     }
   });
 
@@ -170,6 +207,10 @@ export default function Trivia() {
           totalCorrectas: data.total_aciertos || 0,
           puntosTotales: data.puntos_totales || 0,
           mejorRacha: data.mejor_racha || 0,
+          victoriasDuelo: data.victorias_duelo || 0,
+          derrotasDuelo: data.derrotas_duelo || 0,
+          empatesDuelo: data.empates_duelo || 0,
+          puntosDuelista: data.puntos_duelista || 0,
         });
       }
     } catch (err) {
@@ -181,6 +222,7 @@ export default function Trivia() {
   const fetchRankingFromSupabase = async () => {
     setLoadingRanking(true);
     try {
+      // General Ranking
       const { data, error } = await supabase
         .from("trivia_leaderboard")
         .select("*")
@@ -203,6 +245,19 @@ export default function Trivia() {
         setLeaderboardList(formatted);
       } else {
         setLeaderboardList([]);
+      }
+
+      // Ranking de Duelistas Exclusivo
+      const { data: duelData, error: duelError } = await supabase
+        .from("trivia_leaderboard_duelistas")
+        .select("*")
+        .order("puntos_duelista", { ascending: false })
+        .limit(50);
+
+      if (duelData && !duelError && duelData.length > 0) {
+        setDuelistasLeaderboardList(duelData);
+      } else {
+        setDuelistasLeaderboardList([]);
       }
     } catch (err) {
       console.error("Error al obtener ranking en Supabase:", err);
@@ -470,16 +525,13 @@ export default function Trivia() {
   const finishGame = async () => {
     setGameOver(true);
 
-    const newStats = {
-      totalJugadas: userStats.totalJugadas + 1,
-      totalCorrectas: userStats.totalCorrectas + correctAnswersCount,
-      puntosTotales: userStats.puntosTotales + score,
-      mejorRacha: Math.max(userStats.mejorRacha, maxStreak)
-    };
+    let updatedStats = { ...userStats };
+    updatedStats.totalJugadas += 1;
+    updatedStats.totalCorrectas += correctAnswersCount;
+    updatedStats.puntosTotales += score;
+    updatedStats.mejorRacha = Math.max(userStats.mejorRacha, maxStreak);
 
-    setUserStats(newStats);
-
-    // Si el usuario está autenticado, registrar la partida en Supabase
+    // Registrar partida individual en Supabase
     if (user) {
       try {
         await supabase.from("trivia_partidas").insert({
@@ -491,9 +543,6 @@ export default function Trivia() {
           total_preguntas: questionsPool.length,
           racha_maxima: maxStreak
         });
-
-        fetchRankingFromSupabase();
-        fetchUserStatsFromSupabase();
       } catch (err) {
         console.error("Error al registrar la partida en Supabase:", err);
       }
@@ -503,15 +552,105 @@ export default function Trivia() {
     if (activeDuelRoom) {
       try {
         const isPlayer1 = activeDuelRoom.player1Id === user?.id || activeDuelRoom.player1Nombre === userName;
+        
+        // Cargar estado actualizado de la sala desde Supabase
+        const { data: currentRoomData } = await supabase
+          .from("trivia_duelos")
+          .select("*")
+          .eq("id", activeDuelRoom.id)
+          .maybeSingle();
+
+        const room = currentRoomData || activeDuelRoom;
+        
+        const p1Score = isPlayer1 ? score : (room.player1_puntos || room.player1Puntos || 0);
+        const p1Aciertos = isPlayer1 ? correctAnswersCount : (room.player1_aciertos || room.player1Aciertos || 0);
+        const p1Done = isPlayer1 ? true : (room.player1_completed || room.player1Completed || false);
+
+        const p2Score = !isPlayer1 ? score : (room.player2_puntos || room.player2Puntos || 0);
+        const p2Aciertos = !isPlayer1 ? correctAnswersCount : (room.player2_aciertos || room.player2Aciertos || 0);
+        const p2Done = !isPlayer1 ? true : (room.player2_completed || room.player2Completed || false);
+        const p2Name = !isPlayer1 ? (room.player1_nombre || room.player1Nombre || "Rival") : (room.player2_nombre || room.player2Nombre || "Rival");
+
         const updateData = isPlayer1
           ? { player1_aciertos: correctAnswersCount, player1_puntos: score, player1_completed: true }
           : { player2_aciertos: correctAnswersCount, player2_puntos: score, player2_completed: true };
 
-        await supabase.from("trivia_duelos").update(updateData).eq("id", activeDuelRoom.id);
+        if (p1Done && p2Done) {
+          try {
+            await supabase.rpc('fn_procesar_resultado_duelo', {
+              p_duelo_id: activeDuelRoom.id,
+              p_player1_puntos: p1Score,
+              p_player1_aciertos: p1Aciertos,
+              p_player2_puntos: p2Score,
+              p_player2_aciertos: p2Aciertos
+            });
+          } catch {
+            await supabase.from("trivia_duelos").update({
+              ...updateData,
+              status: "finalizado",
+              ganador_id: p1Score > p2Score ? "player1" : (p2Score > p1Score ? "player2" : "empate")
+            }).eq("id", activeDuelRoom.id);
+          }
+
+          // Calcular resultado para mostrar en modal
+          let res: "victoria" | "derrota" | "empate" = "empate";
+          let ptsBonus = 25;
+
+          const myScore = isPlayer1 ? p1Score : p2Score;
+          const oppScore = isPlayer1 ? p2Score : p1Score;
+
+          if (myScore > oppScore) {
+            res = "victoria";
+            ptsBonus = 50;
+            updatedStats.victoriasDuelo += 1;
+          } else if (oppScore > myScore) {
+            res = "derrota";
+            ptsBonus = 10;
+            updatedStats.derrotasDuelo += 1;
+          } else {
+            res = "empate";
+            ptsBonus = 25;
+            updatedStats.empatesDuelo += 1;
+          }
+          updatedStats.puntosDuelista += ptsBonus;
+
+          setDuelOutcomeModal({
+            resultado: res,
+            puntosGanados: ptsBonus,
+            rivalNombre: p2Name,
+            p1Nombre: room.player1_nombre || room.player1Nombre || "Jugador 1",
+            p1Puntos: p1Score,
+            p1Aciertos: p1Aciertos,
+            p2Nombre: room.player2_nombre || room.player2Nombre || "Jugador 2",
+            p2Puntos: p2Score,
+            p2Aciertos: p2Aciertos
+          });
+        } else {
+          // Si el otro jugador aún no ha completado la sala
+          await supabase.from("trivia_duelos").update(updateData).eq("id", activeDuelRoom.id);
+          setDuelOutcomeModal({
+            resultado: "esperando_rival",
+            puntosGanados: 0,
+            rivalNombre: p2Name,
+            p1Nombre: room.player1_nombre || room.player1Nombre || "Jugador 1",
+            p1Puntos: p1Score,
+            p1Aciertos: p1Aciertos,
+            p2Nombre: room.player2_nombre || room.player2Nombre || "Esperando Rival...",
+            p2Puntos: p2Score,
+            p2Aciertos: p2Aciertos
+          });
+        }
+
         fetchDuelosFromSupabase();
       } catch (err) {
         console.error("Error al actualizar sala de duelo en Supabase:", err);
       }
+    }
+
+    setUserStats(updatedStats);
+    if (user) {
+      fetchRankingFromSupabase();
+      fetchUserStatsFromSupabase();
     }
   };
 
@@ -708,6 +847,9 @@ export default function Trivia() {
               <div className="text-right">
                 <span className="text-[9px] uppercase font-black text-slate-400 block">Puntos Acumulados</span>
                 <span className="text-2xl font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
+                <span className="text-[10px] text-amber-300 font-bold block">
+                  ⚔️ Duelista: {userStats.victoriasDuelo}V / {userStats.derrotasDuelo}D ({userStats.puntosDuelista} PTS)
+                </span>
               </div>
 
               <button
@@ -1083,87 +1225,186 @@ export default function Trivia() {
           </div>
         )}
 
-        {/* PESTAÑA 3: RANKING GENERAL ÚNICO DE SUPABASE */}
+        {/* PESTAÑA 3: RANKING GENERAL & RANKING DE DUELISTAS 1V1 */}
         {activeTab === "ranking" && (
           <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-xl font-black text-white flex items-center gap-2">
                   <Trophy className="w-5 h-5 text-yellow-400" />
-                  <span>Tabla del Ranking General Único</span>
+                  <span>Tablas de Ranking de la Facultad</span>
                 </h3>
-                <p className="text-xs text-slate-400">Puntajes acumulados y sincronizados en tiempo real con la base de datos de usuarios.</p>
+                <p className="text-xs text-slate-400">Posiciones calculadas en tiempo real con la base de datos de estudiantes reales.</p>
               </div>
 
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={fetchRankingFromSupabase}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-slate-300 transition-all cursor-pointer"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5", loadingRanking && "animate-spin")} />
+                  <span>Actualizar</span>
+                </button>
+              </div>
+            </div>
+
+            {/* SECTOR SUB-PESTAÑAS DE RANKING */}
+            <div className="flex items-center gap-2 p-1.5 bg-slate-950 rounded-2xl border border-white/10">
               <button
-                onClick={fetchRankingFromSupabase}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-slate-300 transition-all cursor-pointer"
+                onClick={() => setRankingSubTab("global")}
+                className={cn(
+                  "w-1/2 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer",
+                  rankingSubTab === "global"
+                    ? "bg-[#0A1C3D] text-white border border-red-500/40 shadow-lg"
+                    : "text-slate-400 hover:text-white"
+                )}
               >
-                <RefreshCw className={cn("w-3.5 h-3.5", loadingRanking && "animate-spin")} />
-                <span>Actualizar Tabla</span>
+                <Trophy className="w-4 h-4 text-yellow-400" />
+                <span>Ranking General Único</span>
+              </button>
+              <button
+                onClick={() => setRankingSubTab("duelistas")}
+                className={cn(
+                  "w-1/2 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer",
+                  rankingSubTab === "duelistas"
+                    ? "bg-[#0A1C3D] text-white border border-red-500/40 shadow-lg"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                <Swords className="w-4 h-4 text-red-400" />
+                <span>Ranking de Duelistas (1v1)</span>
               </button>
             </div>
 
-            <div className="space-y-2.5">
-              {/* USUARIO ACTUAL EN RANKING */}
-              <div className="p-4 rounded-2xl bg-[#0A1C3D]/60 border border-red-500/50 flex items-center justify-between gap-4 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-xl bg-red-600 text-white font-black text-sm flex items-center justify-center font-mono">
-                    #1
-                  </span>
-                  <div>
-                    <h4 className="font-black text-sm text-white flex items-center gap-1.5">
-                      <span>{userName}</span>
-                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">(Tú)</span>
-                    </h4>
-                    <p className="text-[11px] text-blue-300 font-bold">{rangoActual.nombre}</p>
+            {/* CONTENIDO RANKING GENERAL */}
+            {rankingSubTab === "global" && (
+              <div className="space-y-2.5">
+                {/* USUARIO ACTUAL EN RANKING GENERAL */}
+                <div className="p-4 rounded-2xl bg-[#0A1C3D]/60 border border-red-500/50 flex items-center justify-between gap-4 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-xl bg-red-600 text-white font-black text-sm flex items-center justify-center font-mono">
+                      #1
+                    </span>
+                    <div>
+                      <h4 className="font-black text-sm text-white flex items-center gap-1.5">
+                        <span>{userName}</span>
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">(Tú)</span>
+                      </h4>
+                      <p className="text-[11px] text-blue-300 font-bold">{rangoActual.nombre}</p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-base font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
+                    <span className="text-[10px] text-slate-400 block font-mono">Racha x{userStats.mejorRacha}</span>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <span className="text-base font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
-                  <span className="text-[10px] text-slate-400 block font-mono">Racha x{userStats.mejorRacha}</span>
-                </div>
-              </div>
+                {leaderboardList.length > 0 ? (
+                  <div className="space-y-2 pt-2">
+                    {leaderboardList.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className={cn(
+                          "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
+                          entry.id === user?.id
+                            ? "bg-red-500/10 border-red-500/40 text-white"
+                            : "bg-white/[0.02] border-white/10 text-slate-300 hover:bg-white/[0.04]"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center font-mono border border-white/10">
+                            #{entry.posicion}
+                          </span>
+                          <div>
+                            <h5 className="font-bold text-sm text-white">{entry.nombre}</h5>
+                            <span className="text-[11px] text-slate-400">{entry.rangoNombre || "Ingresante"}</span>
+                          </div>
+                        </div>
 
-              {/* LISTA REAL DE JUGADORES EN BASE DE DATOS */}
-              {leaderboardList.length > 0 ? (
-                <div className="space-y-2 pt-2">
-                  {leaderboardList.map((entry) => (
-                    <div
-                      key={entry.id}
-                      className={cn(
-                        "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
-                        entry.id === user?.id
-                          ? "bg-red-500/10 border-red-500/40 text-white"
-                          : "bg-white/[0.02] border-white/10 text-slate-300 hover:bg-white/[0.04]"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center font-mono border border-white/10">
-                          #{entry.posicion}
-                        </span>
-                        <div>
-                          <h5 className="font-bold text-sm text-white">{entry.nombre}</h5>
-                          <span className="text-[11px] text-slate-400">{entry.rangoNombre || "Ingresante"}</span>
+                        <div className="text-right">
+                          <span className="text-sm font-black text-red-400 font-mono">{entry.puntos} PTS</span>
+                          <span className="text-[10px] text-slate-400 block font-mono">Precisión: {entry.aciertosPorcentaje}%</span>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
+                    <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
+                    <h4 className="font-black text-sm text-white">¡Liderás la Tabla de Posiciones!</h4>
+                    <p className="text-xs text-slate-400">A medida que más estudiantes jueguen evaluaciones y duelos, sus puntajes aparecerán automáticamente aquí.</p>
+                  </div>
+                )}
+              </div>
+            )}
 
-                      <div className="text-right">
-                        <span className="text-sm font-black text-red-400 font-mono">{entry.puntos} PTS</span>
-                        <span className="text-[10px] text-slate-400 block font-mono">Precisión: {entry.aciertosPorcentaje}%</span>
-                      </div>
+            {/* CONTENIDO RANKING DE DUELISTAS 1V1 */}
+            {rankingSubTab === "duelistas" && (
+              <div className="space-y-2.5">
+                {/* MI RÉCORD EN DUELOS */}
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-red-950/40 via-[#0A1C3D]/60 to-slate-900 border border-red-500/50 flex items-center justify-between gap-4 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400">
+                      <Swords className="w-5 h-5" />
                     </div>
-                  ))}
+                    <div>
+                      <h4 className="font-black text-sm text-white flex items-center gap-1.5">
+                        <span>{userName}</span>
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">(Tu Récord 1v1)</span>
+                      </h4>
+                      <p className="text-[11px] text-slate-400">
+                        <span className="text-emerald-400 font-bold">{userStats.victoriasDuelo} Vict</span> • <span className="text-red-400 font-bold">{userStats.derrotasDuelo} Derr</span> • <span className="text-amber-400 font-bold">{userStats.empatesDuelo} Emp</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-base font-black text-amber-400 font-mono">{userStats.puntosDuelista} PTS</span>
+                    <span className="text-[10px] text-slate-400 block font-mono">Puntos Duelista</span>
+                  </div>
                 </div>
-              ) : (
-                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
-                  <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
-                  <h4 className="font-black text-sm text-white">¡Liderás la Tabla de Posiciones!</h4>
-                  <p className="text-xs text-slate-400">A medida que más estudiantes jueguen evaluaciones y duelos, sus puntajes aparecerán automáticamente aquí.</p>
-                </div>
-              )}
-            </div>
+
+                {duelistasLeaderboardList.length > 0 ? (
+                  <div className="space-y-2 pt-2">
+                    {duelistasLeaderboardList.map((entry, idx) => (
+                      <div
+                        key={entry.user_id || idx}
+                        className={cn(
+                          "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
+                          entry.user_id === user?.id
+                            ? "bg-red-500/10 border-red-500/40 text-white"
+                            : "bg-white/[0.02] border-white/10 text-slate-300 hover:bg-white/[0.04]"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center font-mono border border-white/10">
+                            #{entry.posicion || idx + 1}
+                          </span>
+                          <div>
+                            <h5 className="font-bold text-sm text-white">{entry.nombre}</h5>
+                            <span className="text-[11px] text-slate-400">
+                              <span className="text-emerald-400 font-bold">{entry.victorias || 0}V</span> - <span className="text-red-400 font-bold">{entry.derrotas || 0}D</span> - <span className="text-amber-400 font-bold">{entry.empates || 0}E</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-sm font-black text-amber-400 font-mono">{entry.puntos_duelista || 0} PTS</span>
+                          <span className="text-[10px] text-slate-400 block font-mono">Duelos 1v1</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
+                    <Swords className="w-8 h-8 mx-auto text-red-400 opacity-60" />
+                    <h4 className="font-black text-sm text-white">¡No hay duelistas registrados aún!</h4>
+                    <p className="text-xs text-slate-400">Completá duelos 1v1 en la pestaña de Salas para acumular victorias y liderar el Ranking de Duelistas.</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -1221,6 +1462,78 @@ export default function Trivia() {
                     Cerrar y Esperar Rival
                   </button>
                 </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* MODAL DE RESULTADO DE DUELO 1V1 */}
+        <AnimatePresence>
+          {duelOutcomeModal && (
+            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="max-w-md w-full bg-[#0D1527] border border-white/20 rounded-3xl p-6 space-y-6 shadow-2xl relative text-center"
+              >
+                <div className={cn(
+                  "w-16 h-16 mx-auto rounded-2xl flex items-center justify-center font-bold border shadow-xl",
+                  duelOutcomeModal.resultado === "victoria" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40" :
+                  duelOutcomeModal.resultado === "derrota" ? "bg-red-500/20 text-red-400 border-red-500/40" :
+                  "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                )}>
+                  {duelOutcomeModal.resultado === "victoria" && <Trophy className="w-8 h-8 animate-bounce text-amber-400" />}
+                  {duelOutcomeModal.resultado === "derrota" && <XCircle className="w-8 h-8 text-red-400" />}
+                  {duelOutcomeModal.resultado === "empate" && <Scale className="w-8 h-8 text-amber-400" />}
+                  {duelOutcomeModal.resultado === "esperando_rival" && <Timer className="w-8 h-8 text-blue-400 animate-spin" />}
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-xl font-black text-white">
+                    {duelOutcomeModal.resultado === "victoria" && "🏆 ¡VICTORIA EN EL DUELO 1V1!"}
+                    {duelOutcomeModal.resultado === "derrota" && "💔 DERROTA EN EL DUELO 1V1"}
+                    {duelOutcomeModal.resultado === "empate" && "🤝 ¡EMPATE ACADÉMICO!"}
+                    {duelOutcomeModal.resultado === "esperando_rival" && "⏳ PARTIDA REGISTRADA"}
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {duelOutcomeModal.resultado === "esperando_rival"
+                      ? "Tu puntaje ha sido guardado en la sala de Supabase. El resultado final del duelo se computará cuando tu rival complete las preguntas."
+                      : `Enfrentamiento directo contra ${duelOutcomeModal.rivalNombre}`}
+                  </p>
+
+                  {duelOutcomeModal.puntosGanados > 0 && (
+                    <span className="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 font-mono font-black text-xs border border-amber-500/40 my-1">
+                      +{duelOutcomeModal.puntosGanados} PTS Duelista Acumulados
+                    </span>
+                  )}
+                </div>
+
+                {/* COMPARATIVA DE PUNTAJES DE AMBOS PARTICIPANTES */}
+                <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 space-y-3">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Marcador del Duelo:</span>
+                  
+                  <div className="grid grid-cols-2 gap-3 text-left">
+                    <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 space-y-1">
+                      <span className="text-[11px] font-bold text-blue-300 block truncate">{duelOutcomeModal.p1Nombre}</span>
+                      <span className="text-base font-black text-white font-mono">{duelOutcomeModal.p1Puntos} PTS</span>
+                      <span className="text-[10px] text-slate-400 block">{duelOutcomeModal.p1Aciertos}/5 aciertos</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 space-y-1">
+                      <span className="text-[11px] font-bold text-red-300 block truncate">{duelOutcomeModal.p2Nombre}</span>
+                      <span className="text-base font-black text-white font-mono">{duelOutcomeModal.p2Puntos} PTS</span>
+                      <span className="text-[10px] text-slate-400 block">{duelOutcomeModal.p2Aciertos}/5 aciertos</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setDuelOutcomeModal(null)}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg cursor-pointer"
+                >
+                  Continuar al Menú
+                </button>
               </motion.div>
             </div>
           )}
