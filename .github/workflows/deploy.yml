@@ -37,6 +37,12 @@ jobs:
               fi
             fi
 
+            # Auto-run SQL enum update if DB container is running
+            DB_CONTAINER=$(docker ps -q -f name=db | head -n 1)
+            if [ -n "$DB_CONTAINER" ]; then
+              docker exec "$DB_CONTAINER" psql -U postgres -d postgres -c "ALTER TYPE public.tipo_evento ADD VALUE IF NOT EXISTS 'academico';" 2>/dev/null || true
+            fi
+
             echo "STEP 3: NPM BUILD" >> /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
             npm ci --prefer-offline 2>/dev/null || npm install
             npm run build

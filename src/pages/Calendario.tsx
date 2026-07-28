@@ -162,19 +162,47 @@ const Calendario = () => {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !titulo.trim() || !fecha) return;
+
+    let payloadTipo = tipo;
     const { error } = await supabase.from("eventos").insert({
       user_id: user.id,
       titulo: titulo.trim().slice(0, 120),
       descripcion: descripcion.trim().slice(0, 500) || null,
-      tipo,
+      tipo: payloadTipo,
       fecha: new Date(fecha).toISOString(),
       es_global: esGlobal && isAdminOrWriter,
     });
+
     if (error) {
+      // Fallback if Postgres remote enum tipo_evento doesn't have 'academico' yet
+      if (error.code === "22P02" && payloadTipo === "academico") {
+        const { error: retryError } = await supabase.from("eventos").insert({
+          user_id: user.id,
+          titulo: titulo.trim().slice(0, 120),
+          descripcion: descripcion.trim().slice(0, 500) || null,
+          tipo: "otro",
+          fecha: new Date(fecha).toISOString(),
+          es_global: esGlobal && isAdminOrWriter,
+        });
+
+        if (!retryError) {
+          toast.success("Evento agregado");
+          setTitulo("");
+          setDescripcion("");
+          setFecha("");
+          setTipo("parcial");
+          setEsGlobal(false);
+          setOpen(false);
+          fetchEventos();
+          return;
+        }
+      }
+
       console.error("Error saving event:", error);
-      toast.error("No se pudo guardar");
+      toast.error("No se pudo guardar: " + (error.message || error));
       return;
     }
+
     toast.success("Evento agregado");
     setTitulo("");
     setDescripcion("");
@@ -192,18 +220,38 @@ const Calendario = () => {
     // Almacenamos al mediodía local para evitar desfases de zona horaria al formatear
     const localDate = new Date(inlineFecha + "T12:00:00");
 
+    let payloadTipo = inlineTipo;
     const { error } = await supabase.from("eventos").insert({
       user_id: user.id,
       titulo: inlineTitulo.trim().slice(0, 120),
       descripcion: null,
-      tipo: inlineTipo,
+      tipo: payloadTipo,
       fecha: localDate.toISOString(),
       es_global: false,
     });
 
     if (error) {
+      if (error.code === "22P02" && payloadTipo === "academico") {
+        const { error: retryError } = await supabase.from("eventos").insert({
+          user_id: user.id,
+          titulo: inlineTitulo.trim().slice(0, 120),
+          descripcion: null,
+          tipo: "otro",
+          fecha: localDate.toISOString(),
+          es_global: false,
+        });
+
+        if (!retryError) {
+          toast.success("Fecha agregada");
+          setInlineTitulo("");
+          setInlineFecha("");
+          fetchEventos();
+          return;
+        }
+      }
+
       console.error("Error saving event:", error);
-      toast.error("No se pudo guardar");
+      toast.error("No se pudo guardar: " + (error.message || error));
       return;
     }
 
