@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
@@ -47,7 +47,8 @@ import {
   Leaf,
   Zap,
   Plus,
-  RefreshCw
+  RefreshCw,
+  Eye
 } from "lucide-react";
 import { 
   TRIVIA_QUESTIONS, 
@@ -86,6 +87,24 @@ const ICON_MAP: Record<string, any> = {
   Zap
 };
 
+// Función para desordenar aleatoriamente las 4 opciones de cada pregunta
+const prepareQuestionPool = (questions: TriviaQuestion[]): TriviaQuestion[] => {
+  return questions.map(q => {
+    const correctText = q.opciones[q.respuesta_correcta_index];
+    const shuffled = [...q.opciones];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    const newCorrectIndex = shuffled.indexOf(correctText);
+    return {
+      ...q,
+      opciones: shuffled,
+      respuesta_correcta_index: newCorrectIndex
+    };
+  });
+};
+
 export default function Trivia() {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
@@ -93,6 +112,7 @@ export default function Trivia() {
   // Pestañas Principales: "evaluacion" | "duelos" | "ranking"
   const [activeTab, setActiveTab] = useState<"evaluacion" | "duelos" | "ranking">("evaluacion");
   const [showRangosModal, setShowRangosModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   // Filtro de Año de Carrera: 0 = Toda la Carrera, 1 = 1º Año, 2 = 2º Año, 3 = 3º Año, 4 = 4º Año, 5 = 5º Año
   const [selectedYearFilter, setSelectedYearFilter] = useState<number>(0);
@@ -104,6 +124,11 @@ export default function Trivia() {
   const [createdDueloModal, setCreatedDueloModal] = useState<DueloTrivia | null>(null);
   const [activeDuelRoom, setActiveDuelRoom] = useState<DueloTrivia | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+
+  const activeDuelRoomRef = useRef<DueloTrivia | null>(null);
+  useEffect(() => {
+    activeDuelRoomRef.current = activeDuelRoom;
+  }, [activeDuelRoom]);
 
   // Ranking conectado a Supabase (General y Duelistas)
   const [rankingSubTab, setRankingSubTab] = useState<"global" | "duelistas">("global");
@@ -320,8 +345,56 @@ export default function Trivia() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "trivia_duelos" },
-        () => {
+        (payload: any) => {
           fetchDuelosFromSupabase();
+
+          // Sincronizar en tiempo real el modal si este jugador está esperando en una sala
+          const newRoom = payload.new;
+          if (newRoom && activeDuelRoomRef.current && activeDuelRoomRef.current.id === newRoom.id) {
+            const isPlayer1 = newRoom.player1_id === user?.id || newRoom.player1_nombre === userName;
+            const p1Score = newRoom.player1_puntos || 0;
+            const p1Aciertos = newRoom.player1_aciertos || 0;
+            const p2Score = newRoom.player2_puntos || 0;
+            const p2Aciertos = newRoom.player2_aciertos || 0;
+            const p1Done = newRoom.player1_completed;
+            const p2Done = newRoom.player2_completed;
+
+            if (p1Done && p2Done) {
+              const myScore = isPlayer1 ? p1Score : p2Score;
+              const oppScore = isPlayer1 ? p2Score : p1Score;
+              const p2Name = !isPlayer1 ? (newRoom.player1_nombre || "Rival") : (newRoom.player2_nombre || "Rival");
+
+              let res: "victoria" | "derrota" | "empate" = "empate";
+              let ptsBonus = 25;
+
+              if (myScore > oppScore) {
+                res = "victoria";
+                ptsBonus = 50;
+              } else if (oppScore > myScore) {
+                res = "derrota";
+                ptsBonus = 10;
+              } else {
+                res = "empate";
+                ptsBonus = 25;
+              }
+
+              // ACTUALIZAR MODAL DE RESULTADO EN VIVO
+              setDuelOutcomeModal({
+                resultado: res,
+                puntosGanados: ptsBonus,
+                rivalNombre: p2Name,
+                p1Nombre: newRoom.player1_nombre || "Jugador 1",
+                p1Puntos: p1Score,
+                p1Aciertos: p1Aciertos,
+                p2Nombre: newRoom.player2_nombre || "Jugador 2",
+                p2Puntos: p2Score,
+                p2Aciertos: p2Aciertos
+              });
+
+              fetchUserStatsFromSupabase();
+              fetchRankingFromSupabase();
+            }
+          }
         }
       )
       .subscribe();
@@ -358,7 +431,7 @@ export default function Trivia() {
     ? CATEGORIAS_TRIVIA
     : CATEGORIAS_TRIVIA.filter(cat => cat.anio === selectedYearFilter || cat.id === "todas");
 
-  // Iniciar Trivia Solo
+  // Iniciar Trivia Solo (con desorden de opciones aleatorio)
   const handleStartGame = () => {
     setActiveDuelRoom(null);
     let pool = [...TRIVIA_QUESTIONS];
@@ -378,7 +451,8 @@ export default function Trivia() {
     pool = pool.sort(() => 0.5 - Math.random());
     const finalPool = pool.slice(0, Math.min(questionsCount, pool.length));
 
-    setQuestionsPool(finalPool);
+    // Mezclar las 4 opciones de cada pregunta aleatoriamente
+    setQuestionsPool(prepareQuestionPool(finalPool));
     setCurrentIndex(0);
     setScore(0);
     setStreak(0);
@@ -471,7 +545,8 @@ export default function Trivia() {
       }
     }
 
-    setQuestionsPool(duelQuestions);
+    // Mezclar las 4 opciones de cada pregunta para este jugador
+    setQuestionsPool(prepareQuestionPool(duelQuestions));
     setCurrentIndex(0);
     setScore(0);
     setStreak(0);
@@ -1528,11 +1603,104 @@ export default function Trivia() {
                   </div>
                 </div>
 
+                <div className="flex flex-col gap-2 pt-2">
+                  <button
+                    onClick={() => {
+                      setDuelOutcomeModal(null);
+                      setShowReviewModal(true);
+                    }}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <BookOpenCheck className="w-4 h-4" />
+                    <span>Ver Respuestas y Fundamentos Normativos</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setDuelOutcomeModal(null);
+                      setInGame(false);
+                      setGameOver(false);
+                      setActiveDuelRoom(null);
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs uppercase cursor-pointer"
+                  >
+                    Volver al Menú Principal
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* MODAL DE REVISIÓN DE PREGUNTAS Y FUNDAMENTOS */}
+        <AnimatePresence>
+          {showReviewModal && (
+            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="max-w-2xl w-full bg-[#0D1527] border border-white/20 rounded-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto shadow-2xl relative"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="flex items-center gap-2">
+                    <BookOpenCheck className="w-6 h-6 text-red-400" />
+                    <h3 className="text-xl font-black text-white">Revisión de Preguntas y Fundamentos</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowReviewModal(false)}
+                    className="p-2 rounded-xl bg-white/10 text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {questionsPool.map((q, idx) => (
+                    <div key={q.id || idx} className="p-4 rounded-2xl bg-slate-950 border border-white/10 space-y-3">
+                      <span className="text-[10px] font-mono font-black text-red-400 uppercase block">Pregunta {idx + 1} • {q.categoria_nombre}</span>
+                      <h4 className="font-bold text-sm text-white">{q.pregunta}</h4>
+                      
+                      <div className="space-y-1.5 pl-1">
+                        {q.opciones.map((opc, opcIdx) => {
+                          const isCorrect = opcIdx === q.respuesta_correcta_index;
+                          return (
+                            <div
+                              key={opcIdx}
+                              className={cn(
+                                "p-2.5 rounded-xl text-xs flex items-center justify-between gap-2 border font-mono",
+                                isCorrect
+                                  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-200 font-bold"
+                                  : "bg-white/[0.02] border-white/5 text-slate-400"
+                              )}
+                            >
+                              <span>{String.fromCharCode(65 + opcIdx)}. {opc}</span>
+                              {isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#0A1C3D]/40 border border-[#0F2A5C]/50 text-xs space-y-1 text-slate-300">
+                        <span className="font-black uppercase text-[10px] text-blue-300 block flex items-center gap-1">
+                          ⚖️ Fundamento Jurídico:
+                        </span>
+                        <p className="leading-relaxed text-slate-300">{q.fundamento_juridico}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
                 <button
-                  onClick={() => setDuelOutcomeModal(null)}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg cursor-pointer"
+                  onClick={() => {
+                    setShowReviewModal(false);
+                    setInGame(false);
+                    setGameOver(false);
+                    setActiveDuelRoom(null);
+                  }}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider cursor-pointer shadow-lg"
                 >
-                  Continuar al Menú
+                  Volver al Menú Principal
                 </button>
               </motion.div>
             </div>
