@@ -1508,131 +1508,223 @@ export default function Trivia() {
 
             {/* CONTENIDO RANKING GENERAL */}
             {rankingSubTab === "global" && (
-              <div className="space-y-2.5">
-                {/* USUARIO ACTUAL EN RANKING GENERAL */}
-                <div className="p-4 rounded-2xl bg-[#0A1C3D]/60 border border-red-500/50 flex items-center justify-between gap-4 shadow-xl">
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-xl bg-red-600 text-white font-black text-sm flex items-center justify-center font-mono">
-                      #1
-                    </span>
-                    <div>
-                      <h4 className="font-black text-sm text-white flex items-center gap-1.5">
-                        <span>{userName}</span>
-                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">(Tú)</span>
-                      </h4>
-                      <p className="text-[11px] text-blue-300 font-bold">{rangoActual.nombre}</p>
-                    </div>
-                  </div>
+              <div className="space-y-4">
+                {/* WIDGET EXECUTIVE DE TU POSICIÓN OFICIAL */}
+                {(() => {
+                  const myEntry = leaderboardList.find(e => e.id === user?.id);
+                  const myPos = myEntry?.posicion || 1;
 
-                  <div className="text-right">
-                    <span className="text-base font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
-                    <span className="text-[10px] text-slate-400 block font-mono">Racha x{userStats.mejorRacha}</span>
-                  </div>
-                </div>
+                  return (
+                    <div className="p-5 rounded-2xl bg-gradient-to-r from-[#0A1C3D] via-[#0D1527] to-red-950/40 border-2 border-red-500/40 shadow-2xl space-y-3">
+                      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-red-300 flex items-center gap-1.5 font-mono">
+                          <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Tu Ficha de Rendimiento en la Facultad</span>
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-red-600/30 border border-red-500/40 text-[10px] font-black uppercase text-red-200">
+                          Tu Posición: #{myPos}
+                        </span>
+                      </div>
 
-                {leaderboardList.length > 0 ? (
-                  <div className="space-y-2 pt-2">
-                    {leaderboardList.map((entry) => (
-                      <div
-                        key={entry.id}
-                        className={cn(
-                          "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
-                          entry.id === user?.id
-                            ? "bg-red-500/10 border-red-500/40 text-white"
-                            : "bg-white/[0.02] border-white/10 text-slate-300 hover:bg-white/[0.04]"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center font-mono border border-white/10">
-                            #{entry.posicion}
-                          </span>
-                          <div>
-                            <h5 className="font-bold text-sm text-white">{entry.nombre}</h5>
-                            <span className="text-[11px] text-slate-400">{entry.rangoNombre || "Ingresante"}</span>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="space-y-0.5">
+                          <h4 className="text-base font-black text-white flex items-center gap-2">
+                            <span>{userName}</span>
+                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40 font-mono">TÚ</span>
+                          </h4>
+                          <p className="text-xs text-blue-300 font-bold">{rangoActual.nombre}</p>
+                        </div>
+
+                        <div className="flex items-center gap-4 bg-slate-950/60 p-2.5 rounded-xl border border-white/10 w-full sm:w-auto justify-between sm:justify-end">
+                          <div className="text-center px-2">
+                            <span className="text-xs font-black text-slate-400 uppercase block text-[9px]">Puntaje</span>
+                            <span className="text-sm font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
+                          </div>
+                          <div className="h-6 w-px bg-white/10" />
+                          <div className="text-center px-2">
+                            <span className="text-xs font-black text-slate-400 uppercase block text-[9px]">Racha Máx</span>
+                            <span className="text-sm font-black text-amber-400 font-mono">x{userStats.mejorRacha}</span>
+                          </div>
+                          <div className="h-6 w-px bg-white/10" />
+                          <div className="text-center px-2">
+                            <span className="text-xs font-black text-slate-400 uppercase block text-[9px]">Precisión</span>
+                            <span className="text-sm font-black text-emerald-400 font-mono">
+                              {userStats.totalPreguntas > 0 
+                                ? `${Math.round((userStats.totalAciertos / userStats.totalPreguntas) * 100)}%` 
+                                : "0%"}
+                            </span>
                           </div>
                         </div>
-
-                        <div className="text-right">
-                          <span className="text-sm font-black text-red-400 font-mono">{entry.puntos} PTS</span>
-                          <span className="text-[10px] text-slate-400 block font-mono">Precisión: {entry.aciertosPorcentaje}%</span>
-                        </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
-                    <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
-                    <h4 className="font-black text-sm text-white">¡Liderás la Tabla de Posiciones!</h4>
-                    <p className="text-xs text-slate-400">A medida que más estudiantes jueguen evaluaciones y duelos, sus puntajes aparecerán automáticamente aquí.</p>
-                  </div>
-                )}
+                    </div>
+                  );
+                })()}
+
+                {/* TABLA DE POSICIONES GENERALE */}
+                <div className="space-y-2 pt-1">
+                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2 px-1">
+                    <span>Tabla de Clasificación General:</span>
+                  </h4>
+
+                  {leaderboardList.length > 0 ? (
+                    <div className="space-y-2">
+                      {leaderboardList.map((entry) => {
+                        const isMe = entry.id === user?.id;
+
+                        return (
+                          <div
+                            key={entry.id}
+                            className={cn(
+                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
+                              isMe
+                                ? "bg-red-950/30 border-red-500/60 shadow-lg shadow-red-900/10 ring-1 ring-red-500/30"
+                                : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-white/[0.04]"
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className={cn(
+                                "w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center font-mono border",
+                                entry.posicion === 1 ? "bg-amber-500/20 text-amber-300 border-amber-500/40 font-black" :
+                                entry.posicion === 2 ? "bg-slate-300/20 text-slate-200 border-slate-300/40 font-black" :
+                                entry.posicion === 3 ? "bg-amber-700/20 text-amber-400 border-amber-700/40 font-black" :
+                                "bg-slate-800 text-slate-300 border-white/10"
+                              )}>
+                                #{entry.posicion}
+                              </span>
+                              <div>
+                                <h5 className="font-bold text-sm text-white flex items-center gap-2">
+                                  <span>{entry.nombre}</span>
+                                  {isMe && (
+                                    <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
+                                      TÚ
+                                    </span>
+                                  )}
+                                </h5>
+                                <span className="text-[11px] text-slate-400">{entry.rangoNombre || "Ingresante"}</span>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <span className="text-sm font-black text-red-400 font-mono">{entry.puntos} PTS</span>
+                              <span className="text-[10px] text-slate-400 block font-mono">Precisión: {entry.aciertosPorcentaje}%</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
+                      <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
+                      <h4 className="font-black text-sm text-white">¡Liderás la Tabla de Posiciones!</h4>
+                      <p className="text-xs text-slate-400">A medida que más estudiantes jueguen evaluaciones y duelos, sus puntajes aparecerán automáticamente aquí.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
             {/* CONTENIDO RANKING DE DUELISTAS 1V1 */}
             {rankingSubTab === "duelistas" && (
-              <div className="space-y-2.5">
-                {/* MI RÉCORD EN DUELOS */}
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-red-950/40 via-[#0A1C3D]/60 to-slate-900 border border-red-500/50 flex items-center justify-between gap-4 shadow-xl">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400">
-                      <Swords className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-black text-sm text-white flex items-center gap-1.5">
-                        <span>{userName}</span>
-                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40">(Tu Récord 1v1)</span>
-                      </h4>
-                      <p className="text-[11px] text-slate-400">
-                        <span className="text-emerald-400 font-bold">{userStats.victoriasDuelo} Vict</span> • <span className="text-red-400 font-bold">{userStats.derrotasDuelo} Derr</span> • <span className="text-amber-400 font-bold">{userStats.empatesDuelo} Emp</span>
-                      </p>
-                    </div>
-                  </div>
+              <div className="space-y-4">
+                {/* WIDGET EXECUTIVE DE DUELISTAS */}
+                {(() => {
+                  const myDuelistEntry = duelistasLeaderboardList.find(e => e.user_id === user?.id);
+                  const myPosText = myDuelistEntry?.posicion ? `#${myDuelistEntry.posicion}` : "Sin Clasificar";
 
-                  <div className="text-right">
-                    <span className="text-base font-black text-amber-400 font-mono">{userStats.puntosDuelista} PTS</span>
-                    <span className="text-[10px] text-slate-400 block font-mono">Puntos Duelista</span>
-                  </div>
-                </div>
+                  return (
+                    <div className="p-5 rounded-2xl bg-gradient-to-r from-red-950/50 via-[#0A1C3D] to-slate-950 border-2 border-red-500/40 shadow-2xl space-y-3">
+                      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5 font-mono">
+                          <Swords className="w-3.5 h-3.5 text-red-400" />
+                          <span>Tu Récord Oficial en Duelos 1vs1</span>
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-[10px] font-black uppercase text-amber-300">
+                          Posición 1v1: {myPosText}
+                        </span>
+                      </div>
 
-                {duelistasLeaderboardList.length > 0 ? (
-                  <div className="space-y-2 pt-2">
-                    {duelistasLeaderboardList.map((entry, idx) => (
-                      <div
-                        key={entry.user_id || idx}
-                        className={cn(
-                          "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
-                          entry.user_id === user?.id
-                            ? "bg-red-500/10 border-red-500/40 text-white"
-                            : "bg-white/[0.02] border-white/10 text-slate-300 hover:bg-white/[0.04]"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center font-mono border border-white/10">
-                            #{entry.posicion || idx + 1}
-                          </span>
-                          <div>
-                            <h5 className="font-bold text-sm text-white">{entry.nombre}</h5>
-                            <span className="text-[11px] text-slate-400">
-                              <span className="text-emerald-400 font-bold">{entry.victorias || 0}V</span> - <span className="text-red-400 font-bold">{entry.derrotas || 0}D</span> - <span className="text-amber-400 font-bold">{entry.empates || 0}E</span>
-                            </span>
-                          </div>
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="space-y-0.5">
+                          <h4 className="text-base font-black text-white flex items-center gap-2">
+                            <span>{userName}</span>
+                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40 font-mono">TÚ</span>
+                          </h4>
+                          <p className="text-xs text-slate-400">
+                            Historial: <span className="text-emerald-400 font-bold">{userStats.victoriasDuelo} Victorias</span> • <span className="text-red-400 font-bold">{userStats.derrotasDuelo} Derrotas</span> • <span className="text-amber-400 font-bold">{userStats.empatesDuelo} Empates</span>
+                          </p>
                         </div>
 
-                        <div className="text-right">
-                          <span className="text-sm font-black text-amber-400 font-mono">{entry.puntos_duelista || 0} PTS</span>
-                          <span className="text-[10px] text-slate-400 block font-mono">Duelos 1v1</span>
+                        <div className="bg-slate-950/60 p-2.5 rounded-xl border border-white/10 text-right w-full sm:w-auto">
+                          <span className="text-base font-black text-amber-400 font-mono block">{userStats.puntosDuelista} PTS</span>
+                          <span className="text-[10px] text-slate-400 block font-mono">Puntos de Duelista Acumulados</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
-                    <Swords className="w-8 h-8 mx-auto text-red-400 opacity-60" />
-                    <h4 className="font-black text-sm text-white">¡No hay duelistas registrados aún!</h4>
-                    <p className="text-xs text-slate-400">Completá duelos 1v1 en la pestaña de Salas para acumular victorias y liderar el Ranking de Duelistas.</p>
-                  </div>
-                )}
+                    </div>
+                  );
+                })()}
+
+                {/* TABLA DE DUELISTAS BELOW */}
+                <div className="space-y-2 pt-1">
+                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2 px-1">
+                    <span>Tabla de Duelistas Destacados:</span>
+                  </h4>
+
+                  {duelistasLeaderboardList.length > 0 ? (
+                    <div className="space-y-2">
+                      {duelistasLeaderboardList.map((entry, idx) => {
+                        const isMe = entry.user_id === user?.id;
+
+                        return (
+                          <div
+                            key={entry.user_id || idx}
+                            className={cn(
+                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
+                              isMe
+                                ? "bg-red-950/30 border-red-500/60 shadow-lg shadow-red-900/10 ring-1 ring-red-500/30"
+                                : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-white/[0.04]"
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className={cn(
+                                "w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center font-mono border",
+                                (entry.posicion || idx + 1) === 1 ? "bg-amber-500/20 text-amber-300 border-amber-500/40 font-black" :
+                                (entry.posicion || idx + 1) === 2 ? "bg-slate-300/20 text-slate-200 border-slate-300/40 font-black" :
+                                (entry.posicion || idx + 1) === 3 ? "bg-amber-700/20 text-amber-400 border-amber-700/40 font-black" :
+                                "bg-slate-800 text-slate-300 border-white/10"
+                              )}>
+                                #{entry.posicion || idx + 1}
+                              </span>
+                              <div>
+                                <h5 className="font-bold text-sm text-white flex items-center gap-2">
+                                  <span>{entry.nombre}</span>
+                                  {isMe && (
+                                    <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
+                                      TÚ
+                                    </span>
+                                  )}
+                                </h5>
+                                <span className="text-[11px] text-slate-400">
+                                  <span className="text-emerald-400 font-bold">{entry.victorias || 0}V</span> - <span className="text-red-400 font-bold">{entry.derrotas || 0}D</span> - <span className="text-amber-400 font-bold">{entry.empates || 0}E</span>
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <span className="text-sm font-black text-amber-400 font-mono">{entry.puntos_duelista || 0} PTS</span>
+                              <span className="text-[10px] text-slate-400 block font-mono">Duelos 1v1</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
+                      <Swords className="w-8 h-8 mx-auto text-red-400 opacity-60" />
+                      <h4 className="font-black text-sm text-white">¡No hay duelistas registrados aún!</h4>
+                      <p className="text-xs text-slate-400">Completá duelos 1v1 en la pestaña de Salas para acumular victorias y liderar el Ranking de Duelistas.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
