@@ -109,7 +109,8 @@ FOR EACH ROW EXECUTE FUNCTION public.fn_actualizar_estadisticas_trivia();
 -- 6. Vista del Ranking General Único (Con DROP VIEW para evitar error 42P16 de cambio de columnas)
 DROP VIEW IF EXISTS public.trivia_leaderboard CASCADE;
 
-CREATE VIEW public.trivia_leaderboard AS
+CREATE VIEW public.trivia_leaderboard 
+WITH (security_invoker = true) AS
 SELECT 
     e.user_id,
     COALESCE(p.full_name, 'Estudiante de Abogacía') AS nombre,

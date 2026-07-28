@@ -103,7 +103,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- 3. Vista del Ranking Exclusivo de Duelistas (1v1)
 DROP VIEW IF EXISTS public.trivia_leaderboard_duelistas CASCADE;
 
-CREATE VIEW public.trivia_leaderboard_duelistas AS
+CREATE VIEW public.trivia_leaderboard_duelistas 
+WITH (security_invoker = true) AS
 SELECT 
     e.user_id,
     COALESCE(p.full_name, 'Estudiante de Abogacía') AS nombre,
