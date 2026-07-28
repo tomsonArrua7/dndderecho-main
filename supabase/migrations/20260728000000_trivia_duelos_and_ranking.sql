@@ -1,4 +1,4 @@
--- Migration: Tablas, Realtime y Ranking para Trivia y Duelos 1vs1 Académicos
+-- Migration: Tablas, Realtime y Ranking para Trivia y Duelos 1vs1 Académicos (Idempotente)
 
 -- 1. Tabla de Historial de Partidas
 CREATE TABLE IF NOT EXISTS public.trivia_partidas (
@@ -49,12 +49,11 @@ CREATE TABLE IF NOT EXISTS public.trivia_duelos (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Habilitar RLS en todas las tablas
+-- 4. Habilitar RLS (Row Level Security) y Políticas de Lectura/Escritura
 ALTER TABLE public.trivia_partidas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.trivia_estadisticas_usuario ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.trivia_duelos ENABLE ROW LEVEL SECURITY;
 
--- Políticas de RLS
 DROP POLICY IF EXISTS "Lectura de partidas" ON public.trivia_partidas;
 CREATE POLICY "Lectura de partidas" ON public.trivia_partidas FOR SELECT USING (true);
 
@@ -100,12 +99,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Eliminar trigger anterior si existe para evitar error 42710
 DROP TRIGGER IF EXISTS trg_actualizar_estadisticas_trivia ON public.trivia_partidas;
+
 CREATE TRIGGER trg_actualizar_estadisticas_trivia
 AFTER INSERT ON public.trivia_partidas
 FOR EACH ROW EXECUTE FUNCTION public.fn_actualizar_estadisticas_trivia();
 
--- 6. Vista del Ranking / Leaderboard General
+-- 6. Vista del Ranking General Único
 CREATE OR REPLACE VIEW public.trivia_leaderboard AS
 SELECT 
     e.user_id,
@@ -127,7 +128,7 @@ FROM public.trivia_estadisticas_usuario e
 JOIN public.profiles p ON e.user_id = p.id
 ORDER BY e.puntos_totales DESC;
 
--- 7. Publicación Realtime para Duelos
+-- 7. Habilitar Supabase Realtime en Duelos (seguro si ya existe)
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
