@@ -58,10 +58,10 @@ export const Navbar = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          "sticky top-0 z-50 transition-colors duration-300 backdrop-blur-md shadow-lg border-b",
+          "fixed top-0 left-0 right-0 z-50 transition-colors duration-300 backdrop-blur-md shadow-lg border-b",
           isLight
             ? "bg-white/95 border-slate-200/90 text-slate-900"
-            : "bg-gradient-to-r from-[#060A18]/90 via-[#10132B]/85 to-[#4A0E17]/90 border-white/10 text-white selection:bg-accent/30"
+            : "bg-gradient-to-r from-[#060A18]/95 via-[#10132B]/90 to-[#4A0E17]/95 border-white/10 text-white selection:bg-accent/30"
         )}
       >
         <div className="w-full px-3 md:px-8 flex h-16 items-center justify-between gap-2">
