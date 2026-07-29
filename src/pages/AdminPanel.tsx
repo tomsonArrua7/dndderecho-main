@@ -17,6 +17,7 @@ export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
   const [permutas, setPermutas] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [totalUsersCount, setTotalUsersCount] = useState<number>(0);
   const [appSettings, setAppSettings] = useState<{ id: number; permutero_activo: boolean; modo_mantenimiento: boolean } | null>(null);
   const [totalPartidasCount, setTotalPartidasCount] = useState<number>(0);
   const [totalDuelosCount, setTotalDuelosCount] = useState<number>(0);
@@ -46,20 +47,47 @@ export default function AdminPanel() {
 
       const [
         { data: perms }, 
-        { data: profs }, 
+        { count: usersCount }, 
         { data: settings },
         { count: partidasCount },
         { count: duelosCount }
       ] = await Promise.all([
         supabase.from("permutas").select("*, materias(nombre)").order("created_at", { ascending: false }),
-        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("app_settings").select("*").eq("id", 1).single(),
         supabase.from("trivia_partidas").select("*", { count: "exact", head: true }),
         supabase.from("trivia_duelos").select("*", { count: "exact", head: true })
       ]);
 
+      setTotalUsersCount(usersCount || 0);
+
+      // Paginación para obtener la totalidad de perfiles superando el límite por defecto de 1000 filas de Supabase
+      let allProfiles: any[] = [];
+      let from = 0;
+      const step = 1000;
+      let keepFetching = true;
+
+      while (keepFetching) {
+        const { data: chunk, error: chunkErr } = await supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .range(from, from + step - 1);
+
+        if (chunkErr || !chunk || chunk.length === 0) {
+          keepFetching = false;
+        } else {
+          allProfiles.push(...chunk);
+          if (chunk.length < step) {
+            keepFetching = false;
+          } else {
+            from += step;
+          }
+        }
+      }
+
       setPermutas(perms || []);
-      setProfiles(profs || []);
+      setProfiles(allProfiles);
       setAppSettings(settings || { id: 1, permutero_activo: true, modo_mantenimiento: false });
       setTotalPartidasCount(partidasCount || 0);
       setTotalDuelosCount(duelosCount || 0);
@@ -224,7 +252,7 @@ export default function AdminPanel() {
 
           <div>
             <span className="text-4xl md:text-5xl font-black text-white tracking-tight font-mono">
-              {profiles.length}
+              {totalUsersCount || profiles.length}
             </span>
             <h3 className="text-sm font-black text-slate-200 mt-1 flex items-center gap-1.5">
               <span>Estudiantes Registrados</span>
@@ -292,7 +320,7 @@ export default function AdminPanel() {
         <TabsList className="bg-muted/50 p-1 rounded-xl">
           <TabsTrigger value="general" className="rounded-lg px-6">General</TabsTrigger>
           <TabsTrigger value="permutas" className="rounded-lg px-6">Permutas ({permutas.length})</TabsTrigger>
-          <TabsTrigger value="usuarios" className="rounded-lg px-6">Usuarios ({profiles.length})</TabsTrigger>
+          <TabsTrigger value="usuarios" className="rounded-lg px-6">Usuarios ({totalUsersCount || profiles.length})</TabsTrigger>
         </TabsList>
 
         {/* --- TAB: GENERAL --- */}

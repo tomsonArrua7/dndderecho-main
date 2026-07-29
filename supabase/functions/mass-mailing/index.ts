@@ -34,15 +34,36 @@ serve(async (req) => {
 
     console.log("Iniciando envío masivo individual...");
 
-    // Obtener usuarios desde auth.admin
-    const { data: { users }, error: listError } = await supabaseClient.auth.admin.listUsers();
+    // Obtener usuarios desde auth.admin (con paginación para superar el límite de 1000)
+    let allUsers: any[] = [];
+    let page = 1;
+    let hasMore = true;
 
-    if (listError) {
-      console.error("Error al listar usuarios de Auth:", listError);
-      throw listError;
+    while (hasMore) {
+      const { data, error: listError } = await supabaseClient.auth.admin.listUsers({
+        page,
+        perPage: 1000,
+      });
+
+      if (listError) {
+        console.error(`Error al listar usuarios de Auth en página ${page}:`, listError);
+        throw listError;
+      }
+
+      const pageUsers = data?.users || [];
+      if (pageUsers.length === 0) {
+        hasMore = false;
+      } else {
+        allUsers.push(...pageUsers);
+        if (pageUsers.length < 1000) {
+          hasMore = false;
+        } else {
+          page++;
+        }
+      }
     }
 
-    const emails = users
+    const emails = allUsers
       .map(u => u.email)
       .filter(email => email && email.includes("@")) as string[];
 
