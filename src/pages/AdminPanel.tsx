@@ -612,6 +612,8 @@ export default function AdminPanel() {
               <div className="p-12 text-center text-muted-foreground italic">No se encontraron usuarios con los filtros actuales.</div>
             )}
           </div>
+        </TabsContent>
+
         {/* --- TAB: ASISTENTE IA CORRECCIONES --- */}
         <TabsContent value="asistente" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="p-6 bg-card border rounded-2xl shadow-sm space-y-2">
