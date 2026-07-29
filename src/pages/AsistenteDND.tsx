@@ -11,11 +11,18 @@ import {
   Loader2, 
   ExternalLink,
   ChevronRight,
-  Lock
+  Lock,
+  ThumbsUp,
+  ThumbsDown,
+  Edit3,
+  CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface Materia {
   id: string;
@@ -121,6 +128,13 @@ export default function AsistenteDND() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   
+  // Correction & Feedback States
+  const [feedbackState, setFeedbackState] = useState<Record<number, "up" | "down">>({});
+  const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
+  const [correctionMsgIndex, setCorrectionMsgIndex] = useState<number | null>(null);
+  const [correctionInputText, setCorrectionInputText] = useState("");
+  const [isSavingCorrection, setIsSavingCorrection] = useState(false);
+
   // Estados para el cargador dinámico
   const [loadingTime, setLoadingTime] = useState(0);
   const [loadingStage, setLoadingStage] = useState("Buscando apuntes oficiales en la biblioteca...");
@@ -285,6 +299,66 @@ export default function AsistenteDND() {
       return;
     }
     enviarPregunta(sug);
+  };
+
+  const handleFeedback = (idx: number, type: "up" | "down") => {
+    setFeedbackState(prev => ({ ...prev, [idx]: type }));
+    if (type === "up") {
+      toast.success("¡Gracias por tu valoración!");
+    } else {
+      openCorrectionModal(idx);
+    }
+  };
+
+  const openCorrectionModal = (idx: number) => {
+    const msg = messages[idx];
+    if (!msg || msg.role !== "assistant") return;
+    setCorrectionMsgIndex(idx);
+
+    const cleanIndex = msg.content.indexOf("[SUGERENCIAS]:");
+    const initialText = cleanIndex === -1 ? msg.content.trim() : msg.content.substring(0, cleanIndex).trim();
+    setCorrectionInputText(initialText);
+    setIsCorrectionModalOpen(true);
+  };
+
+  const handleSaveCorrection = async () => {
+    if (correctionMsgIndex === null) return;
+    const msg = messages[correctionMsgIndex];
+    const prevUserMsg = correctionMsgIndex > 0 ? messages[correctionMsgIndex - 1] : null;
+
+    const preguntaOriginal = prevUserMsg?.content || "Consulta de materia";
+    const materiaRef = selectedMateria || prevUserMsg?.materia || "General / Dudas de la web";
+
+    if (!correctionInputText.trim()) {
+      toast.error("Por favor ingresa el texto corregido.");
+      return;
+    }
+
+    setIsSavingCorrection(true);
+    try {
+      const { error } = await supabase.from("asistente_correcciones").insert({
+        materia: materiaRef,
+        catedra: selectedCatedra || null,
+        comision: selectedComision || null,
+        pregunta_original: preguntaOriginal,
+        respuesta_original: msg.content,
+        respuesta_corregida: correctionInputText.trim(),
+        creado_por: user?.id || null
+      });
+
+      if (error) throw error;
+
+      toast.success("¡Corrección guardada! El Asistente DND aprenderá esta respuesta oficial para futuras consultas.");
+      
+      // Actualizar mensaje en la interfaz
+      setMessages(prev => prev.map((m, i) => i === correctionMsgIndex ? { ...m, content: correctionInputText.trim() } : m));
+      setIsCorrectionModalOpen(false);
+    } catch (err: any) {
+      console.error("Error al guardar corrección:", err);
+      toast.error("No se pudo guardar la corrección: " + (err.message || "Error de servidor"));
+    } finally {
+      setIsSavingCorrection(false);
+    }
   };
 
   return (
@@ -510,7 +584,6 @@ export default function AsistenteDND() {
                               .filter(s => s.length > 0);
                             const isLastMessage = idx === messages.length - 1;
 
-                            // Limpiamos posibles espacios o comillas invertidas que la IA coloque por error en el formato Markdown de los links
                             const sanitizedContent = cleanContent
                               .replace(/\]\s+\(/g, '](')
                               .replace(/`\[(.*?)\]\((.*?)\)`/g, '[$1]($2)');
@@ -519,6 +592,44 @@ export default function AsistenteDND() {
                               <div className="space-y-3">
                                 <MarkdownRenderer content={sanitizedContent} />
                                 
+                                {/* Botones de Feedback y Corrección en tiempo real */}
+                                <div className="pt-2.5 border-t border-slate-200 dark:border-white/5 flex items-center justify-between gap-2 flex-wrap text-xs">
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      onClick={() => handleFeedback(idx, "up")}
+                                      title="Esta respuesta es útil y correcta"
+                                      className={`p-1.5 rounded-lg border transition-all flex items-center gap-1 text-[11px] font-semibold cursor-pointer ${
+                                        feedbackState[idx] === "up"
+                                          ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
+                                          : "bg-slate-200/50 dark:bg-white/5 border-slate-300/50 dark:border-white/5 text-slate-600 dark:text-white/60 hover:text-emerald-400 hover:bg-emerald-500/10"
+                                      }`}
+                                    >
+                                      <ThumbsUp size={12} />
+                                      <span>Útil</span>
+                                    </button>
+                                    
+                                    <button
+                                      onClick={() => handleFeedback(idx, "down")}
+                                      title="Respuesta inexacta - Corregir"
+                                      className={`p-1.5 rounded-lg border transition-all flex items-center gap-1 text-[11px] font-semibold cursor-pointer ${
+                                        feedbackState[idx] === "down"
+                                          ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                          : "bg-slate-200/50 dark:bg-white/5 border-slate-300/50 dark:border-white/5 text-slate-600 dark:text-white/60 hover:text-red-400 hover:bg-red-500/10"
+                                      }`}
+                                    >
+                                      <ThumbsDown size={12} />
+                                      <span>Inexacta</span>
+                                    </button>
+                                  </div>
+
+                                  <button
+                                    onClick={() => openCorrectionModal(idx)}
+                                    className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1 py-1 px-2 rounded-lg bg-accent/10 hover:bg-accent/20 border border-accent/20 transition-all cursor-pointer"
+                                  >
+                                    <Edit3 size={11} /> Corregir Respuesta en Tiempo Real
+                                  </button>
+                                </div>
+
                                 {isLastMessage && sugerencias.length > 0 && (
                                   <div className="pt-3 border-t border-slate-200 dark:border-white/5 space-y-2">
                                     <p className="text-[10px] uppercase tracking-wider text-accent font-black flex items-center gap-1.5">
@@ -589,6 +700,58 @@ export default function AsistenteDND() {
 
         </Card>
       </div>
+
+      {/* Modal de Corrección en Tiempo Real */}
+      <Dialog open={isCorrectionModalOpen} onOpenChange={setIsCorrectionModalOpen}>
+        <DialogContent className="max-w-xl bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-2xl space-y-4">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl font-bold text-foreground flex items-center gap-2">
+              <Edit3 className="text-accent h-5 w-5" /> Corregir Respuesta del Asistente
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Ingresa la respuesta oficial o directriz corregida. El bot aprenderá esta respuesta de inmediato para responder con máxima precisión en futuras consultas de esta materia.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            <div className="p-3 bg-muted/40 rounded-xl border text-xs space-y-1">
+              <span className="font-bold text-accent uppercase tracking-wider block text-[10px]">Pregunta del Estudiante:</span>
+              <p className="text-foreground font-medium">
+                {correctionMsgIndex !== null && correctionMsgIndex > 0 ? messages[correctionMsgIndex - 1]?.content : "Consulta general"}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-bold text-foreground">Respuesta Oficial Corregida (Instrucción para la IA)</Label>
+              <Textarea 
+                rows={6}
+                value={correctionInputText}
+                onChange={(e) => setCorrectionInputText(e.target.value)}
+                placeholder="Escribe aquí la respuesta exacta o directriz oficial que debe dar el bot..."
+                className="bg-background border border-border text-xs rounded-xl p-3 focus:ring-accent font-medium leading-relaxed"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsCorrectionModalOpen(false)}
+              className="rounded-xl text-xs"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleSaveCorrection}
+              disabled={isSavingCorrection || !correctionInputText.trim()}
+              className="bg-accent hover:bg-accent/90 text-white font-bold text-xs rounded-xl px-5 h-10 flex items-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+            >
+              {isSavingCorrection ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 size={16} />}
+              Guardar y Re-entrenar Bot
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -99,7 +99,7 @@ serve(async (req) => {
         });
       */
 
-      // Consulta de prueba (Reemplaza con tu tabla real de apuntes/documentos):
+      // Consulta de fragmentos en base de datos
       const { data: fragmentos, error: dbError } = await supabase
         .from("apuntes_fragmentos")
         .select("contenido, fuente")
@@ -117,7 +117,27 @@ serve(async (req) => {
         }
         contextoRecuperado = obtenerContextoSimulado(materia, catedra, comision);
       }
-    } catch (err) {
+
+      // Buscar si existen correcciones previas aprobadas por admins para esta materia
+      try {
+        const { data: correcciones } = await supabase
+          .from("asistente_correcciones")
+          .select("pregunta_original, respuesta_corregida")
+          .eq("materia", materia)
+          .order("created_at", { ascending: false })
+          .limit(6);
+
+        if (correcciones && correcciones.length > 0) {
+          const textoCorrecciones = correcciones
+            .map((c, idx) => `[CORRECCIÓN REGISTRADA ${idx + 1}]\nPregunta original: "${c.pregunta_original}"\nRespuesta Oficial Corregida: ${c.respuesta_corregida}`)
+            .join("\n\n");
+
+          contextoRecuperado += `\n\n=== DIRECTRICES Y CORRECCIONES OFICIALES DE ADMINISTRADORES (MÁXIMA PRIORIDAD) ===\n${textoCorrecciones}`;
+        }
+      } catch (e: any) {
+        console.warn("Aviso al consultar asistente_correcciones:", e.message);
+      }
+    } catch (err: any) {
       console.error("Fallo al conectar con la base de datos Supabase:", err.message);
       contextoRecuperado = obtenerContextoSimulado(materia, catedra, comision);
     }

@@ -19,6 +19,7 @@ export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
   const [permutas, setPermutas] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [correcciones, setCorrecciones] = useState<any[]>([]);
   const [totalUsersCount, setTotalUsersCount] = useState<number>(0);
   const [appSettings, setAppSettings] = useState<{ id: number; permutero_activo: boolean; modo_mantenimiento: boolean } | null>(null);
   const [totalPartidasCount, setTotalPartidasCount] = useState<number>(0);
@@ -115,16 +116,19 @@ export default function AdminPanel() {
         { count: usersCount }, 
         { data: settings },
         { count: partidasCount },
-        { count: duelosCount }
+        { count: duelosCount },
+        { data: corrs }
       ] = await Promise.all([
         supabase.from("permutas").select("*, materias(nombre)").order("created_at", { ascending: false }),
         supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("app_settings").select("*").eq("id", 1).single(),
         supabase.from("trivia_partidas").select("*", { count: "exact", head: true }),
-        supabase.from("trivia_duelos").select("*", { count: "exact", head: true })
+        supabase.from("trivia_duelos").select("*", { count: "exact", head: true }),
+        supabase.from("asistente_correcciones").select("*").order("created_at", { ascending: false })
       ]);
 
       setTotalUsersCount(usersCount || 0);
+      setCorrecciones(corrs || []);
 
       // Paginación para obtener la totalidad de perfiles superando el límite por defecto de 1000 filas de Supabase
       let allProfiles: any[] = [];
@@ -200,6 +204,18 @@ export default function AdminPanel() {
     else {
       setPermutas(prev => prev.filter(p => p.id !== id));
       toast.success("Permuta eliminada");
+    }
+    setUpdating(false);
+  };
+
+  const deleteCorreccion = async (id: string) => {
+    if (!confirm("¿Eliminar esta regla de corrección del asistente?")) return;
+    setUpdating(true);
+    const { error } = await supabase.from("asistente_correcciones").delete().eq("id", id);
+    if (error) toast.error("Error: " + error.message);
+    else {
+      setCorrecciones(prev => prev.filter(c => c.id !== id));
+      toast.success("Corrección eliminada");
     }
     setUpdating(false);
   };
@@ -386,6 +402,7 @@ export default function AdminPanel() {
           <TabsTrigger value="general" className="rounded-lg px-6">General</TabsTrigger>
           <TabsTrigger value="permutas" className="rounded-lg px-6">Permutas ({permutas.length})</TabsTrigger>
           <TabsTrigger value="usuarios" className="rounded-lg px-6">Usuarios ({totalUsersCount || profiles.length})</TabsTrigger>
+          <TabsTrigger value="asistente" className="rounded-lg px-6">Asistente IA ({correcciones.length})</TabsTrigger>
         </TabsList>
 
         {/* --- TAB: GENERAL --- */}
@@ -593,6 +610,57 @@ export default function AdminPanel() {
             </table>
             {sortedAndFilteredProfiles.length === 0 && (
               <div className="p-12 text-center text-muted-foreground italic">No se encontraron usuarios con los filtros actuales.</div>
+            )}
+          </div>
+        {/* --- TAB: ASISTENTE IA CORRECCIONES --- */}
+        <TabsContent value="asistente" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="p-6 bg-card border rounded-2xl shadow-sm space-y-2">
+            <h3 className="text-lg font-bold flex items-center gap-2 text-foreground">
+              <Sparkles className="text-accent h-5 w-5" /> Correcciones y Reglas de Aprendizaje del Bot
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Las correcciones registradas aquí se inyectan automáticamente en las futuras consultas del Asistente DND como instrucciones prioritarias y verdades absolutas.
+            </p>
+          </div>
+
+          <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 border-b">
+                <tr>
+                  <th className="px-6 py-4 text-left font-semibold">Materia / Contexto</th>
+                  <th className="px-6 py-4 text-left font-semibold">Pregunta Original</th>
+                  <th className="px-6 py-4 text-left font-semibold">Respuesta Oficial Corregida</th>
+                  <th className="px-6 py-4 text-left font-semibold">Fecha</th>
+                  <th className="px-6 py-4 text-right font-semibold">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {correcciones.map(c => (
+                  <tr key={c.id} className="hover:bg-muted/10 transition-colors">
+                    <td className="px-6 py-4 font-bold text-accent">
+                      {c.materia}
+                      {c.catedra && <span className="block text-[10px] text-muted-foreground font-normal">Cat: {c.catedra}</span>}
+                    </td>
+                    <td className="px-6 py-4 text-xs font-medium max-w-xs truncate" title={c.pregunta_original}>
+                      {c.pregunta_original}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-foreground max-w-md line-clamp-2" title={c.respuesta_corregida}>
+                      {c.respuesta_corregida}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-muted-foreground">
+                      {new Date(c.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Button variant="ghost" size="icon" onClick={() => deleteCorreccion(c.id)} className="text-destructive hover:bg-destructive/10">
+                        <Trash2 size={16} />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {correcciones.length === 0 && (
+              <div className="p-12 text-center text-muted-foreground italic">No hay reglas de corrección registradas aún.</div>
             )}
           </div>
         </TabsContent>
