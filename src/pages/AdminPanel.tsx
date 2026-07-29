@@ -7,8 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { 
   Loader2, Trash2, Search, UserMinus, UserCheck, Mail, ShieldAlert, 
-  Users, Repeat, Trophy, Sparkles, TrendingUp, ShieldCheck, Activity, GraduationCap 
+  Users, Repeat, Trophy, Sparkles, TrendingUp, ShieldCheck, Activity, GraduationCap,
+  FileSpreadsheet, Download
 } from "lucide-react";
+import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -33,6 +35,69 @@ export default function AdminPanel() {
   const [mailSubject, setMailSubject] = useState("");
   const [mailBody, setMailBody] = useState("");
   const [sendingMail, setSendingMail] = useState(false);
+
+  // User Filter State
+  const [searchUserProfile, setSearchUserProfile] = useState("");
+
+  const exportUsersToExcel = () => {
+    if (!profiles || profiles.length === 0) {
+      toast.error("No hay usuarios para exportar");
+      return;
+    }
+
+    const sortedProfiles = [...profiles].sort((a, b) =>
+      (a.full_name || "").localeCompare(b.full_name || "", "es", { sensitivity: "base" })
+    );
+
+    const dataToExport = sortedProfiles.map((p, idx) => ({
+      "N°": idx + 1,
+      "Nombre Completo": p.full_name || "Sin nombre",
+      "Año de Ingreso": p.anio_ingreso ? p.anio_ingreso : "No especificado",
+      "Teléfono": p.telefono || "No especificado",
+      "Rol": p.role === "admin" ? "Administrador" : p.role === "escritor" ? "Escritor" : "Estudiante",
+      "Suscrito a Calendario": p.suscripto_calendario ? "Sí" : "No",
+      "Estado de Veto": p.is_banned ? "Vetado" : "Activo",
+      "Permutas Publicadas": userPermutaCount[p.id] || 0,
+      "Fecha de Registro": p.created_at ? new Date(p.created_at).toLocaleString("es-AR") : "",
+      "ID de Usuario": p.id,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Estudiantes DND");
+
+    worksheet["!cols"] = [
+      { wch: 5 },   // N°
+      { wch: 32 },  // Nombre
+      { wch: 15 },  // Año ingreso
+      { wch: 18 },  // Teléfono
+      { wch: 15 },  // Rol
+      { wch: 22 },  // Suscrito
+      { wch: 12 },  // Estado
+      { wch: 18 },  // Permutas
+      { wch: 22 },  // Fecha registro
+      { wch: 38 },  // ID
+    ];
+
+    const today = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(workbook, `Estudiantes_DND_Derecho_${today}.xlsx`);
+    toast.success(`Exportados ${sortedProfiles.length} usuarios a Excel en orden alfabético.`);
+  };
+
+  const sortedAndFilteredProfiles = useMemo(() => {
+    return [...profiles]
+      .filter((p) => {
+        if (!searchUserProfile.trim()) return true;
+        const q = searchUserProfile.toLowerCase();
+        const nameMatch = p.full_name?.toLowerCase().includes(q);
+        const yearMatch = String(p.anio_ingreso || "").includes(q);
+        const phoneMatch = p.telefono?.includes(q);
+        return nameMatch || yearMatch || phoneMatch;
+      })
+      .sort((a, b) =>
+        (a.full_name || "").localeCompare(b.full_name || "", "es", { sensitivity: "base" })
+      );
+  }, [profiles, searchUserProfile]);
 
   useEffect(() => {
     if (user?.id) {
@@ -443,11 +508,32 @@ export default function AdminPanel() {
 
         {/* --- TAB: USUARIOS --- */}
         <TabsContent value="usuarios" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex flex-wrap gap-4 items-center justify-between bg-muted/30 p-4 rounded-2xl border">
+            <div className="relative flex-1 min-w-[240px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Buscar por nombre, año de ingreso o teléfono..." 
+                className="pl-10 bg-background border-none shadow-none text-xs" 
+                value={searchUserProfile}
+                onChange={e => setSearchUserProfile(e.target.value)}
+              />
+            </div>
+
+            <Button 
+              onClick={exportUsersToExcel} 
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl px-5 h-10 flex items-center gap-2 shadow-md transition-all active:scale-95 shrink-0"
+            >
+              <FileSpreadsheet size={16} />
+              Exportar a Excel (.xlsx)
+            </Button>
+          </div>
+
           <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
                   <th className="px-6 py-4 text-left font-semibold">Nombre Completo</th>
+                  <th className="px-6 py-4 text-left font-semibold">Año Ingreso</th>
                   <th className="px-6 py-4 text-left font-semibold">Rol</th>
                   <th className="px-6 py-4 text-left font-semibold">Permutas Activas</th>
                   <th className="px-6 py-4 text-left font-semibold">Estado</th>
@@ -455,11 +541,20 @@ export default function AdminPanel() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {profiles.map(p => (
+                {sortedAndFilteredProfiles.map(p => (
                   <tr key={p.id} className={`hover:bg-muted/10 transition-colors ${p.is_banned ? "bg-destructive/5" : ""}`}>
                     <td className="px-6 py-4">
                       <div className="font-bold text-foreground">{p.full_name || "Sin nombre"}</div>
                       <div className="text-[10px] text-muted-foreground font-mono">{p.id}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {p.anio_ingreso ? (
+                        <span className="font-mono font-bold text-accent text-xs px-2.5 py-1 rounded-md bg-accent/10 border border-accent/20">
+                          {p.anio_ingreso}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground text-xs italic">N/D</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 capitalize">{p.role}</td>
                     <td className="px-6 py-4">
@@ -496,6 +591,9 @@ export default function AdminPanel() {
                 ))}
               </tbody>
             </table>
+            {sortedAndFilteredProfiles.length === 0 && (
+              <div className="p-12 text-center text-muted-foreground italic">No se encontraron usuarios con los filtros actuales.</div>
+            )}
           </div>
         </TabsContent>
       </Tabs>
