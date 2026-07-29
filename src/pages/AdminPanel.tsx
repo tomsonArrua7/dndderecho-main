@@ -37,8 +37,9 @@ export default function AdminPanel() {
   const [mailBody, setMailBody] = useState("");
   const [sendingMail, setSendingMail] = useState(false);
 
-  // User Filter State
+  // User Filter & Sort States
   const [searchUserProfile, setSearchUserProfile] = useState("");
+  const [userSortOrder, setUserSortOrder] = useState<"recent" | "az" | "year">("recent");
 
   const exportUsersToExcel = () => {
     if (!profiles || profiles.length === 0) {
@@ -95,10 +96,16 @@ export default function AdminPanel() {
         const phoneMatch = p.telefono?.includes(q);
         return nameMatch || yearMatch || phoneMatch;
       })
-      .sort((a, b) =>
-        (a.full_name || "").localeCompare(b.full_name || "", "es", { sensitivity: "base" })
-      );
-  }, [profiles, searchUserProfile]);
+      .sort((a, b) => {
+        if (userSortOrder === "recent") {
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        }
+        if (userSortOrder === "year") {
+          return (Number(b.anio_ingreso) || 0) - (Number(a.anio_ingreso) || 0);
+        }
+        return (a.full_name || "").localeCompare(b.full_name || "", "es", { sensitivity: "base" });
+      });
+  }, [profiles, searchUserProfile, userSortOrder]);
 
   useEffect(() => {
     if (user?.id) {
@@ -536,13 +543,25 @@ export default function AdminPanel() {
               />
             </div>
 
-            <Button 
-              onClick={exportUsersToExcel} 
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl px-5 h-10 flex items-center gap-2 shadow-md transition-all active:scale-95 shrink-0"
-            >
-              <FileSpreadsheet size={16} />
-              Exportar a Excel (.xlsx)
-            </Button>
+            <div className="flex items-center gap-3 shrink-0">
+              <select
+                value={userSortOrder}
+                onChange={(e) => setUserSortOrder(e.target.value as any)}
+                className="bg-background border border-border text-foreground text-xs font-semibold rounded-xl px-3 h-10 outline-none cursor-pointer focus:ring-2 focus:ring-accent"
+              >
+                <option value="recent">🕒 Más recientes primero</option>
+                <option value="az">🔤 Alfabético (A - Z)</option>
+                <option value="year">🎓 Año de Ingreso (Mayor a menor)</option>
+              </select>
+
+              <Button 
+                onClick={exportUsersToExcel} 
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl px-5 h-10 flex items-center gap-2 shadow-md transition-all active:scale-95 shrink-0"
+              >
+                <FileSpreadsheet size={16} />
+                Exportar a Excel (.xlsx)
+              </Button>
+            </div>
           </div>
 
           <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
@@ -550,6 +569,7 @@ export default function AdminPanel() {
               <thead className="bg-muted/50 border-b">
                 <tr>
                   <th className="px-6 py-4 text-left font-semibold">Nombre Completo</th>
+                  <th className="px-6 py-4 text-left font-semibold">Fecha Registro</th>
                   <th className="px-6 py-4 text-left font-semibold">Año Ingreso</th>
                   <th className="px-6 py-4 text-left font-semibold">Rol</th>
                   <th className="px-6 py-4 text-left font-semibold">Permutas Activas</th>
@@ -563,6 +583,9 @@ export default function AdminPanel() {
                     <td className="px-6 py-4">
                       <div className="font-bold text-foreground">{p.full_name || "Sin nombre"}</div>
                       <div className="text-[10px] text-muted-foreground font-mono">{p.id}</div>
+                    </td>
+                    <td className="px-6 py-4 text-xs font-mono text-muted-foreground">
+                      {p.created_at ? new Date(p.created_at).toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" }) : "N/D"}
                     </td>
                     <td className="px-6 py-4">
                       {p.anio_ingreso ? (
