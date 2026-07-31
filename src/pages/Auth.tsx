@@ -112,16 +112,32 @@ const Auth = () => {
     if (hasExchanged.current) return;
     hasExchanged.current = true;
 
+    // Guardamos la información del hash y search ANTES de limpiar la URL
+    const rawHash = window.location.hash;
+    const rawSearch = window.location.search;
+
+    const isRecovery = 
+      window.location.pathname === "/auth/recovery" ||
+      rawHash.includes("type=recovery") ||
+      rawSearch.includes("type=recovery");
+
     // Limpiamos la URL del navegador manteniendo la ruta /auth/recovery
     window.history.replaceState(null, "", "/auth/recovery");
 
-    if (info.type === "hash") {
-      // Si el hash indica recovery, marcamos el flujo de recuperación y terminamos cargando
-      if (window.location.hash.includes("type=recovery")) {
-        isRecoveryFlow.current = true;
-        setConfirmState("idle");
-        return;
+    if (isRecovery) {
+      isRecoveryFlow.current = true;
+      setConfirmState("idle");
+      setTab("update-password");
+      if (info.type === "token_hash") {
+        setRecoveryToken(info.token);
       }
+      if (info.type === "pkce") {
+        supabase.auth.exchangeCodeForSession(info.code).catch((err) => console.error("PKCE exchange error:", err));
+      }
+      return;
+    }
+
+    if (info.type === "hash") {
       setConfirmState("confirmed");
       return;
     }
@@ -131,20 +147,17 @@ const Auth = () => {
       setRecoveryToken(info.token);
       isRecoveryFlow.current = true;
       setConfirmState("idle");
+      setTab("update-password");
       return;
     }
 
-    // Flujo PKCE: intercambiar code por sesión
+    // Flujo PKCE para confirmación de email
     supabase.auth.exchangeCodeForSession(info.code).then(({ error }) => {
       if (error) {
         console.error("PKCE exchange error:", error);
         setConfirmState("error");
       } else {
-        if (!isRecoveryFlow.current) {
-          setConfirmState("confirmed");
-        } else {
-          setConfirmState("idle");
-        }
+        setConfirmState("confirmed");
       }
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
