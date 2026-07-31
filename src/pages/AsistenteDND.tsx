@@ -334,6 +334,8 @@ export default function AsistenteDND() {
       return;
     }
 
+    const isAdmin = profile?.role === "admin" || profile?.role === "escritor";
+
     setIsSavingCorrection(true);
     try {
       const { error } = await supabase.from("asistente_correcciones").insert({
@@ -343,12 +345,17 @@ export default function AsistenteDND() {
         pregunta_original: preguntaOriginal,
         respuesta_original: msg.content,
         respuesta_corregida: correctionInputText.trim(),
-        creado_por: user?.id || null
+        creado_por: user?.id || null,
+        aprobado: isAdmin
       });
 
       if (error) throw error;
 
-      toast.success("¡Corrección guardada! El Asistente DND aprenderá esta respuesta oficial para futuras consultas.");
+      if (isAdmin) {
+        toast.success("¡Corrección guardada y aprobada! El Asistente DND aprenderá esta respuesta oficial para futuras consultas.");
+      } else {
+        toast.success("¡Gracias! Tu sugerencia fue enviada para ser revisada y aprobada por los administradores.");
+      }
       
       // Actualizar mensaje en la interfaz
       setMessages(prev => prev.map((m, i) => i === correctionMsgIndex ? { ...m, content: correctionInputText.trim() } : m));

@@ -124,6 +124,7 @@ serve(async (req) => {
           .from("asistente_correcciones")
           .select("pregunta_original, respuesta_corregida")
           .eq("materia", materia)
+          .eq("aprobado", true)
           .order("created_at", { ascending: false })
           .limit(6);
 

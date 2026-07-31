@@ -8,12 +8,13 @@ import { Input } from "@/components/ui/input";
 import { 
   Loader2, Trash2, Search, UserMinus, UserCheck, Mail, ShieldAlert, 
   Users, Repeat, Trophy, Sparkles, TrendingUp, ShieldCheck, Activity, GraduationCap,
-  FileSpreadsheet, Download
+  FileSpreadsheet, Download, Eye, CheckCircle, Clock, Check
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
@@ -27,6 +28,10 @@ export default function AdminPanel() {
   
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  
+  // Correction Modal States
+  const [selectedCorreccion, setSelectedCorreccion] = useState<any | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   
   // Search & Filter States
   const [searchMateria, setSearchMateria] = useState("");
@@ -222,9 +227,37 @@ export default function AdminPanel() {
     if (error) toast.error("Error: " + error.message);
     else {
       setCorrecciones(prev => prev.filter(c => c.id !== id));
+      if (selectedCorreccion?.id === id) {
+        setIsDetailModalOpen(false);
+        setSelectedCorreccion(null);
+      }
       toast.success("Corrección eliminada");
     }
     setUpdating(false);
+  };
+
+  const approveCorreccion = async (id: string) => {
+    setUpdating(true);
+    const { error } = await supabase
+      .from("asistente_correcciones")
+      .update({ aprobado: true })
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Error al aprobar: " + error.message);
+    } else {
+      toast.success("¡Corrección aprobada con éxito! La IA utilizará esta instrucción para futuras consultas.");
+      setCorrecciones(prev => prev.map(c => c.id === id ? { ...c, aprobado: true } : c));
+      if (selectedCorreccion?.id === id) {
+        setSelectedCorreccion((prev: any) => prev ? { ...prev, aprobado: true } : null);
+      }
+    }
+    setUpdating(false);
+  };
+
+  const openDetailModal = (c: any) => {
+    setSelectedCorreccion(c);
+    setIsDetailModalOpen(true);
   };
 
   const toggleBanUser = async (profileId: string, currentStatus: boolean) => {
@@ -639,13 +672,24 @@ export default function AdminPanel() {
 
         {/* --- TAB: ASISTENTE IA CORRECCIONES --- */}
         <TabsContent value="asistente" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="p-6 bg-card border rounded-2xl shadow-sm space-y-2">
-            <h3 className="text-lg font-bold flex items-center gap-2 text-foreground">
-              <Sparkles className="text-accent h-5 w-5" /> Correcciones y Reglas de Aprendizaje del Bot
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Las correcciones registradas aquí se inyectan automáticamente en las futuras consultas del Asistente DND como instrucciones prioritarias y verdades absolutas.
-            </p>
+          <div className="p-6 bg-card border rounded-2xl shadow-sm space-y-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-bold flex items-center gap-2 text-foreground">
+                <Sparkles className="text-accent h-5 w-5" /> Correcciones y Reglas de Aprendizaje del Bot
+              </h3>
+              <p className="text-xs text-muted-foreground leading-relaxed mt-1">
+                Las correcciones <strong className="text-emerald-400">aprobadas por administradores</strong> se inyectan en tiempo real como verdades absolutas para el Asistente DND.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs shrink-0">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold">
+                {correcciones.filter(c => c.aprobado).length} Aprobadas
+              </span>
+              <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold">
+                {correcciones.filter(c => !c.aprobado).length} Pendientes
+              </span>
+            </div>
           </div>
 
           <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
@@ -653,6 +697,7 @@ export default function AdminPanel() {
               <thead className="bg-muted/50 border-b">
                 <tr>
                   <th className="px-6 py-4 text-left font-semibold">Materia / Contexto</th>
+                  <th className="px-6 py-4 text-left font-semibold">Estado</th>
                   <th className="px-6 py-4 text-left font-semibold">Pregunta Original</th>
                   <th className="px-6 py-4 text-left font-semibold">Respuesta Oficial Corregida</th>
                   <th className="px-6 py-4 text-left font-semibold">Fecha</th>
@@ -661,10 +706,25 @@ export default function AdminPanel() {
               </thead>
               <tbody className="divide-y">
                 {correcciones.map(c => (
-                  <tr key={c.id} className="hover:bg-muted/10 transition-colors">
+                  <tr 
+                    key={c.id} 
+                    className="hover:bg-muted/20 transition-colors cursor-pointer"
+                    onClick={() => openDetailModal(c)}
+                  >
                     <td className="px-6 py-4 font-bold text-accent">
                       {c.materia}
                       {c.catedra && <span className="block text-[10px] text-muted-foreground font-normal">Cat: {c.catedra}</span>}
+                    </td>
+                    <td className="px-6 py-4">
+                      {c.aprobado ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+                          <CheckCircle size={11} /> Aprobada
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500/15 text-amber-400 border border-amber-500/30 uppercase tracking-wider animate-pulse">
+                          <Clock size={11} /> Pendiente
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-xs font-medium max-w-xs truncate" title={c.pregunta_original}>
                       {c.pregunta_original}
@@ -672,13 +732,41 @@ export default function AdminPanel() {
                     <td className="px-6 py-4 text-xs text-foreground max-w-md line-clamp-2" title={c.respuesta_corregida}>
                       {c.respuesta_corregida}
                     </td>
-                    <td className="px-6 py-4 text-xs text-muted-foreground">
-                      {new Date(c.created_at).toLocaleDateString()}
+                    <td className="px-6 py-4 text-xs text-muted-foreground whitespace-nowrap">
+                      {new Date(c.created_at).toLocaleDateString("es-AR")}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <Button variant="ghost" size="icon" onClick={() => deleteCorreccion(c.id)} className="text-destructive hover:bg-destructive/10">
-                        <Trash2 size={16} />
-                      </Button>
+                    <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => openDetailModal(c)}
+                          className="h-8 px-2.5 text-xs text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg flex items-center gap-1"
+                        >
+                          <Eye size={14} /> Ver
+                        </Button>
+
+                        {!c.aprobado && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => approveCorreccion(c.id)} 
+                            disabled={updating}
+                            className="h-8 px-2.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center gap-1 font-bold"
+                          >
+                            <Check size={14} /> Aprobar
+                          </Button>
+                        )}
+
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => deleteCorreccion(c.id)} 
+                          disabled={updating}
+                          className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-lg"
+                        >
+                          <Trash2 size={15} />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -690,6 +778,106 @@ export default function AdminPanel() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* MODAL DETALLE DE CORRECCIÓN COMPLETO */}
+      <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-2xl space-y-5">
+          {selectedCorreccion && (
+            <>
+              <DialogHeader className="border-b border-border pb-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-bold font-mono text-accent uppercase tracking-widest bg-accent/10 border border-accent/20 px-3 py-1 rounded-lg">
+                    Materia: {selectedCorreccion.materia} {selectedCorreccion.catedra ? `(Cátedras ${selectedCorreccion.catedra})` : ""}
+                  </span>
+
+                  {selectedCorreccion.aprobado ? (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                      <CheckCircle size={13} /> APROBADA E INYECTADA EN IA
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      <Clock size={13} /> PENDIENTE DE REVISIÓN ADMIN
+                    </span>
+                  )}
+                </div>
+
+                <DialogTitle className="font-display text-xl font-bold text-foreground mt-3">
+                  Detalle Completo de la Corrección
+                </DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  Registrada el {new Date(selectedCorreccion.created_at).toLocaleString("es-AR")}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-5 py-2">
+                {/* Pregunta Original */}
+                <div className="space-y-1.5 p-4 rounded-xl bg-muted/40 border">
+                  <label className="text-[11px] font-black text-accent uppercase tracking-wider block">
+                    Pregunta Original del Alumno:
+                  </label>
+                  <p className="text-sm font-semibold text-foreground whitespace-pre-wrap leading-relaxed">
+                    {selectedCorreccion.pregunta_original}
+                  </p>
+                </div>
+
+                {/* Respuesta Original del Bot (si existe) */}
+                {selectedCorreccion.respuesta_original && (
+                  <div className="space-y-1.5 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+                    <label className="text-[11px] font-black text-red-400 uppercase tracking-wider block">
+                      Respuesta Original del Bot (Errónea / Incompleta):
+                    </label>
+                    <div className="text-xs text-foreground/80 whitespace-pre-wrap leading-relaxed">
+                      {selectedCorreccion.respuesta_original}
+                    </div>
+                  </div>
+                )}
+
+                {/* Respuesta Oficial Corregida (COMPLETA) */}
+                <div className="space-y-1.5 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+                  <label className="text-[11px] font-black text-emerald-400 uppercase tracking-wider block">
+                    Respuesta Oficial Corregida (Instrucción Real para la IA):
+                  </label>
+                  <div className="text-sm font-medium text-foreground whitespace-pre-wrap leading-relaxed bg-background p-4 rounded-xl border border-border">
+                    {selectedCorreccion.respuesta_corregida}
+                  </div>
+                </div>
+              </div>
+
+              {/* Botones de Acción del Modal */}
+              <div className="flex items-center justify-between gap-3 pt-4 border-t border-border">
+                <Button 
+                  variant="destructive" 
+                  onClick={() => deleteCorreccion(selectedCorreccion.id)}
+                  disabled={updating}
+                  className="rounded-xl text-xs font-bold flex items-center gap-1.5"
+                >
+                  <Trash2 size={15} /> Eliminar Corrección
+                </Button>
+
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsDetailModalOpen(false)}
+                    className="rounded-xl text-xs"
+                  >
+                    Cerrar
+                  </Button>
+
+                  {!selectedCorreccion.aprobado && (
+                    <Button 
+                      onClick={() => approveCorreccion(selectedCorreccion.id)}
+                      disabled={updating}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl px-5 h-10 flex items-center gap-2 shadow-md transition-all active:scale-95"
+                    >
+                      <Check size={16} /> Aprobar Corrección Ahora
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
