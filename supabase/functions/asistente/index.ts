@@ -403,18 +403,27 @@ PREGUNTA DEL ESTUDIANTE:
       let apiResponse;
       let usedModel = anthropicModel;
 
+      const systemPayload = [
+        {
+          type: "text",
+          text: systemInstructionText,
+          cache_control: { type: "ephemeral" }
+        }
+      ];
+
       try {
         apiResponse = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: {
             "x-api-key": anthropicApiKey,
             "anthropic-version": "2023-06-01",
+            "anthropic-beta": "prompt-caching-2024-07-31",
             "content-type": "application/json"
           },
           body: JSON.stringify({
             model: usedModel,
             max_tokens: 1500,
-            system: systemInstructionText,
+            system: systemPayload,
             messages: simpleMessages
           })
         });
@@ -428,12 +437,13 @@ PREGUNTA DEL ESTUDIANTE:
             headers: {
               "x-api-key": anthropicApiKey,
               "anthropic-version": "2023-06-01",
+              "anthropic-beta": "prompt-caching-2024-07-31",
               "content-type": "application/json"
             },
             body: JSON.stringify({
               model: usedModel,
               max_tokens: 1500,
-              system: systemInstructionText,
+              system: systemPayload,
               messages: simpleMessages
             })
           });
