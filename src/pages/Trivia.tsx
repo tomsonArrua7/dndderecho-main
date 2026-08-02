@@ -116,7 +116,9 @@ export default function Trivia() {
   const [showReviewModal, setShowReviewModal] = useState(false);
 
   // Filtro de Año de Carrera: 0 = Toda la Carrera, 1 = 1º Año, 2 = 2º Año, 3 = 3º Año, 4 = 4º Año, 5 = 5º Año
-  const [selectedYearFilter, setSelectedYearFilter] = useState<nu  // Estado de Duelos 1v1 conectados a Supabase
+  const [selectedYearFilter, setSelectedYearFilter] = useState<number>(0);
+  
+  // Estado de Duelos 1v1 conectados a Supabase
   const [duelosList, setDuelosList] = useState<DueloTrivia[]>([]);
   const [loadingDuelos, setLoadingDuelos] = useState(false);
   const [inputCodigoDuelo, setInputCodigoDuelo] = useState("");
