@@ -116,15 +116,39 @@ export default function Trivia() {
   const [showReviewModal, setShowReviewModal] = useState(false);
 
   // Filtro de Año de Carrera: 0 = Toda la Carrera, 1 = 1º Año, 2 = 2º Año, 3 = 3º Año, 4 = 4º Año, 5 = 5º Año
-  const [selectedYearFilter, setSelectedYearFilter] = useState<number>(0);
-  
-  // Estado de Duelos 1v1 conectados a Supabase
+  const [selectedYearFilter, setSelectedYearFilter] = useState<nu  // Estado de Duelos 1v1 conectados a Supabase
   const [duelosList, setDuelosList] = useState<DueloTrivia[]>([]);
   const [loadingDuelos, setLoadingDuelos] = useState(false);
   const [inputCodigoDuelo, setInputCodigoDuelo] = useState("");
   const [createdDueloModal, setCreatedDueloModal] = useState<DueloTrivia | null>(null);
   const [activeDuelRoom, setActiveDuelRoom] = useState<DueloTrivia | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+
+  // Registro de resultados de duelo ya vistos (para no repetir popups en cada refresco, estilo Preguntados)
+  const [seenDuelResults, setSeenDuelResults] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("dnd_seen_duel_results");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const seenDuelResultsRef = useRef<string[]>([]);
+  useEffect(() => {
+    seenDuelResultsRef.current = seenDuelResults;
+  }, [seenDuelResults]);
+
+  const markDuelAsSeen = (duelId: string) => {
+    setSeenDuelResults(prev => {
+      if (prev.includes(duelId)) return prev;
+      const updated = [...prev, duelId];
+      try {
+        localStorage.setItem("dnd_seen_duel_results", JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
 
   const activeDuelRoomRef = useRef<DueloTrivia | null>(null);
   useEffect(() => {
@@ -149,6 +173,11 @@ export default function Trivia() {
     p2Puntos: number;
     p2Aciertos: number;
   } | null>(null);
+
+  const duelOutcomeModalRef = useRef(duelOutcomeModal);
+  useEffect(() => {
+    duelOutcomeModalRef.current = duelOutcomeModal;
+  }, [duelOutcomeModal]);
 
   // Filtros de juego Solo
   const [selectedCategoria, setSelectedCategoria] = useState<string>("todas");
@@ -182,11 +211,11 @@ export default function Trivia() {
     puntosDuelista: number;
   }>(() => {
     try {
-      const saved = localStorage.getItem(`dnd_trivia_user_stats`);
-      return saved ? JSON.parse(saved) : { 
-        totalJugadas: 0, 
-        totalCorrectas: 0, 
-        puntosTotales: 0, 
+      const saved = localStorage.getItem("dnd_trivia_user_stats");
+      return saved ? JSON.parse(saved) : {
+        totalJugadas: 0,
+        totalCorrectas: 0,
+        puntosTotales: 0,
         mejorRacha: 0,
         victoriasDuelo: 0,
         derrotasDuelo: 0,
@@ -194,10 +223,10 @@ export default function Trivia() {
         puntosDuelista: 0
       };
     } catch {
-      return { 
-        totalJugadas: 0, 
-        totalCorrectas: 0, 
-        puntosTotales: 0, 
+      return {
+        totalJugadas: 0,
+        totalCorrectas: 0,
+        puntosTotales: 0,
         mejorRacha: 0,
         victoriasDuelo: 0,
         derrotasDuelo: 0,
@@ -248,7 +277,6 @@ export default function Trivia() {
   const fetchRankingFromSupabase = async () => {
     setLoadingRanking(true);
     try {
-      // General Ranking
       const { data, error } = await supabase
         .from("trivia_leaderboard")
         .select("*")
@@ -273,7 +301,6 @@ export default function Trivia() {
         setLeaderboardList([]);
       }
 
-      // Ranking de Duelistas Exclusivo
       const { data: duelData, error: duelError } = await supabase
         .from("trivia_leaderboard_duelistas")
         .select("*")
@@ -292,6 +319,62 @@ export default function Trivia() {
     }
   };
 
+  // Evaluar automáticamente si hay un duelo recién finalizado del jugador sin haber visto el modal (Estilo Preguntados)
+  const checkAndTriggerUnseenResults = (duelos: DueloTrivia[], seenList: string[]) => {
+    if (duelOutcomeModalRef.current) return;
+
+    for (const duel of duelos) {
+      const isP1 = (user?.id && duel.player1Id === user.id) || duel.player1Nombre === userName;
+      const isP2 = (user?.id && duel.player2Id === user.id) || (duel.player2Nombre && duel.player2Nombre === userName);
+
+      if (!isP1 && !isP2) continue;
+
+      const isFinished = duel.status === "finalizado" || (duel.player1Completed && duel.player2Completed);
+
+      if (isFinished && !seenList.includes(duel.id)) {
+        const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
+        const oppScore = isP1 ? (duel.player2Puntos || 0) : (duel.player1Puntos || 0);
+        const p1Score = duel.player1Puntos || 0;
+        const p1Aciertos = duel.player1Aciertos || 0;
+        const p2Score = duel.player2Puntos || 0;
+        const p2Aciertos = duel.player2Aciertos || 0;
+        const oppName = isP1 ? (duel.player2Nombre || "Rival") : (duel.player1Nombre || "Rival");
+
+        let res: "victoria" | "derrota" | "empate" = "empate";
+        let ptsBonus = 25;
+
+        if (myScore > oppScore) {
+          res = "victoria";
+          ptsBonus = 50;
+        } else if (oppScore > myScore) {
+          res = "derrota";
+          ptsBonus = 10;
+        } else {
+          res = "empate";
+          ptsBonus = 25;
+        }
+
+        markDuelAsSeen(duel.id);
+
+        setDuelOutcomeModal({
+          resultado: res,
+          puntosGanados: ptsBonus,
+          rivalNombre: oppName,
+          p1Nombre: duel.player1Nombre || "Jugador 1",
+          p1Puntos: p1Score,
+          p1Aciertos: p1Aciertos,
+          p2Nombre: duel.player2Nombre || "Jugador 2",
+          p2Puntos: p2Score,
+          p2Aciertos: p2Aciertos
+        });
+
+        fetchUserStatsFromSupabase();
+        fetchRankingFromSupabase();
+        break;
+      }
+    }
+  };
+
   // 3. Cargar Salas de Duelo 1vs1 desde Supabase DB
   const fetchDuelosFromSupabase = async () => {
     setLoadingDuelos(true);
@@ -300,7 +383,7 @@ export default function Trivia() {
         .from("trivia_duelos")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(40);
 
       if (data && !error) {
         const mapped: DueloTrivia[] = data.map((d: any) => ({
@@ -326,6 +409,9 @@ export default function Trivia() {
           createdAt: d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Reciente"
         }));
         setDuelosList(mapped);
+
+        // Auto-activar modal estilo Preguntados si un rival acaba de completar un duelo del jugador
+        checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
       }
     } catch (err) {
       console.error("Error al obtener duelos de Supabase:", err);
@@ -334,76 +420,34 @@ export default function Trivia() {
     }
   };
 
-  // Escuchar cambios de autenticación y suscribirse a Realtime de Duelos
+  // Escuchar cambios de autenticación, Polling 4s y Suscripción Realtime a trivia_duelos
   useEffect(() => {
     fetchUserStatsFromSupabase();
     fetchDuelosFromSupabase();
     fetchRankingFromSupabase();
 
-    // Suscripción Realtime para actualización en tiempo real de salas de duelo
+    // Polling cada 4 segundos para asegurar sync fluida en celulares y PCs sin depender únicamente del socket
+    const pollInterval = setInterval(() => {
+      fetchDuelosFromSupabase();
+    }, 4000);
+
+    // Suscripción Realtime para notificación instantánea
     const channel = supabase
       .channel("public:trivia_duelos")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "trivia_duelos" },
-        (payload: any) => {
+        () => {
           fetchDuelosFromSupabase();
-
-          // Sincronizar en tiempo real el modal si este jugador está esperando en una sala
-          const newRoom = payload.new;
-          if (newRoom && activeDuelRoomRef.current && activeDuelRoomRef.current.id === newRoom.id) {
-            const isPlayer1 = newRoom.player1_id === user?.id || newRoom.player1_nombre === userName;
-            const p1Score = newRoom.player1_puntos || 0;
-            const p1Aciertos = newRoom.player1_aciertos || 0;
-            const p2Score = newRoom.player2_puntos || 0;
-            const p2Aciertos = newRoom.player2_aciertos || 0;
-            const p1Done = newRoom.player1_completed;
-            const p2Done = newRoom.player2_completed;
-
-            if (p1Done && p2Done) {
-              const myScore = isPlayer1 ? p1Score : p2Score;
-              const oppScore = isPlayer1 ? p2Score : p1Score;
-              const p2Name = !isPlayer1 ? (newRoom.player1_nombre || "Rival") : (newRoom.player2_nombre || "Rival");
-
-              let res: "victoria" | "derrota" | "empate" = "empate";
-              let ptsBonus = 25;
-
-              if (myScore > oppScore) {
-                res = "victoria";
-                ptsBonus = 50;
-              } else if (oppScore > myScore) {
-                res = "derrota";
-                ptsBonus = 10;
-              } else {
-                res = "empate";
-                ptsBonus = 25;
-              }
-
-              // ACTUALIZAR MODAL DE RESULTADO EN VIVO
-              setDuelOutcomeModal({
-                resultado: res,
-                puntosGanados: ptsBonus,
-                rivalNombre: p2Name,
-                p1Nombre: newRoom.player1_nombre || "Jugador 1",
-                p1Puntos: p1Score,
-                p1Aciertos: p1Aciertos,
-                p2Nombre: newRoom.player2_nombre || "Jugador 2",
-                p2Puntos: p2Score,
-                p2Aciertos: p2Aciertos
-              });
-
-              fetchUserStatsFromSupabase();
-              fetchRankingFromSupabase();
-            }
-          }
         }
       )
       .subscribe();
 
     return () => {
+      clearInterval(pollInterval);
       supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [user?.id, userName]);
 
   // Persistir stats localmente como fallback
   useEffect(() => {
@@ -521,11 +565,13 @@ export default function Trivia() {
 
   // Unirse a un Duelo 1vs1 (por código o lista)
   const handleJoinDuelo = async (duelo: DueloTrivia) => {
-    setActiveDuelRoom(duelo);
+    const isPlayer1 = (user?.id && duelo.player1Id === user.id) || duelo.player1Nombre === userName;
+    const isPlayer2 = (user?.id && duelo.player2Id === user.id) || (duelo.player2Nombre && duelo.player2Nombre === userName);
+    const myCompleted = isPlayer1 ? duelo.player1Completed : (isPlayer2 ? duelo.player2Completed : false);
+    const oppCompleted = isPlayer1 ? duelo.player2Completed : (isPlayer2 ? duelo.player1Completed : false);
 
-    // Si el duelo ya está completado por ambos o finalizado en la BD, mostrar directo el resultado
+    // 1. Si el duelo ya está completado por ambos o finalizado en la BD, mostrar directo el resultado final
     if (duelo.status === "finalizado" || (duelo.player1Completed && duelo.player2Completed)) {
-      const isPlayer1 = duelo.player1Id === user?.id || duelo.player1Nombre === userName;
       const p1Score = duelo.player1Puntos || 0;
       const p1Aciertos = duelo.player1Aciertos || 0;
       const p2Score = duelo.player2Puntos || 0;
@@ -533,7 +579,7 @@ export default function Trivia() {
 
       const myScore = isPlayer1 ? p1Score : p2Score;
       const oppScore = isPlayer1 ? p2Score : p1Score;
-      const p2Name = !isPlayer1 ? (duelo.player1Nombre || "Rival") : (duelo.player2Nombre || "Rival");
+      const oppName = !isPlayer1 ? (duelo.player1Nombre || "Rival") : (duelo.player2Nombre || "Rival");
 
       let res: "victoria" | "derrota" | "empate" = "empate";
       let ptsBonus = 25;
@@ -549,10 +595,12 @@ export default function Trivia() {
         ptsBonus = 25;
       }
 
+      markDuelAsSeen(duelo.id);
+
       setDuelOutcomeModal({
         resultado: res,
         puntosGanados: ptsBonus,
-        rivalNombre: p2Name,
+        rivalNombre: oppName,
         p1Nombre: duelo.player1Nombre || "Jugador 1",
         p1Puntos: p1Score,
         p1Aciertos: p1Aciertos,
@@ -563,14 +611,40 @@ export default function Trivia() {
       return;
     }
 
+    // 2. Si este jugador YA completó su turno pero su rival aún no termina, mostrar modal de esperando rival sin reiniciar el juego
+    if (myCompleted && !oppCompleted) {
+      const p1Score = duelo.player1Puntos || 0;
+      const p1Aciertos = duelo.player1Aciertos || 0;
+      const p2Score = duelo.player2Puntos || 0;
+      const p2Aciertos = duelo.player2Aciertos || 0;
+      const oppName = !isPlayer1 ? (duelo.player1Nombre || "Rival") : (duelo.player2Nombre || "Esperando Rival...");
+
+      setActiveDuelRoom(duelo);
+      setDuelOutcomeModal({
+        resultado: "esperando_rival",
+        puntosGanados: 0,
+        rivalNombre: oppName,
+        p1Nombre: duelo.player1Nombre || "Jugador 1",
+        p1Puntos: p1Score,
+        p1Aciertos: p1Aciertos,
+        p2Nombre: duelo.player2Nombre || "Esperando Rival...",
+        p2Puntos: p2Score,
+        p2Aciertos: p2Aciertos
+      });
+      return;
+    }
+
+    // 3. Si aún NO ha respondido, iniciar sesión de juego para este usuario
+    setActiveDuelRoom(duelo);
+
     // Obtener preguntas seleccionadas de la sala
     let duelQuestions = TRIVIA_QUESTIONS.filter(q => duelo.preguntasIds.includes(q.id));
     if (duelQuestions.length === 0) {
       duelQuestions = TRIVIA_QUESTIONS.slice(0, 5);
     }
 
-    // Si entra como Rival (Jugador 2)
-    if (duelo.player1Id !== user?.id && !duelo.player2Id) {
+    // Si entra como Rival (Jugador 2) por primera vez
+    if (!isPlayer1 && !duelo.player2Id) {
       try {
         await supabase
           .from("trivia_duelos")
@@ -655,7 +729,6 @@ export default function Trivia() {
   };
 
   const finishGame = async () => {
-    // Si NO es un duelo 1v1, mostrar resumen individual
     if (!activeDuelRoom) {
       setGameOver(true);
     } else {
@@ -669,7 +742,6 @@ export default function Trivia() {
     updatedStats.puntosTotales += score;
     updatedStats.mejorRacha = Math.max(userStats.mejorRacha, maxStreak);
 
-    // Registrar partida individual en Supabase
     if (user) {
       try {
         await supabase.from("trivia_partidas").insert({
@@ -686,12 +758,18 @@ export default function Trivia() {
       }
     }
 
-    // Si la partida pertenecía a un duelo 1v1
     if (activeDuelRoom) {
       try {
-        const isPlayer1 = activeDuelRoom.player1Id === user?.id || activeDuelRoom.player1Nombre === userName;
+        const isPlayer1 = (user?.id && activeDuelRoom.player1Id === user.id) || activeDuelRoom.player1Nombre === userName;
         
-        // Cargar estado actualizado de la sala desde Supabase
+        const updateData = isPlayer1
+          ? { player1_aciertos: correctAnswersCount, player1_puntos: score, player1_completed: true }
+          : { player2_aciertos: correctAnswersCount, player2_puntos: score, player2_completed: true };
+
+        // 1. Guardar primero el resultado de este jugador en Supabase
+        await supabase.from("trivia_duelos").update(updateData).eq("id", activeDuelRoom.id);
+
+        // 2. Traer el estado actualizado real de la sala desde Supabase
         const { data: currentRoomData } = await supabase
           .from("trivia_duelos")
           .select("*")
@@ -700,18 +778,14 @@ export default function Trivia() {
 
         const room = currentRoomData || activeDuelRoom;
         
-        const p1Score = isPlayer1 ? score : (room.player1_puntos || room.player1Puntos || 0);
-        const p1Aciertos = isPlayer1 ? correctAnswersCount : (room.player1_aciertos || room.player1Aciertos || 0);
-        const p1Done = isPlayer1 ? true : (room.player1_completed || room.player1Completed || false);
+        const p1Score = isPlayer1 ? score : (room.player1_puntos || 0);
+        const p1Aciertos = isPlayer1 ? correctAnswersCount : (room.player1_aciertos || 0);
+        const p1Done = room.player1_completed || isPlayer1;
 
-        const p2Score = !isPlayer1 ? score : (room.player2_puntos || room.player2Puntos || 0);
-        const p2Aciertos = !isPlayer1 ? correctAnswersCount : (room.player2_aciertos || room.player2Aciertos || 0);
-        const p2Done = !isPlayer1 ? true : (room.player2_completed || room.player2Completed || false);
-        const p2Name = !isPlayer1 ? (room.player1_nombre || room.player1Nombre || "Rival") : (room.player2_nombre || room.player2Nombre || "Rival");
-
-        const updateData = isPlayer1
-          ? { player1_aciertos: correctAnswersCount, player1_puntos: score, player1_completed: true }
-          : { player2_aciertos: correctAnswersCount, player2_puntos: score, player2_completed: true };
+        const p2Score = !isPlayer1 ? score : (room.player2_puntos || 0);
+        const p2Aciertos = !isPlayer1 ? correctAnswersCount : (room.player2_aciertos || 0);
+        const p2Done = room.player2_completed || !isPlayer1;
+        const p2Name = !isPlayer1 ? (room.player1_nombre || "Rival") : (room.player2_nombre || "Rival");
 
         if (p1Done && p2Done) {
           try {
@@ -724,13 +798,11 @@ export default function Trivia() {
             });
           } catch {
             await supabase.from("trivia_duelos").update({
-              ...updateData,
               status: "finalizado",
               ganador_id: p1Score > p2Score ? "player1" : (p2Score > p1Score ? "player2" : "empate")
             }).eq("id", activeDuelRoom.id);
           }
 
-          // Calcular resultado para mostrar en modal
           let res: "victoria" | "derrota" | "empate" = "empate";
           let ptsBonus = 25;
 
@@ -752,28 +824,28 @@ export default function Trivia() {
           }
           updatedStats.puntosDuelista += ptsBonus;
 
+          markDuelAsSeen(activeDuelRoom.id);
+
           setDuelOutcomeModal({
             resultado: res,
             puntosGanados: ptsBonus,
             rivalNombre: p2Name,
-            p1Nombre: room.player1_nombre || room.player1Nombre || "Jugador 1",
+            p1Nombre: room.player1_nombre || "Jugador 1",
             p1Puntos: p1Score,
             p1Aciertos: p1Aciertos,
-            p2Nombre: room.player2_nombre || room.player2Nombre || "Jugador 2",
+            p2Nombre: room.player2_nombre || "Jugador 2",
             p2Puntos: p2Score,
             p2Aciertos: p2Aciertos
           });
         } else {
-          // Si el otro jugador aún no ha completado la sala
-          await supabase.from("trivia_duelos").update(updateData).eq("id", activeDuelRoom.id);
           setDuelOutcomeModal({
             resultado: "esperando_rival",
             puntosGanados: 0,
             rivalNombre: p2Name,
-            p1Nombre: room.player1_nombre || room.player1Nombre || "Jugador 1",
+            p1Nombre: room.player1_nombre || "Jugador 1",
             p1Puntos: p1Score,
             p1Aciertos: p1Aciertos,
-            p2Nombre: room.player2_nombre || room.player2Nombre || "Esperando Rival...",
+            p2Nombre: room.player2_nombre || "Esperando Rival...",
             p2Puntos: p2Score,
             p2Aciertos: p2Aciertos
           });
@@ -1327,7 +1399,7 @@ export default function Trivia() {
             {duelosSubTab === "disponibles" && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Salas Públicas en Espera:</h4>
+                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Salas de Duelo Activas:</h4>
                   <button 
                     onClick={fetchDuelosFromSupabase}
                     className="flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 transition-colors"
@@ -1348,33 +1420,53 @@ export default function Trivia() {
                     {duelosList
                       .filter(d => d.status !== "finalizado" && !(d.player1Completed && d.player2Completed))
                       .map((duelo) => {
-                        const isOwnRoom = duelo.player1Id === user?.id || duelo.player1Nombre === userName;
+                        const isPlayer1 = (user?.id && duelo.player1Id === user.id) || duelo.player1Nombre === userName;
+                        const isPlayer2 = (user?.id && duelo.player2Id === user.id) || (duelo.player2Nombre && duelo.player2Nombre === userName);
+                        const isParticipant = isPlayer1 || isPlayer2;
+                        const myCompleted = isPlayer1 ? duelo.player1Completed : (isPlayer2 ? duelo.player2Completed : false);
+                        const oppName = isPlayer1 ? (duelo.player2Nombre || "Esperando Rival...") : duelo.player1Nombre;
 
                         return (
                           <div
                             key={duelo.id}
-                            className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-4"
+                            className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
                           >
                             <div className="space-y-1">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500/20 text-red-300 border border-red-500/30 font-mono">
                                   {duelo.id}
                                 </span>
                                 <span className="text-xs font-black text-white">{duelo.materiaNombre}</span>
+
+                                {isParticipant && (
+                                  <span className={cn(
+                                    "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase border font-mono",
+                                    myCompleted ? "bg-amber-500/20 text-amber-300 border-amber-500/40" : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 animate-pulse"
+                                  )}>
+                                    {myCompleted ? `⏳ Esperando a ${oppName}` : "🔥 ¡ES TU TURNO DE RESPONDER!"}
+                                  </span>
+                                )}
                               </div>
-                              <p className="text-[11px] text-slate-400">Creado por: <span className="text-blue-300 font-bold">{duelo.player1Nombre}</span></p>
+                              <p className="text-[11px] text-slate-400">
+                                Creado por: <span className="text-blue-300 font-bold">{duelo.player1Nombre}</span>
+                                {duelo.player2Nombre && (
+                                  <> vs <span className="text-red-300 font-bold">{duelo.player2Nombre}</span></>
+                                )}
+                              </p>
                             </div>
 
-                            {isOwnRoom ? (
-                              <div className="flex items-center gap-2">
-                                <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/20 text-xs font-bold font-mono">
-                                  ⏳ Tu Sala (Esperando Rival)
-                                </span>
+                            {isParticipant ? (
+                              <div className="flex items-center gap-2 w-full sm:w-auto">
                                 <button
                                   onClick={() => handleJoinDuelo(duelo)}
-                                  className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all cursor-pointer"
+                                  className={cn(
+                                    "px-4 py-2 rounded-xl text-xs font-black uppercase cursor-pointer transition-all shadow-lg flex-1 sm:flex-initial text-center",
+                                    myCompleted 
+                                      ? "bg-blue-600 hover:bg-blue-500 text-white" 
+                                      : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white animate-bounce"
+                                  )}
                                 >
-                                  Entrar a tu Sala
+                                  {myCompleted ? "Ver Estado / Marcador" : "¡Responder Ahora!"}
                                 </button>
                                 <button
                                   onClick={() => handleDeleteDuelo(duelo.id)}
@@ -1386,10 +1478,10 @@ export default function Trivia() {
                                 </button>
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 w-full sm:w-auto">
                                 <button
                                   onClick={() => handleJoinDuelo(duelo)}
-                                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase cursor-pointer shadow-lg"
+                                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase cursor-pointer shadow-lg w-full sm:w-auto text-center"
                                 >
                                   Aceptar Duelo 1v1
                                 </button>
