@@ -381,20 +381,20 @@ const MiEspacio = () => {
 
           {/* Action Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {profile?.role === "admin" && (
+            {(profile?.role === "admin" || profile?.role === "betatester") && (
               <>
                 <DashCard
                   to="/trivia"
                   icon={Trophy}
-                  title="Trivia Jurídica (Beta Admin)"
-                  stats="Desafío por materias y ranking"
+                  title="Trivia Jurídica (Beta)"
+                  stats="Desafío por materias y duelos 1v1"
                   color="accent"
                 />
                 <DashCard
                   to="/hace-tu-historia"
                   icon={Sparkles}
-                  title="Hacé Tu Historia (Beta Admin)"
-                  stats="Simulador de carrera legal (18 a 65 años)"
+                  title="Hacé Tu Historia (Beta)"
+                  stats="Simulador de carrera legal en La Plata"
                   color="accent"
                 />
               </>

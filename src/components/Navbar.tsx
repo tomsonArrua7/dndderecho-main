@@ -224,7 +224,7 @@ export const Navbar = () => {
                             <Newspaper size={16} strokeWidth={2}/> Panel Redacción
                           </Link>
                         )}
-                        {profile?.role === 'admin' && (
+                        {(profile?.role === 'admin' || profile?.role === 'betatester') && (
                           <>
                             <Link to="/trivia" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-amber-400 hover:bg-amber-500/10 flex items-center gap-3 transition-all duration-300">
                               <Trophy size={16} strokeWidth={2}/> Trivia Jurídica (Beta)
@@ -232,10 +232,12 @@ export const Navbar = () => {
                             <Link to="/hace-tu-historia" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 flex items-center gap-3 transition-all duration-300">
                               <Sparkles size={16} strokeWidth={2}/> Hacé Tu Historia (Beta)
                             </Link>
-                            <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
-                              <Settings size={16} strokeWidth={2}/> Panel Admin
-                            </Link>
                           </>
+                        )}
+                        {profile?.role === 'admin' && (
+                          <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
+                            <Settings size={16} strokeWidth={2}/> Panel Admin
+                          </Link>
                         )}
                         <div className="h-px bg-white/5 my-1" />
                         <button onClick={async () => { await signOut(); navigate("/"); }} className="px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-500/10 flex items-center gap-3 transition-all duration-300 w-full text-left">
@@ -361,6 +363,28 @@ export const Navbar = () => {
                         <span className="text-[12px] uppercase tracking-widest font-bold">{l.label}</span>
                       </NavLink>
                     ))}
+
+                    {(profile?.role === 'admin' || profile?.role === 'betatester') && (
+                      <div className="pt-4 space-y-2 border-t border-white/5">
+                        <div className="text-[10px] font-black text-amber-400/60 uppercase tracking-[0.3em] mb-2 pl-2">Juegos (Beta)</div>
+                        <NavLink
+                          to="/trivia"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-4 px-4 py-3 rounded-2xl text-amber-400 font-bold text-xs bg-amber-500/10 border border-amber-500/20"
+                        >
+                          <Trophy className="h-4 w-4" strokeWidth={2} />
+                          <span className="uppercase tracking-wider">Trivia Jurídica (Beta)</span>
+                        </NavLink>
+                        <NavLink
+                          to="/hace-tu-historia"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-4 px-4 py-3 rounded-2xl text-indigo-400 font-bold text-xs bg-indigo-500/10 border border-indigo-500/20"
+                        >
+                          <Sparkles className="h-4 w-4" strokeWidth={2} />
+                          <span className="uppercase tracking-wider">Hacé Tu Historia (Beta)</span>
+                        </NavLink>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

@@ -61,7 +61,7 @@ export default function AdminPanel() {
       "Nombre Completo": p.full_name || "Sin nombre",
       "Año de Ingreso": p.anio_ingreso ? p.anio_ingreso : "No especificado",
       "Teléfono": p.telefono || "No especificado",
-      "Rol": p.role === "admin" ? "Administrador" : p.role === "escritor" ? "Escritor" : "Estudiante",
+      "Rol": p.role === "admin" ? "Administrador" : p.role === "betatester" ? "Betatester" : p.role === "escritor" ? "Escritor" : "Estudiante",
       "Suscrito a Calendario": p.suscripto_calendario ? "Sí" : "No",
       "Estado de Veto": p.is_banned ? "Vetado" : "Activo",
       "Permutas Publicadas": userPermutaCount[p.id] || 0,
@@ -277,6 +277,22 @@ export default function AdminPanel() {
       toast.success(currentStatus ? "Veto levantado" : "Usuario vetado");
     }
     setUpdating(false);
+  };
+
+  const updateUserRole = async (profileId: string, newRole: string) => {
+    setUpdating(true);
+    try {
+      const { error } = await supabase.from("profiles").update({ role: newRole }).eq("id", profileId);
+      if (error) throw error;
+
+      setProfiles(prev => prev.map(p => p.id === profileId ? { ...p, role: newRole } : p));
+      toast.success(`Rol actualizado a "${newRole}" correctamente.`);
+    } catch (err: any) {
+      console.error("Error actualizando rol:", err);
+      toast.error("Error al actualizar el rol del usuario.");
+    } finally {
+      setUpdating(false);
+    }
   };
 
   const handleSendMassMail = async () => {
@@ -629,7 +645,18 @@ export default function AdminPanel() {
                         <span className="text-muted-foreground text-xs italic">N/D</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 capitalize">{p.role}</td>
+                    <td className="px-6 py-4">
+                      <select
+                        value={p.role || "user"}
+                        onChange={(e) => updateUserRole(p.id, e.target.value)}
+                        className="bg-slate-900 border border-white/20 text-white font-bold text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-red-500 cursor-pointer"
+                      >
+                        <option value="user">Estudiante (User)</option>
+                        <option value="betatester">⚡ Betatester</option>
+                        <option value="escritor">✍️ Escritor</option>
+                        <option value="admin">👑 Administrador</option>
+                      </select>
+                    </td>
                     <td className="px-6 py-4">
                       <div className={`inline-flex items-center justify-center w-8 h-8 rounded-lg font-bold ${
                         (userPermutaCount[p.id] || 0) > 3 ? "bg-orange-500 text-white" : "bg-muted text-muted-foreground"

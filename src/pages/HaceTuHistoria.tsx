@@ -63,8 +63,8 @@ interface StaffConfig {
 export default function HaceTuHistoria() {
   const { user, profile, loading } = useAuth();
   
-  // Verificación estricta de Admin
-  const isAdminUser = profile?.role === "admin";
+  // Verificación estricta de Beta (Admin o Betatester)
+  const isBetaUser = profile?.role === "admin" || profile?.role === "betatester";
 
   // Pestañas Pre-Juego: "setup" | "logros" | "historial"
   const [activePreGameTab, setActivePreGameTab] = useState<"setup" | "logros" | "historial">("setup");
@@ -212,7 +212,7 @@ export default function HaceTuHistoria() {
     setCarrerasPasadas(prev => [nuevaCarrera, ...prev]);
   };
 
-  if (!loading && (!user || !isAdminUser)) {
+  if (!loading && (!user || !isBetaUser)) {
     return <Navigate to="/mi-espacio" replace />;
   }
 

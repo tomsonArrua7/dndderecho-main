@@ -22,7 +22,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import { Layout } from "@/components/Layout";
 import { AppProvider } from "@/context/AppContext";
-import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute, AdminRoute, BetaRoute } from "@/components/ProtectedRoute";
 import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { AlertCircle, ExternalLink, RefreshCw, Loader2 } from "lucide-react";
 import { DndMark } from "@/components/DndMark";
@@ -221,8 +221,9 @@ const AppContent = () => {
         <Route path="/asistente"       element={<AsistenteDND />} />
         <Route path="/ingresantes"     element={<Ingresantes />} />
         <Route path="/quienes-somos"   element={<QuienesSomos />} />
-        <Route path="/trivia"          element={<AdminRoute><Trivia /></AdminRoute>} />
-        <Route path="/hace-tu-historia" element={<AdminRoute><HaceTuHistoria /></AdminRoute>} />
+        <Route path="/trivia"          element={<BetaRoute><Trivia /></BetaRoute>} />
+        <Route path="/hace-tu-historia" element={<BetaRoute><HaceTuHistoria /></BetaRoute>} />
+        <Route path="/juegos"           element={<BetaRoute><Juegos /></BetaRoute>} />
 
         {/* Ruta legacy /dashboard → redirige a /mi-espacio */}
         <Route path="/dashboard"       element={<ProtectedRoute><MiEspacio /></ProtectedRoute>} />
