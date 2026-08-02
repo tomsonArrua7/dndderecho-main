@@ -357,6 +357,11 @@ export default function Trivia() {
         }
 
         markDuelAsSeen(duel.id);
+        setActiveDuelRoom(duel);
+
+        let duelQuestions = TRIVIA_QUESTIONS.filter(q => duel.preguntasIds.includes(q.id));
+        if (duelQuestions.length === 0) duelQuestions = TRIVIA_QUESTIONS.slice(0, 5);
+        setQuestionsPool(duelQuestions);
 
         setDuelOutcomeModal({
           resultado: res,
@@ -567,6 +572,15 @@ export default function Trivia() {
 
   // Unirse a un Duelo 1vs1 (por código o lista)
   const handleJoinDuelo = async (duelo: DueloTrivia) => {
+    setActiveDuelRoom(duelo);
+
+    // Cargar siempre las preguntas del duelo a questionsPool por si el usuario abre la revisión
+    let duelQuestions = TRIVIA_QUESTIONS.filter(q => duelo.preguntasIds.includes(q.id));
+    if (duelQuestions.length === 0) {
+      duelQuestions = TRIVIA_QUESTIONS.slice(0, 5);
+    }
+    setQuestionsPool(duelQuestions);
+
     const isPlayer1 = (user?.id && duelo.player1Id === user.id) || duelo.player1Nombre === userName;
     const isPlayer2 = (user?.id && duelo.player2Id === user.id) || (duelo.player2Nombre && duelo.player2Nombre === userName);
     const myCompleted = isPlayer1 ? duelo.player1Completed : (isPlayer2 ? duelo.player2Completed : false);
@@ -638,12 +652,6 @@ export default function Trivia() {
 
     // 3. Si aún NO ha respondido, iniciar sesión de juego para este usuario
     setActiveDuelRoom(duelo);
-
-    // Obtener preguntas seleccionadas de la sala
-    let duelQuestions = TRIVIA_QUESTIONS.filter(q => duelo.preguntasIds.includes(q.id));
-    if (duelQuestions.length === 0) {
-      duelQuestions = TRIVIA_QUESTIONS.slice(0, 5);
-    }
 
     // Si entra como Rival (Jugador 2) por primera vez
     if (!isPlayer1 && !duelo.player2Id) {
@@ -1985,6 +1993,11 @@ export default function Trivia() {
                 <div className="flex flex-col gap-2 pt-2">
                   <button
                     onClick={() => {
+                      if (questionsPool.length === 0 && activeDuelRoom?.preguntasIds) {
+                        let duelQs = TRIVIA_QUESTIONS.filter(q => activeDuelRoom.preguntasIds.includes(q.id));
+                        if (duelQs.length === 0) duelQs = TRIVIA_QUESTIONS.slice(0, 5);
+                        setQuestionsPool(duelQs);
+                      }
                       setDuelOutcomeModal(null);
                       setShowReviewModal(true);
                     }}
