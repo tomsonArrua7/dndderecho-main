@@ -205,7 +205,7 @@ const MateriaCard = ({
           </span>
         </div>
 
-        {isAprobada && (
+        {isAprobada && !isPPS && (
           <div 
             onClick={(e) => e.stopPropagation()} 
             className="mt-2 flex items-center justify-between gap-2 pt-2 border-t border-white/5"
@@ -411,6 +411,7 @@ const PlanEstudios = () => {
 
   const average = useMemo(() => {
     const aprobadasConNota = currentMaterias.filter(m => 
+      m.id !== "10657" &&
       estados[m.id] === "aprobada" && 
       notas[m.id] !== undefined && 
       notas[m.id] !== null && 
@@ -513,6 +514,7 @@ const PlanEstudios = () => {
     const current = estados["10657"] || "pendiente";
 
     setEstados(prev => ({ ...prev, "10657": nextState }));
+    setNotas(prev => ({ ...prev, "10657": null }));
     setSaving(true);
 
     try {
@@ -524,6 +526,7 @@ const PlanEstudios = () => {
             plan_id: planId,
             materia_id: "10657",
             estado: nextState,
+            nota: null,
             updated_at: new Date().toISOString()
           },
           { onConflict: 'user_id,plan_id,materia_id' }
