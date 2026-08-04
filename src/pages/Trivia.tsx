@@ -1410,29 +1410,31 @@ export default function Trivia() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 self-stretch sm:self-auto justify-between sm:justify-end relative z-10 border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
+          <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 self-stretch sm:self-auto relative z-10 border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
             <div className="text-left sm:text-right">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Puntos Acumulados:</span>
               <span className="text-xl md:text-3xl font-black text-white font-mono leading-none">{userStats.puntosTotales} PTS</span>
-              <span className="text-[11px] text-amber-300 font-bold block pt-1">
-                ⚔️ Duelista: {userStats.victoriasDuelo}V / {userStats.derrotasDuelo}D ({userStats.puntosDuelista} PTS)
+              <span className="text-[10px] sm:text-[11px] text-amber-300 font-bold block pt-0.5">
+                ⚔️ {userStats.victoriasDuelo}V / {userStats.derrotasDuelo}D ({userStats.puntosDuelista} PTS 1v1)
               </span>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowGuideModal(true)}
-                className="px-3.5 py-2.5 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95 flex items-center gap-1.5"
+                className="px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95 flex items-center gap-1.5"
               >
                 <BookOpen className="w-4 h-4 text-amber-400" />
-                <span className="hidden sm:inline">Guía & Reglas</span>
+                <span className="text-[11px] sm:text-xs">Guía</span>
               </button>
 
               <button
                 onClick={() => setShowRangosModal(true)}
-                className="px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95"
+                className="px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95 flex items-center gap-1.5"
               >
-                VER ESCALA DE RANGOS
+                <Award className="w-4 h-4 text-amber-400" />
+                <span className="hidden sm:inline">Escala de Rangos</span>
+                <span className="sm:hidden text-[11px]">Rangos</span>
               </button>
             </div>
           </div>
