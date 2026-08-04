@@ -1471,11 +1471,119 @@ export default function Trivia() {
         {activeTab === "evaluacion" && (
           <div className="space-y-6">
             
-            {/* SECCIÓN ELEGÍ TU DESAFÍO */}
+            {/* SECCIÓN 1: FILTRO DE MATERIA POR AÑO DE CARRERA (AHORA ARRIBA) */}
+            <div className="bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-red-400" />
+                    <span>Elegí la Materia o Año (Paso 1)</span>
+                  </h3>
+                  <p className="text-xs text-slate-400 pt-0.5">Filtrá las preguntas por año de cursada o elegí una materia específica del plan de estudios.</p>
+                </div>
+
+                {selectedCategoria !== "todas" && (
+                  <button
+                    onClick={() => {
+                      setSelectedYearFilter(0);
+                      setSelectedCategoria("todas");
+                    }}
+                    className="text-xs text-red-400 hover:underline font-bold px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/30"
+                  >
+                    Limpiar Filtro (Toda la Carrera)
+                  </button>
+                )}
+              </div>
+
+              {/* BOTONES DE AÑO DE CARRERA */}
+              <div className="flex items-center justify-start gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <button
+                  onClick={() => {
+                    setSelectedYearFilter(0);
+                    setSelectedCategoria("todas");
+                  }}
+                  className={cn(
+                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
+                    selectedYearFilter === 0
+                      ? "bg-red-600 border-red-500 text-white shadow-lg shadow-red-600/30"
+                      : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                  )}
+                >
+                  🎓 Toda la Carrera
+                </button>
+                {[
+                  { id: 1, label: "1º Año" },
+                  { id: 2, label: "2º Año" },
+                  { id: 3, label: "3º Año" },
+                  { id: 4, label: "4º Año" },
+                  { id: 5, label: "5º Año" }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedYearFilter(item.id)}
+                    className={cn(
+                      "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
+                      selectedYearFilter === item.id
+                        ? "bg-red-600 border-red-500 text-white shadow-lg shadow-red-600/30"
+                        : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* LISTA DE MATERIAS SEGÚN EL AÑO SELECCIONADO */}
+              {selectedYearFilter > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-1">
+                  {filteredCategorias.filter(cat => cat.id !== "todas").map((cat) => {
+                    const CatIcon = ICON_MAP[cat.icono] || BookOpen;
+                    const isSelected = selectedCategoria === cat.id;
+
+                    return (
+                      <div
+                        key={cat.id}
+                        onClick={() => setSelectedCategoria(cat.id)}
+                        className={cn(
+                          "p-3.5 rounded-2xl border transition-all cursor-pointer space-y-2 flex items-center justify-between gap-3",
+                          isSelected
+                            ? "bg-red-500/20 border-red-500 text-white shadow-lg shadow-red-950/40 ring-1 ring-red-500/40"
+                            : "bg-slate-950/60 border-white/10 hover:border-red-500/30 text-slate-300"
+                        )}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className={cn(
+                            "w-9 h-9 rounded-xl flex items-center justify-center border font-bold text-xs shrink-0",
+                            isSelected ? "bg-red-500/30 border-red-400 text-red-200" : "bg-white/5 border-white/10 text-slate-400"
+                          )}>
+                            <CatIcon className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="font-bold text-xs text-white truncate">{cat.nombre}</h4>
+                            <span className="text-[10px] text-slate-400 block">{cat.anio}º Año</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* SECCIÓN 2: ELEGÍ TU DESAFÍO (AHORA PASO 2) */}
             <div className="space-y-4">
-              <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
-                <span>ELEGÍ TU DESAFÍO</span>
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-amber-400" />
+                  <span>Configurá tu Evaluación (Paso 2)</span>
+                </h3>
+                {selectedCategoria !== "todas" && (
+                  <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-bold font-mono">
+                    Materia: {CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre}
+                  </span>
+                )}
+              </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 
@@ -1510,7 +1618,11 @@ export default function Trivia() {
                   <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
                     <div>
                       <span className="font-bold text-slate-300 block">Sobre las preguntas</span>
-                      <p className="text-[11px] text-slate-400 leading-snug">Las preguntas son aleatorias y abarcan diferentes materias del derecho.</p>
+                      <p className="text-[11px] text-slate-400 leading-snug">
+                        {selectedCategoria === "todas"
+                          ? "Las preguntas son aleatorias y abarcan diferentes materias del derecho."
+                          : `Las preguntas corresponden a ${CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre}.`}
+                      </p>
                     </div>
                     <BookOpen className="w-8 h-8 text-slate-600 shrink-0 ml-2" />
                   </div>
@@ -1565,94 +1677,6 @@ export default function Trivia() {
                 </div>
 
               </div>
-            </div>
-
-            {/* OPCIONAL: FILTRO DE MATERIA POR AÑO DE CARRERA */}
-            <div className="pt-2 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase tracking-wider text-slate-400">Filtro por Materia Específica (Opcional)</span>
-                {selectedCategoria !== "todas" && (
-                  <button
-                    onClick={() => setSelectedCategoria("todas")}
-                    className="text-xs text-red-400 hover:underline font-bold"
-                  >
-                    Limpiar Filtro (Toda la Carrera)
-                  </button>
-                )}
-              </div>
-
-              <div className="flex items-center justify-start gap-2 overflow-x-auto pb-2 scrollbar-none">
-                <button
-                  onClick={() => {
-                    setSelectedYearFilter(0);
-                    setSelectedCategoria("todas");
-                  }}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
-                    selectedYearFilter === 0
-                      ? "bg-red-600/30 border-red-500 text-white"
-                      : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                  )}
-                >
-                  🎓 Toda la Carrera
-                </button>
-                {[
-                  { id: 1, label: "1º Año" },
-                  { id: 2, label: "2º Año" },
-                  { id: 3, label: "3º Año" },
-                  { id: 4, label: "4º Año" },
-                  { id: 5, label: "5º Año" }
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelectedYearFilter(item.id)}
-                    className={cn(
-                      "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
-                      selectedYearFilter === item.id
-                        ? "bg-[#0A1C3D] border-[#0F2A5C] text-white"
-                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-
-              {selectedYearFilter > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-1">
-                  {filteredCategorias.filter(cat => cat.id !== "todas").map((cat) => {
-                    const CatIcon = ICON_MAP[cat.icono] || BookOpen;
-                    const isSelected = selectedCategoria === cat.id;
-
-                    return (
-                      <div
-                        key={cat.id}
-                        onClick={() => setSelectedCategoria(cat.id)}
-                        className={cn(
-                          "p-4 rounded-2xl border transition-all cursor-pointer space-y-2 flex items-center justify-between gap-3",
-                          isSelected
-                            ? "bg-red-500/10 border-red-500 text-white"
-                            : "bg-[#0D1527]/80 border-white/10 hover:border-red-500/30 text-slate-300"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "w-9 h-9 rounded-xl flex items-center justify-center border font-bold text-xs shrink-0",
-                            isSelected ? "bg-red-500/20 border-red-500/50 text-red-300" : "bg-white/5 border-white/10 text-slate-400"
-                          )}>
-                            <CatIcon className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-xs text-white">{cat.nombre}</h4>
-                            <span className="text-[10px] text-slate-400 block">{cat.anio}º Año</span>
-                          </div>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
 
             {/* FILA INFERIOR: TU ACTIVIDAD RECIENTE Y CONSEJOS */}
