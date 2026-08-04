@@ -18,7 +18,9 @@ import {
   AlertCircle,
   FileSearch,
   Filter,
-  Layers
+  Layers,
+  Sprout,
+  Users
 } from "lucide-react";
 import { MATERIAS_PLAN6, Materia } from "@/data/plan6Structure";
 import { cn } from "@/lib/utils";
@@ -67,7 +69,9 @@ export const RECOMENDACIONES_MAP: Record<string, RecomendacionData> = {
   }
 };
 
-const NOM_ANIOS: Record<number, string> = {
+// Secciones del menú: -1 = Ingresantes, 1..5 = Años 1 a 5
+const NOM_SECCIONES: Record<number, string> = {
+  [-1]: "INGRESANTES (Primer Año)",
   1: "Primer Año (1º Año)",
   2: "Segundo Año (2º Año)",
   3: "Tercer Año (3º Año)",
@@ -76,10 +80,11 @@ const NOM_ANIOS: Record<number, string> = {
 };
 
 export default function Recomendaciones() {
-  const [selectedAnio, setSelectedAnio] = useState<number>(0); // 0 = Todos los años
+  const [selectedAnio, setSelectedAnio] = useState<number>(0); // 0 = Todas las secciones
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedAnios, setExpandedAnios] = useState<Record<number, boolean>>({
-    1: true,
+  const [expandedSecciones, setExpandedSecciones] = useState<Record<number, boolean>>({
+    [-1]: true,
+    1: false,
     2: false,
     3: false,
     4: false,
@@ -93,16 +98,16 @@ export default function Recomendaciones() {
     rec: RecomendacionData;
   } | null>(null);
 
-  const toggleAnio = (anio: number) => {
-    setExpandedAnios(prev => ({ ...prev, [anio]: !prev[anio] }));
+  const toggleSeccion = (sec: number) => {
+    setExpandedSecciones(prev => ({ ...prev, [sec]: !prev[sec] }));
   };
 
-  // Filtrar materias del Plan 6
-  const materiasPorAnio = useMemo(() => {
+  // Filtrar materias por sección (Ingresantes vs Años 1 a 5)
+  const materiasPorSeccion = useMemo(() => {
     const queryLower = searchQuery.toLowerCase().trim();
 
     const agrupadas: Record<number, { materia: Materia; rec?: RecomendacionData }[]> = {
-      1: [], 2: [], 3: [], 4: [], 5: []
+      [-1]: [], 1: [], 2: [], 3: [], 4: [], 5: []
     };
 
     MATERIAS_PLAN6.forEach(materia => {
@@ -114,7 +119,13 @@ export default function Recomendaciones() {
         materia.id.includes(queryLower);
 
       if (matchesSearch) {
-        agrupadas[materia.anio].push({ materia, rec });
+        // Si pertenece a primer año, se lista tanto en INGRESANTES (-1) como en 1º AÑO (1)
+        if (materia.anio === 1) {
+          agrupadas[-1].push({ materia, rec });
+          agrupadas[1].push({ materia, rec });
+        } else {
+          agrupadas[materia.anio].push({ materia, rec });
+        }
       }
     });
 
@@ -145,7 +156,7 @@ export default function Recomendaciones() {
           </h1>
 
           <p className="text-sm md:text-base text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            Explorá las recomendaciones de cursada, análisis de cátedras y guías en PDF elaboradas para cada materia del Plan de Estudios de la Facultad de Ciencias Jurídicas y Sociales (UNLP).
+            Explorá las recomendaciones de cursada, análisis de cátedras y guías en PDF elaboradas para Ingresantes y estudiantes del Plan de Estudios de la Facultad de Ciencias Jurídicas y Sociales (UNLP).
           </p>
 
           {/* TARJETAS RESUMEN DE ESTADÍSTICAS */}
@@ -159,8 +170,8 @@ export default function Recomendaciones() {
               <span className="text-sm md:text-base font-black text-emerald-400 font-mono">{totalActivas} Materias</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-              <span className="text-[10px] font-black uppercase text-slate-400 block">Estructura</span>
-              <span className="text-sm md:text-base font-black text-amber-400 font-mono">1º a 5º Año</span>
+              <span className="text-[10px] font-black uppercase text-slate-400 block">Nivel Ingreso</span>
+              <span className="text-sm md:text-base font-black text-amber-400 font-mono">🌱 Ingresantes</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
               <span className="text-[10px] font-black uppercase text-slate-400 block">Formato</span>
@@ -169,12 +180,12 @@ export default function Recomendaciones() {
           </div>
         </div>
 
-        {/* BARRA DE BÚSQUEDA Y FILTROS POR AÑO */}
+        {/* BARRA DE BÚSQUEDA Y FILTROS (INGRESANTES + AÑOS 1 A 5) */}
         <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-4 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             
             {/* Campo de búsqueda */}
-            <div className="relative w-full md:w-96">
+            <div className="relative w-full md:w-80">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
@@ -193,35 +204,48 @@ export default function Recomendaciones() {
               )}
             </div>
 
-            {/* Selector de años */}
+            {/* Selector de categorías: Ingresantes, 1º a 5º Año */}
             <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
               <button
                 onClick={() => setSelectedAnio(0)}
                 className={cn(
-                  "px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0",
+                  "px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0",
                   selectedAnio === 0
                     ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
                     : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
                 )}
               >
-                Todos los Años
+                Todas las Materias
               </button>
 
+              {/* Botón Destacado de INGRESANTES */}
+              <button
+                onClick={() => setSelectedAnio(-1)}
+                className={cn(
+                  "px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 border",
+                  selectedAnio === -1
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-lg shadow-emerald-600/30"
+                    : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                )}
+              >
+                <Sprout className="w-4 h-4 text-emerald-400" />
+                <span>INGRESANTES</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="4 PDFs Disponibles" />
+              </button>
+
+              {/* Años 1 a 5 */}
               {[1, 2, 3, 4, 5].map(anio => (
                 <button
                   key={anio}
                   onClick={() => setSelectedAnio(anio)}
                   className={cn(
-                    "px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5",
+                    "px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1",
                     selectedAnio === anio
                       ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
                       : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
                   )}
                 >
                   <span>{anio}º Año</span>
-                  {anio === 1 && (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="PDFs Activos" />
-                  )}
                 </button>
               ))}
             </div>
@@ -229,40 +253,59 @@ export default function Recomendaciones() {
           </div>
         </div>
 
-        {/* LISTADO DE AÑOS Y MATERIAS */}
+        {/* LISTADO DE SECCIONES (INGRESANTES + AÑOS 1 A 5) */}
         <div className="space-y-6">
-          {[1, 2, 3, 4, 5].map(anio => {
-            if (selectedAnio !== 0 && selectedAnio !== anio) return null;
+          {[-1, 1, 2, 3, 4, 5].map(sec => {
+            if (selectedAnio !== 0 && selectedAnio !== sec) return null;
 
-            const materias = materiasPorAnio[anio] || [];
+            const materias = materiasPorSeccion[sec] || [];
             if (materias.length === 0 && searchQuery) return null;
 
-            const isExpanded = expandedAnios[anio] || !!searchQuery;
-            const activasAnio = materias.filter(m => m.rec).length;
+            const isExpanded = expandedSecciones[sec] || !!searchQuery;
+            const activasSeccion = materias.filter(m => m.rec).length;
+            const isIngresantes = sec === -1;
 
             return (
               <motion.div
-                key={anio}
+                key={sec}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-[#0D1527]/90 border border-white/15 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl"
+                className={cn(
+                  "border rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl transition-colors",
+                  isIngresantes 
+                    ? "bg-gradient-to-b from-[#0A1C3D] via-[#0D1527] to-[#07101E] border-emerald-500/40" 
+                    : "bg-[#0D1527]/90 border-white/15"
+                )}
               >
-                {/* CABECERA DEL AÑO (ACCORDION) */}
+                {/* CABECERA DE LA SECCIÓN (DESPLEGABLE) */}
                 <button
-                  onClick={() => toggleAnio(anio)}
+                  onClick={() => toggleSeccion(sec)}
                   className="w-full p-5 md:p-6 flex items-center justify-between gap-4 text-left hover:bg-white/[0.02] transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-500/20 to-indigo-500/20 border border-white/10 flex items-center justify-center text-red-400 shrink-0 font-serif font-bold text-lg">
-                      {anio}º
+                    <div className={cn(
+                      "w-11 h-11 rounded-2xl border flex items-center justify-center shrink-0 font-serif font-bold text-lg",
+                      isIngresantes 
+                        ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                        : "bg-gradient-to-br from-red-500/20 to-indigo-500/20 border-white/10 text-red-400"
+                    )}>
+                      {isIngresantes ? <Sprout className="w-6 h-6 text-emerald-400" /> : `${sec}º`}
                     </div>
+
                     <div>
-                      <h3 className="text-lg md:text-xl font-black text-white">{NOM_ANIOS[anio]}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg md:text-xl font-black text-white">{NOM_SECCIONES[sec]}</h3>
+                        {isIngresantes && (
+                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
+                            Recomendado
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-slate-400">
                         {materias.length} materias del Plan Nº 6
-                        {activasAnio > 0 && (
+                        {activasSeccion > 0 && (
                           <span className="text-emerald-400 font-bold ml-2">
-                            • {activasAnio} recomendación{activasAnio !== 1 ? "es" : ""} disponible{activasAnio !== 1 ? "s" : ""}
+                            • {activasSeccion} recomendación{activasSeccion !== 1 ? "es" : ""} disponible{activasSeccion !== 1 ? "s" : ""} (PDF)
                           </span>
                         )}
                       </p>
@@ -270,10 +313,10 @@ export default function Recomendaciones() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    {activasAnio > 0 ? (
+                    {activasSeccion > 0 ? (
                       <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
                         <Sparkles className="w-3 h-3 text-emerald-400" />
-                        Recomendaciones Disponibles
+                        PDFs Disponibles
                       </span>
                     ) : (
                       <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-white/5 text-slate-400 border border-white/10 font-mono">
@@ -300,7 +343,7 @@ export default function Recomendaciones() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {materias.map(({ materia, rec }) => (
                           <div
-                            key={materia.id}
+                            key={`${sec}-${materia.id}`}
                             className={cn(
                               "p-5 rounded-2xl border transition-all flex flex-col justify-between space-y-4 relative overflow-hidden group",
                               rec
