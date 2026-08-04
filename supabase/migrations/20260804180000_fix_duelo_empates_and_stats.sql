@@ -148,7 +148,7 @@ BEGIN
         empates_duelo = r.total_emp,
         puntos_duelista = r.total_pts
     FROM resumen r
-    WHERE e.user_id = r.user_id;
+    WHERE e.user_id::text = r.user_id::text;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
