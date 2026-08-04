@@ -197,8 +197,8 @@ export default function Trivia() {
   const [maxStreak, setMaxStreak] = useState(0);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
 
-  // Timer por pregunta
-  const [timeLeft, setTimeLeft] = useState(15);
+  // Timer por pregunta (20 segundos)
+  const [timeLeft, setTimeLeft] = useState(20);
   const [gameOver, setGameOver] = useState(false);
 
   // Estadísticas del usuario acumuladas (sincronizadas con DB / LocalStorage)
@@ -492,10 +492,6 @@ export default function Trivia() {
       pool = pool.filter(q => q.id_categoria === selectedCategoria);
     }
 
-    if (selectedDificultad !== "todas") {
-      pool = pool.filter(q => q.dificultad === selectedDificultad);
-    }
-
     if (pool.length === 0) {
       pool = [...TRIVIA_QUESTIONS];
     }
@@ -513,7 +509,7 @@ export default function Trivia() {
     setSelectedOption(null);
     setIsAnswered(false);
     setGameOver(false);
-    setTimeLeft(15);
+    setTimeLeft(20);
     setInGame(true);
   };
 
@@ -680,7 +676,7 @@ export default function Trivia() {
     setSelectedOption(null);
     setIsAnswered(false);
     setGameOver(false);
-    setTimeLeft(15);
+    setTimeLeft(20);
     setInGame(true);
   };
 
@@ -713,7 +709,7 @@ export default function Trivia() {
     const isCorrect = optionIndex === currentQ.respuesta_correcta_index;
 
     if (isCorrect) {
-      const timeBonus = Math.floor(timeLeft * 2);
+      const timeBonus = Math.floor(timeLeft * 1.5);
       const pointsAdded = 10 + timeBonus;
       setScore((prev) => prev + pointsAdded);
       setStreak((prev) => {
@@ -732,7 +728,7 @@ export default function Trivia() {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswered(false);
-      setTimeLeft(15);
+      setTimeLeft(20);
     } else {
       finishGame();
     }
@@ -757,7 +753,7 @@ export default function Trivia() {
         await supabase.from("trivia_partidas").insert({
           user_id: user.id,
           categoria_id: selectedCategoria,
-          dificultad: selectedDificultad,
+          dificultad: "todas",
           puntos: score,
           aciertos: correctAnswersCount,
           total_preguntas: questionsPool.length,
@@ -883,56 +879,87 @@ export default function Trivia() {
   if (inGame && questionsPool.length > 0 && !gameOver) {
     const currentQ = questionsPool[currentIndex];
     const isLastQuestion = currentIndex + 1 === questionsPool.length;
+    const progressPercent = (timeLeft / 20) * 100;
 
     return (
-      <div className="min-h-screen bg-[#050B14] text-white py-8 px-4 flex items-center justify-center relative overflow-hidden">
-        <div className="max-w-2xl w-full bg-[#0D1527] border border-white/15 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative z-10 backdrop-blur-xl">
+      <div className="min-h-screen bg-[#050B14] text-white py-6 md:py-10 px-3 sm:px-4 flex items-center justify-center relative overflow-hidden">
+        {/* Glow ambient background */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-2xl w-full bg-[#0D1527] border border-white/15 rounded-3xl p-5 md:p-8 space-y-6 shadow-2xl relative z-10 backdrop-blur-xl">
           
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-[#0A1C3D]/40 text-blue-300 text-xs font-black uppercase tracking-wider border border-[#0F2A5C]/50">
-                Pregunta {currentIndex + 1} de {questionsPool.length}
-              </span>
-              <span className="text-xs text-slate-400 font-mono hidden sm:inline">
-                [{currentQ.categoria_nombre}]
-              </span>
+          {/* BARRA DE PROGRESO DEL TEMPORIZADOR (20 SEGUNDOS) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-400">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full bg-[#0A1C3D] text-blue-300 text-xs font-black uppercase tracking-wider border border-[#0F2A5C]">
+                  Pregunta {currentIndex + 1} de {questionsPool.length}
+                </span>
+                <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+                  [{currentQ.categoria_nombre}]
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {streak > 1 && (
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black border border-amber-500/30 animate-pulse">
+                    <Flame className="w-4 h-4 text-amber-400" />
+                    <span>Racha x{streak}</span>
+                  </div>
+                )}
+
+                {/* RELOJ VISUAL LLAMATIVO */}
+                <div className={cn(
+                  "flex items-center gap-2 px-3.5 py-1.5 rounded-2xl font-mono font-black text-sm md:text-base border transition-all duration-300 shadow-md",
+                  timeLeft > 10
+                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 shadow-emerald-950/20"
+                    : timeLeft > 5
+                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-amber-950/20"
+                    : "bg-rose-500/30 text-rose-200 border-rose-500/60 animate-pulse scale-105 shadow-rose-950/50"
+                )}>
+                  <Timer className={cn("w-4 h-4 md:w-5 md:h-5", timeLeft <= 5 && "animate-spin text-rose-400")} />
+                  <span>{timeLeft}s</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              {streak > 1 && (
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black border border-amber-500/30 animate-pulse">
-                  <Flame className="w-4 h-4 text-amber-400" />
-                  <span>Racha x{streak}</span>
-                </div>
-              )}
-
-              <div className={cn(
-                "flex items-center gap-1.5 px-3 py-1 rounded-full font-mono font-black text-sm border",
-                timeLeft <= 5 ? "bg-red-500/20 text-red-400 border-red-500/40 animate-bounce" : "bg-white/10 text-white border-white/10"
-              )}>
-                <Timer className="w-4 h-4" />
-                <span>{timeLeft}s</span>
-              </div>
+            {/* Barra de progreso de tiempo con gradiente dinámico */}
+            <div className="w-full h-2.5 bg-slate-950/80 rounded-full overflow-hidden border border-white/10 relative">
+              <motion.div 
+                initial={{ width: "100%" }}
+                animate={{ width: `${progressPercent}%` }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className={cn(
+                  "h-full rounded-full transition-colors duration-500",
+                  timeLeft > 10
+                    ? "bg-gradient-to-r from-emerald-500 to-teal-400 shadow-sm shadow-emerald-500/50"
+                    : timeLeft > 5
+                    ? "bg-gradient-to-r from-amber-500 to-yellow-400 shadow-sm shadow-amber-500/50"
+                    : "bg-gradient-to-r from-rose-600 via-red-500 to-rose-400 shadow-md shadow-rose-600/80"
+                )}
+              />
             </div>
           </div>
 
-          <div className="space-y-3">
-            <h3 className="text-base md:text-xl font-bold text-white leading-relaxed">
+          {/* ENUNCIADO DE LA PREGUNTA */}
+          <div className="space-y-2 pt-1">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-relaxed">
               {currentQ.pregunta}
             </h3>
           </div>
 
+          {/* OPCIONES DE RESPUESTA (OPTIMIZADAS PARA CELULAR) */}
           <div className="space-y-3">
             {currentQ.opciones.map((opc, idx) => {
               const isSelected = selectedOption === idx;
               const isRight = idx === currentQ.respuesta_correcta_index;
 
-              let style = "bg-white/[0.03] border-white/10 hover:bg-white/[0.08] text-white";
+              let style = "bg-white/[0.04] border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-white";
 
               if (isAnswered) {
-                if (isRight) style = "bg-emerald-600/30 border-emerald-500 text-emerald-200 font-bold shadow-lg shadow-emerald-950/40";
-                else if (isSelected && !isRight) style = "bg-red-600/30 border-red-500 text-red-200 font-bold";
-                else style = "bg-slate-950/40 border-white/5 text-slate-500 opacity-40";
+                if (isRight) style = "bg-emerald-600/30 border-emerald-500 text-emerald-100 font-bold shadow-lg shadow-emerald-950/50";
+                else if (isSelected && !isRight) style = "bg-rose-600/30 border-rose-500 text-rose-100 font-bold shadow-lg shadow-rose-950/50";
+                else style = "bg-slate-950/50 border-white/5 text-slate-500 opacity-40";
               }
 
               return (
@@ -941,41 +968,48 @@ export default function Trivia() {
                   disabled={isAnswered}
                   onClick={() => handleAnswer(idx)}
                   className={cn(
-                    "w-full text-left p-4 rounded-2xl border transition-all text-xs md:text-sm flex items-center justify-between gap-3 cursor-pointer min-h-[50px]",
+                    "w-full text-left p-4 sm:p-5 rounded-2xl border transition-all text-xs sm:text-sm md:text-base flex items-center justify-between gap-3 cursor-pointer min-h-[54px] active:scale-[0.98]",
                     style
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center font-bold text-xs shrink-0 font-mono">
+                  <div className="flex items-center gap-3.5">
+                    <span className={cn(
+                      "w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 font-mono border",
+                      isAnswered && isRight ? "bg-emerald-500/30 border-emerald-400 text-emerald-200" :
+                      isAnswered && isSelected && !isRight ? "bg-rose-500/30 border-rose-400 text-rose-200" :
+                      "bg-white/10 border-white/15 text-slate-200"
+                    )}>
                       {String.fromCharCode(65 + idx)}
                     </span>
-                    <span>{opc}</span>
+                    <span className="leading-snug">{opc}</span>
                   </div>
 
-                  {isAnswered && isRight && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
-                  {isAnswered && isSelected && !isRight && <XCircle className="w-5 h-5 text-red-400 shrink-0" />}
+                  {isAnswered && isRight && <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-emerald-400 shrink-0" />}
+                  {isAnswered && isSelected && !isRight && <XCircle className="w-5 h-5 md:w-6 md:h-6 text-rose-400 shrink-0" />}
                 </button>
               );
             })}
           </div>
 
+          {/* FUNDAMENTO JURÍDICO EXPLICATIVO */}
           {isAnswered && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-2xl bg-[#0A1C3D]/20 border border-[#0F2A5C]/40 text-blue-200 text-xs space-y-1.5"
+              className="p-4 rounded-2xl bg-[#0A1C3D]/40 border border-[#0F2A5C] text-blue-200 text-xs space-y-1.5 shadow-lg"
             >
-              <span className="font-black uppercase tracking-wider text-[10px] text-blue-300 block flex items-center gap-1">
-                <BookOpenCheck className="w-3.5 h-3.5" /> Fundamento Normativo:
+              <span className="font-black uppercase tracking-wider text-[10px] text-blue-300 flex items-center gap-1.5">
+                <BookOpenCheck className="w-4 h-4 text-blue-400" /> Fundamento Normativo Oficial:
               </span>
-              <p className="leading-relaxed text-slate-300">{currentQ.fundamento_juridico}</p>
+              <p className="leading-relaxed text-slate-300 text-xs sm:text-sm">{currentQ.fundamento_juridico}</p>
             </motion.div>
           )}
 
+          {/* BOTÓN SIGUIENTE PREGUNTA */}
           {isAnswered && (
             <button
               onClick={handleNextQuestion}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
             >
               <span>{isLastQuestion ? "Ver Resultados de Partida" : "Siguiente Pregunta"}</span>
               <ArrowRight className="w-4 h-4" />
@@ -1262,63 +1296,35 @@ export default function Trivia() {
             )}
 
             {/* CONFIGURACIÓN Y BOTÓN INICIAR */}
-            <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                    Cantidad de Preguntas:
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[5, 10, 15].map((cnt) => (
-                      <button
-                        key={cnt}
-                        onClick={() => setQuestionsCount(cnt)}
-                        className={cn(
-                          "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer font-mono",
-                          questionsCount === cnt
-                            ? "bg-[#0A1C3D] border-[#0F2A5C] text-white shadow-lg"
-                            : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                        )}
-                      >
-                        {cnt} Preguntas
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
-                    Nivel de Dificultad:
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: "todas", label: "Todas" },
-                      { id: "facil", label: "Fácil" },
-                      { id: "media", label: "Media" }
-                    ].map((dif) => (
-                      <button
-                        key={dif.id}
-                        onClick={() => setSelectedDificultad(dif.id)}
-                        className={cn(
-                          "py-2.5 rounded-xl text-xs font-black border transition-all cursor-pointer",
-                          selectedDificultad === dif.id
-                            ? "bg-[#0A1C3D] border-[#0F2A5C] text-white shadow-lg"
-                            : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                        )}
-                      >
-                        {dif.label}
-                      </button>
-                    ))}
-                  </div>
+            <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl backdrop-blur-xl">
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-slate-400 block text-center sm:text-left">
+                  Cantidad de Preguntas por Evaluación:
+                </label>
+                <div className="grid grid-cols-3 gap-2.5 max-w-md mx-auto sm:mx-0">
+                  {[5, 10, 15].map((cnt) => (
+                    <button
+                      key={cnt}
+                      onClick={() => setQuestionsCount(cnt)}
+                      className={cn(
+                        "py-3 rounded-2xl text-xs font-black border transition-all cursor-pointer font-mono active:scale-95",
+                        questionsCount === cnt
+                          ? "bg-gradient-to-r from-red-600 to-rose-600 border-red-500 text-white shadow-lg shadow-red-600/30 scale-105"
+                          : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.08]"
+                      )}
+                    >
+                      {cnt} Preguntas
+                    </button>
+                  ))}
                 </div>
               </div>
 
               <button
                 onClick={handleStartGame}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all min-h-[52px]"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
               >
-                <Play className="w-4 h-4 fill-white" />
-                <span>Comenzar Evaluación Trivia ({questionsCount} Preguntas)</span>
+                <Play className="w-4.5 h-4.5 fill-white" />
+                <span>Comenzar Evaluación ({questionsCount} Preguntas • 20s c/u)</span>
               </button>
             </div>
           </div>
