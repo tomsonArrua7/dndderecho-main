@@ -545,11 +545,7 @@ PREGUNTA DEL ESTUDIANTE:
           model: openrouterModel,
           messages: messagesForOpenRouter,
           stream: true,
-          temperature: 0.3,
-          provider: {
-            order: ["Fireworks", "Together", "DeepSeek"],
-            allow_fallbacks: true
-          }
+          temperature: 0.3
         })
       });
 
