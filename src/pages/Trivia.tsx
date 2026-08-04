@@ -573,11 +573,33 @@ export default function Trivia() {
     }
   };
 
+  // Historial de Actividad Reciente del Usuario desde Supabase DB
+  const [recentActivityList, setRecentActivityList] = useState<any[]>([]);
+
+  const fetchRecentActivityFromSupabase = async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from("trivia_partidas")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (data && !error) {
+        setRecentActivityList(data);
+      }
+    } catch (err) {
+      console.error("Error al obtener actividad reciente de Supabase:", err);
+    }
+  };
+
   // Escuchar cambios de autenticación, Polling 4s y Suscripción Realtime a trivia_duelos
   useEffect(() => {
     fetchUserStatsFromSupabase();
     fetchDuelosFromSupabase();
     fetchRankingFromSupabase();
+    fetchRecentActivityFromSupabase();
 
     // Polling cada 4 segundos para asegurar sync fluida en celulares y PCs sin depender únicamente del socket
     const pollInterval = setInterval(() => {
@@ -657,6 +679,26 @@ export default function Trivia() {
     setIsAnswered(false);
     setGameOver(false);
     setTimeLeft(20);
+    setInGame(true);
+  };
+
+  // Iniciar Modo Flash (5 preguntas ultra-rápidas con 10s por pregunta)
+  const handleStartFlashGame = () => {
+    setActiveDuelRoom(null);
+    setExplicacionIA(null);
+    let pool = [...allQuestionsCombined].sort(() => 0.5 - Math.random());
+    const finalPool = pool.slice(0, 5);
+
+    setQuestionsPool(prepareQuestionPool(finalPool));
+    setCurrentIndex(0);
+    setScore(0);
+    setStreak(0);
+    setMaxStreak(0);
+    setCorrectAnswersCount(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setGameOver(false);
+    setTimeLeft(10);
     setInGame(true);
   };
 
@@ -1249,53 +1291,80 @@ export default function Trivia() {
 
   // PANTALLA PRINCIPAL
   return (
-    <div className="min-h-screen bg-[#050B14] text-white py-8 md:py-12 px-4 relative overflow-hidden">
-      <div className="max-w-5xl mx-auto space-y-8 relative z-10">
+    <div className="min-h-screen bg-[#050B14] text-white py-6 md:py-10 px-3 sm:px-6 relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/3 left-10 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto space-y-6 md:space-y-8 relative z-10">
         
-        {/* HEADER CON PAGO DE RANGO Y BARRA DE PROGRESO DE LOS 12 NIVELES */}
-        <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-5 md:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500/20 to-[#0A1C3D]/40 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
-                <RangoIcon className="w-6 h-6 animate-pulse" />
-              </div>
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-red-400 block">Tu Rango Jurídico:</span>
-                <h3 className="text-lg md:text-xl font-black text-white">{rangoActual.nombre}</h3>
-                <p className="text-[11px] text-slate-400">{rangoActual.descripcion}</p>
-              </div>
+        {/* HEADER PRINCIPAL */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#0D1527]/90 border border-white/15 rounded-3xl p-5 md:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-red-600/20 via-rose-500/10 to-[#0A1C3D] border border-red-500/40 flex items-center justify-center text-red-400 shrink-0 shadow-lg shadow-red-950/40">
+              <BookOpen className="w-6 h-6 md:w-7 md:h-7" />
+            </div>
+            <div>
+              <h1 className="text-xl md:text-3xl font-black text-white tracking-tight">Trivia Jurídica</h1>
+              <p className="text-xs md:text-sm text-slate-400 pt-0.5">Poné a prueba tus conocimientos y subí de rango respondiendo preguntas.</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 self-stretch sm:self-auto justify-between sm:justify-end relative z-10 border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
+            <div className="text-left sm:text-right">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Puntos Acumulados:</span>
+              <span className="text-xl md:text-3xl font-black text-white font-mono leading-none">{userStats.puntosTotales} PTS</span>
+              <span className="text-[11px] text-amber-300 font-bold block pt-1">
+                ⚔️ Duelista: {userStats.victoriasDuelo}V / {userStats.derrotasDuelo}D ({userStats.puntosDuelista} PTS)
+              </span>
             </div>
 
-            <div className="flex items-center gap-4 self-end sm:self-center">
-              <div className="text-right">
-                <span className="text-[9px] uppercase font-black text-slate-400 block">Puntos Acumulados</span>
-                <span className="text-2xl font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
-                <span className="text-[10px] text-amber-300 font-bold block">
-                  ⚔️ Duelista: {userStats.victoriasDuelo}V / {userStats.derrotasDuelo}D ({userStats.puntosDuelista} PTS)
-                </span>
+            <button
+              onClick={() => setShowRangosModal(true)}
+              className="px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95"
+            >
+              VER ESCALA DE RANGOS
+            </button>
+          </div>
+        </div>
+
+        {/* HERO RANK CARD (TU RANGO JURÍDICO) */}
+        <div className="bg-gradient-to-br from-[#121A2D] via-[#0D1527] to-[#1A0B12] border border-red-500/30 rounded-3xl p-5 sm:p-6 md:p-8 space-y-5 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+          {/* Marca de agua de templo judicial */}
+          <div className="absolute -right-4 -bottom-6 opacity-10 text-red-500 pointer-events-none">
+            <Landmark className="w-56 h-56 md:w-72 md:h-72" />
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
+            <div className="flex items-start gap-4">
+              {/* Badge Hexagonal Rojo */}
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white shadow-lg shadow-red-600/30 shrink-0 border border-red-400/30">
+                <RangoIcon className="w-6 h-6 sm:w-7 sm:h-7" />
               </div>
 
-              <button
-                onClick={() => setShowRangosModal(true)}
-                className="px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 font-black text-[10px] uppercase tracking-wider transition-all cursor-pointer"
-              >
-                VER ESCALA DE RANGOS (12 Niveles)
-              </button>
+              <div className="space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-red-400 block">TU RANGO JURÍDICO</span>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white">{rangoActual.nombre}</h2>
+                <p className="text-xs md:text-sm text-slate-300 max-w-xl leading-relaxed">{rangoActual.descripcion}</p>
+              </div>
             </div>
           </div>
 
           {/* BARRA DE PROGRESO DE RANGO */}
           {proximoRango && (
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center justify-between text-[11px] font-bold">
-                <span className="text-slate-400">Progreso de Rango: <span className="text-white">{rangoActual.nombre}</span></span>
+            <div className="space-y-2 pt-2 border-t border-white/10 relative z-10">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-bold gap-1">
+                <span className="text-slate-300">
+                  Progreso de rango: <span className="text-white font-black">{proximoRango.nombre}</span>
+                </span>
                 <span className="text-red-400 font-mono font-black">
-                  Siguiente: {proximoRango.nombre} ({proximoRango.minPuntos - userStats.puntosTotales} PTS restar.)
+                  {proximoRango.minPuntos - userStats.puntosTotales} PTS para el siguiente rango
                 </span>
               </div>
-              <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-white/10">
+
+              <div className="w-full h-3 bg-slate-950/80 rounded-full overflow-hidden border border-white/10 relative">
                 <div 
-                  className="h-full bg-gradient-to-r from-[#0A1C3D] via-[#0F2A5C] to-red-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-red-400 rounded-full transition-all duration-500 shadow-md shadow-red-600/50"
                   style={{ width: `${progresoPorcentaje}%` }}
                 />
               </div>
@@ -1303,209 +1372,375 @@ export default function Trivia() {
           )}
         </div>
 
-        {/* PESTAÑAS PRINCIPALES: EVALUACIÓN / DUELOS 1V1 / RANKING GENERAL ÚNICO */}
-        <div className="flex items-center justify-center gap-2 pt-2 border-b border-white/10 pb-4">
+        {/* PESTAÑAS PRINCIPALES (3 PILLS) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             onClick={() => setActiveTab("evaluacion")}
             className={cn(
-              "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
+              "p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 relative overflow-hidden group shadow-lg active:scale-98",
               activeTab === "evaluacion"
-                ? "bg-gradient-to-r from-[#0A1C3D] to-[#0F2A5C] border-[#0F2A5C] text-white shadow-[#0A1C3D]/30 scale-105"
-                : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                ? "bg-[#0D1527] border-red-500/60 text-white shadow-red-950/30"
+                : "bg-[#0D1527]/60 border-white/10 text-slate-400 hover:bg-[#0D1527] hover:text-slate-200"
             )}
           >
-            <BookOpen className="w-4 h-4" />
-            <span>1. Evaluación por Materia</span>
+            {activeTab === "evaluacion" && (
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-rose-500 shadow-md shadow-red-600/80" />
+            )}
+            <div className={cn(
+              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+              activeTab === "evaluacion" ? "bg-red-500/20 text-red-400 border border-red-500/40" : "bg-white/5 text-slate-400"
+            )}>
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-black text-xs sm:text-sm block text-white">Evaluación por Materia</span>
+              <span className="text-[11px] text-slate-400 block truncate">Preguntas de múltiples materias</span>
+            </div>
           </button>
 
           <button
             onClick={() => setActiveTab("duelos")}
             className={cn(
-              "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
+              "p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 relative overflow-hidden group shadow-lg active:scale-98",
               activeTab === "duelos"
-                ? "bg-gradient-to-r from-[#0A1C3D] to-[#0F2A5C] border-[#0F2A5C] text-white shadow-[#0A1C3D]/30 scale-105"
-                : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                ? "bg-[#0D1527] border-red-500/60 text-white shadow-red-950/30"
+                : "bg-[#0D1527]/60 border-white/10 text-slate-400 hover:bg-[#0D1527] hover:text-slate-200"
             )}
           >
-            <Swords className="w-4 h-4 text-amber-400" />
-            <span>2. Duelos 1vs1 (Salas)</span>
+            {activeTab === "duelos" && (
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-rose-500 shadow-md shadow-red-600/80" />
+            )}
+            <div className={cn(
+              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+              activeTab === "duelos" ? "bg-amber-500/20 text-amber-400 border border-amber-500/40" : "bg-white/5 text-slate-400"
+            )}>
+              <Swords className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-black text-xs sm:text-sm block text-white">Duelos 1vs1 (Salas)</span>
+              <span className="text-[11px] text-slate-400 block truncate">Competí contra otros usuarios</span>
+            </div>
           </button>
 
           <button
             onClick={() => setActiveTab("ranking")}
             className={cn(
-              "px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border shadow-lg",
+              "p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 relative overflow-hidden group shadow-lg active:scale-98",
               activeTab === "ranking"
-                ? "bg-gradient-to-r from-[#0A1C3D] to-[#0F2A5C] border-[#0F2A5C] text-white shadow-[#0A1C3D]/30 scale-105"
-                : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                ? "bg-[#0D1527] border-red-500/60 text-white shadow-red-950/30"
+                : "bg-[#0D1527]/60 border-white/10 text-slate-400 hover:bg-[#0D1527] hover:text-slate-200"
             )}
           >
-            <Trophy className="w-4 h-4 text-yellow-400" />
-            <span>3. Ranking General Único</span>
+            {activeTab === "ranking" && (
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-rose-500 shadow-md shadow-red-600/80" />
+            )}
+            <div className={cn(
+              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+              activeTab === "ranking" ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/40" : "bg-white/5 text-slate-400"
+            )}>
+              <Trophy className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-black text-xs sm:text-sm block text-white">Ranking General Único</span>
+              <span className="text-[11px] text-slate-400 block truncate">Top jugadores del ranking</span>
+            </div>
           </button>
         </div>
 
         {/* PESTAÑA 1: EVALUACIÓN POR MATERIA */}
         {activeTab === "evaluacion" && (
           <div className="space-y-6">
-            {/* BOTÓN TODA LA CARRERA + SELECTOR DE AÑOS */}
-            <div className="flex flex-col items-center gap-4">
-              {/* Botón Toda la Carrera - standalone */}
-              <button
-                onClick={() => {
-                  setSelectedYearFilter(0);
-                  setSelectedCategoria("todas");
-                }}
-                className={cn(
-                  "px-8 py-3.5 rounded-2xl text-sm font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-3 border shadow-xl",
-                  selectedYearFilter === 0
-                    ? "bg-gradient-to-r from-red-600 to-red-500 border-red-500 text-white shadow-red-600/30 scale-105"
-                    : "bg-[#0D1527] border-white/10 text-slate-300 hover:bg-[#0F2A5C]/30 hover:border-red-500/30"
-                )}
-              >
-                <Sparkles className="w-5 h-5" />
-                <span>🎓 Toda la Carrera</span>
-              </button>
+            
+            {/* SECCIÓN ELEGÍ TU DESAFÍO */}
+            <div className="space-y-4">
+              <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
+                <span>ELEGÍ TU DESAFÍO</span>
+              </h3>
 
-              {/* Separador */}
-              <div className="flex items-center gap-3 w-full max-w-md">
-                <div className="flex-1 h-px bg-white/10" />
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">O elegí por año</span>
-                <div className="flex-1 h-px bg-white/10" />
-              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                
+                {/* COLUMNA IZQUIERDA: SELECCIÓN DE CANTIDAD DE PREGUNTAS (lg:col-span-5) */}
+                <div className="lg:col-span-5 bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between relative overflow-hidden backdrop-blur-xl">
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="font-black text-sm text-white">Cantidad de preguntas</h4>
+                      <p className="text-xs text-slate-400 pt-0.5">Seleccioná la cantidad de preguntas para tu evaluación</p>
+                    </div>
 
-              {/* Tabs de Años */}
-              <div className="flex items-center justify-center gap-2 flex-wrap">
-                {[
-                  { id: 1, label: "1º Año", icon: BookOpen },
-                  { id: 2, label: "2º Año", icon: Landmark },
-                  { id: 3, label: "3º Año", icon: Scale },
-                  { id: 4, label: "4º Año", icon: FileText },
-                  { id: 5, label: "5º Año", icon: GraduationCap }
-                ].map((item) => {
-                  const ItemIcon = item.icon;
-                  const isSelected = selectedYearFilter === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => setSelectedYearFilter(item.id)}
-                      className={cn(
-                        "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
-                        isSelected
-                          ? "bg-[#0A1C3D] border-[#0F2A5C] text-white shadow-lg"
-                          : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
-                      )}
-                    >
-                      <ItemIcon className="w-3.5 h-3.5" />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
+                    {/* 4 PILLS DE CANTIDAD (5, 10, 15, 20) */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                      {[5, 10, 15, 20].map((cnt) => (
+                        <button
+                          key={cnt}
+                          onClick={() => setQuestionsCount(cnt)}
+                          className={cn(
+                            "p-3 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center min-h-[64px] active:scale-95",
+                            questionsCount === cnt
+                              ? "bg-red-500/10 border-red-500 text-white shadow-lg shadow-red-950/40 ring-1 ring-red-500/50"
+                              : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                          )}
+                        >
+                          <span className="text-base font-black font-mono leading-none">{cnt}</span>
+                          <span className="text-[10px] text-slate-400 font-medium pt-1">preguntas</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+                    <div>
+                      <span className="font-bold text-slate-300 block">Sobre las preguntas</span>
+                      <p className="text-[11px] text-slate-400 leading-snug">Las preguntas son aleatorias y abarcan diferentes materias del derecho.</p>
+                    </div>
+                    <BookOpen className="w-8 h-8 text-slate-600 shrink-0 ml-2" />
+                  </div>
+                </div>
+
+                {/* COLUMNA CENTRAL: TARJETA EVALUACIÓN COMPLETA (lg:col-span-4) - RED GLOW FEATURED */}
+                <div className="lg:col-span-4 bg-gradient-to-br from-[#2D0B12] via-[#1A0B12] to-[#0D1527] border border-red-500/50 rounded-3xl p-6 flex flex-col items-center justify-between text-center space-y-6 shadow-2xl relative overflow-hidden group hover:border-red-500 transition-all">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-red-600/20 rounded-full blur-2xl pointer-events-none" />
+
+                  <div className="space-y-4 pt-2 relative z-10">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-600/50 group-hover:scale-110 transition-transform">
+                      <Play className="w-8 h-8 fill-white ml-1" />
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-black text-white">Evaluación Completa</h4>
+                      <p className="text-xs text-red-200/80 pt-1">Respondé {questionsCount} preguntas</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleStartGame}
+                    className="w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-red-600/40 cursor-pointer transition-all active:scale-[0.98] min-h-[48px] relative z-10"
+                  >
+                    COMENZAR EVALUACIÓN
+                  </button>
+                </div>
+
+                {/* COLUMNA DERECHA: TARJETA MODO FLASH (lg:col-span-3) - GOLD GLOW */}
+                <div className="lg:col-span-3 bg-gradient-to-br from-[#1A160B] via-[#0D1527] to-[#0D1527] border border-amber-500/40 rounded-3xl p-6 flex flex-col items-center justify-between text-center space-y-6 shadow-2xl relative overflow-hidden group hover:border-amber-500 transition-all">
+                  <div className="space-y-4 pt-2 relative z-10">
+                    <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shadow-lg shadow-amber-950/50 group-hover:scale-110 transition-transform">
+                      <Zap className="w-7 h-7 fill-amber-400 text-amber-400" />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <h4 className="text-base font-black text-white">Modo Flash</h4>
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] uppercase tracking-wider">NUEVO</span>
+                      </div>
+                      <p className="text-xs text-slate-400 pt-1 leading-relaxed">Respondé 5 preguntas. Enfocado en velocidad.</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleStartFlashGame}
+                    className="w-full py-3 rounded-2xl bg-transparent hover:bg-amber-500/10 border border-amber-500/40 text-amber-300 font-black text-xs uppercase tracking-wider shadow-md cursor-pointer transition-all active:scale-[0.98] min-h-[48px] relative z-10"
+                  >
+                    MODO FLASH
+                  </button>
+                </div>
+
               </div>
             </div>
 
-            {/* GRID DE MATERIAS - Solo visible cuando se selecciona un año específico (1-5) */}
-            {selectedYearFilter > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {filteredCategorias.filter(cat => cat.id !== "todas").map((cat) => {
-                  const CatIcon = ICON_MAP[cat.icono] || BookOpen;
-                  const isSelected = selectedCategoria === cat.id;
-                  const qCount = getQuestionCountForCategory(cat.id);
+            {/* OPCIONAL: FILTRO DE MATERIA POR AÑO DE CARRERA */}
+            <div className="pt-2 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black uppercase tracking-wider text-slate-400">Filtro por Materia Específica (Opcional)</span>
+                {selectedCategoria !== "todas" && (
+                  <button
+                    onClick={() => setSelectedCategoria("todas")}
+                    className="text-xs text-red-400 hover:underline font-bold"
+                  >
+                    Limpiar Filtro (Toda la Carrera)
+                  </button>
+                )}
+              </div>
 
-                  return (
-                    <motion.div
-                      key={cat.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedCategoria(cat.id)}
-                      className={cn(
-                        "p-5 rounded-3xl border transition-all duration-300 cursor-pointer space-y-3 flex flex-col justify-between group shadow-xl relative overflow-hidden",
-                        isSelected
-                          ? "bg-gradient-to-br from-[#0A1C3D]/80 via-[#0D1527] to-[#1F0B12]/40 border-red-500/60 text-white shadow-red-900/20"
-                          : "bg-[#0D1527]/80 border-white/10 hover:border-red-500/30 hover:bg-[#0D1527] text-slate-300"
-                      )}
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
+              <div className="flex items-center justify-start gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <button
+                  onClick={() => {
+                    setSelectedYearFilter(0);
+                    setSelectedCategoria("todas");
+                  }}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
+                    selectedYearFilter === 0
+                      ? "bg-red-600/30 border-red-500 text-white"
+                      : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                  )}
+                >
+                  🎓 Toda la Carrera
+                </button>
+                {[
+                  { id: 1, label: "1º Año" },
+                  { id: 2, label: "2º Año" },
+                  { id: 3, label: "3º Año" },
+                  { id: 4, label: "4º Año" },
+                  { id: 5, label: "5º Año" }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedYearFilter(item.id)}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
+                      selectedYearFilter === item.id
+                        ? "bg-[#0A1C3D] border-[#0F2A5C] text-white"
+                        : "bg-white/[0.02] border-white/10 text-slate-400 hover:bg-white/[0.05]"
+                    )}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+
+              {selectedYearFilter > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-1">
+                  {filteredCategorias.filter(cat => cat.id !== "todas").map((cat) => {
+                    const CatIcon = ICON_MAP[cat.icono] || BookOpen;
+                    const isSelected = selectedCategoria === cat.id;
+
+                    return (
+                      <div
+                        key={cat.id}
+                        onClick={() => setSelectedCategoria(cat.id)}
+                        className={cn(
+                          "p-4 rounded-2xl border transition-all cursor-pointer space-y-2 flex items-center justify-between gap-3",
+                          isSelected
+                            ? "bg-red-500/10 border-red-500 text-white"
+                            : "bg-[#0D1527]/80 border-white/10 hover:border-red-500/30 text-slate-300"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
                           <div className={cn(
-                            "w-10 h-10 rounded-2xl flex items-center justify-center border font-bold",
-                            isSelected ? "bg-red-500/20 border-red-500/50 text-red-300" : "bg-white/5 border-white/10 text-slate-400 group-hover:text-white"
+                            "w-9 h-9 rounded-xl flex items-center justify-center border font-bold text-xs shrink-0",
+                            isSelected ? "bg-red-500/20 border-red-500/50 text-red-300" : "bg-white/5 border-white/10 text-slate-400"
                           )}>
-                            <CatIcon className="w-5 h-5" />
+                            <CatIcon className="w-4 h-4" />
                           </div>
+                          <div>
+                            <h4 className="font-bold text-xs text-white">{cat.nombre}</h4>
+                            <span className="text-[10px] text-slate-400 block">{cat.anio}º Año</span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
-                          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-[#0A1C3D]/50 text-blue-300 border border-[#0F2A5C]/50">
-                            {cat.anio}º Año
+            {/* FILA INFERIOR: TU ACTIVIDAD RECIENTE Y CONSEJOS */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
+              
+              {/* IZQUIERDA: TU ACTIVIDAD RECIENTE (lg:col-span-8) */}
+              <div className="lg:col-span-8 bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <h3 className="font-black text-xs md:text-sm text-white uppercase tracking-wider">TU ACTIVIDAD RECIENTE</h3>
+                  <span className="text-[11px] text-slate-400 font-mono">Últimas Evaluaciones</span>
+                </div>
+
+                {/* VISTA TABLA DESKTOP */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="text-slate-400 text-[10px] font-black uppercase border-b border-white/10">
+                        <th className="pb-3 px-2">Fecha</th>
+                        <th className="pb-3 px-2">Tipo</th>
+                        <th className="pb-3 px-2 text-center">Preguntas</th>
+                        <th className="pb-3 px-2 text-center">Puntaje</th>
+                        <th className="pb-3 px-2 text-right">Resultado</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5 font-medium">
+                      {recentActivityList.length > 0 ? (
+                        recentActivityList.slice(0, 5).map((act, idx) => (
+                          <tr key={act.id || idx} className="hover:bg-white/[0.02] transition-colors">
+                            <td className="py-3 px-2 text-slate-300 font-mono text-[11px]">
+                              {act.created_at ? new Date(act.created_at).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' }) : "Hoy"}
+                              <span className="text-slate-500 block text-[10px]">{act.created_at ? new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}</span>
+                            </td>
+                            <td className="py-3 px-2 font-bold text-white flex items-center gap-1.5">
+                              <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                              <span>{act.categoria_id === "flash" ? "Modo Flash" : "Evaluación por Materia"}</span>
+                            </td>
+                            <td className="py-3 px-2 text-center text-slate-300 font-mono">
+                              {act.total_preguntas || 10}
+                            </td>
+                            <td className="py-3 px-2 text-center font-black text-white font-mono text-sm">
+                              {act.puntos || 0} pts
+                            </td>
+                            <td className="py-3 px-2 text-right">
+                              <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-black uppercase">
+                                Aprobado
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={5} className="py-6 text-center text-slate-400 text-xs">
+                            Aún no tenés evaluaciones registradas. ¡Iniciá tu primer desafío!
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* VISTA TARJETAS MOBILE */}
+                <div className="sm:hidden space-y-2.5">
+                  {recentActivityList.length > 0 ? (
+                    recentActivityList.slice(0, 3).map((act, idx) => (
+                      <div key={act.id || idx} className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-400 font-mono text-[10px]">
+                            {act.created_at ? new Date(act.created_at).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' }) : "Hoy"}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-black uppercase">
+                            Aprobado
                           </span>
                         </div>
-
-                        <div>
-                          <h4 className="font-black text-base text-white group-hover:text-red-300 transition-colors">
-                            {cat.nombre}
-                          </h4>
-                          <p className="text-xs text-slate-400 leading-relaxed pt-1">
-                            {cat.descripcion}
-                          </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 font-bold text-xs text-white">
+                            <Zap className="w-3.5 h-3.5 text-amber-400" />
+                            <span>{act.categoria_id === "flash" ? "Modo Flash" : "Evaluación por Materia"}</span>
+                          </div>
+                          <span className="font-mono font-black text-white text-sm">{act.puntos || 0} pts</span>
                         </div>
                       </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] font-bold">
-                        <span className="text-slate-400 font-mono">
-                          {qCount} Preguntas
-                        </span>
-                        <div className="flex items-center gap-1 text-red-400 font-black">
-                          <span>Seleccionar</span>
-                          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* CONFIGURACIÓN Y BOTÓN INICIAR */}
-            <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl backdrop-blur-xl">
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-400 block text-center sm:text-left">
-                  Cantidad de Preguntas por Evaluación:
-                </label>
-                <div className="grid grid-cols-3 gap-2.5 max-w-md mx-auto sm:mx-0">
-                  {[5, 10, 15].map((cnt) => (
-                    <button
-                      key={cnt}
-                      onClick={() => setQuestionsCount(cnt)}
-                      className={cn(
-                        "py-3 rounded-2xl text-xs font-black border transition-all cursor-pointer font-mono active:scale-95",
-                        questionsCount === cnt
-                          ? "bg-gradient-to-r from-red-600 to-rose-600 border-red-500 text-white shadow-lg shadow-red-600/30 scale-105"
-                          : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.08]"
-                      )}
-                    >
-                      {cnt} Preguntas
-                    </button>
-                  ))}
+                    ))
+                  ) : (
+                    <div className="py-4 text-center text-slate-400 text-xs">
+                      Aún no tenés evaluaciones registradas. ¡Iniciá tu primer desafío!
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  onClick={handleStartGame}
-                  className="py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
-                >
-                  <Play className="w-4.5 h-4.5 fill-white" />
-                  <span>Comenzar Evaluación ({questionsCount} Preguntas)</span>
-                </button>
-
-                <button
-                  onClick={() => setIsParcialFlashModalOpen(true)}
-                  className="py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
-                >
-                  <Sparkles className="w-4.5 h-4.5 text-white animate-pulse" />
-                  <span>⚡ Parcial Flash con IA (5 Preguntas)</span>
-                </button>
+              {/* DERECHA: CONSEJOS (lg:col-span-4) */}
+              <div className="lg:col-span-4 bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl flex flex-col justify-between">
+                <div className="space-y-3">
+                  <h3 className="font-black text-xs md:text-sm text-white uppercase tracking-wider">CONSEJOS</h3>
+                  
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <h4 className="font-black text-xs sm:text-sm text-white pt-1">Leé las preguntas con atención</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Tomate tu tiempo para entender bien cada consigna antes de responder. Podés consultar al Tutor IA al finalizar cada pregunta.
+                    </p>
+                  </div>
+                </div>
               </div>
+
             </div>
+
           </div>
         )}
 
