@@ -26,6 +26,7 @@ import { ProtectedRoute, AdminRoute, BetaRoute } from "@/components/ProtectedRou
 import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { AlertCircle, ExternalLink, RefreshCw, Loader2 } from "lucide-react";
 import { DndMark } from "@/components/DndMark";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import Proximamente from "./pages/Proximamente";
 import { useAuth } from "@/context/AuthContext";
 
@@ -253,6 +254,7 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <PWAInstallBanner />
           <BrowserRouter>
             <ScrollToTop />
             <AuthProvider>
