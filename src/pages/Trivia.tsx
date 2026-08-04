@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, Component, ErrorInfo } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
@@ -90,22 +90,28 @@ const ICON_MAP: Record<string, any> = {
   Zap
 };
 
-// Función para desordenar aleatoriamente las 4 opciones de cada pregunta
+// Función para desordenar aleatoriamente las 4 opciones de cada pregunta de forma segura
 const prepareQuestionPool = (questions: TriviaQuestion[]): TriviaQuestion[] => {
-  return questions.map(q => {
-    const correctText = q.opciones[q.respuesta_correcta_index];
-    const shuffled = [...q.opciones];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    const newCorrectIndex = shuffled.indexOf(correctText);
-    return {
-      ...q,
-      opciones: shuffled,
-      respuesta_correcta_index: newCorrectIndex
-    };
-  });
+  if (!Array.isArray(questions)) return [];
+  return questions
+    .filter(q => q && Array.isArray(q.opciones) && q.opciones.length > 0)
+    .map(q => {
+      const validIndex = (typeof q.respuesta_correcta_index === "number" && q.respuesta_correcta_index >= 0 && q.respuesta_correcta_index < q.opciones.length)
+        ? q.respuesta_correcta_index
+        : 0;
+      const correctText = q.opciones[validIndex];
+      const shuffled = [...q.opciones];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      const newCorrectIndex = shuffled.indexOf(correctText);
+      return {
+        ...q,
+        opciones: shuffled,
+        respuesta_correcta_index: newCorrectIndex !== -1 ? newCorrectIndex : 0
+      };
+    });
 };
 
 export default function Trivia() {
@@ -337,41 +343,27 @@ export default function Trivia() {
   };
 
   // Estadísticas del usuario acumuladas (sincronizadas con DB / LocalStorage)
-  const [userStats, setUserStats] = useState<{
-    totalJugadas: number;
-    totalCorrectas: number;
-    puntosTotales: number;
-    mejorRacha: number;
-    victoriasDuelo: number;
-    derrotasDuelo: number;
-    empatesDuelo: number;
-    puntosDuelista: number;
-  }>(() => {
+  const [rawUserStats, setUserStats] = useState<any>(() => {
     try {
       const saved = localStorage.getItem("dnd_trivia_user_stats");
-      return saved ? JSON.parse(saved) : {
-        totalJugadas: 0,
-        totalCorrectas: 0,
-        puntosTotales: 0,
-        mejorRacha: 0,
-        victoriasDuelo: 0,
-        derrotasDuelo: 0,
-        empatesDuelo: 0,
-        puntosDuelista: 0
-      };
-    } catch {
-      return {
-        totalJugadas: 0,
-        totalCorrectas: 0,
-        puntosTotales: 0,
-        mejorRacha: 0,
-        victoriasDuelo: 0,
-        derrotasDuelo: 0,
-        empatesDuelo: 0,
-        puntosDuelista: 0
-      };
-    }
+      const parsed = saved ? JSON.parse(saved) : null;
+      if (parsed && typeof parsed === "object") return parsed;
+    } catch {}
+    return {};
   });
+
+  const userStats = useMemo(() => {
+    return {
+      totalJugadas: typeof rawUserStats?.totalJugadas === "number" ? rawUserStats.totalJugadas : 0,
+      totalCorrectas: typeof rawUserStats?.totalCorrectas === "number" ? rawUserStats.totalCorrectas : 0,
+      puntosTotales: typeof rawUserStats?.puntosTotales === "number" ? rawUserStats.puntosTotales : 0,
+      mejorRacha: typeof rawUserStats?.mejorRacha === "number" ? rawUserStats.mejorRacha : 0,
+      victoriasDuelo: typeof rawUserStats?.victoriasDuelo === "number" ? rawUserStats.victoriasDuelo : 0,
+      derrotasDuelo: typeof rawUserStats?.derrotasDuelo === "number" ? rawUserStats.derrotasDuelo : 0,
+      empatesDuelo: typeof rawUserStats?.empatesDuelo === "number" ? rawUserStats.empatesDuelo : 0,
+      puntosDuelista: typeof rawUserStats?.puntosDuelista === "number" ? rawUserStats.puntosDuelista : 0,
+    };
+  }, [rawUserStats]);
 
   const userName = profile?.full_name || user?.email?.split("@")[0] || "Estudiante de Abogacía";
   const rangoActual = calcularRango(userStats.puntosTotales);
@@ -2409,5 +2401,56 @@ export default function Trivia() {
 
       </div>
     </div>
+  );
+}
+
+class TriviaErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean; error: Error | null }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Trivia Component Error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#050B14] text-white p-8 flex items-center justify-center">
+          <div className="max-w-md w-full bg-[#0D1527] border border-red-500/40 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+            <div className="w-16 h-16 mx-auto rounded-full bg-red-500/20 text-red-400 flex items-center justify-center">
+              <ShieldAlert className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-bold text-white">Actualizando Módulo de Trivia</h2>
+            <p className="text-xs text-slate-300">
+              Se sincronizaron nuevos datos. Hacé clic para restaurar la vista fluida.
+            </p>
+            <button
+              onClick={() => {
+                try { localStorage.removeItem("dnd_trivia_user_stats"); } catch {}
+                window.location.reload();
+              }}
+              className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs uppercase cursor-pointer"
+            >
+              Cargar Trivia
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export function TriviaWithBoundary() {
+  return (
+    <TriviaErrorBoundary>
+      <Trivia />
+    </TriviaErrorBoundary>
   );
 }
