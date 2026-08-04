@@ -3,6 +3,7 @@ import { Link, useNavigate, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { UserProfileModal } from "@/components/trivia/UserProfileModal";
 import { 
   Trophy, 
   Timer, 
@@ -48,6 +49,7 @@ import {
   Zap,
   Plus,
   RefreshCw,
+  Calendar,
   Eye,
   Loader2
 } from "lucide-react";
@@ -170,11 +172,30 @@ export default function Trivia() {
     activeDuelRoomRef.current = activeDuelRoom;
   }, [activeDuelRoom]);
 
-  // Ranking conectado a Supabase (General y Duelistas)
-  const [rankingSubTab, setRankingSubTab] = useState<"global" | "duelistas">("global");
+  // Ranking conectado a Supabase (General, Duelistas y Medallas)
+  const [rankingSubTab, setRankingSubTab] = useState<"global" | "duelistas" | "medallas">("global");
   const [leaderboardList, setLeaderboardList] = useState<LeaderboardEntry[]>([]);
   const [duelistasLeaderboardList, setDuelistasLeaderboardList] = useState<any[]>([]);
+  const [medallasLeaderboardList, setMedallasLeaderboardList] = useState<any[]>([]);
   const [loadingRanking, setLoadingRanking] = useState(false);
+
+  // Modal para inspeccionar perfil público y medallas de otro estudiante
+  const [inspectUserModal, setInspectUserModal] = useState<{
+    isOpen: boolean;
+    userId: string | null;
+    userName?: string;
+    userAvatar?: string;
+  }>({ isOpen: false, userId: null });
+
+  const handleInspectUser = (userId: string, userName?: string, avatarUrl?: string) => {
+    if (!userId) return;
+    setInspectUserModal({
+      isOpen: true,
+      userId,
+      userName: userName || "Estudiante de Abogacía",
+      userAvatar: avatarUrl
+    });
+  };
 
   // Modal de resultado final de Duelo 1v1
   const [duelOutcomeModal, setDuelOutcomeModal] = useState<{
@@ -455,6 +476,17 @@ export default function Trivia() {
         setDuelistasLeaderboardList(duelData);
       } else {
         setDuelistasLeaderboardList([]);
+      }
+
+      const { data: medallasData, error: medallasError } = await supabase
+        .from("trivia_leaderboard_medallas")
+        .select("*")
+        .limit(50);
+
+      if (medallasData && !medallasError && medallasData.length > 0) {
+        setMedallasLeaderboardList(medallasData);
+      } else {
+        setMedallasLeaderboardList([]);
       }
     } catch (err) {
       console.error("Error al obtener ranking en Supabase:", err);
@@ -2060,7 +2092,7 @@ export default function Trivia() {
           </div>
         )}
 
-        {/* PESTAÑA 3: RANKING GENERAL Y DUELISTAS 1V1 DE LA FACULTAD */}
+        {/* PESTAÑA 3: RANKING GENERAL, DUELISTAS Y MEDALLERO OLÍMPICO */}
         {activeTab === "ranking" && (
           <div className="space-y-6">
             
@@ -2104,6 +2136,36 @@ export default function Trivia() {
                   <span className="hidden sm:inline">Actualizar</span>
                 </button>
               </div>
+            </div>
+
+            {/* BANNER DE INICIO OFICIAL DE TEMPORADA COMPETITIVA (23 DE AGOSTO 20:00 HS) */}
+            <div className="p-4 rounded-3xl bg-gradient-to-r from-[#2D0B12] via-[#1A0B12] to-[#0D1527] border border-red-500/40 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 font-bold shrink-0 shadow">
+                  <Calendar className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <h4 className="font-black text-xs sm:text-sm text-white flex items-center gap-2">
+                    <span>🚀 Temporada Competitiva & Resets</span>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-mono">
+                      Inicio: 23 de Agosto 20:00 hs
+                    </span>
+                  </h4>
+                  <p className="text-[11px] text-slate-300">
+                    Resets semanales en Duelos 1v1 y mensuales en Ranking General con entrega de Medallas de Podio (Oro, Plata, Bronce).
+                  </p>
+                </div>
+              </div>
+
+              {user && (
+                <button
+                  onClick={() => handleInspectUser(user.id, userName, profile?.avatar_url)}
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg flex items-center gap-2 shrink-0 cursor-pointer"
+                >
+                  <Award className="w-4 h-4 fill-slate-950" />
+                  <span>Mi Medallero</span>
+                </button>
+              )}
             </div>
 
             {/* TARJETAS HIGHLIGHT DE ESTADÍSTICAS EN TIEMPO REAL */}
@@ -2164,13 +2226,13 @@ export default function Trivia() {
 
             </div>
 
-            {/* BOTONES DE SUB-PESTAÑA (GENERAL vs DUELISTAS 1V1) + IR A MI POSICIÓN */}
+            {/* BOTONES DE SUB-PESTAÑA (GENERAL, DUELISTAS, MEDALLERO) + IR A MI POSICIÓN */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-              <div className="flex items-center gap-2 p-1.5 bg-[#0D1527] border border-white/10 rounded-2xl w-full sm:w-auto">
+              <div className="flex items-center gap-2 p-1.5 bg-[#0D1527] border border-white/10 rounded-2xl w-full sm:w-auto overflow-x-auto scrollbar-none">
                 <button
                   onClick={() => setRankingSubTab("global")}
                   className={cn(
-                    "px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex-1 sm:flex-initial text-center flex items-center justify-center gap-2",
+                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 text-center flex items-center justify-center gap-1.5",
                     rankingSubTab === "global"
                       ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
                       : "text-slate-400 hover:text-white"
@@ -2182,14 +2244,26 @@ export default function Trivia() {
                 <button
                   onClick={() => setRankingSubTab("duelistas")}
                   className={cn(
-                    "px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex-1 sm:flex-initial text-center flex items-center justify-center gap-2",
+                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 text-center flex items-center justify-center gap-1.5",
                     rankingSubTab === "duelistas"
                       ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
                       : "text-slate-400 hover:text-white"
                   )}
                 >
                   <Swords className="w-4 h-4 text-amber-400" />
-                  <span>Ranking de Duelistas (1v1)</span>
+                  <span>Ranking Duelistas (1v1)</span>
+                </button>
+                <button
+                  onClick={() => setRankingSubTab("medallas")}
+                  className={cn(
+                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 text-center flex items-center justify-center gap-1.5",
+                    rankingSubTab === "medallas"
+                      ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
+                      : "text-slate-400 hover:text-white"
+                  )}
+                >
+                  <Award className="w-4 h-4 text-amber-400" />
+                  <span>🥇 Medallero Olímpico</span>
                 </button>
               </div>
 
@@ -2215,9 +2289,12 @@ export default function Trivia() {
                       
                       {/* PUESTO 2 (PLATA) */}
                       {leaderboardList[1] && (
-                        <div className="flex flex-col items-center flex-1 space-y-2">
+                        <div 
+                          onClick={() => handleInspectUser(leaderboardList[1].id, leaderboardList[1].nombre, leaderboardList[1].avatarUrl)}
+                          className="flex flex-col items-center flex-1 space-y-2 cursor-pointer group"
+                        >
                           <div className="relative">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-slate-800 border-2 border-slate-300 p-0.5 shadow-lg shadow-slate-300/20 overflow-hidden">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-slate-800 border-2 border-slate-300 p-0.5 shadow-lg shadow-slate-300/20 overflow-hidden group-hover:scale-105 transition-transform">
                               <div className="w-full h-full rounded-full bg-slate-700 flex items-center justify-center font-black text-slate-200 text-sm sm:text-base uppercase">
                                 {leaderboardList[1].nombre.split(" ").map(n => n[0]).slice(0, 2).join("")}
                               </div>
@@ -2227,7 +2304,7 @@ export default function Trivia() {
                             </span>
                           </div>
                           <div className="text-center">
-                            <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px]">{leaderboardList[1].nombre}</h5>
+                            <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px] group-hover:text-slate-200">{leaderboardList[1].nombre}</h5>
                             <span className="text-[10px] text-slate-400 block truncate max-w-[100px]">
                               {leaderboardList[1].rangoNombre || calcularRango(leaderboardList[1].puntos).nombre}
                             </span>
@@ -2241,9 +2318,12 @@ export default function Trivia() {
 
                       {/* PUESTO 1 (ORO - MÁS ALTO) */}
                       {leaderboardList[0] && (
-                        <div className="flex flex-col items-center flex-1 space-y-2 relative -top-3">
+                        <div 
+                          onClick={() => handleInspectUser(leaderboardList[0].id, leaderboardList[0].nombre, leaderboardList[0].avatarUrl)}
+                          className="flex flex-col items-center flex-1 space-y-2 relative -top-3 cursor-pointer group"
+                        >
                           <div className="relative">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 p-0.5 shadow-xl shadow-amber-500/30 overflow-hidden ring-4 ring-amber-500/20">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 p-0.5 shadow-xl shadow-amber-500/30 overflow-hidden ring-4 ring-amber-500/20 group-hover:scale-105 transition-transform">
                               <div className="w-full h-full rounded-full bg-amber-600/30 flex items-center justify-center font-black text-amber-300 text-base sm:text-xl uppercase">
                                 {leaderboardList[0].nombre.split(" ").map(n => n[0]).slice(0, 2).join("")}
                               </div>
@@ -2253,7 +2333,7 @@ export default function Trivia() {
                             </span>
                           </div>
                           <div className="text-center">
-                            <h5 className="font-black text-xs sm:text-base text-white truncate max-w-[120px]">{leaderboardList[0].nombre}</h5>
+                            <h5 className="font-black text-xs sm:text-base text-white truncate max-w-[120px] group-hover:text-amber-300">{leaderboardList[0].nombre}</h5>
                             <span className="text-[10px] text-amber-300/80 block truncate max-w-[120px]">
                               {leaderboardList[0].rangoNombre || calcularRango(leaderboardList[0].puntos).nombre}
                             </span>
@@ -2267,9 +2347,12 @@ export default function Trivia() {
 
                       {/* PUESTO 3 (BRONCE) */}
                       {leaderboardList[2] && (
-                        <div className="flex flex-col items-center flex-1 space-y-2">
+                        <div 
+                          onClick={() => handleInspectUser(leaderboardList[2].id, leaderboardList[2].nombre, leaderboardList[2].avatarUrl)}
+                          className="flex flex-col items-center flex-1 space-y-2 cursor-pointer group"
+                        >
                           <div className="relative">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-amber-900/40 border-2 border-amber-600 p-0.5 shadow-lg shadow-amber-700/20 overflow-hidden">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-amber-900/40 border-2 border-amber-600 p-0.5 shadow-lg shadow-amber-700/20 overflow-hidden group-hover:scale-105 transition-transform">
                               <div className="w-full h-full rounded-full bg-amber-900/50 flex items-center justify-center font-black text-amber-400 text-sm sm:text-base uppercase">
                                 {leaderboardList[2].nombre.split(" ").map(n => n[0]).slice(0, 2).join("")}
                               </div>
@@ -2279,7 +2362,7 @@ export default function Trivia() {
                             </span>
                           </div>
                           <div className="text-center">
-                            <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px]">{leaderboardList[2].nombre}</h5>
+                            <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px] group-hover:text-amber-400">{leaderboardList[2].nombre}</h5>
                             <span className="text-[10px] text-slate-400 block truncate max-w-[100px]">
                               {leaderboardList[2].rangoNombre || calcularRango(leaderboardList[2].puntos).nombre}
                             </span>
@@ -2321,8 +2404,9 @@ export default function Trivia() {
                                 <tr 
                                   key={entry.id} 
                                   id={isMe ? "my-user-rank-row" : undefined}
+                                  onClick={() => handleInspectUser(entry.id, entry.nombre, entry.avatarUrl)}
                                   className={cn(
-                                    "hover:bg-white/[0.02] transition-colors",
+                                    "hover:bg-white/[0.04] transition-colors cursor-pointer",
                                     entry.posicion === 1 && "bg-amber-500/[0.04] border-l-2 border-l-amber-400",
                                     entry.posicion === 2 && "bg-slate-300/[0.04] border-l-2 border-l-slate-300",
                                     entry.posicion === 3 && "bg-amber-700/[0.04] border-l-2 border-l-amber-600",
@@ -2347,7 +2431,7 @@ export default function Trivia() {
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-2">
-                                          <span className="font-bold text-white text-sm">{entry.nombre}</span>
+                                          <span className="font-bold text-white text-sm hover:underline">{entry.nombre}</span>
                                           {isMe && (
                                             <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
                                               TÚ
@@ -2386,8 +2470,9 @@ export default function Trivia() {
                             <div 
                               key={entry.id} 
                               id={isMe ? "my-user-rank-row" : undefined}
+                              onClick={() => handleInspectUser(entry.id, entry.nombre, entry.avatarUrl)}
                               className={cn(
-                                "p-3.5 rounded-2xl border flex items-center justify-between gap-3",
+                                "p-3.5 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer",
                                 isMe ? "bg-red-500/10 border-red-500" : "bg-white/[0.03] border-white/10"
                               )}
                             >
@@ -2469,8 +2554,9 @@ export default function Trivia() {
                         return (
                           <div
                             key={entry.user_id || idx}
+                            onClick={() => handleInspectUser(entry.user_id, entry.nombre, entry.avatar_url)}
                             className={cn(
-                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
+                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 cursor-pointer",
                               isMe
                                 ? "bg-red-950/30 border-red-500/60 shadow-lg shadow-red-900/10 ring-1 ring-red-500/30"
                                 : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-white/[0.04]"
@@ -2487,7 +2573,7 @@ export default function Trivia() {
                                 #{entry.posicion || idx + 1}
                               </span>
                               <div>
-                                <h5 className="font-bold text-sm text-white flex items-center gap-2">
+                                <h5 className="font-bold text-sm text-white flex items-center gap-2 hover:underline">
                                   <span>{entry.nombre || "Duelista"}</span>
                                   {isMe && (
                                     <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
@@ -2520,6 +2606,82 @@ export default function Trivia() {
                   )}
                 </div>
 
+              </div>
+            )}
+
+            {/* CONTENIDO 3: MEDALLERO OLÍMPICO CON CLASIFICACIÓN DE MEDALLAS ORO, PLATA Y BRONCE */}
+            {rankingSubTab === "medallas" && (
+              <div className="space-y-4">
+                <div className="bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <h3 className="font-black text-xs md:text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                      <Award className="w-4 h-4 text-amber-400" />
+                      <span>Tabla Olímpica de Medallas Ganadas</span>
+                    </h3>
+                    <span className="text-[11px] text-amber-400 font-mono">Ordenado por 🥇 Oro &gt; 🥈 Plata &gt; 🥉 Bronce</span>
+                  </div>
+
+                  {medallasLeaderboardList.length > 0 ? (
+                    <div className="space-y-2.5">
+                      {medallasLeaderboardList.map((entry, idx) => {
+                        const isMe = entry.user_id === user?.id;
+
+                        return (
+                          <div
+                            key={entry.user_id || idx}
+                            onClick={() => handleInspectUser(entry.user_id, entry.nombre, entry.avatar_url)}
+                            className={cn(
+                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 cursor-pointer",
+                              isMe
+                                ? "bg-amber-950/30 border-amber-500/60 shadow-lg shadow-amber-900/10 ring-1 ring-amber-500/30"
+                                : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-white/[0.04]"
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className={cn(
+                                "w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center font-mono border shrink-0",
+                                idx === 0 ? "bg-amber-500/20 text-amber-300 border-amber-500/40 font-black" :
+                                idx === 1 ? "bg-slate-300/20 text-slate-200 border-slate-300/40 font-black" :
+                                idx === 2 ? "bg-amber-700/20 text-amber-400 border-amber-700/40 font-black" :
+                                "bg-slate-800 text-slate-300 border-white/10"
+                              )}>
+                                #{idx + 1}
+                              </span>
+                              <div>
+                                <h5 className="font-bold text-sm text-white flex items-center gap-2 hover:underline">
+                                  <span>{entry.nombre || "Estudiante"}</span>
+                                  {isMe && (
+                                    <span className="px-2 py-0.5 rounded-full bg-amber-500/30 text-amber-200 border border-amber-500/40 text-[9px] font-black uppercase font-mono">
+                                      TÚ
+                                    </span>
+                                  )}
+                                </h5>
+                                <div className="flex items-center gap-3 text-xs pt-0.5 font-mono font-bold">
+                                  <span className="text-amber-400">🥇 {entry.medallas_oro || 0}</span>
+                                  <span className="text-slate-300">🥈 {entry.medallas_plata || 0}</span>
+                                  <span className="text-amber-600">🥉 {entry.medallas_bronce || 0}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <span className="text-sm font-black text-amber-400 font-mono">{entry.total_medallas || 0}</span>
+                              <span className="text-[10px] text-slate-400 block font-mono">Medallas Totales</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
+                      <Award className="w-10 h-10 mx-auto text-amber-400 opacity-60" />
+                      <h4 className="font-black text-base text-white">¡No hay medallas otorgadas aún!</h4>
+                      <p className="text-xs text-slate-400 max-w-md mx-auto">
+                        Las medallas olímpicas se otorgan a los mejores duelistas y campeones al finalizar los ciclos semanales y mensuales de competencia.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -2869,6 +3031,15 @@ export default function Trivia() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* MODAL FICHA DE ESTUDIANTE Y MEDALLERO PÚBLICO */}
+        <UserProfileModal
+          isOpen={inspectUserModal.isOpen}
+          onClose={() => setInspectUserModal(prev => ({ ...prev, isOpen: false }))}
+          userId={inspectUserModal.userId}
+          userName={inspectUserModal.userName}
+          userAvatar={inspectUserModal.userAvatar}
+        />
 
       </div>
     </div>
