@@ -221,22 +221,26 @@ export default function Trivia() {
   useEffect(() => {
     async function fetchDbQuestions() {
       try {
-        const { data } = await supabase.from("trivia_preguntas").select("*").eq("aprobado", true);
-        if (data && data.length > 0) {
-          const mapped: TriviaQuestion[] = data.map((d: any) => ({
-            id: d.id,
-            id_categoria: d.materia ? d.materia.toLowerCase().replace(/\s+/g, "_") : "general",
-            categoria_nombre: d.materia || "Derecho General",
-            dificultad: d.dificultad || "media",
-            pregunta: d.pregunta,
-            opciones: d.opciones,
-            respuesta_correcta_index: d.respuesta_correcta_index,
-            fundamento_juridico: d.fundamento_juridico || "",
-            puntos_base: 100
-          }));
+        const { data, error } = await supabase.from("trivia_preguntas").select("*").eq("aprobado", true);
+        if (!error && data && data.length > 0) {
+          const mapped: TriviaQuestion[] = data
+            .filter((d: any) => d && d.pregunta && Array.isArray(d.opciones) && d.opciones.length === 4)
+            .map((d: any) => ({
+              id: d.id || `db_${Math.random()}`,
+              id_categoria: d.materia ? d.materia.toLowerCase().replace(/\s+/g, "_") : "general",
+              categoria_nombre: d.materia || "Derecho General",
+              dificultad: d.dificultad || "media",
+              pregunta: d.pregunta,
+              opciones: d.opciones,
+              respuesta_correcta_index: typeof d.respuesta_correcta_index === "number" ? d.respuesta_correcta_index : 0,
+              fundamento_juridico: d.fundamento_juridico || "",
+              puntos_base: 100
+            }));
           setDbTriviaQuestions(mapped);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("No se pudieron cargar preguntas de DB Supabase:", e);
+      }
     }
     fetchDbQuestions();
   }, []);
