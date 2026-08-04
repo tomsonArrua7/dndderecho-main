@@ -347,26 +347,29 @@ const MiEspacio = () => {
           {/* Plan de Estudios Progress Card */}
           <Link
             to="/plan"
-            className="p-6 rounded-2xl bg-card border border-border shadow-paper relative overflow-hidden group block hover:border-primary/45 transition-all duration-300"
+            className="p-4 sm:p-6 rounded-2xl bg-card border border-border shadow-paper relative overflow-hidden group block hover:border-primary/45 transition-all duration-300"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-[0.03] bg-primary -translate-y-8 translate-x-8" />
-            <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-primary/10 text-primary">
-                  <GraduationCap className="h-6 w-6" />
+            <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-[0.03] bg-primary -translate-y-8 translate-x-8 pointer-events-none" />
+            <div className="flex items-center justify-between mb-4 sm:mb-6 gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <div>
-                  <h3 className="font-display font-semibold text-xl text-foreground">Tu Progreso</h3>
-                  <p className="text-sm text-muted-foreground">{stats.aprobadas} de {stats.total} materias aprobadas ({stats.planName})</p>
+                <div className="min-w-0">
+                  <h3 className="font-display font-semibold text-base sm:text-xl text-foreground leading-tight">Tu Progreso</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{stats.aprobadas} de {stats.total} materias ({stats.planName})</p>
                 </div>
               </div>
-              <div className="inline-flex items-center justify-center rounded-xl text-xs font-bold transition-colors border border-input bg-background/50 h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground group-hover:border-primary/50">
+              <div className="hidden sm:inline-flex items-center justify-center rounded-xl text-xs font-bold transition-colors border border-input bg-background/50 h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground group-hover:border-primary/50 shrink-0">
                 Abrir Plan <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform ml-1.5" />
+              </div>
+              <div className="sm:hidden text-primary group-hover:translate-x-0.5 transition-transform shrink-0">
+                <ArrowRight className="h-4 w-4" />
               </div>
             </div>
             
             {/* Simple progress bar representation */}
-            <div className="w-full bg-secondary/50 rounded-full h-3 mb-2 overflow-hidden shadow-inner">
+            <div className="w-full bg-secondary/50 rounded-full h-2.5 sm:h-3 mb-2 overflow-hidden shadow-inner">
               <div 
                 className="bg-primary h-full rounded-full transition-all duration-1000 ease-out relative" 
                 style={{ width: `${Math.max(2, Math.min(100, (stats.aprobadas / stats.total) * 100))}%` }} 
@@ -379,23 +382,27 @@ const MiEspacio = () => {
             </p>
           </Link>
 
+
           {/* Action Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Mobile: 2-col compact grid | Desktop: 3-col vertical cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {(profile?.role === "admin" || profile?.role === "betatester") && (
               <>
                 <DashCard
                   to="/trivia"
                   icon={Trophy}
-                  title="Trivia Jurídica (Beta)"
+                  title="Trivia Jurídica"
                   stats="Desafío por materias y duelos 1v1"
                   color="accent"
+                  badge="Beta"
                 />
                 <DashCard
                   to="/hace-tu-historia"
                   icon={Sparkles}
-                  title="Hacé Tu Historia (Beta)"
+                  title="Hacé Tu Historia"
                   stats="Simulador de carrera legal en La Plata"
                   color="accent"
+                  badge="Beta"
                 />
               </>
             )}
@@ -658,31 +665,79 @@ const MiEspacio = () => {
 };
 
 const DashCard = ({
-  to, icon: Icon, title, stats, color,
+  to, icon: Icon, title, stats, color, badge,
 }: {
-  to: string; icon: React.ElementType; title: string; stats: string; color: "primary" | "accent";
+  to: string; icon: React.ElementType; title: string; stats: string; color: "primary" | "accent"; badge?: string;
 }) => (
   <Link
     to={to}
-    className="relative p-6 rounded-xl bg-card border border-border hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 shadow-paper hover:shadow-elegant group overflow-hidden"
+    className="relative rounded-xl bg-card border border-border hover:border-primary/40 transition-all duration-300 shadow-paper hover:shadow-elegant group overflow-hidden block"
   >
     {/* Glow corner */}
     <div
-      className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-[0.06] -translate-y-8 translate-x-8"
+      className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-[0.06] -translate-y-8 translate-x-8 pointer-events-none"
       style={{ background: color === "accent" ? "hsl(var(--accent))" : "hsl(var(--primary))" }}
     />
-    <div className={`inline-flex p-3 rounded-xl mb-4 ${
-      color === "accent" ? "bg-accent/10 text-accent" : "bg-primary/10 text-primary"
-    }`}>
-      <Icon className="h-5 w-5" />
+
+    {/* ── MOBILE layout: horizontal compact ── */}
+    <div className="flex sm:hidden items-center gap-3 p-4">
+      <div
+        className={`shrink-0 flex items-center justify-center w-11 h-11 rounded-xl ${
+          color === "accent" ? "bg-accent/15 text-accent" : "bg-primary/15 text-primary"
+        }`}
+      >
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <h3 className="font-display font-semibold text-sm text-foreground leading-tight">{title}</h3>
+          {badge && (
+            <span
+              className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
+                color === "accent" ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"
+              }`}
+            >
+              {badge}
+            </span>
+          )}
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{stats}</p>
+      </div>
+      <div
+        className={`shrink-0 ${
+          color === "accent" ? "text-accent" : "text-primary"
+        } group-hover:translate-x-0.5 transition-transform duration-200`}
+      >
+        <ArrowRight className="h-4 w-4" />
+      </div>
     </div>
-    <h3 className="font-display font-semibold text-lg text-foreground">{title}</h3>
-    <p className="text-sm text-muted-foreground mt-1">{stats}</p>
-    <span className={`inline-block mt-5 text-xs font-semibold group-hover:translate-x-1.5 transition-transform duration-200 ${
-      color === "accent" ? "text-accent" : "text-primary"
-    }`}>
-      Abrir →
-    </span>
+
+    {/* ── DESKTOP layout: vertical card ── */}
+    <div className="hidden sm:block p-6">
+      <div className="flex items-start justify-between mb-1">
+        <div className={`inline-flex p-3 rounded-xl mb-4 ${
+          color === "accent" ? "bg-accent/10 text-accent" : "bg-primary/10 text-primary"
+        }`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        {badge && (
+          <span
+            className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full mt-1 ${
+              color === "accent" ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"
+            }`}
+          >
+            {badge}
+          </span>
+        )}
+      </div>
+      <h3 className="font-display font-semibold text-lg text-foreground">{title}</h3>
+      <p className="text-sm text-muted-foreground mt-1">{stats}</p>
+      <span className={`inline-block mt-5 text-xs font-semibold group-hover:translate-x-1.5 transition-transform duration-200 ${
+        color === "accent" ? "text-accent" : "text-primary"
+      }`}>
+        Abrir →
+      </span>
+    </div>
   </Link>
 );
 
