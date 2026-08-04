@@ -39,11 +39,17 @@ serve(async (req) => {
       throw error;
     }
 
+    const hashedToken = data.properties?.hashed_token;
     const actionLink = data.properties?.action_link;
 
-    if (!actionLink) {
+    if (!actionLink && !hashedToken) {
       throw new Error("No se pudo generar el enlace de recuperación.");
     }
+
+    // Generar enlace directo a nuestra web para evitar que los escáneres anti-spam del correo consuman el OTP
+    const directLink = hashedToken 
+      ? `${origin || "https://dndjursoc.com.ar"}/auth/recovery?token=${hashedToken}&type=recovery`
+      : actionLink;
 
     // 1. Obtener API Key de Resend (entorno o app_settings)
     let resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -121,7 +127,7 @@ serve(async (req) => {
                     <table cellpadding="0" cellspacing="0" border="0">
                       <tr>
                         <td style="border-radius: 12px; background: linear-gradient(135deg, #be123c 0%, #9f1239 100%); box-shadow: 0 4px 12px rgba(190, 18, 60, 0.3);">
-                          <a href="${actionLink}" target="_blank" style="display: inline-block; padding: 14px 32px; color: #ffffff; font-size: 13px; font-weight: bold; text-decoration: none; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                          <a href="${directLink}" target="_blank" style="display: inline-block; padding: 14px 32px; color: #ffffff; font-size: 13px; font-weight: bold; text-decoration: none; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
                             Restablecer Contraseña
                           </a>
                         </td>
@@ -135,7 +141,7 @@ serve(async (req) => {
                   <td style="color: #475569; font-size: 11px; line-height: 1.5; text-align: center;">
                     Si el botón no funciona, podés copiar y pegar el siguiente enlace en tu navegador:
                     <div style="margin-top: 10px; word-break: break-all; color: #be123c; font-family: monospace; font-size: 11px; padding: 10px; background-color: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; select-all: all;">
-                      ${actionLink}
+                      ${directLink}
                     </div>
                   </td>
                 </tr>

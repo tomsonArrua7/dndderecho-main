@@ -49,13 +49,19 @@ function getUrlError(): string | null {
   return null;
 }
 
-// Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña válido
+// Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña válido con token/código/hash
 function isRecoveryUrl(): boolean {
   if (getUrlError()) return false;
   const params = new URLSearchParams(window.location.search);
-  return window.location.pathname === "/auth/recovery" ||
-         params.get("type") === "recovery" ||
-         window.location.hash.includes("type=recovery");
+  const hash = window.location.hash;
+  
+  return !!(
+    params.get("token") || 
+    params.get("token_hash") || 
+    params.get("code") || 
+    (params.get("type") === "recovery" && (params.get("token") || params.get("code"))) || 
+    (hash.includes("type=recovery") && (hash.includes("access_token") || hash.includes("refresh_token")))
+  );
 }
 
 // Detecta si la URL actual viene de un link de confirmación de Supabase
@@ -80,7 +86,7 @@ const Auth = () => {
 
   const recoveryActive = isRecoveryUrl();
   const [tab, setTab] = useState<"signin" | "signup" | "forgot" | "forgot-success" | "update-password">(
-    recoveryActive ? "update-password" : "signin"
+    recoveryActive ? "update-password" : (window.location.pathname === "/auth/recovery" ? "forgot" : "signin")
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
