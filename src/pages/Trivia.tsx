@@ -978,11 +978,28 @@ export default function Trivia() {
       setGameOver(false);
     }
 
+    const totalPreguntas = questionsPool.length || 5;
+    const umbralAprobado = Math.ceil(totalPreguntas / 2);
+    const esAprobado = correctAnswersCount >= umbralAprobado;
+
+    // Si aprueba (>=50% aciertos) suma puntos; si reprueba (<50%), sufre penalización de puntos
+    let puntosCambio = score;
+    if (!activeDuelRoom && !esAprobado) {
+      const errCount = totalPreguntas - correctAnswersCount;
+      const penalizacion = Math.max(50, errCount * 25);
+      puntosCambio = -penalizacion;
+    }
+
     let updatedStats = { ...userStats };
     updatedStats.totalJugadas += 1;
     updatedStats.totalCorrectas += correctAnswersCount;
-    updatedStats.puntosTotales += score;
+    updatedStats.puntosTotales = Math.max(0, userStats.puntosTotales + puntosCambio);
     updatedStats.mejorRacha = Math.max(userStats.mejorRacha, maxStreak);
+    setUserStats(updatedStats);
+
+    try {
+      localStorage.setItem("dnd_trivia_user_stats", JSON.stringify(updatedStats));
+    } catch {}
 
     if (user) {
       try {
@@ -990,11 +1007,28 @@ export default function Trivia() {
           user_id: user.id,
           categoria_id: selectedCategoria,
           dificultad: "todas",
-          puntos: score,
+          puntos: puntosCambio,
           aciertos: correctAnswersCount,
-          total_preguntas: questionsPool.length,
+          total_preguntas: totalPreguntas,
           racha_maxima: maxStreak
         });
+
+        const { data: currentStats } = await supabase
+          .from("trivia_estadisticas_usuario")
+          .select("puntos_totales")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        const oldPuntos = currentStats?.puntos_totales || 0;
+        const newPuntos = Math.max(0, oldPuntos + puntosCambio);
+
+        await supabase.from("trivia_estadisticas_usuario").upsert({
+          user_id: user.id,
+          puntos_totales: newPuntos,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "user_id" });
+
+        fetchRankingFromSupabase();
       } catch (err) {
         console.error("Error al registrar la partida en Supabase:", err);
       }
