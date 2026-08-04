@@ -408,7 +408,7 @@ PREGUNTA DEL ESTUDIANTE:
       content: currentPrompt
     });
 
-    // --- OPCIÓN 0: INTEGRACIÓN CON OPENROUTER (DEEPSEEK V3 / OTROS) MÁXIMA PRIORIDAD Y AHORRO ---
+    // --- OPCIÓN 0: INTEGRACIÓN CON OPENROUTER (DEEPSEEK V3 / OTROS) CON STREAMING SSE ---
     if (openrouterApiKey) {
       // Ventana deslizante de historial: tomamos como máximo las últimas 6 intervenciones para ahorrar tokens
       const messagesForOpenRouter = [
@@ -416,9 +416,9 @@ PREGUNTA DEL ESTUDIANTE:
         ...simpleMessages.slice(-7)
       ];
 
-      console.log(`[Asistente DND] Enviando consulta a OpenRouter (${openrouterModel}). Historial acotado a ${messagesForOpenRouter.length - 1} mensajes.`);
+      console.log(`[Asistente DND] Iniciando streaming desde OpenRouter (${openrouterModel})...`);
 
-      const apiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      const openrouterRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${openrouterApiKey}`,
@@ -429,37 +429,29 @@ PREGUNTA DEL ESTUDIANTE:
         body: JSON.stringify({
           model: openrouterModel,
           messages: messagesForOpenRouter,
-          temperature: 0.3
+          stream: true,
+          temperature: 0.3,
+          provider: {
+            order: ["Fireworks", "Together", "DeepSeek"],
+            allow_fallbacks: true
+          }
         })
       });
 
-      const responseText = await apiResponse.text();
-      if (!apiResponse.ok) {
-        throw new Error(`OpenRouter API error: ${apiResponse.status} - ${responseText}`);
+      if (!openrouterRes.ok) {
+        const errText = await openrouterRes.text();
+        throw new Error(`OpenRouter API error: ${openrouterRes.status} - ${errText}`);
       }
 
-      let apiData;
-      try {
-        apiData = JSON.parse(responseText);
-      } catch (e) {
-        throw new Error(`La respuesta de OpenRouter no es JSON válido. Status: ${apiResponse.status}. Body: ${responseText}`);
-      }
-
-      const respuestaTexto = apiData.choices?.[0]?.message?.content;
-      if (!respuestaTexto) {
-        throw new Error("No se obtuvo respuesta de texto de OpenRouter.");
-      }
-
-      return new Response(
-        JSON.stringify({
-          respuesta: respuestaTexto,
-          origenContexto,
-          materia,
-          catedra: catedra || null,
-          comision: comision || null
-        }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      // Retornamos el flujo SSE en tiempo real directamente al cliente
+      return new Response(openrouterRes.body, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive"
+        }
+      });
     }
 
     // --- OPCIÓN 1: INTEGRACIÓN CON ANTHROPIC CLAUDE ---

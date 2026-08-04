@@ -232,59 +232,109 @@ export default function AsistenteDND() {
       content: m.content
     }));
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage, { role: "assistant", content: "" }]);
     setPregunta("");
     setIsLoadingResponse(true);
 
     try {
-      // Petición a la Edge Function de Supabase pasando el historial completo
-      const { data, error } = await supabase.functions.invoke("asistente", {
-        body: {
+      const { data: { session } } = await supabase.auth.getSession();
+      const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || "https://api.dndjursoc.com.ar").replace(/\/$/, "");
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ""}`,
+          "apikey": supabaseAnonKey
+        },
+        body: JSON.stringify({
           pregunta: userMessage.content,
           materia: userMessage.materia || "General / Dudas de la web",
           catedra: userMessage.catedra || "",
           comision: userMessage.comision || "",
           historial: historialValido
-        },
+        })
       });
 
-      if (error) throw error;
-      
-      setMessages(prev => [
-        ...prev,
-        {
-          role: "assistant",
-          content: data.respuesta
-        }
-      ]);
-    } catch (err: any) {
-      console.error("Error al obtener respuesta del asistente:", err);
-      let errorMsgToShow = `❌ **Error de conexión:**\n\nNo pudimos conectarnos con la función "asistente" en tu proyecto de Supabase.\n\n*Detalles: ${err.message || "Error desconocido"}*`;
-
-      if (err.context && typeof err.context.json === "function") {
+      if (!res.ok) {
+        let errJson: any;
         try {
-          const details = await err.context.json();
-          if (details && details.error) {
-            errorMsgToShow = details.error;
-          }
-        } catch (e) {
-          console.error("No se pudo extraer el JSON de error:", e);
-        }
-      } else if (err.context && typeof err.context.text === "function") {
-        try {
-          const text = await err.context.text();
-          console.error("Texto del error devuelto por la Edge Function:", text);
+          errJson = await res.json();
         } catch (e) {}
+        throw new Error(errJson?.error || errJson?.detalles || `Error de servidor (${res.status})`);
       }
 
-      toast.error("Ocurrió un error en la consulta.");
-      setMessages(prev => [
-        ...prev,
-        {
-          role: "assistant",
-          content: errorMsgToShow
+      const contentType = res.headers.get("content-type") || "";
+
+      if (contentType.includes("text/event-stream") && res.body) {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let accumulatedText = "";
+        let buffer = "";
+
+        setIsLoadingResponse(false);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine || trimmedLine.startsWith(":")) continue;
+
+            if (trimmedLine.startsWith("data: ")) {
+              const dataStr = trimmedLine.replace(/^data:\s*/, "");
+              if (dataStr === "[DONE]") break;
+
+              try {
+                const parsed = JSON.parse(dataStr);
+                const token = parsed.choices?.[0]?.delta?.content || "";
+                if (token) {
+                  accumulatedText += token;
+                  setMessages(prev => {
+                    const newArr = [...prev];
+                    newArr[newArr.length - 1] = {
+                      role: "assistant",
+                      content: accumulatedText
+                    };
+                    return newArr;
+                  });
+                }
+              } catch (e) {
+                // Parciales ignorados
+              }
+            }
+          }
         }
-      ]);
+      } else {
+        const data = await res.json();
+        setMessages(prev => {
+          const newArr = [...prev];
+          newArr[newArr.length - 1] = {
+            role: "assistant",
+            content: data.respuesta
+          };
+          return newArr;
+        });
+      }
+    } catch (err: any) {
+      console.error("Error al obtener respuesta del asistente:", err);
+      toast.error("Ocurrió un error en la consulta.");
+      setMessages(prev => {
+        const newArr = [...prev];
+        if (newArr.length > 0 && newArr[newArr.length - 1].role === "assistant" && !newArr[newArr.length - 1].content) {
+          newArr[newArr.length - 1] = {
+            role: "assistant",
+            content: `❌ **Error de conexión:**\n\n${err.message || "Error al procesar consulta."}`
+          };
+        }
+        return newArr;
+      });
     } finally {
       setIsLoadingResponse(false);
     }
