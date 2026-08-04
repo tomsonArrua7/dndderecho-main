@@ -141,10 +141,14 @@ export default function Trivia() {
     seenDuelResultsRef.current = seenDuelResults;
   }, [seenDuelResults]);
 
+  const isInitialLoadRef = useRef(true);
+
   const markDuelAsSeen = (duelId: string) => {
+    if (!duelId) return;
     setSeenDuelResults(prev => {
       if (prev.includes(duelId)) return prev;
       const updated = [...prev, duelId];
+      seenDuelResultsRef.current = updated;
       try {
         localStorage.setItem("dnd_seen_duel_results", JSON.stringify(updated));
       } catch {}
@@ -417,8 +421,27 @@ export default function Trivia() {
         }));
         setDuelosList(mapped);
 
-        // Auto-activar modal estilo Preguntados si un rival acaba de completar un duelo del jugador
-        checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
+        if (isInitialLoadRef.current) {
+          isInitialLoadRef.current = false;
+          // Marcar duelos finalizados preexistentes como vistos para no mostrar popups antiguos al abrir la app
+          const finishedIds = mapped
+            .filter(d => d.status === "finalizado" || (d.player1Completed && d.player2Completed))
+            .map(d => d.id);
+          
+          if (finishedIds.length > 0) {
+            setSeenDuelResults(prev => {
+              const updated = Array.from(new Set([...prev, ...finishedIds]));
+              seenDuelResultsRef.current = updated;
+              try {
+                localStorage.setItem("dnd_seen_duel_results", JSON.stringify(updated));
+              } catch {}
+              return updated;
+            });
+          }
+        } else {
+          // Auto-activar modal únicamente para duelos que finalicen en tiempo real durante la sesión
+          checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
+        }
       }
     } catch (err) {
       console.error("Error al obtener duelos de Supabase:", err);
@@ -2015,6 +2038,9 @@ export default function Trivia() {
 
                   <button
                     onClick={() => {
+                      if (activeDuelRoom?.id) {
+                        markDuelAsSeen(activeDuelRoom.id);
+                      }
                       setDuelOutcomeModal(null);
                       setInGame(false);
                       setGameOver(false);
