@@ -146,7 +146,7 @@ function EventCard({ event }: { event: AcademicDate }) {
   return (
     <article
       className={cn(
-        "group relative flex flex-col justify-between p-4 rounded-2xl border transition-all duration-300 min-w-[160px] md:min-w-0 md:w-full h-full",
+        "group relative flex flex-col justify-between p-3 rounded-2xl border transition-all duration-300 w-full h-full",
         isUrgent
           ? "bg-accent/5 border-accent/30"
           : "bg-white/[0.03] border-white/8 hover:bg-white/[0.05]"
@@ -256,21 +256,19 @@ export function UpcomingDates() {
         </Link>
       </div>
 
-      {/* Mobile: Horizontal Scroll | Desktop: Vertical Stack or Grid */}
-      <div className="flex overflow-x-auto pb-4 gap-3 md:grid md:grid-cols-1 lg:grid-cols-2 scrollbar-hide snap-x snap-mandatory">
+      {/* Grid 2-col siempre — sin scroll horizontal */}
+      <div className="grid grid-cols-2 gap-3">
         {loading ? (
-          <div className="py-6 text-center text-xs text-white/30 w-full col-span-2">
+          <div className="py-6 text-center text-xs text-white/30 col-span-2">
             Cargando fechas...
           </div>
         ) : combinedDates.length === 0 ? (
-          <div className="w-full col-span-2">
+          <div className="col-span-2">
             <EmptyState />
           </div>
         ) : (
           combinedDates.map((event) => (
-            <div key={event.id} className="snap-center">
-              <EventCard event={event} />
-            </div>
+            <EventCard key={event.id} event={event} />
           ))
         )}
       </div>

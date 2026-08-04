@@ -383,9 +383,8 @@ const MiEspacio = () => {
           </Link>
 
 
-          {/* Action Cards */}
-          {/* Mobile: 2-col compact grid | Desktop: 3-col vertical cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {/* Action Cards - lista vertical en mobile, grid en desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
             {(profile?.role === "admin" || profile?.role === "betatester") && (
               <>
                 <DashCard
@@ -671,58 +670,28 @@ const DashCard = ({
 }) => (
   <Link
     to={to}
-    className="relative rounded-xl bg-card border border-border hover:border-primary/40 transition-all duration-300 shadow-paper hover:shadow-elegant group overflow-hidden block"
+    className="relative flex items-center gap-3 p-4 rounded-xl bg-card border border-border hover:border-primary/40 active:scale-[0.97] transition-all duration-200 shadow-paper group overflow-hidden"
   >
-    {/* Glow corner */}
+    {/* Glow bg */}
     <div
-      className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-[0.06] -translate-y-8 translate-x-8 pointer-events-none"
+      className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-[0.07] -translate-y-6 translate-x-6 pointer-events-none"
       style={{ background: color === "accent" ? "hsl(var(--accent))" : "hsl(var(--primary))" }}
     />
-
-    {/* ── MOBILE layout: horizontal compact ── */}
-    <div className="flex sm:hidden items-center gap-3 p-4">
-      <div
-        className={`shrink-0 flex items-center justify-center w-11 h-11 rounded-xl ${
-          color === "accent" ? "bg-accent/15 text-accent" : "bg-primary/15 text-primary"
-        }`}
-      >
-        <Icon className="h-5 w-5" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <h3 className="font-display font-semibold text-sm text-foreground leading-tight">{title}</h3>
-          {badge && (
-            <span
-              className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
-                color === "accent" ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"
-              }`}
-            >
-              {badge}
-            </span>
-          )}
-        </div>
-        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{stats}</p>
-      </div>
-      <div
-        className={`shrink-0 ${
-          color === "accent" ? "text-accent" : "text-primary"
-        } group-hover:translate-x-0.5 transition-transform duration-200`}
-      >
-        <ArrowRight className="h-4 w-4" />
-      </div>
+    {/* Icon */}
+    <div
+      className={`shrink-0 flex items-center justify-center w-10 h-10 rounded-xl ${
+        color === "accent" ? "bg-accent/15 text-accent" : "bg-primary/15 text-primary"
+      }`}
+    >
+      <Icon className="h-5 w-5" />
     </div>
-
-    {/* ── DESKTOP layout: vertical card ── */}
-    <div className="hidden sm:block p-6">
-      <div className="flex items-start justify-between mb-1">
-        <div className={`inline-flex p-3 rounded-xl mb-4 ${
-          color === "accent" ? "bg-accent/10 text-accent" : "bg-primary/10 text-primary"
-        }`}>
-          <Icon className="h-5 w-5" />
-        </div>
+    {/* Text */}
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <h3 className="font-semibold text-sm text-foreground leading-tight">{title}</h3>
         {badge && (
           <span
-            className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full mt-1 ${
+            className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
               color === "accent" ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"
             }`}
           >
@@ -730,14 +699,14 @@ const DashCard = ({
           </span>
         )}
       </div>
-      <h3 className="font-display font-semibold text-lg text-foreground">{title}</h3>
-      <p className="text-sm text-muted-foreground mt-1">{stats}</p>
-      <span className={`inline-block mt-5 text-xs font-semibold group-hover:translate-x-1.5 transition-transform duration-200 ${
-        color === "accent" ? "text-accent" : "text-primary"
-      }`}>
-        Abrir →
-      </span>
+      <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{stats}</p>
     </div>
+    {/* Arrow */}
+    <ArrowRight
+      className={`shrink-0 h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200 ${
+        color === "accent" ? "text-accent/60" : "text-primary/60"
+      }`}
+    />
   </Link>
 );
 
