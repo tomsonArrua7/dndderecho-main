@@ -160,14 +160,22 @@ serve(async (req) => {
       console.warn("No se pudo leer la tabla app_settings:", err.message);
     }
 
+    let openrouterApiKey = Deno.env.get("OPENROUTER_API_KEY") || dbSettings?.openrouter_api_key || "";
+    let openrouterModel = dbSettings?.openrouter_model || "deepseek/deepseek-chat";
     let anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") || dbSettings?.anthropic_api_key || "";
     let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL") || dbSettings?.local_ollama_url || "";
     let anthropicModel = dbSettings?.anthropic_model || "claude-sonnet-4-6";
     let geminiApiKey = Deno.env.get("GEMINI_API_KEY") || dbSettings?.gemini_api_key || "";
 
+    if (openrouterApiKey) {
+      openrouterApiKey = openrouterApiKey.replace(/\s+/g, "");
+      origenClave = Deno.env.get("OPENROUTER_API_KEY") ? "Deno.env (OpenRouter/DeepSeek)" : "base_de_datos (OpenRouter/DeepSeek)";
+    }
     if (anthropicApiKey) {
       anthropicApiKey = anthropicApiKey.replace(/\s+/g, "");
-      origenClave = Deno.env.get("ANTHROPIC_API_KEY") ? "Deno.env (Claude)" : "base_de_datos (Claude)";
+      if (origenClave === "ninguno") {
+        origenClave = Deno.env.get("ANTHROPIC_API_KEY") ? "Deno.env (Claude)" : "base_de_datos (Claude)";
+      }
     }
     if (geminiApiKey) {
       geminiApiKey = geminiApiKey.replace(/\s+/g, "");
@@ -177,18 +185,19 @@ serve(async (req) => {
     }
 
     // Si no hay ninguna clave o URL configurada, informamos al usuario para que la agregue
-    if (!anthropicApiKey && !localOllamaUrl && !geminiApiKey) {
+    if (!openrouterApiKey && !anthropicApiKey && !localOllamaUrl && !geminiApiKey) {
       return new Response(
         JSON.stringify({
           respuesta: `⚠️ **¡La Edge Function del Asistente DND está activa!**
           
-Sin embargo, no se ha configurado ninguna clave de Inteligencia Artificial (Claude, Gemini u Ollama). Al usar **Supabase Self-hosted**, puedes agregarla fácilmente en tu base de datos:
+Sin embargo, no se ha configurado ninguna clave de Inteligencia Artificial (OpenRouter/DeepSeek, Claude, Gemini u Ollama). Al usar **Supabase Self-hosted**, puedes agregarla fácilmente en tu base de datos:
 
 **Desde tu Panel Web (Súper Fácil):**
 1. Ve al **Table Editor** en el menú izquierdo de tu Supabase Dashboard.
 2. Abre la tabla \`app_settings\`.
 3. Haz clic en el botón de agregar columna \`+\` y crea alguna de las siguientes columnas de tipo \`text\`:
-   - \`anthropic_api_key\` (para usar **Claude 3.5 Sonnet**, altamente recomendado).
+   - \`openrouter_api_key\` (para usar **DeepSeek V3** a ultrabajo costo, altamente recomendado).
+   - \`anthropic_api_key\` (para usar **Claude 3.5 Sonnet**).
    - \`gemini_api_key\` (para usar **Gemini**).
    - \`local_ollama_url\` (para usar **Ollama local**).
 4. Pega tu API Key correspondiente en esa celda para la fila activa (ID 1).`,
@@ -399,7 +408,61 @@ PREGUNTA DEL ESTUDIANTE:
       content: currentPrompt
     });
 
-    // --- OPCIÓN 1: INTEGRACIÓN CON ANTHROPIC CLAUDE (MÁXIMA PRIORIDAD) ---
+    // --- OPCIÓN 0: INTEGRACIÓN CON OPENROUTER (DEEPSEEK V3 / OTROS) MÁXIMA PRIORIDAD Y AHORRO ---
+    if (openrouterApiKey) {
+      // Ventana deslizante de historial: tomamos como máximo las últimas 6 intervenciones para ahorrar tokens
+      const messagesForOpenRouter = [
+        { role: "system", content: systemInstructionText },
+        ...simpleMessages.slice(-7)
+      ];
+
+      console.log(`[Asistente DND] Enviando consulta a OpenRouter (${openrouterModel}). Historial acotado a ${messagesForOpenRouter.length - 1} mensajes.`);
+
+      const apiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${openrouterApiKey}`,
+          "HTTP-Referer": "https://dndderecho.unlp.edu.ar",
+          "X-Title": "Asistente DND UNLP",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: openrouterModel,
+          messages: messagesForOpenRouter,
+          temperature: 0.3
+        })
+      });
+
+      const responseText = await apiResponse.text();
+      if (!apiResponse.ok) {
+        throw new Error(`OpenRouter API error: ${apiResponse.status} - ${responseText}`);
+      }
+
+      let apiData;
+      try {
+        apiData = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`La respuesta de OpenRouter no es JSON válido. Status: ${apiResponse.status}. Body: ${responseText}`);
+      }
+
+      const respuestaTexto = apiData.choices?.[0]?.message?.content;
+      if (!respuestaTexto) {
+        throw new Error("No se obtuvo respuesta de texto de OpenRouter.");
+      }
+
+      return new Response(
+        JSON.stringify({
+          respuesta: respuestaTexto,
+          origenContexto,
+          materia,
+          catedra: catedra || null,
+          comision: comision || null
+        }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // --- OPCIÓN 1: INTEGRACIÓN CON ANTHROPIC CLAUDE ---
     if (anthropicApiKey) {
       let apiResponse;
       let usedModel = anthropicModel;
