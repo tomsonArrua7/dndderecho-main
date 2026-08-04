@@ -1528,18 +1528,19 @@ export default function Trivia() {
 
                     <div>
                       <div className="flex items-center justify-center gap-1.5">
-                        <h4 className="text-base font-black text-white">Modo Flash</h4>
+                        <h4 className="text-base font-black text-white">Modo Flash (IA)</h4>
                         <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] uppercase tracking-wider">NUEVO</span>
                       </div>
-                      <p className="text-xs text-slate-400 pt-1 leading-relaxed">Respondé 5 preguntas. Enfocado en velocidad.</p>
+                      <p className="text-xs text-slate-400 pt-1 leading-relaxed">Respondé 5 preguntas de examen generadas en tiempo real con Inteligencia Artificial.</p>
                     </div>
                   </div>
 
                   <button
-                    onClick={handleStartFlashGame}
-                    className="w-full py-3 rounded-2xl bg-transparent hover:bg-amber-500/10 border border-amber-500/40 text-amber-300 font-black text-xs uppercase tracking-wider shadow-md cursor-pointer transition-all active:scale-[0.98] min-h-[48px] relative z-10"
+                    onClick={() => setIsParcialFlashModalOpen(true)}
+                    className="w-full py-3 rounded-2xl bg-transparent hover:bg-amber-500/10 border border-amber-500/40 text-amber-300 font-black text-xs uppercase tracking-wider shadow-md cursor-pointer transition-all active:scale-[0.98] min-h-[48px] relative z-10 flex items-center justify-center gap-1.5"
                   >
-                    MODO FLASH
+                    <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                    <span>MODO FLASH (IA)</span>
                   </button>
                 </div>
 
