@@ -119,12 +119,13 @@ export default function Recomendaciones() {
         materia.id.includes(queryLower);
 
       if (matchesSearch) {
-        // Si pertenece a primer año, se lista tanto en INGRESANTES (-1) como en 1º AÑO (1)
+        // Las recomendaciones con PDF son EXCLUSIVAMENTE para INGRESANTES (-1).
+        // En los años 1 a 5, las materias se muestran en preparación ("Próximamente").
         if (materia.anio === 1) {
           agrupadas[-1].push({ materia, rec });
-          agrupadas[1].push({ materia, rec });
+          agrupadas[1].push({ materia, rec: undefined });
         } else {
-          agrupadas[materia.anio].push({ materia, rec });
+          agrupadas[materia.anio].push({ materia, rec: undefined });
         }
       }
     });
@@ -156,28 +157,7 @@ export default function Recomendaciones() {
           </h1>
 
           <p className="text-sm md:text-base text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            Explorá las recomendaciones de cursada, análisis de cátedras y guías en PDF elaboradas para Ingresantes y estudiantes del Plan de Estudios de la Facultad de Ciencias Jurídicas y Sociales (UNLP).
           </p>
-
-          {/* TARJETAS RESUMEN DE ESTADÍSTICAS */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 max-w-3xl mx-auto">
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-              <span className="text-[10px] font-black uppercase text-slate-400 block">Plan Vigente</span>
-              <span className="text-sm md:text-base font-black text-white font-mono">Plan Nº 6 (UNLP)</span>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-              <span className="text-[10px] font-black uppercase text-slate-400 block">PDFs Activos</span>
-              <span className="text-sm md:text-base font-black text-emerald-400 font-mono">{totalActivas} Materias</span>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-              <span className="text-[10px] font-black uppercase text-slate-400 block">Nivel Ingreso</span>
-              <span className="text-sm md:text-base font-black text-amber-400 font-mono">🌱 Ingresantes</span>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-1">
-              <span className="text-[10px] font-black uppercase text-slate-400 block">Formato</span>
-              <span className="text-sm md:text-base font-black text-blue-400 font-mono">Visor PDF Integrado</span>
-            </div>
-          </div>
         </div>
 
         {/* BARRA DE BÚSQUEDA Y FILTROS (INGRESANTES + AÑOS 1 A 5) */}
