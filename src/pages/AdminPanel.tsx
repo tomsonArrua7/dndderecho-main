@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Loader2, Trash2, Search, UserMinus, UserCheck, Mail, ShieldAlert, 
   Users, Repeat, Trophy, Sparkles, TrendingUp, ShieldCheck, Activity, GraduationCap,
-  FileSpreadsheet, Download, Eye, CheckCircle, Clock, Check
+  FileSpreadsheet, Download, Eye, CheckCircle, Clock, Check, Brain
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -21,6 +21,7 @@ export default function AdminPanel() {
   const [permutas, setPermutas] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [correcciones, setCorrecciones] = useState<any[]>([]);
+  const [preguntasTriviaIA, setPreguntasTriviaIA] = useState<any[]>([]);
   const [totalUsersCount, setTotalUsersCount] = useState<number>(0);
   const [appSettings, setAppSettings] = useState<{ id: number; permutero_activo: boolean; modo_mantenimiento: boolean } | null>(null);
   const [totalPartidasCount, setTotalPartidasCount] = useState<number>(0);
@@ -172,6 +173,7 @@ export default function AdminPanel() {
       setAppSettings(settings || { id: 1, permutero_activo: true, modo_mantenimiento: false });
       setTotalPartidasCount(partidasCount || 0);
       setTotalDuelosCount(duelosCount || 0);
+      fetchTriviaIAPreguntas();
     } catch (err) {
       console.error("Error loading admin data:", err);
       toast.error("Error al cargar datos del panel.");
@@ -234,6 +236,34 @@ export default function AdminPanel() {
       toast.success("Corrección eliminada");
     }
     setUpdating(false);
+  };
+
+  const fetchTriviaIAPreguntas = async () => {
+    try {
+      const { data } = await supabase.from("trivia_preguntas").select("*").order("created_at", { ascending: false });
+      if (data) setPreguntasTriviaIA(data);
+    } catch (e) {}
+  };
+
+  const aprobarPreguntaTrivia = async (id: string) => {
+    const { error } = await supabase.from("trivia_preguntas").update({ aprobado: true }).eq("id", id);
+    if (error) {
+      toast.error("Error al aprobar la pregunta de trivia: " + error.message);
+    } else {
+      toast.success("¡Pregunta aprobada e integrada a la Trivia pública!");
+      setPreguntasTriviaIA(prev => prev.map(p => p.id === id ? { ...p, aprobado: true } : p));
+    }
+  };
+
+  const eliminarPreguntaTrivia = async (id: string) => {
+    if (!confirm("¿Eliminar esta pregunta de la Trivia?")) return;
+    const { error } = await supabase.from("trivia_preguntas").delete().eq("id", id);
+    if (error) {
+      toast.error("Error al eliminar pregunta: " + error.message);
+    } else {
+      toast.success("Pregunta eliminada con éxito.");
+      setPreguntasTriviaIA(prev => prev.filter(p => p.id !== id));
+    }
   };
 
   const approveCorreccion = async (id: string) => {
@@ -459,6 +489,7 @@ export default function AdminPanel() {
           <TabsTrigger value="permutas" className="rounded-lg px-6">Permutas ({permutas.length})</TabsTrigger>
           <TabsTrigger value="usuarios" className="rounded-lg px-6">Usuarios ({totalUsersCount || profiles.length})</TabsTrigger>
           <TabsTrigger value="asistente" className="rounded-lg px-6">Asistente IA ({correcciones.length})</TabsTrigger>
+          <TabsTrigger value="trivia" className="rounded-lg px-6">Trivia IA ({preguntasTriviaIA.length})</TabsTrigger>
         </TabsList>
 
         {/* --- TAB: GENERAL --- */}
@@ -802,6 +833,99 @@ export default function AdminPanel() {
             {correcciones.length === 0 && (
               <div className="p-12 text-center text-muted-foreground italic">No hay reglas de corrección registradas aún.</div>
             )}
+          </div>
+        </TabsContent>
+
+        {/* --- TAB: TRIVIA IA PREGUNTAS --- */}
+        <TabsContent value="trivia" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="p-6 bg-card border rounded-2xl shadow-sm space-y-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-bold flex items-center gap-2 text-foreground">
+                <Brain className="text-accent h-5 w-5" /> Moderación de Preguntas de Trivia generadas por IA
+              </h3>
+              <p className="text-xs text-muted-foreground leading-relaxed mt-1">
+                Las preguntas <strong className="text-emerald-400">aprobadas por administradores</strong> se integran automáticamente al pozo de Trivia del sitio.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs shrink-0">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold">
+                {preguntasTriviaIA.filter(p => p.aprobado).length} Aprobadas
+              </span>
+              <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold">
+                {preguntasTriviaIA.filter(p => !p.aprobado).length} Pendientes
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 border-b">
+                <tr>
+                  <th className="px-6 py-4 text-left font-semibold">Materia</th>
+                  <th className="px-6 py-4 text-left font-semibold">Estado</th>
+                  <th className="px-6 py-4 text-left font-semibold">Pregunta</th>
+                  <th className="px-6 py-4 text-left font-semibold">Fundamento Jurídico</th>
+                  <th className="px-6 py-4 text-right font-semibold">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {preguntasTriviaIA.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-8 text-center text-xs text-muted-foreground italic">
+                      No hay preguntas de Trivia generadas por IA para revisar en este momento.
+                    </td>
+                  </tr>
+                ) : (
+                  preguntasTriviaIA.map(p => (
+                    <tr key={p.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="px-6 py-4 font-bold text-accent">
+                        {p.materia}
+                        {p.catedra && <span className="block text-[10px] text-muted-foreground font-normal">Cat: {p.catedra}</span>}
+                      </td>
+                      <td className="px-6 py-4">
+                        {p.aprobado ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+                            <CheckCircle size={11} /> Aprobada
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500/15 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                            <Clock size={11} /> Pendiente
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 max-w-xs text-xs font-semibold text-foreground leading-relaxed">
+                        {p.pregunta}
+                      </td>
+                      <td className="px-6 py-4 max-w-xs text-xs text-muted-foreground leading-relaxed">
+                        {p.fundamento_juridico || "Sin fundamento especificado"}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {!p.aprobado && (
+                            <Button
+                              size="sm"
+                              onClick={() => aprobarPreguntaTrivia(p.id)}
+                              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-lg"
+                            >
+                              Aprobar
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => eliminarPreguntaTrivia(p.id)}
+                            className="text-xs px-2.5 py-1 rounded-lg"
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </TabsContent>
       </Tabs>

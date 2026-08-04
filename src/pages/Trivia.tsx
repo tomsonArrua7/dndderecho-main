@@ -48,7 +48,8 @@ import {
   Zap,
   Plus,
   RefreshCw,
-  Eye
+  Eye,
+  Loader2
 } from "lucide-react";
 import { 
   TRIVIA_QUESTIONS, 
@@ -63,6 +64,8 @@ import {
   CategoriaTrivia
 } from "@/data/triviaData";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const ICON_MAP: Record<string, any> = {
   Scale,
@@ -204,6 +207,130 @@ export default function Trivia() {
   // Timer por pregunta (20 segundos)
   const [timeLeft, setTimeLeft] = useState(20);
   const [gameOver, setGameOver] = useState(false);
+
+  // Estados para funciones de IA
+  const [explicacionIA, setExplicacionIA] = useState<string | null>(null);
+  const [loadingExplicacion, setLoadingExplicacion] = useState(false);
+
+  const [isParcialFlashModalOpen, setIsParcialFlashModalOpen] = useState(false);
+  const [loadingParcialFlash, setLoadingParcialFlash] = useState(false);
+  const [materiaParcialFlash, setMateriaParcialFlash] = useState("Derecho Civil I");
+  const [dbTriviaQuestions, setDbTriviaQuestions] = useState<TriviaQuestion[]>([]);
+
+  // Cargar preguntas aprobadas de la base de datos Supabase
+  useEffect(() => {
+    async function fetchDbQuestions() {
+      try {
+        const { data } = await supabase.from("trivia_preguntas").select("*").eq("aprobado", true);
+        if (data && data.length > 0) {
+          const mapped: TriviaQuestion[] = data.map((d: any) => ({
+            id: d.id,
+            id_categoria: d.materia ? d.materia.toLowerCase().replace(/\s+/g, "_") : "general",
+            categoria_nombre: d.materia || "Derecho General",
+            dificultad: d.dificultad || "media",
+            pregunta: d.pregunta,
+            opciones: d.opciones,
+            respuesta_correcta_index: d.respuesta_correcta_index,
+            fundamento_juridico: d.fundamento_juridico || "",
+            puntos_base: 100
+          }));
+          setDbTriviaQuestions(mapped);
+        }
+      } catch (e) {}
+    }
+    fetchDbQuestions();
+  }, []);
+
+  const allQuestionsCombined = useMemo(() => {
+    return [...TRIVIA_QUESTIONS, ...dbTriviaQuestions];
+  }, [dbTriviaQuestions]);
+
+  const solicitarExplicacionIA = async (q: TriviaQuestion, opcionIndex: number) => {
+    try {
+      setLoadingExplicacion(true);
+      setExplicacionIA(null);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || "https://api.dndjursoc.com.ar").replace(/\/$/, "");
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ""}`,
+          "apikey": supabaseAnonKey
+        },
+        body: JSON.stringify({
+          accion: "explicar_fallo",
+          pregunta_trivia: q.pregunta,
+          opcion_elegida: q.opciones[opcionIndex] || "",
+          opcion_correcta: q.opciones[q.respuesta_correcta_index] || "",
+          fundamento: q.fundamento_juridico || ""
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setExplicacionIA(data.explicacion);
+      } else {
+        toast.error("No se pudo consultar al tutor IA.");
+      }
+    } catch (e) {
+      toast.error("Error de conexión.");
+    } finally {
+      setLoadingExplicacion(false);
+    }
+  };
+
+  const generarParcialFlashIA = async () => {
+    try {
+      setLoadingParcialFlash(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || "https://api.dndjursoc.com.ar").replace(/\/$/, "");
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ""}`,
+          "apikey": supabaseAnonKey
+        },
+        body: JSON.stringify({
+          accion: "generar_parcial_flash",
+          materia: materiaParcialFlash
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.preguntas && data.preguntas.length > 0) {
+          const pool = prepareQuestionPool(data.preguntas);
+          setQuestionsPool(pool);
+          setCurrentIndex(0);
+          setScore(0);
+          setStreak(0);
+          setCorrectAnswersCount(0);
+          setSelectedOption(null);
+          setIsAnswered(false);
+          setGameOver(false);
+          setInGame(true);
+          setTimeLeft(25);
+          setIsParcialFlashModalOpen(false);
+          toast.success("¡Parcial Flash de 5 preguntas generado por la IA!");
+        } else {
+          toast.error("No se pudieron generar las preguntas del examen.");
+        }
+      } else {
+        toast.error("Error al comunicarse con la IA.");
+      }
+    } catch (e) {
+      toast.error("Error de red.");
+    } finally {
+      setLoadingParcialFlash(false);
+    }
+  };
 
   // Estadísticas del usuario acumuladas (sincronizadas con DB / LocalStorage)
   const [userStats, setUserStats] = useState<{
@@ -509,14 +636,15 @@ export default function Trivia() {
   // Iniciar Trivia Solo (con desorden de opciones aleatorio)
   const handleStartGame = () => {
     setActiveDuelRoom(null);
-    let pool = [...TRIVIA_QUESTIONS];
+    setExplicacionIA(null);
+    let pool = [...allQuestionsCombined];
 
     if (selectedCategoria !== "todas") {
       pool = pool.filter(q => q.id_categoria === selectedCategoria);
     }
 
     if (pool.length === 0) {
-      pool = [...TRIVIA_QUESTIONS];
+      pool = [...allQuestionsCombined];
     }
 
     pool = pool.sort(() => 0.5 - Math.random());
@@ -1019,12 +1147,34 @@ export default function Trivia() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-2xl bg-[#0A1C3D]/40 border border-[#0F2A5C] text-blue-200 text-xs space-y-1.5 shadow-lg"
+              className="p-4 rounded-2xl bg-[#0A1C3D]/40 border border-[#0F2A5C] text-blue-200 text-xs space-y-2.5 shadow-lg"
             >
-              <span className="font-black uppercase tracking-wider text-[10px] text-blue-300 flex items-center gap-1.5">
-                <BookOpenCheck className="w-4 h-4 text-blue-400" /> Fundamento Normativo Oficial:
-              </span>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <span className="font-black uppercase tracking-wider text-[10px] text-blue-300 flex items-center gap-1.5">
+                  <BookOpenCheck className="w-4 h-4 text-blue-400" /> Fundamento Normativo Oficial:
+                </span>
+                {selectedOption !== currentQ.respuesta_correcta_index && (
+                  <button
+                    onClick={() => solicitarExplicacionIA(currentQ, selectedOption!)}
+                    disabled={loadingExplicacion}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                    <span>{loadingExplicacion ? "Consultando IA..." : "¿Por qué me equivoqué? (IA)"}</span>
+                  </button>
+                )}
+              </div>
+
               <p className="leading-relaxed text-slate-300 text-xs sm:text-sm">{currentQ.fundamento_juridico}</p>
+
+              {explicacionIA && (
+                <div className="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1.5">
+                  <span className="font-bold flex items-center gap-1.5 text-amber-300">
+                    <Sparkles className="w-4 h-4 text-amber-400" /> Explicación Pedagógica del Tutor IA:
+                  </span>
+                  <p className="leading-relaxed font-medium text-slate-200 text-xs sm:text-sm">{explicacionIA}</p>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -1342,13 +1492,23 @@ export default function Trivia() {
                 </div>
               </div>
 
-              <button
-                onClick={handleStartGame}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
-              >
-                <Play className="w-4.5 h-4.5 fill-white" />
-                <span>Comenzar Evaluación ({questionsCount} Preguntas • 20s c/u)</span>
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  onClick={handleStartGame}
+                  className="py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
+                >
+                  <Play className="w-4.5 h-4.5 fill-white" />
+                  <span>Comenzar Evaluación ({questionsCount} Preguntas)</span>
+                </button>
+
+                <button
+                  onClick={() => setIsParcialFlashModalOpen(true)}
+                  className="py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
+                >
+                  <Sparkles className="w-4.5 h-4.5 text-white animate-pulse" />
+                  <span>⚡ Parcial Flash con IA (5 Preguntas)</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -2200,6 +2360,48 @@ export default function Trivia() {
             </div>
           )}
         </AnimatePresence>
+
+        {/* MODAL DIALOG: PARCIAL FLASH CON IA */}
+        <Dialog open={isParcialFlashModalOpen} onOpenChange={setIsParcialFlashModalOpen}>
+          <DialogContent className="max-w-md bg-[#0D1527] text-white border border-white/15 rounded-2xl p-6 shadow-2xl space-y-4">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center gap-2 text-amber-400">
+                <Sparkles className="h-5 w-5 text-amber-400 animate-pulse" /> Generador de Parcial Flash con IA
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-300">
+                Ingresá la materia que querés evaluar. La IA generará en tiempo real un examen de 5 preguntas únicas adaptadas al nivel universitario de tu cursada.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-3 pt-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block">Materia para el Parcial Flash</label>
+              <input
+                type="text"
+                value={materiaParcialFlash}
+                onChange={(e) => setMateriaParcialFlash(e.target.value)}
+                placeholder="Ej: Derecho Civil I, Derecho Penal I, Romano..."
+                className="w-full bg-slate-950 border border-white/15 text-white rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-500 font-medium"
+              />
+            </div>
+
+            <div className="pt-3 flex gap-2">
+              <Button
+                disabled={loadingParcialFlash || !materiaParcialFlash.trim()}
+                onClick={generarParcialFlashIA}
+                className="w-full bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold py-3.5 rounded-xl shadow-lg cursor-pointer"
+              >
+                {loadingParcialFlash ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Generando examen con IA...
+                  </>
+                ) : (
+                  "⚡ Comenzar Parcial Flash (5 Preguntas)"
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
       </div>
     </div>

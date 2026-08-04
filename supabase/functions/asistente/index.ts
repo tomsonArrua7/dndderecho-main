@@ -16,21 +16,8 @@ serve(async (req) => {
   }
 
   try {
-    const { pregunta, materia, catedra, comision, historial } = await req.json();
-
-    // Validación
-    if (!pregunta || !materia) {
-      return new Response(
-        JSON.stringify({ error: "Los campos 'pregunta' y 'materia' son obligatorios." }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    console.log(`[Asistente DND Edge Function] Consulta recibida:
-      - Materia: ${materia}
-      - Cátedra: ${catedra || "No especificada"}
-      - Comisión: ${comision || "No especificada"}
-      - Pregunta: "${pregunta}"`);
+    const bodyData = await req.json();
+    const { accion, pregunta, materia, catedra, comision, historial, pregunta_trivia, opcion_elegida, opcion_correcta, fundamento } = bodyData;
 
     // Inicializar cliente de Supabase interno de la función
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "http://kong:8000";
@@ -45,6 +32,134 @@ serve(async (req) => {
     }
     
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Cargar configuraciones desde la tabla 'app_settings'
+    let dbSettings: any = null;
+    let origenClave = "ninguno";
+    try {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+      dbSettings = data;
+    } catch (err: any) {
+      console.warn("No se pudo leer la tabla app_settings:", err.message);
+    }
+
+    let openrouterApiKey = Deno.env.get("OPENROUTER_API_KEY") || dbSettings?.openrouter_api_key || "";
+    let openrouterModel = dbSettings?.openrouter_model || "deepseek/deepseek-chat";
+
+    // =========================================================================
+    // ACCIÓN 1: EXPLICAR FALLO EN LA TRIVIA
+    // =========================================================================
+    if (accion === "explicar_fallo") {
+      const promptExplicacion = `Un estudiante de Derecho respondió INCORRECTAMENTE una pregunta en la Trivia Jurídica.
+Pregunta: "${pregunta_trivia || ''}"
+La opción que eligió el estudiante: "${opcion_elegida || ''}"
+La opción correcta era: "${opcion_correcta || ''}"
+Fundamento normativo base: "${fundamento || 'Normativa aplicable'}"
+
+Por favor, explica en un tono pedagógico, directo y muy claro (EN MÁXIMO 2 ORACIONES CORTAS EN ESPAÑOL FORMAL) por qué su elección era incorrecta y por qué la opción correcta es la adecuada.`;
+
+      let explicacion = "";
+      if (openrouterApiKey) {
+        try {
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${openrouterApiKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: openrouterModel,
+              messages: [{ role: "user", content: promptExplicacion }],
+              temperature: 0.3
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            explicacion = data.choices?.[0]?.message?.content || "";
+          }
+        } catch (e: any) {
+          console.warn("Error al generar explicación con OpenRouter:", e.message);
+        }
+      }
+
+      if (!explicacion) {
+        explicacion = `La respuesta correcta es "${opcion_correcta}" debido al fundamento jurídico aplicable: ${fundamento || 'normativa legal de la materia'}.`;
+      }
+
+      return new Response(JSON.stringify({ explicacion }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    // =========================================================================
+    // ACCIÓN 2: GENERAR PARCIAL FLASH CON IA
+    // =========================================================================
+    if (accion === "generar_parcial_flash") {
+      const promptParcial = `Genera EXACTAMENTE 5 preguntas de opción múltiple (Multiple Choice) para un examen parcial universitario de la materia de Derecho "${materia || 'Derecho General'}" (Cátedra: ${catedra || 'General'}).
+Responde ÚNICAMENTE en formato JSON plano como una lista de objetos (un arreglo JSON sin bloques de código markdown ni texto adicional).
+Estructura exacta de cada objeto:
+{
+  "id": "pf_1",
+  "id_categoria": "general",
+  "categoria_nombre": "${materia || 'Derecho'}",
+  "dificultad": "media",
+  "pregunta": "¿Texto claro de la pregunta?",
+  "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
+  "respuesta_correcta_index": 0,
+  "fundamento_juridico": "Artículo de ley o concepto clave explicativo",
+  "puntos_base": 100
+}`;
+
+      let preguntas: any[] = [];
+      if (openrouterApiKey) {
+        try {
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${openrouterApiKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: openrouterModel,
+              messages: [{ role: "user", content: promptParcial }],
+              temperature: 0.4
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const rawText = data.choices?.[0]?.message?.content || "";
+            const cleanText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+            preguntas = JSON.parse(cleanText);
+          }
+        } catch (e: any) {
+          console.warn("Error al generar Parcial Flash:", e.message);
+        }
+      }
+
+      return new Response(JSON.stringify({ preguntas }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders }
+      });
+    }
+
+    // Validación de campos para consulta del asistente
+    if (!pregunta || !materia) {
+      return new Response(
+        JSON.stringify({ error: "Los campos 'pregunta' y 'materia' son obligatorios." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    console.log(`[Asistente DND Edge Function] Consulta recibida:
+      - Materia: ${materia}
+      - Cátedra: ${catedra || "No especificada"}
+      - Comisión: ${comision || "No especificada"}
+      - Pregunta: "${pregunta}"`);
 
     let contextoRecuperado = "";
     let origenContexto = "datos_simulados";
@@ -443,7 +558,103 @@ PREGUNTA DEL ESTUDIANTE:
         throw new Error(`OpenRouter API error: ${openrouterRes.status} - ${errText}`);
       }
 
-      // Retornamos el flujo SSE en tiempo real directamente al cliente
+      if (openrouterRes.body) {
+        const [streamClient, streamBg] = openrouterRes.body.tee();
+
+        // Procesador en segundo plano para extraer pregunta de trivia sin demorar al cliente
+        (async () => {
+          try {
+            const reader = streamBg.getReader();
+            const decoder = new TextDecoder();
+            let fullAnswer = "";
+            let buffer = "";
+
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split("\n");
+              buffer = lines.pop() || "";
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith("data: ")) {
+                  const dataStr = trimmed.replace(/^data:\s*/, "");
+                  if (dataStr === "[DONE]") break;
+                  try {
+                    const parsed = JSON.parse(dataStr);
+                    const token = parsed.choices?.[0]?.delta?.content || "";
+                    if (token) fullAnswer += token;
+                  } catch (e) {}
+                }
+              }
+            }
+
+            if (fullAnswer.length > 40 && materia) {
+              const promptTrivia = `A partir de la siguiente consulta académica y su respuesta sobre la materia "${materia}":
+PREGUNTA DEL ALUMNO: "${pregunta}"
+RESPUESTA DEL TUTOR: "${fullAnswer}"
+
+Genera UNA sola pregunta de Trivia de opción múltiple (Multiple Choice) de nivel universitario para evaluar esta consulta.
+Responde ÚNICAMENTE en formato JSON plano con esta estructura exacta sin bloques de código markdown:
+{
+  "pregunta": "¿Texto de la pregunta?",
+  "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
+  "respuesta_correcta_index": 0,
+  "fundamento_juridico": "Artículo o concepto explicativo clave",
+  "dificultad": "media"
+}`;
+
+              const triviaRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${openrouterApiKey}`,
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  model: openrouterModel,
+                  messages: [{ role: "user", content: promptTrivia }],
+                  temperature: 0.3
+                })
+              });
+
+              if (triviaRes.ok) {
+                const triviaData = await triviaRes.json();
+                const rawContent = triviaData.choices?.[0]?.message?.content || "";
+                const cleanJson = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+                const parsedQ = JSON.parse(cleanJson);
+
+                if (parsedQ.pregunta && Array.isArray(parsedQ.opciones) && parsedQ.opciones.length === 4) {
+                  await supabase.from("trivia_preguntas").insert({
+                    materia,
+                    catedra: catedra || null,
+                    dificultad: parsedQ.dificultad || "media",
+                    pregunta: parsedQ.pregunta,
+                    opciones: parsedQ.opciones,
+                    respuesta_correcta_index: parsedQ.respuesta_correcta_index ?? 0,
+                    fundamento_juridico: parsedQ.fundamento_juridico || "",
+                    origen: "ia_asistente",
+                    aprobado: false
+                  });
+                  console.log(`[Trivia IA] Pregunta de trivia generada con éxito desde consulta del asistente: "${parsedQ.pregunta}"`);
+                }
+              }
+            }
+          } catch (e: any) {
+            console.warn("[Trivia IA] No se pudo auto-generar la pregunta de trivia en segundo plano:", e.message);
+          }
+        })();
+
+        return new Response(streamClient, {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive"
+          }
+        });
+      }
+
       return new Response(openrouterRes.body, {
         headers: {
           ...corsHeaders,
