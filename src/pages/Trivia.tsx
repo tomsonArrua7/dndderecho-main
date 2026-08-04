@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfileModal } from "@/components/trivia/UserProfileModal";
+import { TriviaGuideModal } from "@/components/trivia/TriviaGuideModal";
 import { 
   Trophy, 
   Timer, 
@@ -243,6 +244,19 @@ export default function Trivia() {
   const [loadingParcialFlash, setLoadingParcialFlash] = useState(false);
   const [materiaParcialFlash, setMateriaParcialFlash] = useState("Derecho Civil I");
   const [dbTriviaQuestions, setDbTriviaQuestions] = useState<TriviaQuestion[]>([]);
+
+  // Estado y auto-apertura del Tutorial / Guía de juego en la primera visita
+  const [showGuideModal, setShowGuideModal] = useState(false);
+
+  useEffect(() => {
+    try {
+      const guideSeen = localStorage.getItem("dnd_trivia_guide_seen");
+      if (!guideSeen) {
+        setShowGuideModal(true);
+        localStorage.setItem("dnd_trivia_guide_seen", "true");
+      }
+    } catch {}
+  }, []);
 
   // Cargar preguntas aprobadas de la base de datos Supabase
   useEffect(() => {
@@ -1405,12 +1419,22 @@ export default function Trivia() {
               </span>
             </div>
 
-            <button
-              onClick={() => setShowRangosModal(true)}
-              className="px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95"
-            >
-              VER ESCALA DE RANGOS
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowGuideModal(true)}
+                className="px-3.5 py-2.5 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95 flex items-center gap-1.5"
+              >
+                <BookOpen className="w-4 h-4 text-amber-400" />
+                <span className="hidden sm:inline">Guía & Reglas</span>
+              </button>
+
+              <button
+                onClick={() => setShowRangosModal(true)}
+                className="px-3.5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95"
+              >
+                VER ESCALA DE RANGOS
+              </button>
+            </div>
           </div>
         </div>
 
@@ -3073,6 +3097,12 @@ export default function Trivia() {
           userId={inspectUserModal.userId}
           userName={inspectUserModal.userName}
           userAvatar={inspectUserModal.userAvatar}
+        />
+
+        {/* MODAL TUTORIAL Y GUÍA DE REGLAS Y PUNTOS DE LA TRIVIA */}
+        <TriviaGuideModal
+          isOpen={showGuideModal}
+          onClose={() => setShowGuideModal(false)}
         />
 
       </div>
