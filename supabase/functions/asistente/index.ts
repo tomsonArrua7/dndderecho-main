@@ -49,6 +49,27 @@ serve(async (req) => {
 
     let openrouterApiKey = Deno.env.get("OPENROUTER_API_KEY") || dbSettings?.openrouter_api_key || "";
     let openrouterModel = dbSettings?.openrouter_model || "deepseek/deepseek-chat";
+    let anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") || dbSettings?.anthropic_api_key || "";
+    let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL") || dbSettings?.local_ollama_url || "";
+    let anthropicModel = dbSettings?.anthropic_model || "claude-sonnet-4-6";
+    let geminiApiKey = Deno.env.get("GEMINI_API_KEY") || dbSettings?.gemini_api_key || "";
+
+    if (openrouterApiKey) {
+      openrouterApiKey = openrouterApiKey.replace(/\s+/g, "");
+      origenClave = Deno.env.get("OPENROUTER_API_KEY") ? "Deno.env (OpenRouter/DeepSeek)" : "base_de_datos (OpenRouter/DeepSeek)";
+    }
+    if (anthropicApiKey) {
+      anthropicApiKey = anthropicApiKey.replace(/\s+/g, "");
+      if (origenClave === "ninguno") {
+        origenClave = Deno.env.get("ANTHROPIC_API_KEY") ? "Deno.env (Claude)" : "base_de_datos (Claude)";
+      }
+    }
+    if (geminiApiKey) {
+      geminiApiKey = geminiApiKey.replace(/\s+/g, "");
+      if (origenClave === "ninguno") {
+        origenClave = Deno.env.get("GEMINI_API_KEY") ? "Deno.env (Gemini)" : "base_de_datos (Gemini)";
+      }
+    }
 
     // =========================================================================
     // ACCIÓN 1: EXPLICAR FALLO EN LA TRIVIA
@@ -259,45 +280,8 @@ Estructura exacta de cada objeto:
     }
 
     // =========================================================================
-    // INTEGRACIÓN CON LA API DE GEMINI (SDK @google/genai)
+    // API keys ya cargadas al inicio de la función (ver bloque superior)
     // =========================================================================
-    // Cargamos configuraciones desde la tabla 'app_settings'
-    let dbSettings: any = null;
-    let origenClave = "ninguno";
-    try {
-      const { data } = await supabase
-        .from("app_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-      dbSettings = data;
-    } catch (err: any) {
-      console.warn("No se pudo leer la tabla app_settings:", err.message);
-    }
-
-    let openrouterApiKey = Deno.env.get("OPENROUTER_API_KEY") || dbSettings?.openrouter_api_key || "";
-    let openrouterModel = dbSettings?.openrouter_model || "deepseek/deepseek-chat";
-    let anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") || dbSettings?.anthropic_api_key || "";
-    let localOllamaUrl = Deno.env.get("LOCAL_OLLAMA_URL") || dbSettings?.local_ollama_url || "";
-    let anthropicModel = dbSettings?.anthropic_model || "claude-sonnet-4-6";
-    let geminiApiKey = Deno.env.get("GEMINI_API_KEY") || dbSettings?.gemini_api_key || "";
-
-    if (openrouterApiKey) {
-      openrouterApiKey = openrouterApiKey.replace(/\s+/g, "");
-      origenClave = Deno.env.get("OPENROUTER_API_KEY") ? "Deno.env (OpenRouter/DeepSeek)" : "base_de_datos (OpenRouter/DeepSeek)";
-    }
-    if (anthropicApiKey) {
-      anthropicApiKey = anthropicApiKey.replace(/\s+/g, "");
-      if (origenClave === "ninguno") {
-        origenClave = Deno.env.get("ANTHROPIC_API_KEY") ? "Deno.env (Claude)" : "base_de_datos (Claude)";
-      }
-    }
-    if (geminiApiKey) {
-      geminiApiKey = geminiApiKey.replace(/\s+/g, "");
-      if (origenClave === "ninguno") {
-        origenClave = Deno.env.get("GEMINI_API_KEY") ? "Deno.env (Gemini)" : "base_de_datos (Gemini)";
-      }
-    }
 
     // Si no hay ninguna clave o URL configurada, informamos al usuario para que la agregue
     if (!openrouterApiKey && !anthropicApiKey && !localOllamaUrl && !geminiApiKey) {
