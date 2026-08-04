@@ -8,15 +8,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 
-import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users, Trophy, Sparkles } from "lucide-react";
+import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users, Trophy, Sparkles, BookmarkCheck } from "lucide-react";
 
 const publicLinks = [
-  { to: "/noticias",        label: "Noticias",       icon: Newspaper },
-  { to: "/apuntes",         label: "Biblioteca",     icon: BookOpen },
-  { to: "/asistente",       label: "Asistente DND",  icon: Bot },
-  { to: "/permutero",       label: "Permutero",      icon: Repeat2 },
-  { to: "/servicios",       label: "Info Útil",      icon: ShieldCheck },
-  { to: "/quienes-somos",   label: "Quiénes Somos",  icon: Users },
+  { to: "/noticias",        label: "Noticias",        icon: Newspaper },
+  { to: "/apuntes",         label: "Biblioteca",      icon: BookOpen },
+  { to: "/asistente",       label: "Asistente DND",   icon: Bot },
+  { to: "/permutero",       label: "Permutero",       icon: Repeat2 },
+  { to: "/servicios",       label: "Info Útil",       icon: ShieldCheck },
+  { to: "/recomendaciones", label: "Recomendaciones", icon: BookmarkCheck },
+  { to: "/quienes-somos",   label: "Quiénes Somos",   icon: Users },
 ];
 
 export const Navbar = () => {
