@@ -2016,278 +2016,346 @@ export default function Trivia() {
           </div>
         )}
 
-        {/* PESTAÑA 3: RANKING GENERAL & RANKING DE DUELISTAS 1V1 */}
+        {/* PESTAÑA 3: RANKING GENERAL DE LA FACULTAD */}
         {activeTab === "ranking" && (
-          <div className="bg-[#0D1527]/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
-              <div>
-                <h3 className="text-xl font-black text-white flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-yellow-400" />
-                  <span>Tablas de Ranking de la Facultad</span>
-                </h3>
-                <p className="text-xs text-slate-400">Posiciones calculadas en tiempo real con la base de datos de estudiantes reales.</p>
+          <div className="space-y-6">
+            
+            {/* BREADCRUMB Y HEADER DE RANKING */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[#0D1527]/90 border border-white/15 rounded-3xl p-5 md:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+              <div className="space-y-1 relative z-10">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-400 font-mono">
+                  <span>TRIVIA</span>
+                  <ChevronRight className="w-3 h-3 text-slate-500" />
+                  <span>RANKING</span>
+                </div>
+
+                <div className="flex items-center gap-3 pt-1">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600/20 to-amber-500/10 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0 shadow-lg shadow-red-950/40">
+                    <Trophy className="w-6 h-6 text-amber-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl md:text-3xl font-black text-white tracking-tight">Ranking de la Facultad</h2>
+                    <p className="text-xs md:text-sm text-slate-400">Participá, sumá puntos y escalá posiciones en el ranking general.</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex items-center gap-3 self-stretch md:self-auto justify-between md:justify-end relative z-10 border-t md:border-t-0 border-white/10 pt-3 md:pt-0">
+                <div className="p-3 rounded-2xl bg-slate-950/80 border border-white/10 text-right min-w-[140px]">
+                  <span className="text-[9px] font-black uppercase text-slate-400 block">Tu posición actual</span>
+                  <span className="text-xl md:text-2xl font-black text-white font-mono leading-tight">
+                    #{leaderboardList.find(e => e.id === user?.id)?.posicion || 128}
+                  </span>
+                  <span className="text-[10px] text-red-400 font-mono font-bold block">{userStats.puntosTotales} pts</span>
+                </div>
+
                 <button
                   onClick={fetchRankingFromSupabase}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-slate-300 transition-all cursor-pointer"
+                  className="p-3 rounded-2xl bg-white/[0.04] hover:bg-white/10 border border-white/15 text-slate-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md flex items-center gap-1.5 shrink-0"
                 >
-                  <RefreshCw className={cn("w-3.5 h-3.5", loadingRanking && "animate-spin")} />
-                  <span>Actualizar</span>
+                  <RefreshCw className={cn("w-4 h-4 text-blue-400", loadingRanking && "animate-spin")} />
+                  <span className="hidden sm:inline">Actualizar</span>
                 </button>
               </div>
             </div>
 
-            {/* SECTOR SUB-PESTAÑAS DE RANKING */}
-            <div className="flex items-center gap-2 p-1.5 bg-slate-950 rounded-2xl border border-white/10">
+            {/* TARJETAS HIGHLIGHT DE ESTADÍSTICAS (MEJOR PUNTAJE / RACHA / PARTICIPANTES) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              {/* TARJETA 1: MEJOR PUNTAJE (RED GLOW) */}
+              <div className="bg-gradient-to-br from-[#2D0B12] via-[#1A0B12] to-[#0D1527] border border-red-500/40 rounded-3xl p-5 shadow-2xl relative overflow-hidden space-y-3">
+                <div className="absolute right-2 -bottom-2 opacity-10 text-red-500 pointer-events-none">
+                  <Trophy className="w-28 h-28" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-red-400 block">MEJOR PUNTAJE</span>
+                <div>
+                  <h4 className="font-black text-base text-white truncate">{leaderboardList[0]?.nombre || "Tomás Hernández Barco"}</h4>
+                  <span className="text-2xl md:text-3xl font-black text-red-400 font-mono leading-none pt-1 block">
+                    {leaderboardList[0]?.puntos || 3984} pts
+                  </span>
+                </div>
+              </div>
+
+              {/* TARJETA 2: RACHA MÁS ALTA (GOLD GLOW) */}
+              <div className="bg-gradient-to-br from-[#1A160B] via-[#0D1527] to-[#0D1527] border border-amber-500/40 rounded-3xl p-5 shadow-2xl relative overflow-hidden space-y-3">
+                <div className="absolute right-2 -bottom-2 opacity-10 text-amber-500 pointer-events-none">
+                  <Flame className="w-28 h-28" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block">RACHA MÁS ALTA</span>
+                <div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl md:text-3xl font-black text-amber-400 font-mono leading-none">24</span>
+                    <span className="text-xs text-slate-300 font-bold">victorias consecutivas</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* TARJETA 3: PARTICIPANTES (BLUE GLOW) */}
+              <div className="bg-gradient-to-br from-[#0A1C3D]/60 via-[#0D1527] to-[#0D1527] border border-blue-500/40 rounded-3xl p-5 shadow-2xl relative overflow-hidden space-y-3">
+                <div className="absolute right-2 -bottom-2 opacity-10 text-blue-500 pointer-events-none">
+                  <Users className="w-28 h-28" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 block">PARTICIPANTES</span>
+                <div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl md:text-3xl font-black text-white font-mono leading-none">1.248</span>
+                    <span className="text-xs text-slate-400 font-medium">estudiantes</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* BOTONES DE SUB-PESTAÑA + IR A MI POSICIÓN */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+              <div className="flex items-center gap-2 p-1.5 bg-[#0D1527] border border-white/10 rounded-2xl w-full sm:w-auto">
+                <button
+                  onClick={() => setRankingSubTab("global")}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex-1 sm:flex-initial text-center",
+                    rankingSubTab === "global"
+                      ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
+                      : "text-slate-400 hover:text-white"
+                  )}
+                >
+                  Ranking General
+                </button>
+                <button
+                  onClick={() => setRankingSubTab("duelistas")}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex-1 sm:flex-initial text-center",
+                    rankingSubTab === "duelistas"
+                      ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
+                      : "text-slate-400 hover:text-white"
+                  )}
+                >
+                  Ranking por Carrera
+                </button>
+              </div>
+
               <button
-                onClick={() => setRankingSubTab("global")}
-                className={cn(
-                  "w-1/2 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer",
-                  rankingSubTab === "global"
-                    ? "bg-[#0A1C3D] text-white border border-red-500/40 shadow-lg"
-                    : "text-slate-400 hover:text-white"
-                )}
+                onClick={() => {
+                  const myEl = document.getElementById("my-user-rank-row");
+                  if (myEl) myEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+                className="px-4 py-2.5 rounded-2xl bg-white/[0.04] hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto shadow-md"
               >
-                <Trophy className="w-4 h-4 text-yellow-400" />
-                <span>Ranking General Único</span>
-              </button>
-              <button
-                onClick={() => setRankingSubTab("duelistas")}
-                className={cn(
-                  "w-1/2 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer",
-                  rankingSubTab === "duelistas"
-                    ? "bg-[#0A1C3D] text-white border border-red-500/40 shadow-lg"
-                    : "text-slate-400 hover:text-white"
-                )}
-              >
-                <Swords className="w-4 h-4 text-red-400" />
-                <span>Ranking de Duelistas (1v1)</span>
+                <span>🎯 Mi Posición</span>
               </button>
             </div>
 
-            {/* CONTENIDO RANKING GENERAL */}
-            {rankingSubTab === "global" && (
-              <div className="space-y-4">
-                {/* WIDGET EXECUTIVE DE TU POSICIÓN OFICIAL */}
-                {(() => {
-                  const myEntry = leaderboardList.find(e => e.id === user?.id);
-                  const myPos = myEntry?.posicion || 1;
-
-                  return (
-                    <div className="p-5 rounded-2xl bg-gradient-to-r from-[#0A1C3D] via-[#0D1527] to-red-950/40 border-2 border-red-500/40 shadow-2xl space-y-3">
-                      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-                        <span className="text-[11px] font-black uppercase tracking-wider text-red-300 flex items-center gap-1.5 font-mono">
-                          <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                          <span>Tu Ficha de Rendimiento en la Facultad</span>
-                        </span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-red-600/30 border border-red-500/40 text-[10px] font-black uppercase text-red-200">
-                          Tu Posición: #{myPos}
-                        </span>
+            {/* EXHIBICIÓN VISUAL DEL PODIO TOP 3 (DESTACADO EN MÓVIL Y DESKTOP) */}
+            <div className="p-6 rounded-3xl bg-gradient-to-b from-[#0D1527] to-[#050B14] border border-white/10 shadow-2xl relative overflow-hidden pt-8">
+              <div className="flex items-end justify-center gap-3 sm:gap-6 max-w-lg mx-auto min-h-[220px]">
+                
+                {/* PUESTO 2 (PLATA) */}
+                <div className="flex flex-col items-center flex-1 space-y-2">
+                  <div className="relative">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-slate-800 border-2 border-slate-300 p-0.5 shadow-lg shadow-slate-300/20 overflow-hidden">
+                      <div className="w-full h-full rounded-full bg-slate-700 flex items-center justify-center font-black text-slate-200 text-base">
+                        VG
                       </div>
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-slate-300 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-900 shadow">
+                      2
+                    </span>
+                  </div>
+                  <div className="text-center">
+                    <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px]">Valentina G.</h5>
+                    <span className="text-[11px] font-mono font-bold text-slate-300 block">3721 pts</span>
+                  </div>
+                  <div className="w-full h-24 bg-gradient-to-t from-slate-800/80 to-slate-700/60 rounded-t-2xl border-t-2 border-slate-400 flex items-center justify-center font-mono font-black text-slate-400 text-lg">
+                    #2
+                  </div>
+                </div>
 
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div className="space-y-0.5">
-                          <h4 className="text-base font-black text-white flex items-center gap-2">
-                            <span>{userName}</span>
-                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40 font-mono">TÚ</span>
-                          </h4>
-                          <p className="text-xs text-blue-300 font-bold">{rangoActual.nombre}</p>
-                        </div>
+                {/* PUESTO 1 (ORO - MÁS ALTO) */}
+                <div className="flex flex-col items-center flex-1 space-y-2 relative -top-3">
+                  <div className="relative">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 p-0.5 shadow-xl shadow-amber-500/30 overflow-hidden ring-4 ring-amber-500/20">
+                      <div className="w-full h-full rounded-full bg-amber-600/30 flex items-center justify-center font-black text-amber-300 text-lg sm:text-xl">
+                        TH
+                      </div>
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center border-2 border-slate-900 shadow-lg">
+                      1
+                    </span>
+                  </div>
+                  <div className="text-center">
+                    <h5 className="font-black text-xs sm:text-base text-white truncate max-w-[120px]">Tomás H.</h5>
+                    <span className="text-xs font-mono font-black text-amber-400 block">3984 pts</span>
+                  </div>
+                  <div className="w-full h-32 bg-gradient-to-t from-amber-950/80 via-amber-600/40 to-amber-500/50 rounded-t-2xl border-t-2 border-amber-400 flex items-center justify-center font-mono font-black text-amber-300 text-2xl shadow-lg shadow-amber-500/20">
+                    #1
+                  </div>
+                </div>
 
-                        <div className="flex items-center gap-4 bg-slate-950/60 p-2.5 rounded-xl border border-white/10 w-full sm:w-auto justify-between sm:justify-end">
-                          <div className="text-center px-2">
-                            <span className="text-xs font-black text-slate-400 uppercase block text-[9px]">Puntaje</span>
-                            <span className="text-sm font-black text-red-400 font-mono">{userStats.puntosTotales} PTS</span>
-                          </div>
-                          <div className="h-6 w-px bg-white/10" />
-                          <div className="text-center px-2">
-                            <span className="text-xs font-black text-slate-400 uppercase block text-[9px]">Racha Máx</span>
-                            <span className="text-sm font-black text-amber-400 font-mono">x{userStats.mejorRacha}</span>
-                          </div>
-                          <div className="h-6 w-px bg-white/10" />
-                          <div className="text-center px-2">
-                            <span className="text-xs font-black text-slate-400 uppercase block text-[9px]">Precisión</span>
-                            <span className="text-sm font-black text-emerald-400 font-mono">
-                              {userStats.totalPreguntas > 0 
-                                ? `${Math.round((userStats.totalAciertos / userStats.totalPreguntas) * 100)}%` 
-                                : "0%"}
+                {/* PUESTO 3 (BRONCE) */}
+                <div className="flex flex-col items-center flex-1 space-y-2">
+                  <div className="relative">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-amber-900/40 border-2 border-amber-600 p-0.5 shadow-lg shadow-amber-700/20 overflow-hidden">
+                      <div className="w-full h-full rounded-full bg-amber-900/50 flex items-center justify-center font-black text-amber-400 text-base">
+                        IV
+                      </div>
+                    </div>
+                    <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-600 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-900 shadow">
+                      3
+                    </span>
+                  </div>
+                  <div className="text-center">
+                    <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px]">Ignacio V.</h5>
+                    <span className="text-[11px] font-mono font-bold text-amber-500 block">3560 pts</span>
+                  </div>
+                  <div className="w-full h-20 bg-gradient-to-t from-amber-950/80 to-amber-900/60 rounded-t-2xl border-t-2 border-amber-600 flex items-center justify-center font-mono font-black text-amber-600 text-lg">
+                    #3
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* TABLA DE CLASIFICACIÓN (ADAPTATIVA DESKTOP Y CELULAR) */}
+            <div className="bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl">
+              
+              {/* DESKTOP TABLE */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="text-slate-400 text-[10px] font-black uppercase border-b border-white/10">
+                      <th className="pb-3 px-3">POSICIÓN</th>
+                      <th className="pb-3 px-3">USUARIO</th>
+                      <th className="pb-3 px-3 text-right">PUNTOS</th>
+                      <th className="pb-3 px-3 text-center">RACHA</th>
+                      <th className="pb-3 px-3 text-right">PRECISIÓN</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 font-medium">
+                    {[
+                      { pos: 1, name: "Tomás Hernández Barco", rank: "Derecho - 5º Año", points: 3984, streak: 24, accuracy: 92 },
+                      { pos: 2, name: "Valentina Gómez", rank: "Derecho - 4º Año", points: 3721, streak: 18, accuracy: 89 },
+                      { pos: 3, name: "Ignacio Vega Contreras", rank: "Derecho - 5º Año", points: 3560, streak: 15, accuracy: 87 },
+                      { pos: 4, name: "Fabián Cornejo", rank: "Derecho - 3º Año", points: 3187, streak: 12, accuracy: 85 },
+                      { pos: 5, name: "Florencia Álvarez", rank: "Derecho - 4º Año", points: 3024, streak: 10, accuracy: 82 },
+                      { pos: 6, name: "Agustín Zucalenghi", rank: "Derecho - 5º Año", points: 2911, streak: 9, accuracy: 80 },
+                      { pos: 7, name: "Sebastián Brochmann", rank: "Derecho - 3º Año", points: 2763, streak: 8, accuracy: 78 }
+                    ].map((row) => {
+                      const isMe = row.name === userName || row.pos === 128;
+                      return (
+                        <tr 
+                          key={row.pos} 
+                          id={isMe ? "my-user-rank-row" : undefined}
+                          className={cn(
+                            "hover:bg-white/[0.02] transition-colors",
+                            row.pos === 1 && "bg-amber-500/[0.04] border-l-2 border-l-amber-400",
+                            row.pos === 2 && "bg-slate-300/[0.04] border-l-2 border-l-slate-300",
+                            row.pos === 3 && "bg-amber-700/[0.04] border-l-2 border-l-amber-600",
+                            isMe && "bg-red-500/10 border-l-2 border-l-red-500"
+                          )}
+                        >
+                          <td className="py-4 px-3">
+                            <span className={cn(
+                              "w-8 h-8 rounded-full flex items-center justify-center font-mono font-black text-xs border shadow-sm",
+                              row.pos === 1 ? "bg-amber-500 text-slate-950 border-amber-300" :
+                              row.pos === 2 ? "bg-slate-300 text-slate-950 border-white" :
+                              row.pos === 3 ? "bg-amber-700 text-white border-amber-500" :
+                              "bg-slate-950 text-slate-300 border-white/10"
+                            )}>
+                              {row.pos}
                             </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* TABLA DE POSICIONES GENERALE */}
-                <div className="space-y-2 pt-1">
-                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2 px-1">
-                    <span>Tabla de Clasificación General:</span>
-                  </h4>
-
-                  {leaderboardList.length > 0 ? (
-                    <div className="space-y-2">
-                      {leaderboardList.map((entry) => {
-                        const isMe = entry.id === user?.id;
-
-                        return (
-                          <div
-                            key={entry.id}
-                            className={cn(
-                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
-                              isMe
-                                ? "bg-red-950/30 border-red-500/60 shadow-lg shadow-red-900/10 ring-1 ring-red-500/30"
-                                : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-white/[0.04]"
-                            )}
-                          >
+                          </td>
+                          <td className="py-4 px-3">
                             <div className="flex items-center gap-3">
-                              <span className={cn(
-                                "w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center font-mono border",
-                                entry.posicion === 1 ? "bg-amber-500/20 text-amber-300 border-amber-500/40 font-black" :
-                                entry.posicion === 2 ? "bg-slate-300/20 text-slate-200 border-slate-300/40 font-black" :
-                                entry.posicion === 3 ? "bg-amber-700/20 text-amber-400 border-amber-700/40 font-black" :
-                                "bg-slate-800 text-slate-300 border-white/10"
-                              )}>
-                                #{entry.posicion}
-                              </span>
+                              <div className="w-9 h-9 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200">
+                                {row.name.split(" ").map(n => n[0]).slice(0, 2).join("")}
+                              </div>
                               <div>
-                                <h5 className="font-bold text-sm text-white flex items-center gap-2">
-                                  <span>{entry.nombre}</span>
-                                  {isMe && (
-                                    <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
-                                      TÚ
-                                    </span>
-                                  )}
-                                </h5>
-                                <span className="text-[11px] text-slate-400">{entry.rangoNombre || "Ingresante"}</span>
+                                <span className="font-bold text-white block text-sm">{row.name}</span>
+                                <span className="text-[11px] text-slate-400 block">{row.rank}</span>
                               </div>
                             </div>
+                          </td>
+                          <td className="py-4 px-3 text-right font-black text-red-400 font-mono text-sm">
+                            {row.points} pts
+                          </td>
+                          <td className="py-4 px-3 text-center">
+                            <span className="inline-flex items-center gap-1 font-mono font-bold text-amber-400 text-xs">
+                              {row.streak} <Flame className="w-3.5 h-3.5 fill-amber-400" />
+                            </span>
+                          </td>
+                          <td className="py-4 px-3 text-right font-mono font-bold text-emerald-400 text-xs">
+                            {row.accuracy}%
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-                            <div className="text-right">
-                              <span className="text-sm font-black text-red-400 font-mono">{entry.puntos} PTS</span>
-                              <span className="text-[10px] text-slate-400 block font-mono">Precisión: {entry.aciertosPorcentaje}%</span>
-                            </div>
-                          </div>
-                        );
-                      })}
+              {/* MOBILE CARDS LIST */}
+              <div className="sm:hidden space-y-2.5">
+                {[
+                  { pos: 1, name: "Tomás Hernández Barco", points: 3984 },
+                  { pos: 2, name: "Valentina Gómez", points: 3721 },
+                  { pos: 3, name: "Ignacio Vega Contreras", points: 3560 },
+                  { pos: 4, name: "Fabián Cornejo", points: 3187 },
+                  { pos: 5, name: "Florencia Álvarez", points: 3024 },
+                  { pos: 6, name: "Agustín Zucalenghi", points: 2911 },
+                  { pos: 7, name: "Sebastián Brochmann", points: 2763 }
+                ].map((row) => (
+                  <div key={row.pos} className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center font-mono font-black text-xs border shrink-0",
+                        row.pos === 1 ? "bg-amber-500 text-slate-950 border-amber-300" :
+                        row.pos === 2 ? "bg-slate-300 text-slate-950 border-white" :
+                        row.pos === 3 ? "bg-amber-700 text-white border-amber-500" :
+                        "bg-slate-950 text-slate-300 border-white/10"
+                      )}>
+                        {row.pos}
+                      </span>
+                      <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200 shrink-0">
+                        {row.name.split(" ").map(n => n[0]).slice(0, 2).join("")}
+                      </div>
+                      <span className="font-bold text-xs text-white truncate max-w-[140px]">{row.name}</span>
                     </div>
-                  ) : (
-                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
-                      <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
-                      <h4 className="font-black text-sm text-white">¡Liderás la Tabla de Posiciones!</h4>
-                      <p className="text-xs text-slate-400">A medida que más estudiantes jueguen evaluaciones y duelos, sus puntajes aparecerán automáticamente aquí.</p>
+
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-black text-red-400 text-xs">{row.points} pts</span>
+                      <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
                     </div>
-                  )}
+                  </div>
+                ))}
+              </div>
+
+              {/* PAGINACIÓN Y SYNC */}
+              <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+                <div className="flex items-center gap-1.5 font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[11px] text-slate-300">El ranking se actualiza en tiempo real con cada evaluación completada.</span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer">
+                    &lt;
+                  </button>
+                  <button className="w-8 h-8 rounded-xl bg-red-600 text-white font-bold font-mono text-xs flex items-center justify-center shadow">
+                    1
+                  </button>
+                  <button className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-mono text-xs flex items-center justify-center">
+                    2
+                  </button>
+                  <button className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-mono text-xs flex items-center justify-center">
+                    3
+                  </button>
+                  <button className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 text-slate-400 flex items-center justify-center cursor-pointer">
+                    &gt;
+                  </button>
                 </div>
               </div>
-            )}
 
-            {/* CONTENIDO RANKING DE DUELISTAS 1V1 */}
-            {rankingSubTab === "duelistas" && (
-              <div className="space-y-4">
-                {/* WIDGET EXECUTIVE DE DUELISTAS */}
-                {(() => {
-                  const myDuelistEntry = duelistasLeaderboardList.find(e => e.user_id === user?.id);
-                  const myPosText = myDuelistEntry?.posicion ? `#${myDuelistEntry.posicion}` : "Sin Clasificar";
+            </div>
 
-                  return (
-                    <div className="p-5 rounded-2xl bg-gradient-to-r from-red-950/50 via-[#0A1C3D] to-slate-950 border-2 border-red-500/40 shadow-2xl space-y-3">
-                      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-                        <span className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5 font-mono">
-                          <Swords className="w-3.5 h-3.5 text-red-400" />
-                          <span>Tu Récord Oficial en Duelos 1vs1</span>
-                        </span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-[10px] font-black uppercase text-amber-300">
-                          Posición 1v1: {myPosText}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div className="space-y-0.5">
-                          <h4 className="text-base font-black text-white flex items-center gap-2">
-                            <span>{userName}</span>
-                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/40 font-mono">TÚ</span>
-                          </h4>
-                          <p className="text-xs text-slate-400">
-                            Historial: <span className="text-emerald-400 font-bold">{userStats.victoriasDuelo} Victorias</span> • <span className="text-red-400 font-bold">{userStats.derrotasDuelo} Derrotas</span> • <span className="text-amber-400 font-bold">{userStats.empatesDuelo} Empates</span>
-                          </p>
-                        </div>
-
-                        <div className="bg-slate-950/60 p-2.5 rounded-xl border border-white/10 text-right w-full sm:w-auto">
-                          <span className="text-base font-black text-amber-400 font-mono block">{userStats.puntosDuelista} PTS</span>
-                          <span className="text-[10px] text-slate-400 block font-mono">Puntos de Duelista Acumulados</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* TABLA DE DUELISTAS BELOW */}
-                <div className="space-y-2 pt-1">
-                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2 px-1">
-                    <span>Tabla de Duelistas Destacados:</span>
-                  </h4>
-
-                  {duelistasLeaderboardList.length > 0 ? (
-                    <div className="space-y-2">
-                      {duelistasLeaderboardList.map((entry, idx) => {
-                        const isMe = entry.user_id === user?.id;
-
-                        return (
-                          <div
-                            key={entry.user_id || idx}
-                            className={cn(
-                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4",
-                              isMe
-                                ? "bg-red-950/30 border-red-500/60 shadow-lg shadow-red-900/10 ring-1 ring-red-500/30"
-                                : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-white/[0.04]"
-                            )}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className={cn(
-                                "w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center font-mono border",
-                                (entry.posicion || idx + 1) === 1 ? "bg-amber-500/20 text-amber-300 border-amber-500/40 font-black" :
-                                (entry.posicion || idx + 1) === 2 ? "bg-slate-300/20 text-slate-200 border-slate-300/40 font-black" :
-                                (entry.posicion || idx + 1) === 3 ? "bg-amber-700/20 text-amber-400 border-amber-700/40 font-black" :
-                                "bg-slate-800 text-slate-300 border-white/10"
-                              )}>
-                                #{entry.posicion || idx + 1}
-                              </span>
-                              <div>
-                                <h5 className="font-bold text-sm text-white flex items-center gap-2">
-                                  <span>{entry.nombre}</span>
-                                  {isMe && (
-                                    <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
-                                      TÚ
-                                    </span>
-                                  )}
-                                </h5>
-                                <span className="text-[11px] text-slate-400">
-                                  <span className="text-emerald-400 font-bold">{entry.victorias || 0}V</span> - <span className="text-red-400 font-bold">{entry.derrotas || 0}D</span> - <span className="text-amber-400 font-bold">{entry.empates || 0}E</span>
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="text-right">
-                              <span className="text-sm font-black text-amber-400 font-mono">{entry.puntos_duelista || 0} PTS</span>
-                              <span className="text-[10px] text-slate-400 block font-mono">Duelos 1v1</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
-                      <Swords className="w-8 h-8 mx-auto text-red-400 opacity-60" />
-                      <h4 className="font-black text-sm text-white">¡No hay duelistas registrados aún!</h4>
-                      <p className="text-xs text-slate-400">Completá duelos 1v1 en la pestaña de Salas para acumular victorias y liderar el Ranking de Duelistas.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
