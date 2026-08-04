@@ -573,23 +573,6 @@ export default function AsistenteDND() {
                 </Link>
               </Button>
             </div>
-          ) : !isAdmin ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-6 bg-slate-50/50 dark:bg-black/10">
-              <div className="h-16 w-16 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
-                <Wrench className="h-8 w-8 text-amber-500 animate-pulse" />
-              </div>
-              <div className="max-w-md space-y-2">
-                <h3 className="text-slate-800 dark:text-white font-black text-lg">Asistente IA en Mantenimiento</h3>
-                <p className="text-slate-550 dark:text-white/50 text-sm leading-relaxed font-semibold">
-                  Estamos realizando tareas de mantenimiento y actualización en el **Tutor Virtual DND** para ofrecerte respuestas más rápidas y precisas. Volverá a estar disponible para todos los estudiantes muy pronto.
-                </p>
-              </div>
-              <Button asChild size="lg" className="bg-slate-800 hover:bg-slate-700 text-white rounded-full font-bold shadow-md cursor-pointer transition-all">
-                <Link to="/">
-                  Volver al Inicio
-                </Link>
-              </Button>
-            </div>
           ) : (
             <>
               {/* Historial de Mensajes */}
