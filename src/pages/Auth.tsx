@@ -29,7 +29,29 @@ const signUpSchema = signInSchema.extend({
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
 
 // Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña
+// Detecta si la URL actual contiene un error en hash o search (por ejemplo otp_expired)
+function getUrlError(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  
+  const errorDesc = params.get("error_description") || hashParams.get("error_description");
+  const errorCode = params.get("error_code") || hashParams.get("error_code");
+  const error = params.get("error") || hashParams.get("error");
+
+  if (errorCode === "otp_expired" || (errorDesc && errorDesc.toLowerCase().includes("expired"))) {
+    return "El enlace de recuperación ha expirado o ya fue utilizado. Por favor, solicitá un nuevo enlace.";
+  }
+
+  if (error || errorCode || errorDesc) {
+    return errorDesc ? decodeURIComponent(errorDesc.replace(/\+/g, " ")) : "El enlace de recuperación es inválido o ha expirado.";
+  }
+
+  return null;
+}
+
+// Detecta si la URL actual tiene indicadores de flujo de recuperación de contraseña válido
 function isRecoveryUrl(): boolean {
+  if (getUrlError()) return false;
   const params = new URLSearchParams(window.location.search);
   return window.location.pathname === "/auth/recovery" ||
          params.get("type") === "recovery" ||
@@ -83,9 +105,11 @@ const Auth = () => {
     setCaptchaKey(prev => prev + 1);
   }, [tab]);
 
-  // "idle" | "loading" | "confirmed" | "error"
-  const [confirmState, setConfirmState] = useState<"idle" | "loading" | "confirmed" | "error">(
-    () => (getConfirmationCode() ? "loading" : "idle")
+  const [urlError, setUrlError] = useState<string | null>(() => getUrlError());
+
+  // "idle" | "loading" | "confirmed" | "error" | "expired"
+  const [confirmState, setConfirmState] = useState<"idle" | "loading" | "confirmed" | "error" | "expired">(
+    () => (getUrlError() ? "expired" : (getConfirmationCode() ? "loading" : "idle"))
   );
 
 
@@ -106,6 +130,13 @@ const Auth = () => {
 
   // Intercambia el código PKCE (o valida el hash / token) por una sesión real
   useEffect(() => {
+    const errMsg = getUrlError();
+    if (errMsg) {
+      setUrlError(errMsg);
+      setConfirmState("expired");
+      return;
+    }
+
     const info = getConfirmationCode();
     if (!info) return;
 
@@ -293,16 +324,35 @@ const Auth = () => {
       if (verifyError) {
         setSubmitting(false);
         console.error("Token verification error:", verifyError);
-        toast.error("El enlace de recuperación es inválido o ha expirado");
+        toast.error("El enlace de recuperación es inválido o ha expirado. Solicitá uno nuevo.");
+        setUrlError("El enlace de recuperación es inválido o ha expirado.");
+        setConfirmState("expired");
         return;
       }
     }
 
-    // 2. Ahora que el usuario tiene sesión activa, actualizamos su contraseña
+    // 2. Verificar que exista sesión activa
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setSubmitting(false);
+      toast.error("No hay una sesión activa de recuperación. Por favor solicitá un enlace nuevo.");
+      setUrlError("El enlace de recuperación ha expirado o ya fue utilizado.");
+      setConfirmState("expired");
+      return;
+    }
+
+    // 3. Ahora que el usuario tiene sesión activa, actualizamos su contraseña
     const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
     setSubmitting(false);
     
     if (updateError) {
+      console.error("Update password error:", updateError);
+      if (updateError.message.includes("Auth session missing") || (updateError as any).status === 403) {
+        toast.error("El enlace de recuperación expiró. Por favor solicitá un nuevo enlace.");
+        setUrlError("El enlace de recuperación ha expirado o ya fue utilizado.");
+        setConfirmState("expired");
+        return;
+      }
       toast.error(updateError.message);
       return;
     }
@@ -344,6 +394,32 @@ const Auth = () => {
             className="w-full rounded-xl font-bold text-base h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 active:scale-95"
           >
             Ingresar a la plataforma
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── PANTALLA: enlace de recuperación expirado / no válido ──────────────
+  if (confirmState === "expired") {
+    return (
+      <div className="container min-h-[70vh] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card border border-amber-500/30 rounded-3xl p-10 shadow-elegant text-center space-y-6 animate-hero-content">
+          <div className="mx-auto h-20 w-20 bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 rounded-full flex items-center justify-center">
+            <KeyRound className="h-10 w-10" strokeWidth={1.5} />
+          </div>
+          <div className="space-y-3">
+            <h1 className="font-display text-2xl font-bold text-foreground">Enlace expirado o no válido</h1>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
+              {urlError || "El enlace de recuperación ha vencido o ya fue utilizado. Por razones de seguridad, solicitá un nuevo correo."}
+            </p>
+          </div>
+          <Button
+            onClick={() => { setConfirmState("idle"); setTab("forgot"); navigate("/auth"); }}
+            size="lg"
+            className="w-full rounded-xl font-bold text-base h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 active:scale-95"
+          >
+            Solicitar nuevo enlace de recuperación
           </Button>
         </div>
       </div>
