@@ -983,14 +983,16 @@ export default function Trivia() {
         const p2Name = !isPlayer1 ? (room.player1_nombre || "Rival") : (room.player2_nombre || "Rival");
 
         if (p1Done && p2Done) {
+          let rpcSuccess = false;
           try {
-            await supabase.rpc('fn_procesar_resultado_duelo', {
+            const { error: rpcErr } = await supabase.rpc('fn_procesar_resultado_duelo', {
               p_duelo_id: activeDuelRoom.id,
               p_player1_puntos: p1Score,
               p_player1_aciertos: p1Aciertos,
               p_player2_puntos: p2Score,
               p_player2_aciertos: p2Aciertos
             });
+            if (!rpcErr) rpcSuccess = true;
           } catch {
             await supabase.from("trivia_duelos").update({
               status: "finalizado",
@@ -1007,17 +1009,20 @@ export default function Trivia() {
           if (myScore > oppScore) {
             res = "victoria";
             ptsBonus = 50;
-            updatedStats.victoriasDuelo += 1;
           } else if (oppScore > myScore) {
             res = "derrota";
             ptsBonus = 10;
-            updatedStats.derrotasDuelo += 1;
           } else {
             res = "empate";
             ptsBonus = 25;
-            updatedStats.empatesDuelo += 1;
           }
-          updatedStats.puntosDuelista += ptsBonus;
+
+          if (!rpcSuccess) {
+            if (res === "victoria") updatedStats.victoriasDuelo += 1;
+            else if (res === "derrota") updatedStats.derrotasDuelo += 1;
+            else updatedStats.empatesDuelo += 1;
+            updatedStats.puntosDuelista += ptsBonus;
+          }
 
           markDuelAsSeen(activeDuelRoom.id);
 
