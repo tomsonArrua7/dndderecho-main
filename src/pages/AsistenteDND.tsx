@@ -232,7 +232,7 @@ export default function AsistenteDND() {
       content: m.content
     }));
 
-    setMessages(prev => [...prev, userMessage, { role: "assistant", content: "" }]);
+    setMessages(prev => [...prev, userMessage]);
     setPregunta("");
     setIsLoadingResponse(true);
 
@@ -272,8 +272,7 @@ export default function AsistenteDND() {
         const decoder = new TextDecoder("utf-8");
         let accumulatedText = "";
         let buffer = "";
-
-        setIsLoadingResponse(false);
+        let isFirstToken = true;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -296,14 +295,23 @@ export default function AsistenteDND() {
                 const token = parsed.choices?.[0]?.delta?.content || "";
                 if (token) {
                   accumulatedText += token;
-                  setMessages(prev => {
-                    const newArr = [...prev];
-                    newArr[newArr.length - 1] = {
-                      role: "assistant",
-                      content: accumulatedText
-                    };
-                    return newArr;
-                  });
+                  if (isFirstToken) {
+                    isFirstToken = false;
+                    setIsLoadingResponse(false);
+                    setMessages(prev => [
+                      ...prev,
+                      { role: "assistant", content: accumulatedText }
+                    ]);
+                  } else {
+                    setMessages(prev => {
+                      const newArr = [...prev];
+                      newArr[newArr.length - 1] = {
+                        role: "assistant",
+                        content: accumulatedText
+                      };
+                      return newArr;
+                    });
+                  }
                 }
               } catch (e) {
                 // Parciales ignorados
@@ -313,28 +321,23 @@ export default function AsistenteDND() {
         }
       } else {
         const data = await res.json();
-        setMessages(prev => {
-          const newArr = [...prev];
-          newArr[newArr.length - 1] = {
-            role: "assistant",
-            content: data.respuesta
-          };
-          return newArr;
-        });
+        setIsLoadingResponse(false);
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", content: data.respuesta }
+        ]);
       }
     } catch (err: any) {
       console.error("Error al obtener respuesta del asistente:", err);
       toast.error("Ocurrió un error en la consulta.");
-      setMessages(prev => {
-        const newArr = [...prev];
-        if (newArr.length > 0 && newArr[newArr.length - 1].role === "assistant" && !newArr[newArr.length - 1].content) {
-          newArr[newArr.length - 1] = {
-            role: "assistant",
-            content: `❌ **Error de conexión:**\n\n${err.message || "Error al procesar consulta."}`
-          };
+      setIsLoadingResponse(false);
+      setMessages(prev => [
+        ...prev,
+        {
+          role: "assistant",
+          content: `❌ **Error de conexión:**\n\n${err.message || "Error al procesar consulta."}`
         }
-        return newArr;
-      });
+      ]);
     } finally {
       setIsLoadingResponse(false);
     }
@@ -495,10 +498,7 @@ export default function AsistenteDND() {
                   <option value="1" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra 1</option>
                   <option value="2" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra 2</option>
                   <option value="3" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra 3</option>
-                  <option value="A" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra A</option>
-                  <option value="B" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra B</option>
-                  <option value="C" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra C</option>
-                  <option value="Unica" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra Única</option>
+                  <option value="Única" className="text-slate-800 dark:text-white dark:bg-[#0A0E1A]">Cátedra Única</option>
                 </select>
               </div>
 
