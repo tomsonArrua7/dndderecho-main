@@ -386,7 +386,7 @@ export default function Trivia() {
         .maybeSingle();
 
       if (data && !error) {
-        setUserStats({
+        const stats = {
           totalJugadas: data.partidas_jugadas || 0,
           totalCorrectas: data.total_aciertos || 0,
           puntosTotales: data.puntos_totales || 0,
@@ -395,7 +395,22 @@ export default function Trivia() {
           derrotasDuelo: data.derrotas_duelo || 0,
           empatesDuelo: data.empates_duelo || 0,
           puntosDuelista: data.puntos_duelista || 0,
-        });
+        };
+        setUserStats(stats);
+        localStorage.setItem("dnd_trivia_user_stats", JSON.stringify(stats));
+      } else {
+        const emptyStats = {
+          totalJugadas: 0,
+          totalCorrectas: 0,
+          puntosTotales: 0,
+          mejorRacha: 0,
+          victoriasDuelo: 0,
+          derrotasDuelo: 0,
+          empatesDuelo: 0,
+          puntosDuelista: 0,
+        };
+        setUserStats(emptyStats);
+        localStorage.removeItem("dnd_trivia_user_stats");
       }
     } catch (err) {
       console.error("Error cargando estadísticas desde Supabase:", err);
