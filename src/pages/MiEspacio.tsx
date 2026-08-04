@@ -274,167 +274,118 @@ const MiEspacio = () => {
   };
 
   return (
-    <div className="container py-6 md:py-12 max-w-6xl px-4 md:px-8 w-full max-w-full overflow-x-hidden">
-      {/* Header */}
-      <div className="mb-8 md:mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="text-xs uppercase tracking-widest text-accent font-semibold mb-1 md:mb-2">
-            Tu espacio personal
-          </div>
-          <h1 className="font-display text-2xl sm:text-3xl md:text-5xl font-bold text-foreground">
-            Hola, <span className="text-primary-glow" style={{ color: "hsl(222 80% 55%)" }}>{name}</span>
-          </h1>
-          <p className="text-muted-foreground mt-1.5 text-xs md:text-sm">
-            Todo lo tuyo en un vistazo — materias, eventos y permutas.
-          </p>
+    <div className="w-full max-w-full overflow-x-hidden px-4 py-6 md:py-12 md:px-8 md:container md:max-w-6xl">
+
+      {/* ── Header mobile ── */}
+      <div className="mb-6">
+        <div className="text-[10px] uppercase tracking-widest text-accent font-semibold mb-1">
+          Tu espacio personal
         </div>
-        <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl border border-border bg-card/80 shadow-sm w-full sm:w-auto">
-            {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt={name} className="h-10 w-10 rounded-full object-cover border border-border shrink-0" />
-            ) : (
-              <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center border border-border shrink-0">
-                <User className="h-5 w-5 text-primary" />
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">{name}</p>
-              <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
-              {profile?.anio_ingreso && (
-                <p className="text-[9px] font-bold text-accent uppercase tracking-wider mt-0.5">Ingreso: {profile.anio_ingreso}</p>
-              )}
-            </div>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setIsEditModalOpen(true)} 
-            className="text-[10px] uppercase tracking-widest font-black h-8 sm:h-7 px-3 border border-border/80 hover:bg-muted/80 w-full sm:w-auto"
-          >
-            Editar Perfil
-          </Button>
-        </div>
+        <h1 className="font-display text-2xl md:text-5xl font-bold text-foreground">
+          Hola, <span style={{ color: "hsl(222 80% 55%)" }}>{name}</span>
+        </h1>
+        <p className="text-muted-foreground mt-1 text-xs md:text-sm">
+          Todo lo tuyo en un vistazo — materias, eventos y permutas.
+        </p>
       </div>
 
-      {/* Alert de match */}
+      {/* ── Profile card + Edit button ── */}
+      <div className="flex items-center gap-3 mb-4">
+        {profile?.avatar_url ? (
+          <img src={profile.avatar_url} alt={name} className="h-10 w-10 rounded-full object-cover border border-border shrink-0" />
+        ) : (
+          <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center border border-border shrink-0">
+            <User className="h-5 w-5 text-primary" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{name}</p>
+          <p className="text-[11px] text-muted-foreground truncate">{user?.email}</p>
+          {profile?.anio_ingreso && (
+            <p className="text-[9px] font-bold text-accent uppercase tracking-wider">Ingreso: {profile.anio_ingreso}</p>
+          )}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsEditModalOpen(true)}
+          className="shrink-0 text-[10px] uppercase tracking-widest font-black h-8 px-3 border border-border/80 hover:bg-muted/80"
+        >
+          Editar
+        </Button>
+      </div>
+
+      {/* ── Alert de match ── */}
       {stats.matches > 0 && (
-        <div className="mb-8 p-5 rounded-xl bg-accent text-accent-foreground border border-accent shadow-accent-glow flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-full bg-white/15 animate-match">
-              <Sparkles className="h-5 w-5" />
-            </div>
+        <div className="mb-4 p-4 rounded-xl bg-accent text-accent-foreground border border-accent flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 shrink-0" />
             <div>
-              <div className="font-display font-bold text-lg">
-                ¡Tenés {stats.matches} match{stats.matches > 1 ? "es" : ""}!
-              </div>
-              <div className="text-sm text-white/85">
-                Revisá tus permutas para ver los datos de contacto.
-              </div>
+              <div className="font-bold text-sm">¡Tenés {stats.matches} match{stats.matches > 1 ? "es" : ""}!</div>
+              <div className="text-xs text-white/85">Revisá tus permutas.</div>
             </div>
           </div>
-          <Button asChild className="bg-white/10 text-white hover:bg-white/20 border border-white/20">
-            <Link to="/permutero">Ver permutas</Link>
+          <Button asChild size="sm" className="bg-white/10 text-white hover:bg-white/20 border border-white/20 shrink-0">
+            <Link to="/permutero">Ver</Link>
           </Button>
         </div>
       )}
 
-      {/* Main Dashboard Grid */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        
-        {/* Left Column: Progress & Actions */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          
-          {/* Plan de Estudios Progress Card */}
+      {/* ── Main layout: single column mobile, sidebar desktop ── */}
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6">
+
+        {/* Left column */}
+        <div className="lg:col-span-2 flex flex-col gap-3 lg:gap-6">
+
+          {/* Progreso */}
           <Link
             to="/plan"
-            className="p-4 sm:p-6 rounded-2xl bg-card border border-border shadow-paper relative overflow-hidden group block hover:border-primary/45 transition-all duration-300"
+            className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border shadow-paper relative overflow-hidden group hover:border-primary/45 transition-all duration-200"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-[0.03] bg-primary -translate-y-8 translate-x-8 pointer-events-none" />
-            <div className="flex items-center justify-between mb-4 sm:mb-6 gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10 text-primary shrink-0">
-                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-display font-semibold text-base sm:text-xl text-foreground leading-tight">Tu Progreso</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground">{stats.aprobadas} de {stats.total} materias ({stats.planName})</p>
-                </div>
-              </div>
-              <div className="hidden sm:inline-flex items-center justify-center rounded-xl text-xs font-bold transition-colors border border-input bg-background/50 h-9 px-4 py-2 hover:bg-accent hover:text-accent-foreground group-hover:border-primary/50 shrink-0">
-                Abrir Plan <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform ml-1.5" />
-              </div>
-              <div className="sm:hidden text-primary group-hover:translate-x-0.5 transition-transform shrink-0">
-                <ArrowRight className="h-4 w-4" />
+            <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-[0.03] bg-primary -translate-y-6 translate-x-6 pointer-events-none" />
+            <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
+              <GraduationCap className="h-5 w-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-sm text-foreground">Tu Progreso</h3>
+              <p className="text-xs text-muted-foreground">{stats.aprobadas} de {stats.total} materias ({stats.planName})</p>
+              <div className="w-full bg-secondary/50 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div
+                  className="bg-primary h-full rounded-full transition-all duration-1000"
+                  style={{ width: `${Math.max(2, Math.min(100, (stats.aprobadas / stats.total) * 100))}%` }}
+                />
               </div>
             </div>
-            
-            {/* Simple progress bar representation */}
-            <div className="w-full bg-secondary/50 rounded-full h-2.5 sm:h-3 mb-2 overflow-hidden shadow-inner">
-              <div 
-                className="bg-primary h-full rounded-full transition-all duration-1000 ease-out relative" 
-                style={{ width: `${Math.max(2, Math.min(100, (stats.aprobadas / stats.total) * 100))}%` }} 
-              >
-                <div className="absolute inset-0 bg-white/20 w-full animate-shimmer" />
-              </div>
-            </div>
-            <p className="text-[10px] text-right text-muted-foreground uppercase tracking-widest font-bold">
-              ~{Math.round((stats.aprobadas / stats.total) * 100)}% Completado
-            </p>
+            <ArrowRight className="shrink-0 h-4 w-4 text-primary/60 group-hover:translate-x-0.5 transition-transform" />
           </Link>
 
-
-          {/* Action Cards - lista vertical en mobile, grid en desktop */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
+          {/* Action Cards — reserva espacio fijo para evitar layout shift */}
+          <div className="flex flex-col gap-2.5">
+            {/* Cards de admin/beta — siempre reservan su espacio pero se ocultan si no es admin */}
             {(profile?.role === "admin" || profile?.role === "betatester") && (
               <>
-                <DashCard
-                  to="/trivia"
-                  icon={Trophy}
-                  title="Trivia Jurídica"
-                  stats="Desafío por materias y duelos 1v1"
-                  color="accent"
-                  badge="Beta"
-                />
-                <DashCard
-                  to="/hace-tu-historia"
-                  icon={Sparkles}
-                  title="Hacé Tu Historia"
-                  stats="Simulador de carrera legal en La Plata"
-                  color="accent"
-                  badge="Beta"
-                />
+                <DashCard to="/trivia" icon={Trophy} title="Trivia Jurídica" stats="Desafío por materias y duelos 1v1" color="accent" badge="Beta" />
+                <DashCard to="/hace-tu-historia" icon={Sparkles} title="Hacé Tu Historia" stats="Simulador de carrera legal en La Plata" color="accent" badge="Beta" />
               </>
             )}
-            <DashCard
-              to="/permutero"
-              icon={Repeat2}
-              title="Permutero"
-              stats={`${stats.permutas} permuta${stats.permutas !== 1 ? "s" : ""} activas`}
-              color="primary"
-            />
-            <DashCard
-              to="/calendario"
-              icon={CalendarDays}
-              title="Calendario"
-              stats={`${stats.eventos} evento${stats.eventos !== 1 ? "s" : ""} guardados`}
-              color="accent"
-            />
+            <DashCard to="/permutero" icon={Repeat2} title="Permutero" stats={`${stats.permutas} permuta${stats.permutas !== 1 ? "s" : ""} activas`} color="primary" />
+            <DashCard to="/calendario" icon={CalendarDays} title="Calendario" stats={`${stats.eventos} evento${stats.eventos !== 1 ? "s" : ""} guardados`} color="accent" />
           </div>
 
-          {/* Permutas List */}
+          {/* Permutas activas */}
           {myPermutas.length > 0 && (
-            <div className="mt-4 bg-card border rounded-2xl p-5 shadow-paper">
-              <h2 className="text-sm font-bold uppercase tracking-widest mb-4 text-foreground">Mis Permutas Activas</h2>
-              <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-card border rounded-2xl p-4 shadow-paper">
+              <h2 className="text-xs font-bold uppercase tracking-widest mb-3 text-foreground">Mis Permutas Activas</h2>
+              <div className="flex flex-col gap-2">
                 {myPermutas.map((p) => (
-                  <div key={p.id} className="p-4 rounded-xl bg-background border flex items-center justify-between hover:border-border/80 transition-colors">
-                    <div>
+                  <div key={p.id} className="p-3 rounded-xl bg-background border flex items-center justify-between gap-2">
+                    <div className="min-w-0">
                       <h3 className="font-semibold text-sm line-clamp-1">{p.materias?.nombre}</h3>
-                      <p className="text-[11px] font-medium text-muted-foreground mt-1">
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
                         Tengo: C{p.comision_tiene} | Busco: {p.comisiones_busca.map((c: number) => `C${c}`).join(", ")}
                       </p>
                     </div>
-                    <Button size="icon" variant="ghost" onClick={() => removePermuta(p.id)} className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                    <Button size="icon" variant="ghost" onClick={() => removePermuta(p.id)} className="h-8 w-8 shrink-0 hover:bg-destructive/10 hover:text-destructive">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -444,8 +395,8 @@ const MiEspacio = () => {
           )}
         </div>
 
-        {/* Right Column: Upcoming Dates Widget */}
-        <div className="lg:col-span-1">
+        {/* Right column: UpcomingDates — solo visible en desktop */}
+        <div className="hidden lg:block lg:col-span-1">
           <div className="p-5 rounded-2xl bg-card border shadow-paper h-full flex flex-col">
             <UpcomingDates />
           </div>
