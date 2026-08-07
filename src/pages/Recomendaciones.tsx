@@ -35,36 +35,293 @@ export interface RecomendacionData {
 
 // Datos de Recomendaciones oficiales compartidas
 export const RECOMENDACIONES_MAP: Record<string, RecomendacionData> = {
-  // DERECHO ROMANO (10121)
-  "10121": {
-    materiaId: "10121",
-    driveViewUrl: "https://drive.google.com/file/d/1Iitm7axdGzWv7K69hkkkS34kYoKRNJdz/view?usp=drive_link",
-    drivePreviewUrl: "https://drive.google.com/file/d/1Iitm7axdGzWv7K69hkkkS34kYoKRNJdz/preview",
-    descripcion: "Recomendaciones integrales de cursada, análisis de cátedras, metodología de parciales y conceptos clave para Derecho Romano.",
+
+  // ══════════════════════════════════════════════════════
+  // INGRESANTES / PRIMER AÑO (también aparecen en año 1)
+  // ══════════════════════════════════════════════════════
+
+  // INTRODUCCIÓN AL DERECHO (10111)
+  "10111": {
+    materiaId: "10111",
+    driveViewUrl: "https://drive.google.com/file/d/1NohtHGiy1RGM9wbmpJ2ZnvJk3fzvxDjm/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1NohtHGiy1RGM9wbmpJ2ZnvJk3fzvxDjm/preview",
+    descripcion: "Orientación inicial para ingresantes, resumen de doctrinas, cátedras recomendadas y modelos de examen.",
     fechaActualizacion: "Agosto 2026"
   },
   // HISTORIA CONSTITUCIONAL (10112)
   "10112": {
     materiaId: "10112",
-    driveViewUrl: "https://drive.google.com/file/d/1n0Wyq5xtCZ2gN4VkJkMJimVngacYDNG0/view?usp=drive_link",
-    drivePreviewUrl: "https://drive.google.com/file/d/1n0Wyq5xtCZ2gN4VkJkMJimVngacYDNG0/preview",
+    driveViewUrl: "https://drive.google.com/file/d/1eQ26_hb4a-a_kf6dHFidzvXy9cwRJ1kQ/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1eQ26_hb4a-a_kf6dHFidzvXy9cwRJ1kQ/preview",
     descripcion: "Guía oficial de lectura, análisis de programas de cátedras y tips de estudio para Historia Constitucional.",
     fechaActualizacion: "Agosto 2026"
   },
   // INTRODUCCIÓN A LA SOCIOLOGÍA (10113)
   "10113": {
     materiaId: "10113",
-    driveViewUrl: "https://drive.google.com/file/d/1HFgbK8so_sDo5U1rf3p3ZSm7UxsyPAIw/view?usp=drive_link",
-    drivePreviewUrl: "https://drive.google.com/file/d/1HFgbK8so_sDo5U1rf3p3ZSm7UxsyPAIw/preview",
+    driveViewUrl: "https://drive.google.com/file/d/15qk3_g2rn-Ff5NpSoE_nc9M3Qny9VPM6/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/15qk3_g2rn-Ff5NpSoE_nc9M3Qny9VPM6/preview",
     descripcion: "Recomendaciones de lectura de autores sociológicos, evaluación de comisiones y tips para los exámenes.",
     fechaActualizacion: "Agosto 2026"
   },
-  // INTRODUCCIÓN AL DERECHO (10111)
-  "10111": {
-    materiaId: "10111",
-    driveViewUrl: "https://drive.google.com/file/d/1ZSU_A_9e5bZ2clIXJOUr1I8q6Rx62e5L/view?usp=drive_link",
-    drivePreviewUrl: "https://drive.google.com/file/d/1ZSU_A_9e5bZ2clIXJOUr1I8q6Rx62e5L/preview",
-    descripcion: "Orientación inicial para ingresantes, resumen de doctrinas, cátedras recomendadas y modelos de examen.",
+  // INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO (10616)
+  "10616": {
+    materiaId: "10616",
+    driveViewUrl: "https://drive.google.com/file/d/1XYV0I0tlZO1u-IB-aLSnMjCIwIrIIzWg/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1XYV0I0tlZO1u-IB-aLSnMjCIwIrIIzWg/preview",
+    descripcion: "Guía de estudio para Introducción al Pensamiento Científico: autores, metodología y tips de evaluación.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO ROMANO (10121)
+  "10121": {
+    materiaId: "10121",
+    driveViewUrl: "https://drive.google.com/file/d/11-_ICXUzpZcl6z4qIbeO7meFf4K5K3QV/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/11-_ICXUzpZcl6z4qIbeO7meFf4K5K3QV/preview",
+    descripcion: "Recomendaciones integrales de cursada, análisis de cátedras, metodología de parciales y conceptos clave para Derecho Romano.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO POLÍTICO (10114)
+  "10114": {
+    materiaId: "10114",
+    driveViewUrl: "https://drive.google.com/file/d/1sJm9iTlYwAoPXmi5Sx7wLmgKYefzxPpX/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1sJm9iTlYwAoPXmi5Sx7wLmgKYefzxPpX/preview",
+    descripcion: "Recomendaciones de cursada y autores esenciales para Derecho Político.",
+    fechaActualizacion: "Agosto 2026"
+  },
+
+  // ══════════════════════════════════════════════════════
+  // SEGUNDO AÑO
+  // ══════════════════════════════════════════════════════
+
+  // DERECHO PRIVADO I - CIVIL (10122)
+  "10122": {
+    materiaId: "10122",
+    driveViewUrl: "https://drive.google.com/file/d/1QXK3ZU92k0P-nnK5Wtwj1dpoXopCoxpY/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1QXK3ZU92k0P-nnK5Wtwj1dpoXopCoxpY/preview",
+    descripcion: "Recomendaciones de cursada, cátedras y metodología de exámenes para Derecho Privado I.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO PENAL I (10124)
+  "10124": {
+    materiaId: "10124",
+    driveViewUrl: "https://drive.google.com/file/d/1slxx9u6Gwe2LgNM0eA19ENIGk3i-aF_i/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1slxx9u6Gwe2LgNM0eA19ENIGk3i-aF_i/preview",
+    descripcion: "Guía de cátedras, autores y estrategias de examen para Derecho Penal I.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO CONSTITUCIONAL (10125)
+  "10125": {
+    materiaId: "10125",
+    driveViewUrl: "https://drive.google.com/file/d/1SmKzYmkQyUWsjav4V9A7nv0HCZ0tImvf/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1SmKzYmkQyUWsjav4V9A7nv0HCZ0tImvf/preview",
+    descripcion: "Recomendaciones de cursada, bibliografía esencial y análisis de cátedras para Derecho Constitucional.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHOS HUMANOS (10626)
+  "10626": {
+    materiaId: "10626",
+    driveViewUrl: "https://drive.google.com/file/d/1J5SBr4pqTC8CzMPQHbdJF_wjUl9BVbSW/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1J5SBr4pqTC8CzMPQHbdJF_wjUl9BVbSW/preview",
+    descripcion: "Guía de estudio y recomendaciones para Derechos Humanos: tratados, organismos y metodología de cursada.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // TEORÍA DEL CONFLICTO (10627)
+  "10627": {
+    materiaId: "10627",
+    driveViewUrl: "https://drive.google.com/file/d/1ik6bDGe4221LTTFI1bkKOpfRF0epEQZt/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1ik6bDGe4221LTTFI1bkKOpfRF0epEQZt/preview",
+    descripcion: "Recomendaciones de cursada y autores clave para Teoría del Conflicto.",
+    fechaActualizacion: "Agosto 2026"
+  },
+
+  // ══════════════════════════════════════════════════════
+  // TERCER AÑO
+  // ══════════════════════════════════════════════════════
+
+  // DERECHO PRIVADO IV - COMERCIAL (10132) → "Derecho Comercial I"
+  "10132": {
+    materiaId: "10132",
+    driveViewUrl: "https://drive.google.com/file/d/10ls2HeTf0bgsXeODHSttDlh_qWPnBBWR/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/10ls2HeTf0bgsXeODHSttDlh_qWPnBBWR/preview",
+    descripcion: "Recomendaciones de cátedras, bibliografía y estrategias para Derecho Privado IV / Comercial I.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO PRIVADO III - CIVIL (10133) → "Civil III"
+  "10133": {
+    materiaId: "10133",
+    driveViewUrl: "https://drive.google.com/file/d/1WYTz0HlKIz7oucRpPocgJ20FUkPR86sT/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1WYTz0HlKIz7oucRpPocgJ20FUkPR86sT/preview",
+    descripcion: "Guía de cursada, autores y tips de examen para Derecho Privado III / Civil III.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO PROCESAL I (10134)
+  "10134": {
+    materiaId: "10134",
+    driveViewUrl: "https://drive.google.com/file/d/1yzZ2GHXh5Q-r5w_oGLsbKQiYI8_8rgRh/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1yzZ2GHXh5Q-r5w_oGLsbKQiYI8_8rgRh/preview",
+    descripcion: "Recomendaciones de cursada, cátedras y metodología de parciales para Derecho Procesal I.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO PÚBLICO, PROVINCIAL Y MUNICIPAL (10136)
+  "10136": {
+    materiaId: "10136",
+    driveViewUrl: "https://drive.google.com/file/d/18ewX8dq1aUXKuCaMI4rSyv3dg-l-y-_G/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/18ewX8dq1aUXKuCaMI4rSyv3dg-l-y-_G/preview",
+    descripcion: "Guía de estudio para Derecho Público, Provincial y Municipal: constituciones provinciales y régimen municipal.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO INTERNACIONAL PÚBLICO (10138)
+  "10138": {
+    materiaId: "10138",
+    driveViewUrl: "https://drive.google.com/file/d/15DUxsD4UhJOcst8Bj3uu4qFuxnKjpd9K/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/15DUxsD4UhJOcst8Bj3uu4qFuxnKjpd9K/preview",
+    descripcion: "Recomendaciones de cátedras, tratados y organismos internacionales para Derecho Internacional Público.",
+    fechaActualizacion: "Agosto 2026"
+  },
+
+  // ══════════════════════════════════════════════════════
+  // CUARTO AÑO
+  // ══════════════════════════════════════════════════════
+
+  // DERECHO ADMINISTRATIVO I (10141)
+  "10141": {
+    materiaId: "10141",
+    driveViewUrl: "https://drive.google.com/file/d/1M9RQQpROiJeRoVFl8jp-pG1TQcBVUEvV/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1M9RQQpROiJeRoVFl8jp-pG1TQcBVUEvV/preview",
+    descripcion: "Recomendaciones de cursada, bibliografía y análisis de cátedras para Derecho Administrativo I.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO PRIVADO VI - COMERCIAL (10142) → "Comercial I" del 4to año
+  "10142": {
+    materiaId: "10142",
+    driveViewUrl: "https://drive.google.com/file/d/1Wz0I13vqkSX2-PjVmvFuCu3fYWwiF5tC/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1Wz0I13vqkSX2-PjVmvFuCu3fYWwiF5tC/preview",
+    descripcion: "Guía de cursada, cátedras y estrategias de examen para Derecho Privado VI / Comercial II.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO PRIVADO V - CIVIL (10143)
+  "10143": {
+    materiaId: "10143",
+    driveViewUrl: "https://drive.google.com/file/d/1pZQz71TdR-7-iMmzhTRB5iwauoIX-pgn/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1pZQz71TdR-7-iMmzhTRB5iwauoIX-pgn/preview",
+    descripcion: "Recomendaciones de cursada y autores clave para Derecho Privado V / Civil.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO SOCIAL DEL TRABAJO (10640)
+  "10640": {
+    materiaId: "10640",
+    driveViewUrl: "https://drive.google.com/file/d/12NU2UkWTHeCeAmb9mXEgAPovmu3sq3Yu/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/12NU2UkWTHeCeAmb9mXEgAPovmu3sq3Yu/preview",
+    descripcion: "Recomendaciones de cátedras, legislación laboral y metodología de parciales para Derecho Social del Trabajo.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // MEDIACIÓN Y MEDIOS DE RESOLUCIÓN DE CONFLICTOS (10649)
+  "10649": {
+    materiaId: "10649",
+    driveViewUrl: "https://drive.google.com/file/d/1thirnlOl60hlzYGHWwueZbxiUTOJ0YqF/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1thirnlOl60hlzYGHWwueZbxiUTOJ0YqF/preview",
+    descripcion: "Guía de cursada, autores y técnicas de mediación para la materia Mediación y Medios de Resolución de Conflictos.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO AGRARIO (10146)
+  "10146": {
+    materiaId: "10146",
+    driveViewUrl: "https://drive.google.com/file/d/1oApX9E7pyCuNglqWKbtjfE70sy3zGSD9/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1oApX9E7pyCuNglqWKbtjfE70sy3zGSD9/preview",
+    descripcion: "Recomendaciones de cátedras y régimen legal del suelo agrario para Derecho Agrario.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // FILOSOFÍA DEL DERECHO (10147)
+  "10147": {
+    materiaId: "10147",
+    driveViewUrl: "https://drive.google.com/file/d/124WQMEBz8luJB3aJj47Qd0ep6404ZSIo/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/124WQMEBz8luJB3aJj47Qd0ep6404ZSIo/preview",
+    descripcion: "Guía de autores, corrientes filosóficas y estrategia de cursada para Filosofía del Derecho.",
+    fechaActualizacion: "Agosto 2026"
+  },
+
+  // ══════════════════════════════════════════════════════
+  // QUINTO AÑO
+  // ══════════════════════════════════════════════════════
+
+  // DERECHO ADMINISTRATIVO II (10151)
+  "10151": {
+    materiaId: "10151",
+    driveViewUrl: "https://drive.google.com/file/d/1m5BSOFKRtfAn-RaKCQt9-jp1GiatCzPk/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1m5BSOFKRtfAn-RaKCQt9-jp1GiatCzPk/preview",
+    descripcion: "Recomendaciones de cátedras, control de legalidad y contencioso-administrativo para Derecho Administrativo II.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO DE FAMILIA (10653)
+  "10653": {
+    materiaId: "10653",
+    driveViewUrl: "https://drive.google.com/file/d/18HOe_4lxfRZkVWchgGa43qpeBQGn22FG/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/18HOe_4lxfRZkVWchgGa43qpeBQGn22FG/preview",
+    descripcion: "Guía de cursada, autores y legislación actualizada para Derecho de Familia.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO DE LA NAVEGACIÓN (10152)
+  "10152": {
+    materiaId: "10152",
+    driveViewUrl: "https://drive.google.com/file/d/1kTXpj_7eF-2PtexG_R5HaNLSDkk8MiwX/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1kTXpj_7eF-2PtexG_R5HaNLSDkk8MiwX/preview",
+    descripcion: "Recomendaciones de cursada, régimen de navegación y estrategia de exámenes para Derecho de la Navegación.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO COLECTIVO DEL TRABAJO Y SEG. SOCIAL (10650)
+  "10650": {
+    materiaId: "10650",
+    driveViewUrl: "https://drive.google.com/file/d/1NLH62wu3d7QiD3AdNMeSv55iE4eN1YUC/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1NLH62wu3d7QiD3AdNMeSv55iE4eN1YUC/preview",
+    descripcion: "Guía de cursada y legislación laboral colectiva para Derecho Colectivo del Trabajo y Seguridad Social.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO DE MINERÍA Y ENERGÍA (10154)
+  "10154": {
+    materiaId: "10154",
+    driveViewUrl: "https://drive.google.com/file/d/1xgHB45CFVoAVcB8I3XcItX1TQ4__-_M8/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1xgHB45CFVoAVcB8I3XcItX1TQ4__-_M8/preview",
+    descripcion: "Recomendaciones de cátedras y régimen minero-energético para Derecho de Minería y Energía.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // SOCIOLOGÍA JURÍDICA (10155)
+  "10155": {
+    materiaId: "10155",
+    driveViewUrl: "https://drive.google.com/file/d/1YGwuAxEBIdeLft4jcHDKMbcfQurO8g2e/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1YGwuAxEBIdeLft4jcHDKMbcfQurO8g2e/preview",
+    descripcion: "Guía de autores, corrientes sociológicas y estrategia de cursada para Sociología Jurídica.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO INTERNACIONAL PRIVADO (10156)
+  "10156": {
+    materiaId: "10156",
+    driveViewUrl: "https://drive.google.com/file/d/1SP4bkn2Y2rSYkm1U2ZPxjo3HMFZObWdK/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1SP4bkn2Y2rSYkm1U2ZPxjo3HMFZObWdK/preview",
+    descripcion: "Recomendaciones de cursada, conflictos de leyes y metodología para Derecho Internacional Privado.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO NOTARIAL Y REGISTRAL (10157)
+  "10157": {
+    materiaId: "10157",
+    driveViewUrl: "https://drive.google.com/file/d/1csYd1svJi5EE8JRTLDL0mkiVFRajiJqF/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1csYd1svJi5EE8JRTLDL0mkiVFRajiJqF/preview",
+    descripcion: "Guía de cursada, función notarial y registros para Derecho Notarial y Registral.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // FINANZAS Y DERECHO FINANCIERO (10158)
+  "10158": {
+    materiaId: "10158",
+    driveViewUrl: "https://drive.google.com/file/d/1D_pr4VgwzKT_HmzqlVF8y-DZGqGCggLU/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1D_pr4VgwzKT_HmzqlVF8y-DZGqGCggLU/preview",
+    descripcion: "Recomendaciones de cursada, presupuesto y tributación para Finanzas y Derecho Financiero.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // DERECHO DE LAS SUCESIONES (10659)
+  "10659": {
+    materiaId: "10659",
+    driveViewUrl: "https://drive.google.com/file/d/16NFp7qwk-es7SuyMwBpLzqKrhhDUUxBs/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/16NFp7qwk-es7SuyMwBpLzqKrhhDUUxBs/preview",
+    descripcion: "Guía de cursada y autores para Derecho de las Sucesiones: testamentos, intestada y proceso sucesorio.",
     fechaActualizacion: "Agosto 2026"
   }
 };
@@ -119,13 +376,13 @@ export default function Recomendaciones() {
         materia.id.includes(queryLower);
 
       if (matchesSearch) {
-        // Las recomendaciones con PDF son EXCLUSIVAMENTE para INGRESANTES (-1).
-        // En los años 1 a 5, las materias se muestran en preparación ("Próximamente").
+        // Las materias de 1º año se muestran tanto en INGRESANTES como en 1º Año.
+        // Todos los años muestran su rec si existe en RECOMENDACIONES_MAP.
         if (materia.anio === 1) {
           agrupadas[-1].push({ materia, rec });
-          agrupadas[1].push({ materia, rec: undefined });
+          agrupadas[1].push({ materia, rec });
         } else {
-          agrupadas[materia.anio].push({ materia, rec: undefined });
+          agrupadas[materia.anio].push({ materia, rec });
         }
       }
     });
