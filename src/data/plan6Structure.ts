@@ -118,7 +118,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     anio: 2, duracion: "cuatrimestral", horas: 96, tipo: "regular",
     requisitos: [
       { id: "10122", tipo: "aprobada" },
-      { id: "10125", tipo: "aprobada" }
+      { id: "10112", tipo: "aprobada" }
     ],
   },
   {

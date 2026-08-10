@@ -178,6 +178,22 @@ export const RECOMENDACIONES_MAP: Record<string, RecomendacionData> = {
     descripcion: "Recomendaciones de cátedras, tratados y organismos internacionales para Derecho Internacional Público.",
     fechaActualizacion: "Agosto 2026"
   },
+  // DERECHO PENAL II (10135)
+  "10135": {
+    materiaId: "10135",
+    driveViewUrl: "https://drive.google.com/file/d/15q1eJg8KuODdMvdz6Z5KOy2FAkLieNWh/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/15q1eJg8KuODdMvdz6Z5KOy2FAkLieNWh/preview",
+    descripcion: "Recomendaciones de cursada, parte especial del Código Penal y estrategia de exámenes para Derecho Penal II.",
+    fechaActualizacion: "Agosto 2026"
+  },
+  // ECONOMÍA POLÍTICA (10115)
+  "10115": {
+    materiaId: "10115",
+    driveViewUrl: "https://drive.google.com/file/d/1BmK7vuCAUoQPv3FMYQdpKqpS4HDh88Ru/view?usp=drive_link",
+    drivePreviewUrl: "https://drive.google.com/file/d/1BmK7vuCAUoQPv3FMYQdpKqpS4HDh88Ru/preview",
+    descripcion: "Guía de autores, corrientes económicas y metodología de cursada para Economía Política.",
+    fechaActualizacion: "Agosto 2026"
+  },
 
   // ══════════════════════════════════════════════════════
   // CUARTO AÑO
