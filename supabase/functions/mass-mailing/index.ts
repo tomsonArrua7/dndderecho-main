@@ -101,40 +101,47 @@ serve(async (req) => {
     }
 
     let sentCount = 0;
-    const errors: Array<{ email: string; error: string }> = [];
+    const errors: Array<{ batch: number; error: string }> = [];
 
-    // Enviamos individualmente para proteger la privacidad, evitar bloqueos por spam
-    // y asegurar que una sola dirección inválida no arruine todo el lote.
-    for (const email of emails) {
+    const htmlTemplate = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${subject}</title></head><body style="margin:0;padding:0;background-color:#0d1b2a;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0d1b2a;padding:40px 20px;"><tr><td align="center"><table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;"><tr><td align="center" style="padding-bottom:24px;"><img src="https://dndjursoc.com.ar/dnd-logo.png" width="140" alt="DND Derecho UNLP" style="display:block;max-width:140px;height:auto;"></td></tr><tr><td style="background-color:#111827;border-radius:16px;border:1px solid #1e293b;overflow:hidden;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:linear-gradient(135deg,#be123c 0%,#9f1239 100%);padding:24px 32px;text-align:center;"><p style="margin:0 0 4px 0;color:#fecdd3;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:3px;">Plataforma Estudiantil</p><h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:800;">DND DERECHO UNLP</h1></td></tr></table><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:36px 32px;color:#94a3b8;font-size:14px;line-height:1.7;">${body.replace(/\n/g, "<br>")}</td></tr></table><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#0f172a;padding:16px 32px;border-top:1px solid #1e293b;text-align:center;"><p style="margin:0;color:#475569;font-size:11px;">Agrupación Estudiantil <strong>Defendamos Nuestro Derecho</strong></p><p style="margin:6px 0 0 0;color:#334155;font-size:10px;">Este correo fue enviado a todos los miembros registrados.</p></td></tr></table></td></tr></table></td></tr></table></body></html>`;
+
+    // Enviar en lotes (batch API) de 100 emails para acelerar de 8 minutos a 4 segundos
+    // y evitar que la Edge Function sea terminada por timeout (60s).
+    const BATCH_SIZE = 100;
+    for (let i = 0; i < emails.length; i += BATCH_SIZE) {
+      const chunk = emails.slice(i, i + BATCH_SIZE);
+      const batchPayload = chunk.map(email => ({
+        from: "DND Derecho UNLP <contacto@dndjursoc.com.ar>",
+        to: email,
+        subject: subject,
+        html: htmlTemplate,
+      }));
+
       try {
-        const res = await fetch("https://api.resend.com/emails", {
+        const res = await fetch("https://api.resend.com/emails/batch", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${resendApiKey}`,
           },
-          body: JSON.stringify({
-            from: "DND Derecho UNLP <contacto@dndjursoc.com.ar>",
-            to: email,
-            subject: subject,
-            html: `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${subject}</title></head><body style="margin:0;padding:0;background-color:#0d1b2a;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0d1b2a;padding:40px 20px;"><tr><td align="center"><table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;"><tr><td align="center" style="padding-bottom:24px;"><img src="https://dndjursoc.com.ar/dnd-logo.png" width="140" alt="DND Derecho UNLP" style="display:block;max-width:140px;height:auto;"></td></tr><tr><td style="background-color:#111827;border-radius:16px;border:1px solid #1e293b;overflow:hidden;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:linear-gradient(135deg,#be123c 0%,#9f1239 100%);padding:24px 32px;text-align:center;"><p style="margin:0 0 4px 0;color:#fecdd3;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:3px;">Plataforma Estudiantil</p><h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:800;">DND DERECHO UNLP</h1></td></tr></table><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:36px 32px;color:#94a3b8;font-size:14px;line-height:1.7;">${body.replace(/\n/g, "<br>")}</td></tr></table><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:#0f172a;padding:16px 32px;border-top:1px solid #1e293b;text-align:center;"><p style="margin:0;color:#475569;font-size:11px;">Agrupación Estudiantil <strong>Defendamos Nuestro Derecho</strong></p><p style="margin:6px 0 0 0;color:#334155;font-size:10px;">Este correo fue enviado a todos los miembros registrados.</p></td></tr></table></td></tr></table></td></tr></table></body></html>`,
-          }),
+          body: JSON.stringify(batchPayload),
         });
 
         if (res.ok) {
-          sentCount++;
+          sentCount += chunk.length;
+          console.log(`Lote ${Math.floor(i / BATCH_SIZE) + 1} enviado con éxito (${chunk.length} mails, acumulado: ${sentCount}/${emails.length})`);
         } else {
           const errorText = await res.text();
-          console.error(`Error de Resend para ${email}:`, errorText);
-          errors.push({ email, error: errorText });
+          console.error(`Error de Resend en lote ${Math.floor(i / BATCH_SIZE) + 1}:`, errorText);
+          errors.push({ batch: Math.floor(i / BATCH_SIZE) + 1, error: errorText });
         }
       } catch (err: any) {
-        console.error(`Excepción al enviar a ${email}:`, err.message);
-        errors.push({ email, error: err.message });
+        console.error(`Excepción en lote ${Math.floor(i / BATCH_SIZE) + 1}:`, err.message);
+        errors.push({ batch: Math.floor(i / BATCH_SIZE) + 1, error: err.message });
       }
 
-      // Delay de 100ms para respetar el límite de la API de Resend (10 emails/seg)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Pausa de 150ms entre lotes de 100
+      await new Promise(resolve => setTimeout(resolve, 150));
     }
 
     console.log(`Envío masivo completado. Éxitos: ${sentCount}/${emails.length}`);
@@ -152,7 +159,7 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error crítico en la función mass-mailing:", error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

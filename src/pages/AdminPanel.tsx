@@ -330,7 +330,8 @@ export default function AdminPanel() {
       toast.error("Completá asunto y cuerpo.");
       return;
     }
-    if (!confirm(`¿Enviar mail a TODOS (${profiles.length})?`)) return;
+    const countToMail = totalUsersCount || profiles.length;
+    if (!confirm(`¿Enviar mail masivo a los ${countToMail} usuarios registrados?`)) return;
 
     setSendingMail(true);
     try {
@@ -338,7 +339,9 @@ export default function AdminPanel() {
         body: { subject: mailSubject, body: mailBody },
       });
       if (error) throw error;
-      toast.success(`Mail enviado con éxito.`);
+      const sentCount = data?.sent || 0;
+      const totalCount = data?.total || countToMail;
+      toast.success(`Mail masivo enviado con éxito a ${sentCount} de ${totalCount} usuarios.`);
       setMailSubject(""); setMailBody("");
     } catch (err: any) {
       toast.error("Error: " + (err.message || "Error desconocido"));
