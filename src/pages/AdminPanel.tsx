@@ -38,10 +38,12 @@ export default function AdminPanel() {
   const [searchMateria, setSearchMateria] = useState("");
   const [searchUser, setSearchUser] = useState("");
   
-  // Mailing States
   const [mailSubject, setMailSubject] = useState("");
   const [mailBody, setMailBody] = useState("");
   const [sendingMail, setSendingMail] = useState(false);
+
+  // Permutas Counter State
+  const [customPermutasCount, setCustomPermutasCount] = useState<string>("");
 
   // User Filter & Sort States
   const [searchUserProfile, setSearchUserProfile] = useState("");
@@ -171,6 +173,7 @@ export default function AdminPanel() {
       setPermutas(perms || []);
       setProfiles(allProfiles);
       setAppSettings(settings || { id: 1, permutero_activo: true, modo_mantenimiento: false });
+      setCustomPermutasCount(String((settings as any)?.personas_permutadas_count || 0));
       setTotalPartidasCount(partidasCount || 0);
       setTotalDuelosCount(duelosCount || 0);
       fetchTriviaIAPreguntas();
@@ -179,6 +182,32 @@ export default function AdminPanel() {
       toast.error("Error al cargar datos del panel.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updatePermutasCount = async () => {
+    const val = parseInt(customPermutasCount, 10);
+    if (isNaN(val) || val < 0) {
+      toast.error("Ingresá un número válido mayor o igual a 0.");
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("app_settings")
+        .update({ personas_permutadas_count: val } as any)
+        .eq("id", 1);
+
+      if (error) throw error;
+
+      setAppSettings((prev: any) => prev ? { ...prev, personas_permutadas_count: val } : prev);
+      toast.success(`Contador histórico de permutas actualizado a ${val} personas.`);
+    } catch (err: any) {
+      console.error("Error al actualizar contador de permutas:", err);
+      toast.error("Error al actualizar contador: " + (err.message || "Error desconocido"));
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -588,19 +617,43 @@ export default function AdminPanel() {
             <div className="space-y-1">
               <h2 className="text-lg font-bold text-foreground">Gestión de Permutas</h2>
               <p className="text-muted-foreground text-xs">
-                Administrá las permutas activas o vaciá el permutero. Al borrar permutas, el contador histórico de personas permutadas se conserva.
+                Administrá las permutas activas o ajustá manualmente el contador de personas que lograron permutar.
               </p>
             </div>
 
-            <Button
-              variant="destructive"
-              onClick={deleteAllPermutas}
-              disabled={updating || permutas.length === 0}
-              className="rounded-xl text-xs font-bold px-4 h-10 flex items-center gap-2 shadow-sm transition-all active:scale-95"
-            >
-              <Trash2 size={16} />
-              Borrar todas las permutas ({permutas.length})
-            </Button>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2 bg-muted/40 p-1.5 rounded-xl border">
+                <span className="text-xs font-semibold px-2 text-muted-foreground whitespace-nowrap">
+                  🎉 Contador histórico:
+                </span>
+                <Input
+                  type="number"
+                  min={0}
+                  className="w-24 h-8 text-xs font-bold bg-background text-center rounded-lg border-muted"
+                  value={customPermutasCount}
+                  onChange={e => setCustomPermutasCount(e.target.value)}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={updatePermutasCount}
+                  disabled={updating}
+                  className="h-8 text-xs font-bold rounded-lg px-3"
+                >
+                  Guardar
+                </Button>
+              </div>
+
+              <Button
+                variant="destructive"
+                onClick={deleteAllPermutas}
+                disabled={updating || permutas.length === 0}
+                className="rounded-xl text-xs font-bold px-4 h-10 flex items-center gap-2 shadow-sm transition-all active:scale-95"
+              >
+                <Trash2 size={16} />
+                Borrar todas las permutas ({permutas.length})
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-4 items-center justify-between bg-muted/30 p-4 rounded-2xl border">
