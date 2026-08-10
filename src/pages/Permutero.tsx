@@ -183,10 +183,40 @@ const Permutero = () => {
   };
 
   const markAsDone = async (id: string) => {
-    await supabase.from("permutas").update({ status: 'realizada' }).eq("id", id);
-    setPermutas((p) => p.filter((x) => x.id !== id));
-    setCompletedCount((prev) => prev + 1);
-    toast.success("¡Permuta marcada como realizada!");
+    // Buscar si la permuta tiene una coincidencia (match) con otra permuta
+    const relatedMatch = matches.find((m) => m.permuta_a === id || m.permuta_b === id);
+    const targetIds = [id];
+    if (relatedMatch) {
+      if (relatedMatch.permuta_a && !targetIds.includes(relatedMatch.permuta_a)) targetIds.push(relatedMatch.permuta_a);
+      if (relatedMatch.permuta_b && !targetIds.includes(relatedMatch.permuta_b)) targetIds.push(relatedMatch.permuta_b);
+    }
+
+    // Marcar ambas permutas como realizada
+    const { error } = await supabase.from("permutas").update({ status: 'realizada' }).in("id", targetIds);
+    if (error) {
+      toast.error("Error al marcar como realizada: " + error.message);
+      return;
+    }
+
+    // Incrementar en 2 personas el contador histórico persistente
+    try {
+      await supabase.rpc("increment_personas_permutadas", { inc_val: 2 });
+    } catch (err) {
+      console.warn("RPC increment_personas_permutadas falló, intentando actualización directa:", err);
+      try {
+        const { data: currentSet } = await supabase.from("app_settings").select("personas_permutadas_count").eq("id", 1).maybeSingle();
+        const currentCount = (currentSet?.personas_permutadas_count || 0) + 2;
+        await supabase.from("app_settings").update({ personas_permutadas_count: currentCount } as any).eq("id", 1);
+      } catch (e) {
+        console.error("Error en fallback de contador:", e);
+      }
+    }
+
+    setPermutas((p) => p.filter((x) => !targetIds.includes(x.id)));
+    setCompletedCount((prev) => prev + 2);
+    toast.success("¡Permuta concretada con éxito! 🎉", {
+      description: "Ambas partes fueron marcadas como realizadas y se sumaron 2 personas al contador."
+    });
   };
 
   const filtered = useMemo(() => {

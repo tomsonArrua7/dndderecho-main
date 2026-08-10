@@ -9,8 +9,14 @@ export const HeroActions = () => {
   const [realizadasCount, setRealizadasCount] = useState(0);
 
   useEffect(() => {
-    supabase.from("permutas").select("*", { count: "exact", head: true }).eq("status", "realizada").then(({ count }) => {
-      if (count !== null) setRealizadasCount(count);
+    supabase.rpc("get_completed_permutas_count" as any).then(({ data, error }) => {
+      if (data !== null && data !== undefined) {
+        setRealizadasCount(Number(data));
+      } else {
+        supabase.from("app_settings").select("personas_permutadas_count").eq("id", 1).maybeSingle().then(({ data: setts }) => {
+          setRealizadasCount(setts?.personas_permutadas_count || 0);
+        });
+      }
     });
   }, []);
 

@@ -222,6 +222,43 @@ export default function AdminPanel() {
     setUpdating(false);
   };
 
+  const deleteAllPermutas = async () => {
+    if (!confirm("⚠️ ¿Estás seguro de que querés borrar TODAS las permutas de la plataforma?\n\nEsta acción eliminará todas las permutas publicadas, pero NO borrará el contador histórico de personas que lograron permutar.")) return;
+
+    setUpdating(true);
+    try {
+      // 1. Obtener la cantidad de permutas realizadas actualmente para acumularlas en app_settings
+      const { data: realizedPermutas } = await supabase
+        .from("permutas")
+        .select("id")
+        .eq("status", "realizada");
+
+      const realizedCount = (realizedPermutas?.length || 0);
+
+      if (realizedCount > 0) {
+        try {
+          await supabase.rpc("increment_personas_permutadas", { inc_val: realizedCount });
+        } catch (e) {
+          const currentCount = (appSettings?.personas_permutadas_count || 0) + realizedCount;
+          await supabase.from("app_settings").update({ personas_permutadas_count: currentCount } as any).eq("id", 1);
+        }
+      }
+
+      // 2. Eliminar todas las filas de matches y permutas
+      await supabase.from("matches").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      const { error } = await supabase.from("permutas").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      if (error) throw error;
+
+      setPermutas([]);
+      toast.success("Todas las permutas fueron eliminadas. El contador de personas que lograron permutar se conservó intacto.");
+    } catch (err: any) {
+      console.error("Error al borrar todas las permutas:", err);
+      toast.error("Error al borrar permutas: " + (err.message || "Error desconocido"));
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const deleteCorreccion = async (id: string) => {
     if (!confirm("¿Eliminar esta regla de corrección del asistente?")) return;
     setUpdating(true);
@@ -547,6 +584,25 @@ export default function AdminPanel() {
 
         {/* --- TAB: PERMUTAS --- */}
         <TabsContent value="permutas" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex flex-wrap gap-4 items-center justify-between bg-card p-6 rounded-2xl border shadow-sm">
+            <div className="space-y-1">
+              <h2 className="text-lg font-bold text-foreground">Gestión de Permutas</h2>
+              <p className="text-muted-foreground text-xs">
+                Administrá las permutas activas o vaciá el permutero. Al borrar permutas, el contador histórico de personas permutadas se conserva.
+              </p>
+            </div>
+
+            <Button
+              variant="destructive"
+              onClick={deleteAllPermutas}
+              disabled={updating || permutas.length === 0}
+              className="rounded-xl text-xs font-bold px-4 h-10 flex items-center gap-2 shadow-sm transition-all active:scale-95"
+            >
+              <Trash2 size={16} />
+              Borrar todas las permutas ({permutas.length})
+            </Button>
+          </div>
+
           <div className="flex flex-wrap gap-4 items-center justify-between bg-muted/30 p-4 rounded-2xl border">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
