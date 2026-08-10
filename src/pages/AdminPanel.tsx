@@ -194,12 +194,17 @@ export default function AdminPanel() {
 
     setUpdating(true);
     try {
-      const { error } = await supabase
-        .from("app_settings")
-        .update({ personas_permutadas_count: val } as any)
-        .eq("id", 1);
+      // 1. Intentar actualizar mediante RPC (bypass cache de PostgREST)
+      const { error: rpcErr } = await supabase.rpc("update_personas_permutadas_count" as any, { new_val: val });
+      if (rpcErr) {
+        console.warn("RPC update_personas_permutadas_count falló, intentando actualización directa:", rpcErr);
+        const { error: directErr } = await supabase
+          .from("app_settings")
+          .update({ personas_permutadas_count: val } as any)
+          .eq("id", 1);
 
-      if (error) throw error;
+        if (directErr) throw directErr;
+      }
 
       setAppSettings((prev: any) => prev ? { ...prev, personas_permutadas_count: val } : prev);
       toast.success(`Contador histórico de permutas actualizado a ${val} personas.`);
