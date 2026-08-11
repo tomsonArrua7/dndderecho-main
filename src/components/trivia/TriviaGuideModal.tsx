@@ -176,11 +176,11 @@ export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onCl
                   <h3 className="font-black text-xs sm:text-sm text-white flex flex-wrap items-center gap-2">
                     <span>🚀 Gran Inicio de Temporada Competitiva</span>
                     <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-mono">
-                      23 de Agosto 20:00 hs
+                      Jueves 13 de Agosto 19:00 hs
                     </span>
                   </h3>
                   <p className="text-slate-200 text-[11px] sm:text-xs leading-relaxed">
-                    El ranking oficial entra en vigencia a partir del **23 de Agosto a las 20:00 hs**, dando inicio al primer ciclo de competencias de la facultad.
+                    El ranking oficial entra en vigencia a partir del **Jueves 13 de Agosto a las 19:00 hs**, dando inicio al primer ciclo de competencias de la facultad.
                   </p>
                 </div>
 

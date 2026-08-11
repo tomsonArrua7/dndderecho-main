@@ -93,6 +93,65 @@ const ICON_MAP: Record<string, any> = {
   Zap
 };
 
+const SEASON_START_TIMESTAMP = new Date("2026-08-13T19:00:00-03:00").getTime();
+
+function getLiveSeasonInfo() {
+  const now = Date.now();
+  if (now < SEASON_START_TIMESTAMP) {
+    const diff = Math.max(0, SEASON_START_TIMESTAMP - now);
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / 1000 / 60) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    const timeStr = d > 0 ? `${d}d ${h}h ${m}m ${s}s` : `${h}h ${m}m ${s}s`;
+    return {
+      isStarted: false,
+      bannerTitle: "🚀 Próximo Inicio de Temporada Competitiva",
+      badgeText: "Jueves 13 de Agosto 19:00 hs",
+      countdownText: `Comienza en: ${timeStr}`,
+      weeklyCountdown: `Comienza en: ${timeStr}`,
+      monthlyCountdown: `Comienza en: ${timeStr}`
+    };
+  } else {
+    const nowObj = new Date();
+    const nextThursday = new Date(nowObj);
+    let daysToAdd = (4 - nowObj.getDay() + 7) % 7;
+    if (daysToAdd === 0 && (nowObj.getHours() > 19 || (nowObj.getHours() === 19 && nowObj.getMinutes() > 0))) {
+      daysToAdd = 7;
+    }
+    nextThursday.setDate(nextThursday.getDate() + daysToAdd);
+    nextThursday.setHours(19, 0, 0, 0);
+
+    const diffW = Math.max(0, nextThursday.getTime() - now);
+    const wd = Math.floor(diffW / (1000 * 60 * 60 * 24));
+    const wh = Math.floor((diffW / (1000 * 60 * 60)) % 24);
+    const wm = Math.floor((diffW / 1000 / 60) % 60);
+    const ws = Math.floor((diffW / 1000) % 60);
+
+    const nextMonth13 = new Date(nowObj);
+    if (nowObj.getDate() > 13 || (nowObj.getDate() === 13 && nowObj.getHours() >= 19)) {
+      nextMonth13.setMonth(nextMonth13.getMonth() + 1);
+    }
+    nextMonth13.setDate(13);
+    nextMonth13.setHours(19, 0, 0, 0);
+
+    const diffM = Math.max(0, nextMonth13.getTime() - now);
+    const md = Math.floor(diffM / (1000 * 60 * 60 * 24));
+    const mh = Math.floor((diffM / (1000 * 60 * 60)) % 24);
+    const mm = Math.floor((diffM / 1000 / 60) % 60);
+    const ms = Math.floor((diffM / 1000) % 60);
+
+    return {
+      isStarted: true,
+      bannerTitle: "🔥 Temporada Competitiva Oficial en Curso",
+      badgeText: "TEMPORADA ACTIVA",
+      countdownText: `Reset 1v1 en: ${wd}d ${wh}h ${wm}m ${ws}s`,
+      weeklyCountdown: `Reset Semanal 1v1 en: ${wd}d ${wh}h ${wm}m ${ws}s`,
+      monthlyCountdown: `Reset Mensual General en: ${md}d ${mh}h ${mm}m ${ms}s`
+    };
+  }
+}
+
 // Función para desordenar aleatoriamente las 4 opciones de cada pregunta de forma segura
 const prepareQuestionPool = (questions: TriviaQuestion[]): TriviaQuestion[] => {
   if (!Array.isArray(questions)) return [];
@@ -248,6 +307,16 @@ export default function Trivia() {
   // Estado y auto-apertura del Tutorial / Guía de juego en la primera visita
   const [showGuideModal, setShowGuideModal] = useState(false);
 
+  // Contador en tiempo real constante para la Temporada Competitiva (Inicio: Jueves 13 de Agosto 19:00 hs)
+  const [seasonInfo, setSeasonInfo] = useState(() => getLiveSeasonInfo());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSeasonInfo(getLiveSeasonInfo());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   useEffect(() => {
     try {
       const guideSeen = localStorage.getItem("dnd_trivia_guide_seen");
@@ -331,9 +400,40 @@ export default function Trivia() {
   const generarParcialFlashIA = async () => {
     try {
       setLoadingParcialFlash(true);
+      
+      // 1. Filtrar si tenemos preguntas en el banco masivo de 1.506 preguntas
+      const searchNorm = materiaParcialFlash.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const matching = allQuestionsCombined.filter(q => {
+        const catNorm = (q.categoria_nombre || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return catNorm.includes(searchNorm) || searchNorm.includes(catNorm);
+      });
+
+      if (matching.length >= 5) {
+        const shuffled = [...matching].sort(() => 0.5 - Math.random()).slice(0, 5);
+        const pool = prepareQuestionPool(shuffled);
+        setQuestionsPool(pool);
+        setCurrentIndex(0);
+        setScore(0);
+        setStreak(0);
+        setCorrectAnswersCount(0);
+        setSelectedOption(null);
+        setIsAnswered(false);
+        setGameOver(false);
+        setInGame(true);
+        setTimeLeft(25);
+        setIsParcialFlashModalOpen(false);
+        setLoadingParcialFlash(false);
+        toast.success(`⚡ ¡Parcial Flash de ${materiaParcialFlash} listo!`);
+        return;
+      }
+
+      // 2. Si es una materia personalizada fuera del banco, invocar IA con timeout corto
       const { data: { session } } = await supabase.auth.getSession();
       const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || "https://api.dndjursoc.com.ar").replace(/\/$/, "");
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
 
       const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
         method: "POST",
@@ -345,10 +445,13 @@ export default function Trivia() {
         body: JSON.stringify({
           accion: "generar_parcial_flash",
           materia: materiaParcialFlash
-        })
-      });
+        }),
+        signal: controller.signal
+      }).catch(() => null);
 
-      if (res.ok) {
+      clearTimeout(timeoutId);
+
+      if (res && res.ok) {
         const data = await res.json();
         if (data.preguntas && data.preguntas.length > 0) {
           const pool = prepareQuestionPool(data.preguntas);
@@ -363,15 +466,29 @@ export default function Trivia() {
           setInGame(true);
           setTimeLeft(25);
           setIsParcialFlashModalOpen(false);
-          toast.success("¡Parcial Flash de 5 preguntas generado por la IA!");
-        } else {
-          toast.error("No se pudieron generar las preguntas del examen.");
+          toast.success("⚡ ¡Parcial Flash generado con IA!");
+          return;
         }
-      } else {
-        toast.error("Error al comunicarse con la IA.");
       }
+
+      // 3. Fallback ultrarrápido usando selección aleatoria del banco completo
+      const randomPool = [...allQuestionsCombined].sort(() => 0.5 - Math.random()).slice(0, 5);
+      const pool = prepareQuestionPool(randomPool);
+      setQuestionsPool(pool);
+      setCurrentIndex(0);
+      setScore(0);
+      setStreak(0);
+      setCorrectAnswersCount(0);
+      setSelectedOption(null);
+      setIsAnswered(false);
+      setGameOver(false);
+      setInGame(true);
+      setTimeLeft(25);
+      setIsParcialFlashModalOpen(false);
+      toast.success(`⚡ ¡Parcial Flash de ${materiaParcialFlash} generado!`);
+
     } catch (e) {
-      toast.error("Error de red.");
+      toast.error("Error al generar Parcial Flash.");
     } finally {
       setLoadingParcialFlash(false);
     }
@@ -2181,8 +2298,11 @@ export default function Trivia() {
                   <span className="text-[9px] font-black uppercase text-slate-400 block">Tu posición actual</span>
                   <span className="text-xl md:text-2xl font-black text-white font-mono leading-tight">
                     {(() => {
-                      const found = leaderboardList.find(e => e.id === user?.id);
-                      return found ? `#${found.posicion}` : "#1";
+                      if (!user?.id) return "--";
+                      const found = leaderboardList.find(e => e.id === user.id);
+                      if (found) return `#${found.posicion}`;
+                      if (userStats.puntosTotales > 0 && leaderboardList.length > 0) return `#${leaderboardList.length + 1}`;
+                      return "--";
                     })()}
                   </span>
                   <span className="text-[10px] text-red-400 font-mono font-bold block">{userStats.puntosTotales} pts</span>
@@ -2198,21 +2318,22 @@ export default function Trivia() {
               </div>
             </div>
 
-            {/* BANNER DE INICIO OFICIAL DE TEMPORADA COMPETITIVA (23 DE AGOSTO 20:00 HS) */}
+            {/* BANNER DE INICIO OFICIAL DE TEMPORADA COMPETITIVA CON CONTADOR EN VIVO (JUEVES 13 DE AGOSTO 19:00 HS) */}
             <div className="p-4 rounded-3xl bg-gradient-to-r from-[#2D0B12] via-[#1A0B12] to-[#0D1527] border border-red-500/40 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 font-bold shrink-0 shadow">
                   <Calendar className="w-5 h-5 text-amber-400" />
                 </div>
                 <div>
-                  <h4 className="font-black text-xs sm:text-sm text-white flex items-center gap-2">
-                    <span>🚀 Temporada Competitiva & Resets</span>
+                  <h4 className="font-black text-xs sm:text-sm text-white flex flex-wrap items-center gap-2">
+                    <span>{seasonInfo.bannerTitle}</span>
                     <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-mono">
-                      Inicio: 23 de Agosto 20:00 hs
+                      {seasonInfo.badgeText}
                     </span>
                   </h4>
-                  <p className="text-[11px] text-slate-300">
-                    Resets semanales en Duelos 1v1 y mensuales en Ranking General con entrega de Medallas de Podio (Oro, Plata, Bronce).
+                  <p className="text-[11px] text-slate-300 pt-0.5">
+                    <span className="text-amber-400 font-mono font-bold mr-2">⏱️ {seasonInfo.countdownText}</span>
+                    Resets semanales en Duelos 1v1 y mensuales en Ranking General con entrega de Medallas de Podio.
                   </p>
                 </div>
               </div>
