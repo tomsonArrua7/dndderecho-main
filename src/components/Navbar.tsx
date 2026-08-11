@@ -10,6 +10,8 @@ import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 
 import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users, Trophy, Sparkles, BookmarkCheck } from "lucide-react";
 
+import { NotificationCenter } from "@/components/NotificationCenter";
+
 const publicLinks = [
   { to: "/noticias",        label: "Noticias",        icon: Newspaper },
   { to: "/apuntes",         label: "Biblioteca",      icon: BookOpen },
@@ -162,6 +164,9 @@ export const Navbar = () => {
 
           {/* ── Actions ── */}
           <div className="flex items-center gap-2 xl:gap-4 shrink-0">
+            {/* Notification Center */}
+            <NotificationCenter />
+
             {/* Theme Toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}

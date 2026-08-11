@@ -7,6 +7,7 @@ interface ProfileInfo {
   full_name: string | null;
   is_banned: boolean;
   anio_ingreso?: number | null;
+  telefono?: string | null;
   avatar_url?: string | null;
 }
 
@@ -31,11 +32,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loadProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase.from("profiles").select("role, full_name, is_banned, anio_ingreso, avatar_url").eq("id", userId).maybeSingle();
+      const { data, error } = await supabase.from("profiles").select("role, full_name, is_banned, anio_ingreso, telefono, avatar_url").eq("id", userId).maybeSingle();
       if (error) {
         console.error("Supabase profile error:", error);
       }
-      const prof = (data as ProfileInfo) || { role: "estudiante", full_name: null, is_banned: false, anio_ingreso: null, avatar_url: null };
+      const prof = (data as ProfileInfo) || { role: "estudiante", full_name: null, is_banned: false, anio_ingreso: null, telefono: null, avatar_url: null };
       
       if (prof.is_banned) {
         console.warn("User is banned. Signing out...");
@@ -46,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setProfile(prof);
     } catch (err) {
       console.error("Unexpected error in loadProfile:", err);
-      setProfile({ role: "estudiante", full_name: null, is_banned: false, anio_ingreso: null, avatar_url: null });
+      setProfile({ role: "estudiante", full_name: null, is_banned: false, anio_ingreso: null, telefono: null, avatar_url: null });
     }
   };
 
