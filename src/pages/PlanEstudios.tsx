@@ -394,6 +394,12 @@ const PlanEstudios = () => {
     try { return JSON.parse(localStorage.getItem("dnd_orientaciones_aprobadas") || "{}"); }
     catch { return {}; }
   });
+  // Nombres escritos por el alumno para los slots libres (cuando no hay materias cargadas)
+  // Estructura: { [bloqueId]: ["nombre1", "nombre2", "nombre3"] }
+  const [orientacionNombres, setOrientacionNombres] = useState<Record<string, string[]>>(() => {
+    try { return JSON.parse(localStorage.getItem("dnd_orientacion_nombres") || "{}"); }
+    catch { return {}; }
+  });
 
   // Modal PPS
   const [isPPSDialogOpen, setIsPPSDialogOpen] = useState(false);
@@ -902,7 +908,11 @@ const PlanEstudios = () => {
               const habilitado = aprobadas >= ORIENTACION_REQUISITO.materiasAprobadas || pct >= ORIENTACION_REQUISITO.porcentajeCarrera;
               const bloqueActual = bloqueSeleccionado ? BLOQUES_ORIENTACION.find(b => b.id === bloqueSeleccionado) : null;
               const aprobCount = bloqueActual
-                ? bloqueActual.materias.filter(m => orientacionesAprobadas[m.id]).length
+                ? bloqueActual.materias.length === 0
+                  // Sin materias cargadas: contar slots de texto llenados
+                  ? (orientacionNombres[bloqueActual.id] || []).filter(n => n.trim().length > 0).length
+                  // Con materias cargadas: contar IDs marcados
+                  : bloqueActual.materias.filter(m => orientacionesAprobadas[m.id]).length
                 : 0;
 
               const BLOQUE_COLORS: Record<string, { border: string; bg: string; text: string; badge: string }> = {
@@ -989,18 +999,69 @@ const PlanEstudios = () => {
                       </div>
 
                       {bloqueActual.materias.length === 0 ? (
-                        // Placeholder: las materias del bloque aún no están cargadas
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          {[1, 2, 3].map(slot => (
-                            <div key={slot} className={cn(
-                              "p-5 rounded-xl border border-dashed border-white/10 bg-white/[0.01] flex flex-col items-center justify-center gap-2 min-h-[100px]"
-                            )}>
-                              <HelpCircle size={20} className="text-white/15" />
-                              <span className="text-[10px] uppercase tracking-widest text-white/20 font-bold">Orientación {slot}</span>
-                              <span className="text-[9px] text-white/15">Próximamente</span>
+                        // Slots libres: el alumno escribe el nombre de cada orientación cursada
+                        (() => {
+                          const nombres: string[] = orientacionNombres[bloqueActual.id] || ["", "", ""];
+                          const filledCount = nombres.filter(n => n.trim().length > 0).length;
+                          // Sincronizar aprobCount con slots llenados
+                          return (
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                              {[0, 1, 2].map(idx => {
+                                const valor = nombres[idx] || "";
+                                const lleno = valor.trim().length > 0;
+                                return (
+                                  <div
+                                    key={idx}
+                                    className={cn(
+                                      "p-4 rounded-xl border transition-all flex flex-col gap-3",
+                                      lleno
+                                        ? "bg-emerald-950/15 border-emerald-800/40"
+                                        : "border-dashed border-white/15 bg-white/[0.01]"
+                                    )}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <span className={cn(
+                                        "text-[9px] font-bold uppercase tracking-widest",
+                                        lleno ? "text-emerald-400" : "text-white/25"
+                                      )}>
+                                        Orientación {idx + 1}
+                                      </span>
+                                      {lleno
+                                        ? <Check size={12} className="text-emerald-400" strokeWidth={3} />
+                                        : <HelpCircle size={12} className="text-white/15" />
+                                      }
+                                    </div>
+                                    <input
+                                      type="text"
+                                      disabled={!habilitado}
+                                      value={valor}
+                                      placeholder={habilitado ? "Escribir nombre de la orientación..." : "Bloqueado"}
+                                      onChange={e => {
+                                        const nuevos = [...nombres];
+                                        nuevos[idx] = e.target.value;
+                                        const next = { ...orientacionNombres, [bloqueActual.id]: nuevos };
+                                        setOrientacionNombres(next);
+                                        localStorage.setItem("dnd_orientacion_nombres", JSON.stringify(next));
+                                      }}
+                                      className={cn(
+                                        "w-full bg-white/5 border rounded-lg px-3 py-2 text-[11px] text-white outline-none transition-all font-sans placeholder-white/20",
+                                        lleno
+                                          ? "border-emerald-700/50 focus:border-emerald-500"
+                                          : "border-white/10 focus:border-amber-500/60",
+                                        !habilitado && "cursor-not-allowed opacity-40"
+                                      )}
+                                    />
+                                    {lleno && (
+                                      <p className="text-[10px] text-emerald-300/70 font-medium leading-tight truncate">
+                                        {valor.trim()}
+                                      </p>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
-                          ))}
-                        </div>
+                          );
+                        })()
                       ) : (
                         // Render de materias reales del bloque
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
