@@ -401,79 +401,95 @@ export default function Trivia() {
     try {
       setLoadingParcialFlash(true);
       
-      // 1. Filtrar si tenemos preguntas en el banco masivo de 1.506 preguntas
+      // 1. Obtener preguntas existentes de la materia elegida
       const searchNorm = materiaParcialFlash.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const matching = allQuestionsCombined.filter(q => {
+      const matchingExisting = allQuestionsCombined.filter(q => {
         const catNorm = (q.categoria_nombre || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         return catNorm.includes(searchNorm) || searchNorm.includes(catNorm);
       });
 
-      if (matching.length >= 5) {
-        const shuffled = [...matching].sort(() => 0.5 - Math.random()).slice(0, 5);
-        const pool = prepareQuestionPool(shuffled);
-        setQuestionsPool(pool);
-        setCurrentIndex(0);
-        setScore(0);
-        setStreak(0);
-        setCorrectAnswersCount(0);
-        setSelectedOption(null);
-        setIsAnswered(false);
-        setGameOver(false);
-        setInGame(true);
-        setTimeLeft(25);
-        setIsParcialFlashModalOpen(false);
-        setLoadingParcialFlash(false);
-        toast.success(`⚡ ¡Parcial Flash de ${materiaParcialFlash} listo!`);
-        return;
-      }
+      // Tomar hasta 3 preguntas existentes de la materia para combinar
+      const existingToUseCount = Math.min(matchingExisting.length, 3);
+      const neededNewCount = 5 - existingToUseCount;
+      const selectedExisting = [...matchingExisting].sort(() => 0.5 - Math.random()).slice(0, existingToUseCount);
 
-      // 2. Si es una materia personalizada fuera del banco, invocar IA con timeout corto
-      const { data: { session } } = await supabase.auth.getSession();
-      const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || "https://api.dndjursoc.com.ar").replace(/\/$/, "");
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+      // 2. Invocar la IA para generar preguntas frescas de la materia
+      let newAiQuestions: TriviaQuestion[] = [];
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || "https://api.dndjursoc.com.ar").replace(/\/$/, "");
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.access_token || ""}`,
-          "apikey": supabaseAnonKey
-        },
-        body: JSON.stringify({
-          accion: "generar_parcial_flash",
-          materia: materiaParcialFlash
-        }),
-        signal: controller.signal
-      }).catch(() => null);
+        const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session?.access_token || ""}`,
+            "apikey": supabaseAnonKey
+          },
+          body: JSON.stringify({
+            accion: "generar_parcial_flash",
+            materia: materiaParcialFlash,
+            cantidad: neededNewCount > 0 ? neededNewCount : 5
+          }),
+          signal: controller.signal
+        }).catch(() => null);
 
-      clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
 
-      if (res && res.ok) {
-        const data = await res.json();
-        if (data.preguntas && data.preguntas.length > 0) {
-          const pool = prepareQuestionPool(data.preguntas);
-          setQuestionsPool(pool);
-          setCurrentIndex(0);
-          setScore(0);
-          setStreak(0);
-          setCorrectAnswersCount(0);
-          setSelectedOption(null);
-          setIsAnswered(false);
-          setGameOver(false);
-          setInGame(true);
-          setTimeLeft(25);
-          setIsParcialFlashModalOpen(false);
-          toast.success("⚡ ¡Parcial Flash generado con IA!");
-          return;
+        if (res && res.ok) {
+          const data = await res.json();
+          if (data.preguntas && data.preguntas.length > 0) {
+            newAiQuestions = data.preguntas.map((q: any, idx: number) => ({
+              id: `ai_${Date.now()}_${idx}`,
+              id_categoria: materiaParcialFlash.toLowerCase().replace(/\s+/g, "_"),
+              categoria_nombre: materiaParcialFlash,
+              dificultad: "media" as const,
+              pregunta: q.pregunta,
+              opciones: q.opciones,
+              respuesta_correcta_index: typeof q.respuesta_correcta_index === "number" ? q.respuesta_correcta_index : 0,
+              fundamento_juridico: q.fundamento_juridico || `Generado por la IA para ${materiaParcialFlash}.`,
+              puntos_base: 100
+            }));
+
+            // PERSISTIR LAS PREGUNTAS NUEVAS EN SUPABASE PARA SUMARLAS AL BANCO GLOBAL CONTINUAMENTE
+            try {
+              const toInsert = newAiQuestions.map(q => ({
+                materia: materiaParcialFlash,
+                dificultad: "media",
+                pregunta: q.pregunta,
+                opciones: q.opciones,
+                respuesta_correcta_index: q.respuesta_correcta_index,
+                fundamento_juridico: q.fundamento_juridico,
+                aprobado: true
+              }));
+              await supabase.from("trivia_preguntas").insert(toInsert);
+            } catch (errDb) {
+              console.warn("Error al guardar preguntas IA en Supabase:", errDb);
+            }
+          }
         }
+      } catch (eAi) {
+        console.warn("Timeout o falla al invocar IA, combinando banco masivo:", eAi);
       }
 
-      // 3. Fallback ultrarrápido usando selección aleatoria del banco completo
-      const randomPool = [...allQuestionsCombined].sort(() => 0.5 - Math.random()).slice(0, 5);
-      const pool = prepareQuestionPool(randomPool);
+      // 3. Meclar preguntas existentes + preguntas frescas IA
+      let combinedPool: TriviaQuestion[] = [...selectedExisting, ...newAiQuestions];
+
+      // Si aún faltan para llegar a 5, completar con preguntas del banco general
+      if (combinedPool.length < 5) {
+        const remainingNeeded = 5 - combinedPool.length;
+        const extraFromBank = [...allQuestionsCombined]
+          .filter(q => !combinedPool.some(existing => existing.pregunta === q.pregunta))
+          .sort(() => 0.5 - Math.random())
+          .slice(0, remainingNeeded);
+        combinedPool = [...combinedPool, ...extraFromBank];
+      }
+
+      const pool = prepareQuestionPool(combinedPool.slice(0, 5));
       setQuestionsPool(pool);
       setCurrentIndex(0);
       setScore(0);
@@ -485,10 +501,10 @@ export default function Trivia() {
       setInGame(true);
       setTimeLeft(25);
       setIsParcialFlashModalOpen(false);
-      toast.success(`⚡ ¡Parcial Flash de ${materiaParcialFlash} generado!`);
+      toast.success(`⚡ ¡Parcial Flash de ${materiaParcialFlash} iniciado!${newAiQuestions.length > 0 ? ` (+${newAiQuestions.length} preguntas IA sumadas al banco)` : ""}`);
 
     } catch (e) {
-      toast.error("Error al generar Parcial Flash.");
+      toast.error("Error al iniciar Parcial Flash.");
     } finally {
       setLoadingParcialFlash(false);
     }
