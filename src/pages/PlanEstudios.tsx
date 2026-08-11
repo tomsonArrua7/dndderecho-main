@@ -8,6 +8,9 @@ import {
   getEstadoVisual,
   EstadoMateria,
   Materia,
+  BLOQUES_ORIENTACION,
+  ORIENTACION_REQUISITO,
+  BloqueOrientacionId,
 } from "@/data/plan6Structure";
 import {
   MATERIAS_PLAN5,
@@ -384,6 +387,13 @@ const PlanEstudios = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<"grid" | "map">("grid");
+  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<BloqueOrientacionId | null>(() => {
+    return (localStorage.getItem("dnd_orientacion_bloque") as BloqueOrientacionId | null);
+  });
+  const [orientacionesAprobadas, setOrientacionesAprobadas] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem("dnd_orientaciones_aprobadas") || "{}"); }
+    catch { return {}; }
+  });
 
   // Modal PPS
   const [isPPSDialogOpen, setIsPPSDialogOpen] = useState(false);
@@ -861,7 +871,7 @@ const PlanEstudios = () => {
 
             {/* Sección Especial: Formación Práctica (PPS y Adaptaciones) */}
             {planId === "plan6" && currentMaterias.some(m => m.tipo === "practica") && (
-              <div className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-8 shadow-card-dnd mb-20">
+              <div className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-8 shadow-card-dnd mb-8">
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
                   <FileText size={18} className="text-red-500" />
                   <h2 className="font-serif text-xl font-bold text-red-100/90">Área de Formación Práctica</h2>
@@ -884,6 +894,175 @@ const PlanEstudios = () => {
                 </div>
               </div>
             )}
+
+            {/* ─── Sección de Orientaciones Obligatorias (solo Plan 6) ─── */}
+            {planId === "plan6" && (() => {
+              const aprobadas = currentMaterias.filter(m => estados[m.id] === "aprobada").length;
+              const pct = stats.pct;
+              const habilitado = aprobadas >= ORIENTACION_REQUISITO.materiasAprobadas || pct >= ORIENTACION_REQUISITO.porcentajeCarrera;
+              const bloqueActual = bloqueSeleccionado ? BLOQUES_ORIENTACION.find(b => b.id === bloqueSeleccionado) : null;
+              const aprobCount = bloqueActual
+                ? bloqueActual.materias.filter(m => orientacionesAprobadas[m.id]).length
+                : 0;
+
+              const BLOQUE_COLORS: Record<string, { border: string; bg: string; text: string; badge: string }> = {
+                blue:    { border: "border-blue-500/40",   bg: "bg-blue-500/10",   text: "text-blue-300",   badge: "bg-blue-500/20 border-blue-500/40 text-blue-300" },
+                violet:  { border: "border-violet-500/40", bg: "bg-violet-500/10", text: "text-violet-300", badge: "bg-violet-500/20 border-violet-500/40 text-violet-300" },
+                amber:   { border: "border-amber-500/40",  bg: "bg-amber-500/10",  text: "text-amber-300",  badge: "bg-amber-500/20 border-amber-500/40 text-amber-300" },
+                emerald: { border: "border-emerald-500/40",bg: "bg-emerald-500/10",text: "text-emerald-300",badge: "bg-emerald-500/20 border-emerald-500/40 text-emerald-300" },
+              };
+
+              return (
+                <div className="bg-white/[0.01] border border-white/[0.03] rounded-2xl p-8 shadow-card-dnd mb-20">
+                  {/* Encabezado */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/5">
+                    <div className="flex items-center gap-3">
+                      <GraduationCap size={18} className="text-amber-400" />
+                      <h2 className="font-serif text-xl font-bold text-amber-100/90">Orientaciones Obligatorias</h2>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">Plan Nº 6 · 5º Año</span>
+                    </div>
+                    <div className={cn(
+                      "text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border font-mono",
+                      habilitado
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                        : "bg-white/5 border-white/10 text-white/30"
+                    )}>
+                      {habilitado
+                        ? `Habilitado · ${aprobadas} materias aprobadas`
+                        : `Bloqueado · Se necesitan 32 mat. aprobadas o ${ORIENTACION_REQUISITO.porcentajeCarrera}% del plan`
+                      }
+                    </div>
+                  </div>
+
+                  {/* Descripción */}
+                  <p className="text-xs text-white/40 leading-relaxed mb-6 max-w-3xl">
+                    Para recibirse debés elegir <strong className="text-white/60">un bloque</strong> de orientación y aprobar <strong className="text-white/60">3 orientaciones</strong> dentro de él. Podés cursar orientaciones una vez que tengas <strong className="text-amber-400">32 materias aprobadas</strong> o el <strong className="text-amber-400">{ORIENTACION_REQUISITO.porcentajeCarrera}%</strong> de la carrera.
+                  </p>
+
+                  {/* Selector de bloque */}
+                  <div className="mb-6">
+                    <div className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-3">1. Elegí tu bloque de orientación</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                      {BLOQUES_ORIENTACION.map(bloque => {
+                        const col = BLOQUE_COLORS[bloque.color];
+                        const isSelected = bloqueSeleccionado === bloque.id;
+                        return (
+                          <button
+                            key={bloque.id}
+                            disabled={!habilitado}
+                            onClick={() => {
+                              const next = isSelected ? null : bloque.id as BloqueOrientacionId;
+                              setBloqueSeleccionado(next);
+                              if (next) localStorage.setItem("dnd_orientacion_bloque", next);
+                              else localStorage.removeItem("dnd_orientacion_bloque");
+                            }}
+                            className={cn(
+                              "text-left p-4 rounded-xl border transition-all",
+                              habilitado ? "cursor-pointer" : "cursor-not-allowed opacity-40",
+                              isSelected
+                                ? `${col.border} ${col.bg}`
+                                : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                            )}
+                          >
+                            <div className={cn("text-[10px] font-black uppercase tracking-widest mb-1", isSelected ? col.text : "text-white/40")}>
+                              {bloque.nombre}
+                            </div>
+                            <div className="text-[10px] text-white/30 leading-relaxed">
+                              {bloque.descripcion}
+                            </div>
+                            {isSelected && (
+                              <div className={cn("mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold border", col.badge)}>
+                                <Check size={9} strokeWidth={3} /> Bloque seleccionado
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Slots de orientaciones */}
+                  {bloqueActual && (
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-3">
+                        2. Completá 3 orientaciones del bloque &quot;{bloqueActual.nombre}&quot; · {aprobCount}/3 aprobadas
+                      </div>
+
+                      {bloqueActual.materias.length === 0 ? (
+                        // Placeholder: las materias del bloque aún no están cargadas
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {[1, 2, 3].map(slot => (
+                            <div key={slot} className={cn(
+                              "p-5 rounded-xl border border-dashed border-white/10 bg-white/[0.01] flex flex-col items-center justify-center gap-2 min-h-[100px]"
+                            )}>
+                              <HelpCircle size={20} className="text-white/15" />
+                              <span className="text-[10px] uppercase tracking-widest text-white/20 font-bold">Orientación {slot}</span>
+                              <span className="text-[9px] text-white/15">Próximamente</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        // Render de materias reales del bloque
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {bloqueActual.materias.map(mat => {
+                            const isAprob = !!orientacionesAprobadas[mat.id];
+                            return (
+                              <motion.div
+                                key={mat.id}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => {
+                                  if (!habilitado) return;
+                                  const next = { ...orientacionesAprobadas, [mat.id]: !isAprob };
+                                  setOrientacionesAprobadas(next);
+                                  localStorage.setItem("dnd_orientaciones_aprobadas", JSON.stringify(next));
+                                }}
+                                className={cn(
+                                  "p-4 rounded-xl border transition-all cursor-pointer",
+                                  isAprob
+                                    ? "bg-emerald-950/15 border-emerald-800/40 hover:border-emerald-700/60"
+                                    : "bg-white/[0.02] border-white/10 hover:border-white/20"
+                                )}
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-[8px] font-mono tracking-widest text-white/30">CÓD. {mat.id}</span>
+                                  {isAprob && <Check size={13} className="text-emerald-400" strokeWidth={3} />}
+                                </div>
+                                <p className={cn(
+                                  "text-[12px] font-serif font-semibold leading-tight",
+                                  isAprob ? "text-emerald-200" : "text-red-200/90"
+                                )}>{mat.nombre}</p>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Progreso */}
+                      <div className="mt-4 flex items-center gap-3">
+                        <div className="flex-1 h-2 rounded-full bg-white/5 border border-white/5 overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-500"
+                            style={{ width: `${(Math.min(aprobCount, 3) / 3) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] font-mono text-white/30">{Math.min(aprobCount, 3)}/3</span>
+                        {aprobCount >= 3 && (
+                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                            <CheckCircle2 size={12} /> Orientaciones completadas
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {!bloqueSeleccionado && habilitado && (
+                    <div className="text-center text-[11px] text-white/25 italic mt-2">
+                      Seleccioná un bloque arriba para ver tus orientaciones disponibles.
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </>
         ) : (
           selectedPlanData && (

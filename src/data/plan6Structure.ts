@@ -7,7 +7,7 @@
 export type Duracion = "bimestral" | "trimestral" | "cuatrimestral" | "semestral" | "anual";
 export type EstadoMateria = "pendiente" | "aprobada";
 export type TipoRequisito = "aprobada";
-export type TipoMateria = "regular" | "idioma" | "seminario" | "practica";
+export type TipoMateria = "regular" | "idioma" | "seminario" | "practica" | "orientacion";
 
 export interface Requisito {
   id: string;
@@ -17,6 +17,7 @@ export interface Requisito {
 export interface RequisitosEspeciales {
   primerAnioCompleto?: boolean;
   porcentajeCarrera?: number;
+  materiasAprobadas?: number; // mínimo de materias aprobadas
 }
 
 export interface Materia {
@@ -422,6 +423,76 @@ export const MATERIAS_PLAN6: Materia[] = [
 ];
 
 export const TOTAL_MATERIAS_PLAN6 = MATERIAS_PLAN6.length;
+
+// ══════════════════════════════════════════════════════════════════
+// ORIENTACIONES OBLIGATORIAS — Plan Nº 6
+// Se exigen para recibirse. Acceso: 32 materias aprobadas o ≥85% del plan.
+// El alumno elige UN bloque y dentro de él aprueba 3 orientaciones.
+// ══════════════════════════════════════════════════════════════════
+
+export type BloqueOrientacionId =
+  | "derecho-publico"
+  | "derecho-privado"
+  | "sociedad-estado"
+  | "docencia-investigacion";
+
+export interface OrientacionMateria {
+  id: string;     // Código oficial
+  nombre: string;
+}
+
+export interface BloqueOrientacion {
+  id: BloqueOrientacionId;
+  nombre: string;
+  descripcion: string;
+  color: string;  // clase CSS de color de acento
+  materias: OrientacionMateria[];
+}
+
+export const BLOQUES_ORIENTACION: BloqueOrientacion[] = [
+  {
+    id: "derecho-publico",
+    nombre: "Derecho Público",
+    descripcion: "Profundización en el Estado, la función administrativa y el ordenamiento jurídico público.",
+    color: "blue",
+    materias: [
+      // A completar con los códigos oficiales de la facultad
+    ]
+  },
+  {
+    id: "derecho-privado",
+    nombre: "Derecho Privado",
+    descripcion: "Especialización en relaciones entre particulares, contratos, familia y sucesiones.",
+    color: "violet",
+    materias: [
+      // A completar
+    ]
+  },
+  {
+    id: "sociedad-estado",
+    nombre: "Sociedad y Estado",
+    descripcion: "Abordaje interdisciplinario de las relaciones entre organizaciones sociales y el poder público.",
+    color: "amber",
+    materias: [
+      // A completar
+    ]
+  },
+  {
+    id: "docencia-investigacion",
+    nombre: "Docencia e Investigación",
+    descripcion: "Formación en prácticas docentes universitarias y metodología de la investigación jurídica.",
+    color: "emerald",
+    materias: [
+      // A completar
+    ]
+  }
+];
+
+/** Requisito de acceso a las orientaciones */
+export const ORIENTACION_REQUISITO = {
+  materiasAprobadas: 32,
+  porcentajeCarrera: 85
+} as const;
 
 export function calcularPorcentaje(estados: Record<string, EstadoMateria>): number {
   const aprobadas = MATERIAS_PLAN6.filter(m => estados[m.id] === "aprobada").length;
