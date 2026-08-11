@@ -121,8 +121,8 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     nombreCorto: "Derecho Procesal I",
     anio: 3, duracion: "cuatrimestral", horas: 144, tipo: "regular",
     requisitos: [
-      { id: "10124", tipo: "aprobada" },
-      { id: "10125", tipo: "aprobada" }
+      { id: "10135", tipo: "aprobada" },
+      { id: "10136", tipo: "aprobada" }
     ],
   },
   {
