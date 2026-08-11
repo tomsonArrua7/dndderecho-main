@@ -415,10 +415,11 @@ const PlanEstudios = () => {
     const raw = planId === "plan6" ? MATERIAS_PLAN6 : MATERIAS_PLAN5;
     return raw.map(m => ({
       ...m,
-      duracion: (m.horas === 32 ? "bimestral" :
-                 m.horas === 64 ? "trimestral" :
-                 m.horas === 96 ? "cuatrimestral" :
-                 m.horas === 120 ? "semestral" : m.duracion) as any
+      duracion: (m.duracion ||
+                 (m.horas === 32 ? "bimestral" :
+                  m.horas === 64 ? "trimestral" :
+                  m.horas === 96 ? "cuatrimestral" :
+                  m.horas === 120 ? "semestral" : "cuatrimestral")) as any
     }));
   }, [planId]);
   const currentTotal = useMemo(() => planId === "plan6" ? TOTAL_MATERIAS_PLAN6 : TOTAL_MATERIAS_PLAN5, [planId]);
