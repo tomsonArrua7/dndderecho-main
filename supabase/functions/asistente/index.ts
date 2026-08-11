@@ -121,18 +121,19 @@ Por favor, explica en un tono pedagógico, directo y muy claro (EN MÁXIMO 2 ORA
     // ACCIÓN 2: GENERAR PARCIAL FLASH CON IA
     // =========================================================================
     if (accion === "generar_parcial_flash") {
-      const promptParcial = `Genera EXACTAMENTE 5 preguntas de opción múltiple (Multiple Choice) para un examen parcial universitario de la materia de Derecho "${materia || 'Derecho General'}" (Cátedra: ${catedra || 'General'}).
+      const promptParcial = `Genera EXACTAMENTE 5 preguntas de opción múltiple (Multiple Choice) para un examen parcial universitario enfocado EXCLUSIVAMENTE en la materia o tema de Derecho: "${materia || 'Derecho General'}".
+¡REGLA OBLIGATORIA Y CRÍTICA!: Las 5 preguntas DEBEN tratar 100% sobre "${materia}". Está estrictamente prohibido incluir contenido o preguntas de otras materias o temas distintos.
 Responde ÚNICAMENTE en formato JSON plano como una lista de objetos (un arreglo JSON sin bloques de código markdown ni texto adicional).
 Estructura exacta de cada objeto:
 {
   "id": "pf_1",
-  "id_categoria": "general",
+  "id_categoria": "${(materia || 'general').toLowerCase().replace(/\s+/g, "_")}",
   "categoria_nombre": "${materia || 'Derecho'}",
   "dificultad": "media",
-  "pregunta": "¿Texto claro de la pregunta?",
+  "pregunta": "¿Texto claro de la pregunta de la materia?",
   "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
   "respuesta_correcta_index": 0,
-  "fundamento_juridico": "Artículo de ley o concepto clave explicativo",
+  "fundamento_juridico": "Artículo de ley o concepto explicativo de ${materia}",
   "puntos_base": 100
 }`;
 

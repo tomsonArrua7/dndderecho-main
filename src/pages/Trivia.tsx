@@ -152,6 +152,81 @@ function getLiveSeasonInfo() {
   }
 }
 
+// Función helper para encontrar preguntas con coincidencia 100% precisa de la materia/tema buscado
+function findExactMatchingQuestions(userSubject: string, questions: TriviaQuestion[]): TriviaQuestion[] {
+  if (!userSubject || !userSubject.trim()) return [];
+
+  const raw = userSubject.trim().toLowerCase();
+  const normUser = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // Palabras estructurales a ignorar al comparar
+  const stopWords = new Set(["derecho", "de", "del", "la", "el", "los", "las", "y", "e", "o", "u", "a", "en", "por", "materia", "catedra", "parcial", "flash"]);
+  
+  const queryTokens = normUser.split(/\s+/).filter(t => t && !stopWords.has(t));
+  if (queryTokens.length === 0) {
+    return questions.filter(q => {
+      const cName = (q.categoria_nombre || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return cName === "derecho general" || cName === "introduccion al derecho";
+    });
+  }
+
+  return questions.filter(q => {
+    const catName = (q.categoria_nombre || "").toLowerCase();
+    const catNorm = catName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // 1. Coincidencia exacta completa
+    if (catNorm === normUser) return true;
+
+    const catTokens = catNorm.split(/\s+/);
+
+    // 2. Todos los tokens significativos de la búsqueda deben estar en el nombre de la categoría
+    const matchesAllTokens = queryTokens.every(qToken => {
+      return catTokens.some(cToken => {
+        if (cToken === qToken) return true;
+        // Mapeo números romanos / arábigos
+        if (qToken === "1" && cToken === "i") return true;
+        if (qToken === "i" && cToken === "1") return true;
+        if (qToken === "2" && cToken === "ii") return true;
+        if (qToken === "ii" && cToken === "2") return true;
+        if (qToken === "3" && cToken === "iii") return true;
+        if (qToken === "iii" && cToken === "3") return true;
+        if (qToken === "4" && cToken === "iv") return true;
+        if (qToken === "iv" && cToken === "4") return true;
+        if (qToken === "5" && cToken === "v") return true;
+        if (qToken === "v" && cToken === "5") return true;
+
+        if (qToken.length >= 4 && cToken.includes(qToken)) return true;
+        if (cToken.length >= 4 && qToken.includes(cToken)) return true;
+
+        return false;
+      });
+    });
+
+    if (!matchesAllTokens) return false;
+
+    // 3. Control estricto de números de materia (evita cruzar I, II, III, IV, V)
+    const isNum1 = queryTokens.some(t => t === "1" || t === "i" || t === "uno");
+    const isNum2 = queryTokens.some(t => t === "2" || t === "ii" || t === "dos");
+    const isNum3 = queryTokens.some(t => t === "3" || t === "iii" || t === "tres");
+    const isNum4 = queryTokens.some(t => t === "4" || t === "iv" || t === "cuatro");
+    const isNum5 = queryTokens.some(t => t === "5" || t === "v" || t === "cinco");
+
+    const catIsNum1 = catTokens.some(t => t === "1" || t === "i" || t === "uno");
+    const catIsNum2 = catTokens.some(t => t === "2" || t === "ii" || t === "dos");
+    const catIsNum3 = catTokens.some(t => t === "3" || t === "iii" || t === "tres");
+    const catIsNum4 = catTokens.some(t => t === "4" || t === "iv" || t === "cuatro");
+    const catIsNum5 = catTokens.some(t => t === "5" || t === "v" || t === "cinco");
+
+    if (isNum1 && (catIsNum2 || catIsNum3 || catIsNum4 || catIsNum5)) return false;
+    if (isNum2 && (catIsNum1 || catIsNum3 || catIsNum4 || catIsNum5)) return false;
+    if (isNum3 && (catIsNum1 || catIsNum2 || catIsNum4 || catIsNum5)) return false;
+    if (isNum4 && (catIsNum1 || catIsNum2 || catIsNum3 || catIsNum5)) return false;
+    if (isNum5 && (catIsNum1 || catIsNum2 || catIsNum3 || catIsNum4)) return false;
+
+    return true;
+  });
+}
+
 // Función para desordenar aleatoriamente las 4 opciones de cada pregunta de forma segura
 const prepareQuestionPool = (questions: TriviaQuestion[]): TriviaQuestion[] => {
   if (!Array.isArray(questions)) return [];
@@ -400,20 +475,40 @@ export default function Trivia() {
   const generarParcialFlashIA = async () => {
     try {
       setLoadingParcialFlash(true);
+      const materiaLimpia = materiaParcialFlash.trim();
+
+      if (!materiaLimpia) {
+        toast.error("Por favor ingresa una materia o tema.");
+        return;
+      }
       
-      // 1. Obtener preguntas existentes de la materia elegida
-      const searchNorm = materiaParcialFlash.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const matchingExisting = allQuestionsCombined.filter(q => {
-        const catNorm = (q.categoria_nombre || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return catNorm.includes(searchNorm) || searchNorm.includes(catNorm);
-      });
+      // 1. Obtener preguntas existentes que coincidan 100% de forma precisa con la materia solicitada
+      const matchingExisting = findExactMatchingQuestions(materiaLimpia, allQuestionsCombined);
 
-      // Tomar hasta 3 preguntas existentes de la materia para combinar
-      const existingToUseCount = Math.min(matchingExisting.length, 3);
-      const neededNewCount = 5 - existingToUseCount;
-      const selectedExisting = [...matchingExisting].sort(() => 0.5 - Math.random()).slice(0, existingToUseCount);
+      // Si ya tenemos 5 o más preguntas exactas en nuestro banco masivo para esa materia, responder AL INSTANTE
+      if (matchingExisting.length >= 5) {
+        const selected = [...matchingExisting].sort(() => 0.5 - Math.random()).slice(0, 5);
+        const pool = prepareQuestionPool(selected);
+        setQuestionsPool(pool);
+        setCurrentIndex(0);
+        setScore(0);
+        setStreak(0);
+        setCorrectAnswersCount(0);
+        setSelectedOption(null);
+        setIsAnswered(false);
+        setGameOver(false);
+        setInGame(true);
+        setTimeLeft(25);
+        setIsParcialFlashModalOpen(false);
+        toast.success(`⚡ ¡Parcial Flash de ${materiaLimpia} listo (5 preguntas de ${matchingExisting.length} disponibles)!`);
+        return;
+      }
 
-      // 2. Invocar la IA para generar preguntas frescas de la materia
+      // Si tenemos entre 1 y 4 preguntas de la materia, usarlas todas e invocar la IA para completar las que faltan
+      const selectedExisting = [...matchingExisting].sort(() => 0.5 - Math.random());
+      const neededNewCount = 5 - selectedExisting.length;
+
+      // 2. Invocar la IA para generar las preguntas faltantes de la materia
       let newAiQuestions: TriviaQuestion[] = [];
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -421,7 +516,7 @@ export default function Trivia() {
         const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
 
         const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
           method: "POST",
@@ -432,7 +527,7 @@ export default function Trivia() {
           },
           body: JSON.stringify({
             accion: "generar_parcial_flash",
-            materia: materiaParcialFlash,
+            materia: materiaLimpia,
             cantidad: neededNewCount > 0 ? neededNewCount : 5
           }),
           signal: controller.signal
@@ -445,20 +540,20 @@ export default function Trivia() {
           if (data.preguntas && data.preguntas.length > 0) {
             newAiQuestions = data.preguntas.map((q: any, idx: number) => ({
               id: `ai_${Date.now()}_${idx}`,
-              id_categoria: materiaParcialFlash.toLowerCase().replace(/\s+/g, "_"),
-              categoria_nombre: materiaParcialFlash,
+              id_categoria: materiaLimpia.toLowerCase().replace(/\s+/g, "_"),
+              categoria_nombre: materiaLimpia,
               dificultad: "media" as const,
               pregunta: q.pregunta,
               opciones: q.opciones,
               respuesta_correcta_index: typeof q.respuesta_correcta_index === "number" ? q.respuesta_correcta_index : 0,
-              fundamento_juridico: q.fundamento_juridico || `Generado por la IA para ${materiaParcialFlash}.`,
+              fundamento_juridico: q.fundamento_juridico || `Generado por la IA para ${materiaLimpia}.`,
               puntos_base: 100
             }));
 
             // PERSISTIR LAS PREGUNTAS NUEVAS EN SUPABASE PARA SUMARLAS AL BANCO GLOBAL CONTINUAMENTE
             try {
               const toInsert = newAiQuestions.map(q => ({
-                materia: materiaParcialFlash,
+                materia: materiaLimpia,
                 dificultad: "media",
                 pregunta: q.pregunta,
                 opciones: q.opciones,
@@ -473,23 +568,26 @@ export default function Trivia() {
           }
         }
       } catch (eAi) {
-        console.warn("Timeout o falla al invocar IA, combinando banco masivo:", eAi);
+        console.warn("Timeout o falla al invocar IA:", eAi);
       }
 
-      // 3. Meclar preguntas existentes + preguntas frescas IA
-      let combinedPool: TriviaQuestion[] = [...selectedExisting, ...newAiQuestions];
+      // 3. Mezclar preguntas existentes de la materia + preguntas de la IA de la materia
+      let finalPool: TriviaQuestion[] = [...selectedExisting, ...newAiQuestions];
 
-      // Si aún faltan para llegar a 5, completar con preguntas del banco general
-      if (combinedPool.length < 5) {
-        const remainingNeeded = 5 - combinedPool.length;
-        const extraFromBank = [...allQuestionsCombined]
-          .filter(q => !combinedPool.some(existing => existing.pregunta === q.pregunta))
-          .sort(() => 0.5 - Math.random())
-          .slice(0, remainingNeeded);
-        combinedPool = [...combinedPool, ...extraFromBank];
+      // Si la materia existe en el banco pero faltan para 5 (ej. falló el llamado IA), reusar de las existentes de esa misma materia
+      if (finalPool.length < 5 && matchingExisting.length > 0) {
+        while (finalPool.length < 5) {
+          const randomChoice = matchingExisting[Math.floor(Math.random() * matchingExisting.length)];
+          finalPool.push(randomChoice);
+        }
       }
 
-      const pool = prepareQuestionPool(combinedPool.slice(0, 5));
+      if (finalPool.length === 0) {
+        toast.error(`No se pudieron generar preguntas específicas para "${materiaLimpia}". Intenta nuevamente.`);
+        return;
+      }
+
+      const pool = prepareQuestionPool(finalPool.slice(0, 5));
       setQuestionsPool(pool);
       setCurrentIndex(0);
       setScore(0);
@@ -501,7 +599,7 @@ export default function Trivia() {
       setInGame(true);
       setTimeLeft(25);
       setIsParcialFlashModalOpen(false);
-      toast.success(`⚡ ¡Parcial Flash de ${materiaParcialFlash} iniciado!${newAiQuestions.length > 0 ? ` (+${newAiQuestions.length} preguntas IA sumadas al banco)` : ""}`);
+      toast.success(`⚡ ¡Parcial Flash de ${materiaLimpia} listo!${newAiQuestions.length > 0 ? ` (+${newAiQuestions.length} preguntas IA sumadas al banco)` : ""}`);
 
     } catch (e) {
       toast.error("Error al iniciar Parcial Flash.");
