@@ -38,7 +38,8 @@ import Permutero      from "./pages/Permutero";
 import MiEspacio      from "./pages/MiEspacio";
 import PlanEstudios   from "./pages/PlanEstudios";
 import Calendario     from "./pages/Calendario";
-import Recomendaciones from "./pages/Recomendaciones";
+import Recomendaciones  from "./pages/Recomendaciones";
+import NotasFormularios from "./pages/NotasFormularios";
 import NotFound       from "./pages/NotFound";
 import AdminPanel     from "./pages/AdminPanel";
 import Servicios      from "./pages/Servicios";
@@ -217,7 +218,8 @@ const AppContent = () => {
         <Route path="/noticias"        element={<Noticias />} />
         <Route path="/apuntes"         element={<Apuntes />} />
         <Route path="/permutero"       element={<Permutero />} />
-        <Route path="/recomendaciones" element={<Recomendaciones />} />
+        <Route path="/recomendaciones"    element={<Recomendaciones />} />
+      <Route path="/notas-formularios"  element={<NotasFormularios />} />
         <Route path="/servicios"       element={<Servicios />} />
         <Route path="/asistente"       element={<AsistenteDND />} />
         <Route path="/ingresantes"     element={<Ingresantes />} />

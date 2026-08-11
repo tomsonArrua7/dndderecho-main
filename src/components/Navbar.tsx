@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { LogIn, LogOut, Menu, Scale, ShieldCheck, Sun, Moon, X } from "lucide-react";
+import { LogIn, LogOut, Menu, Scale, ShieldCheck, Sun, Moon, X, FileText } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { DndMark } from "@/components/DndMark";
 import { cn } from "@/lib/utils";
@@ -15,8 +15,9 @@ const publicLinks = [
   { to: "/apuntes",         label: "Biblioteca",      icon: BookOpen },
   { to: "/asistente",       label: "Asistente DND",   icon: Bot },
   { to: "/permutero",       label: "Permutero",       icon: Repeat2 },
-  { to: "/servicios",       label: "Info Útil",       icon: ShieldCheck },
-  { to: "/recomendaciones", label: "Recomendaciones", icon: BookmarkCheck },
+  { to: "/servicios",          label: "Info Útil",        icon: ShieldCheck },
+  { to: "/notas-formularios",   label: "Notas y Formularios", icon: FileText },
+  { to: "/recomendaciones",     label: "Recomendaciones",  icon: BookmarkCheck },
   { to: "/quienes-somos",   label: "Quiénes Somos",   icon: Users },
 ];
 
