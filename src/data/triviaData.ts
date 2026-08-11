@@ -1,3 +1,5 @@
+import { TRIVIA_QUESTIONS_EXTENDED } from './dbTriviaQuestionsExt';
+
 export interface TriviaQuestion {
   id: string;
   id_categoria: string;
@@ -462,7 +464,7 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [];
 // =========================================================================
 // BANCO DE PREGUNTAS TÉCNICAS (CON VARIACIÓN DEL ÍNDICE DE RESPUESTA CORRECTA 0, 1, 2, 3)
 // =========================================================================
-export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
+const STATIC_QUESTIONS: TriviaQuestion[] = [
   // --- 10610: INTRODUCCIÓN AL ESTUDIO DE LAS CIENCIAS SOCIALES (100 PREGUNTAS OFICIALES DND) ---,
   {
     id: "10610-01", id_categoria: "10610", categoria_nombre: "Intro Cs. Sociales", dificultad: "facil",
@@ -6196,6 +6198,8 @@ export const TRIVIA_QUESTIONS: TriviaQuestion[] = [
     pregunta: "¿Qué tipos de testamento reconoce el CCyCN?",
     opciones: ["Solo ológrafo", "Ológrafo y por acto público", "Solo notarial", "Solo verbal"],
     respuesta_correcta_index: 1,
-    fundamento_juridico: "Arts. 2477 (ológrafo) y 2479 (por acto público) del CCyCN.", puntos_base: 10
   }
 ];
+
+export const TRIVIA_QUESTIONS: TriviaQuestion[] = [...STATIC_QUESTIONS, ...TRIVIA_QUESTIONS_EXTENDED];
+
