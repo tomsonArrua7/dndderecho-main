@@ -117,9 +117,9 @@ export const NotificationCenter: React.FC = () => {
           <DialogPrimitive.Overlay className="fixed inset-0 z-[9990] bg-black/80 backdrop-blur-md transition-opacity duration-200" />
 
           {/* Flexbox Viewport Centered Container */}
-          <div className="fixed inset-0 z-[9991] flex items-center justify-center p-3 sm:p-4 pointer-events-none">
+          <div className="fixed inset-0 z-[9991] flex items-center justify-center p-3 sm:p-4 pointer-events-none touch-none">
             <DialogPrimitive.Content
-              className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-[#0A0E1A] border border-white/20 text-white rounded-3xl p-5 sm:p-6 shadow-[0_10px_50px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col max-h-[85vh] relative outline-none"
+              className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-[#0A0E1A] border border-white/20 text-white rounded-3xl p-5 sm:p-6 shadow-[0_10px_50px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col max-h-[85vh] relative outline-none select-none sm:select-auto"
             >
               {/* Header */}
               <div className="border-b border-white/10 pb-4 flex items-center justify-between shrink-0">
