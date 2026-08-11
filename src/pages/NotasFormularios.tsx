@@ -23,7 +23,7 @@ interface Seccion {
   titulo: string;
   subtitulo: string;
   icono: React.ElementType;
-  color: "blue" | "violet" | "amber";
+  color: "blue" | "red" | "indigo";
   documentos: Documento[];
 }
 
@@ -69,7 +69,7 @@ const SECCIONES: Seccion[] = [
     titulo: "Formularios Oficiales",
     subtitulo: "Formularios descargables para trámites de la Facultad",
     icono: ClipboardList,
-    color: "violet",
+    color: "red",
     documentos: [
       {
         id: "ddjj-informal",
@@ -237,7 +237,7 @@ const SECCIONES: Seccion[] = [
     titulo: "Notas Modelo",
     subtitulo: "Modelos editables para trámites y solicitudes",
     icono: FileEdit,
-    color: "amber",
+    color: "indigo",
     documentos: [
       {
         id: "nota-laboral",
@@ -311,21 +311,21 @@ const COLOR_MAP = {
     btn: "from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500",
     glow: "bg-blue-600/8",
   },
-  violet: {
-    badge: "bg-violet-500/10 border-violet-500/20 text-violet-400",
-    icon: "text-violet-400",
-    header: "text-violet-300",
-    card: "bg-gradient-to-b from-[#120a33] to-[#0a0720] border-violet-500/30 hover:border-violet-400",
-    btn: "from-violet-700 to-violet-600 hover:from-violet-600 hover:to-violet-500",
-    glow: "bg-violet-600/8",
+  red: {
+    badge: "bg-red-500/10 border-red-500/20 text-red-400",
+    icon: "text-red-400",
+    header: "text-red-300",
+    card: "bg-gradient-to-b from-[#2a0a0a] to-[#150505] border-red-500/30 hover:border-red-500",
+    btn: "from-red-700 to-red-600 hover:from-red-600 hover:to-red-500",
+    glow: "bg-red-600/8",
   },
-  amber: {
-    badge: "bg-amber-500/10 border-amber-500/20 text-amber-400",
-    icon: "text-amber-400",
-    header: "text-amber-300",
-    card: "bg-gradient-to-b from-[#1c1200] to-[#100b00] border-amber-500/30 hover:border-amber-400",
-    btn: "from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500",
-    glow: "bg-amber-600/8",
+  indigo: {
+    badge: "bg-indigo-500/10 border-indigo-500/20 text-indigo-400",
+    icon: "text-indigo-400",
+    header: "text-indigo-300",
+    card: "bg-gradient-to-b from-[#0e1040] to-[#060820] border-indigo-500/30 hover:border-indigo-400",
+    btn: "from-indigo-700 to-blue-700 hover:from-indigo-600 hover:to-blue-600",
+    glow: "bg-indigo-600/8",
   },
 };
 
