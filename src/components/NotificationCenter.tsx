@@ -124,6 +124,19 @@ export const NotificationCenter: React.FC = () => {
           )}
         </motion.button>
 
+        {/* Mobile backdrop overlay */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 sm:hidden"
+            />
+          )}
+        </AnimatePresence>
+
         {/* Dropdown Panel */}
         <AnimatePresence>
           {open && (
@@ -132,9 +145,9 @@ export const NotificationCenter: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute right-0 top-full mt-3 w-80 sm:w-96 z-50"
+              className="fixed inset-x-3 top-16 z-50 max-w-sm mx-auto sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-3 sm:w-96 sm:max-w-none"
             >
-              <div className="bg-[#0A0E1A]/95 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+              <div className="bg-[#0A0E1A]/95 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] sm:max-h-none">
                 {/* Header */}
                 <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
                   <div className="flex items-center gap-2">
@@ -146,19 +159,29 @@ export const NotificationCenter: React.FC = () => {
                     </span>
                   </div>
 
-                  {pendingCount > 0 ? (
-                    <span className="px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase font-mono">
-                      1 Pendiente
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase font-mono flex items-center gap-1">
-                      <Check className="w-3 h-3" /> Al día
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {pendingCount > 0 ? (
+                      <span className="px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase font-mono">
+                        1 Pendiente
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase font-mono flex items-center gap-1">
+                        <Check className="w-3 h-3" /> Al día
+                      </span>
+                    )}
+
+                    <button
+                      onClick={() => setOpen(false)}
+                      className="p-1 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-colors"
+                      title="Cerrar"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Notifications list */}
-                <div className="p-3 space-y-2.5 max-h-80 overflow-y-auto">
+                <div className="p-3 space-y-2.5 max-h-[60vh] sm:max-h-80 overflow-y-auto">
                   {notifications.map((item) => {
                     if (dismissedIds.includes(item.id)) return null;
 

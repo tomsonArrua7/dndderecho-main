@@ -11,6 +11,7 @@ import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users, Trophy, Sparkles, BookmarkCheck } from "lucide-react";
 
 import { NotificationCenter } from "@/components/NotificationCenter";
+import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 
 const publicLinks = [
   { to: "/noticias",        label: "Noticias",        icon: Newspaper },
@@ -31,6 +32,9 @@ export const Navbar = () => {
   const drawerRef = useRef<HTMLDivElement>(null);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  const isProfileIncomplete = user && (!profile?.telefono || profile.telefono.trim() === "" || !profile?.anio_ingreso);
 
   const links = publicLinks;
   const isLight = resolvedTheme === "light";
@@ -343,13 +347,34 @@ export const Navbar = () => {
                       <l.icon className="h-5 w-5" strokeWidth={2} />
                       <span className="text-[13px] uppercase tracking-widest">{l.label}</span>
                     </NavLink>
-                  </motion.div>
-                ))}
-
-                {user && (
+                       {user && (
                   <div className="pt-8 space-y-2">
                     <div className="h-px bg-white/5 my-6" />
                     <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6 pl-2">Área Personal</div>
+                    
+                    {isProfileIncomplete && (
+                      <button
+                        onClick={() => {
+                          setOpen(false);
+                          setIsProfileModalOpen(true);
+                        }}
+                        className="w-full mb-3 p-3.5 rounded-2xl bg-gradient-to-r from-red-950/60 to-slate-900 border border-red-500/40 text-left flex items-start gap-3 transition-all active:scale-95 shadow-md"
+                      >
+                        <div className="p-2 rounded-xl bg-red-500/20 text-red-400 shrink-0 mt-0.5">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="text-[11px] font-black uppercase text-red-400 flex items-center gap-1.5">
+                            <span>Completá tu Perfil</span>
+                            <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                          </div>
+                          <p className="text-[10px] text-white/60 leading-tight">
+                            Agregá tu teléfono y año para permutar fácil.
+                          </p>
+                        </div>
+                      </button>
+                    )}
+
                     {[
                       { to: "/mi-espacio", label: "Mi Perfil", icon: LayoutDashboard },
                       { to: "/plan", label: "Plan Estudios", icon: GraduationCap },
@@ -419,6 +444,9 @@ export const Navbar = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Profile completion modal for mobile drawer trigger */}
+      <CompleteProfileModal open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen} />
     </>
   );
 };

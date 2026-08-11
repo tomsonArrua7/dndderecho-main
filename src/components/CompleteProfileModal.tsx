@@ -86,7 +86,7 @@ export const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-[#0A0E1A] border border-white/15 text-white rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden backdrop-blur-xl">
+      <DialogContent className="max-w-md w-[92vw] sm:w-full max-h-[90vh] overflow-y-auto bg-[#0A0E1A] border border-white/15 text-white rounded-3xl p-5 sm:p-8 shadow-2xl backdrop-blur-xl">
         {/* Glow de fondo */}
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
