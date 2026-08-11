@@ -347,7 +347,10 @@ export const Navbar = () => {
                       <l.icon className="h-5 w-5" strokeWidth={2} />
                       <span className="text-[13px] uppercase tracking-widest">{l.label}</span>
                     </NavLink>
-                       {user && (
+                  </motion.div>
+                ))}
+
+                {user && (
                   <div className="pt-8 space-y-2">
                     <div className="h-px bg-white/5 my-6" />
                     <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-6 pl-2">Área Personal</div>
