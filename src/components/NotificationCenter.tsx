@@ -82,16 +82,16 @@ export const NotificationCenter: React.FC = () => {
 
   return (
     <>
-      {/* Bell Button */}
+      {/* Bell Button (High performance touch response) */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          "relative p-2 rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer border shrink-0",
+          "relative p-2 rounded-full transition-colors flex items-center justify-center cursor-pointer border shrink-0 touch-manipulation active:scale-95",
           open
-            ? "bg-red-500/20 text-red-400 border-red-500/40 shadow-[0_0_12px_rgba(220,38,38,0.3)]"
+            ? "bg-red-500/20 text-red-400 border-red-500/40"
             : isProfileIncomplete
-            ? "text-red-400 hover:bg-red-500/10 border-red-500/30 animate-pulse"
+            ? "text-red-400 bg-red-500/10 border-red-500/30"
             : "text-white/60 hover:text-white hover:bg-white/10 border-white/10"
         )}
         title="Notificaciones"
@@ -102,24 +102,23 @@ export const NotificationCenter: React.FC = () => {
         {/* Badge count */}
         {pendingCount > 0 && (
           <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 text-[9px] font-black text-white items-center justify-center leading-none">
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 text-[9px] font-black text-white items-center justify-center leading-none shadow-md">
               !
             </span>
           </span>
         )}
       </button>
 
-      {/* Notification Center Dialog */}
+      {/* Notification Center Dialog (Optimized for 0ms lag on mobile WebKit) */}
       <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
         <DialogPrimitive.Portal>
-          {/* Backdrop Overlay */}
-          <DialogPrimitive.Overlay className="fixed inset-0 z-[9990] bg-black/80 backdrop-blur-md transition-opacity duration-200" />
+          {/* Opaque dark overlay (No heavy backdrop GPU blurs) */}
+          <DialogPrimitive.Overlay className="fixed inset-0 z-[9990] bg-black/85 transition-opacity duration-150" />
 
           {/* Flexbox Viewport Centered Container */}
-          <div className="fixed inset-0 z-[9991] flex items-center justify-center p-3 sm:p-4 pointer-events-none touch-none">
+          <div className="fixed inset-0 z-[9991] flex items-center justify-center p-3 sm:p-4 pointer-events-none">
             <DialogPrimitive.Content
-              className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-[#0A0E1A] border border-white/20 text-white rounded-3xl p-5 sm:p-6 shadow-[0_10px_50px_rgba(0,0,0,0.95)] overflow-hidden flex flex-col max-h-[85vh] relative outline-none select-none sm:select-auto"
+              className="pointer-events-auto w-full max-w-sm sm:max-w-md bg-[#0D1322] border border-white/20 text-white rounded-3xl p-5 sm:p-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative outline-none"
             >
               {/* Header */}
               <div className="border-b border-white/10 pb-4 flex items-center justify-between shrink-0">
@@ -164,7 +163,7 @@ export const NotificationCenter: React.FC = () => {
                       className={cn(
                         "p-4 rounded-2xl border transition-all cursor-pointer flex flex-col gap-2.5 relative group",
                         item.isPending
-                          ? "bg-gradient-to-r from-red-950/40 via-slate-900/60 to-slate-950 border-red-500/50 hover:border-red-400 shadow-md"
+                          ? "bg-red-950/30 border-red-500/50 hover:border-red-400 shadow-md"
                           : "bg-white/[0.03] border-white/10 hover:border-white/20"
                       )}
                     >
@@ -211,7 +210,7 @@ export const NotificationCenter: React.FC = () => {
                             handleAction(item);
                           }}
                           className={cn(
-                            "text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer py-1.5 px-3 rounded-xl border",
+                            "text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer py-1.5 px-3 rounded-xl border touch-manipulation",
                             item.isPending
                               ? "bg-red-500/20 border-red-500/40 text-red-300 hover:bg-red-500 hover:text-white"
                               : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
@@ -249,7 +248,7 @@ export const NotificationCenter: React.FC = () => {
                       setOpen(false);
                       setIsModalOpen(true);
                     }}
-                    className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 shadow-md"
+                    className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[9px] font-black uppercase tracking-wider transition-colors cursor-pointer shrink-0 shadow-md touch-manipulation"
                   >
                     Completar
                   </button>
