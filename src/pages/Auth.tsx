@@ -242,8 +242,14 @@ const Auth = () => {
     const { error } = await signUp(email, password, fullName, parseInt(anioIngreso, 10), captchaToken || undefined);
     setSubmitting(false);
     if (error) {
-      if (error.message.includes("already")) toast.error("Ese email ya está registrado");
-      else toast.error(error.message);
+      const msg = error.message.toLowerCase();
+      if (msg.includes("rate limit") || msg.includes("over_email_send_rate_limit")) {
+        toast.error("Límite temporal de correos alcanzado. Te sugerimos ingresar directamente con 'Continuar con Google' que es instantáneo.", { duration: 6000 });
+      } else if (msg.includes("already")) {
+        toast.error("Ese email ya está registrado. Si ya tenés cuenta, iniciá sesión.");
+      } else {
+        toast.error(error.message);
+      }
       setCaptchaToken(null);
       setCaptchaKey(prev => prev + 1);
       return;
