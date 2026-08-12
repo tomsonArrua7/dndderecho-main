@@ -399,6 +399,38 @@ export const Navbar = () => {
                       </NavLink>
                     ))}
 
+                    {(profile?.role === 'admin' || profile?.role === 'escritor') && (
+                      <NavLink
+                        to="/panel-escritor"
+                        onClick={() => setOpen(false)}
+                        className={({ isActive }) =>
+                          cn(
+                            "flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300",
+                            isActive ? "bg-white/10 text-white font-black" : "text-white/40 hover:text-white"
+                          )
+                        }
+                      >
+                        <Newspaper className="h-4 w-4 text-emerald-400" strokeWidth={2} />
+                        <span className="text-[12px] uppercase tracking-widest font-bold">Panel Redacción</span>
+                      </NavLink>
+                    )}
+
+                    {profile?.role === 'admin' && (
+                      <NavLink
+                        to="/admin"
+                        onClick={() => setOpen(false)}
+                        className={({ isActive }) =>
+                          cn(
+                            "flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 border border-red-500/30 bg-red-500/10 text-red-300",
+                            isActive ? "bg-red-500/20 text-white font-black" : "hover:bg-red-500/20"
+                          )
+                        }
+                      >
+                        <Settings className="h-4 w-4 text-red-400" strokeWidth={2} />
+                        <span className="text-[12px] uppercase tracking-widest font-bold">Panel Admin</span>
+                      </NavLink>
+                    )}
+
                     {(profile?.role === 'admin' || profile?.role === 'betatester') && (
                       <div className="pt-4 space-y-2 border-t border-white/5">
                         <div className="text-[10px] font-black text-amber-400/60 uppercase tracking-[0.3em] mb-2 pl-2">Juegos (Beta)</div>

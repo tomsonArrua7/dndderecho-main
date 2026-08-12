@@ -557,23 +557,23 @@ export default function AdminPanel() {
         </motion.div>
       </div>
 
-      <Tabs defaultValue="general" className="space-y-8">
-        <TabsList className="bg-muted/50 p-1 rounded-xl">
-          <TabsTrigger value="general" className="rounded-lg px-6">General</TabsTrigger>
-          <TabsTrigger value="permutas" className="rounded-lg px-6">Permutas ({permutas.length})</TabsTrigger>
-          <TabsTrigger value="usuarios" className="rounded-lg px-6">Usuarios ({totalUsersCount || profiles.length})</TabsTrigger>
-          <TabsTrigger value="asistente" className="rounded-lg px-6">Asistente IA ({correcciones.length})</TabsTrigger>
-          <TabsTrigger value="trivia" className="rounded-lg px-6">Trivia IA ({preguntasTriviaIA.length})</TabsTrigger>
+      <Tabs defaultValue="general" className="space-y-6 sm:space-y-8">
+        <TabsList className="bg-muted/50 p-1.5 rounded-2xl flex overflow-x-auto max-w-full justify-start sm:justify-center no-scrollbar space-x-1 border border-white/5">
+          <TabsTrigger value="general" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">General</TabsTrigger>
+          <TabsTrigger value="permutas" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Permutas ({permutas.length})</TabsTrigger>
+          <TabsTrigger value="usuarios" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Usuarios ({totalUsersCount || profiles.length})</TabsTrigger>
+          <TabsTrigger value="asistente" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Asistente IA ({correcciones.length})</TabsTrigger>
+          <TabsTrigger value="trivia" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Trivia IA ({preguntasTriviaIA.length})</TabsTrigger>
         </TabsList>
 
         {/* --- TAB: GENERAL --- */}
-        <TabsContent value="general" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <section className="p-8 bg-card border rounded-2xl shadow-sm flex items-center justify-between">
+        <TabsContent value="general" className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <section className="p-5 sm:p-8 bg-card border rounded-2xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h2 className="text-xl font-semibold">Temporada de Permutas</h2>
-              <p className="text-muted-foreground text-sm">Habilita o deshabilita la creación de nuevas publicaciones.</p>
+              <h2 className="text-lg sm:text-xl font-semibold">Temporada de Permutas</h2>
+              <p className="text-muted-foreground text-xs sm:text-sm">Habilita o deshabilita la creación de nuevas publicaciones.</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 self-end sm:self-auto">
               <span className={`text-xs font-bold uppercase tracking-widest ${appSettings?.permutero_activo ? "text-green-500" : "text-destructive"}`}>
                 {appSettings?.permutero_activo ? "Activo" : "Pausado"}
               </span>
@@ -581,12 +581,12 @@ export default function AdminPanel() {
             </div>
           </section>
 
-          <section className="p-8 bg-card border rounded-2xl shadow-sm flex items-center justify-between">
+          <section className="p-5 sm:p-8 bg-card border rounded-2xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h2 className="text-xl font-semibold">Modo Solo Administradores (Mantenimiento)</h2>
-              <p className="text-muted-foreground text-sm">Cuando está activo, los estudiantes solo verán la pantalla de próximamente/mantenimiento.</p>
+              <h2 className="text-lg sm:text-xl font-semibold">Modo Solo Administradores (Mantenimiento)</h2>
+              <p className="text-muted-foreground text-xs sm:text-sm">Cuando está activo, los estudiantes solo verán la pantalla de próximamente/mantenimiento.</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 self-end sm:self-auto">
               <span className={`text-xs font-bold uppercase tracking-widest ${appSettings?.modo_mantenimiento ? "text-amber-500 font-extrabold" : "text-green-500"}`}>
                 {appSettings?.modo_mantenimiento ? "Solo Administradores" : "Acceso Público"}
               </span>
@@ -682,7 +682,7 @@ export default function AdminPanel() {
             </div>
           </div>
 
-          <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-card border rounded-2xl overflow-x-auto shadow-sm">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
@@ -761,7 +761,7 @@ export default function AdminPanel() {
             </div>
           </div>
 
-          <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-card border rounded-2xl overflow-x-auto shadow-sm">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b">
                 <tr>
