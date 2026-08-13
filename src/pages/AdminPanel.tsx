@@ -127,14 +127,12 @@ export default function AdminPanel() {
       if (myProfile?.role !== "admin") return;
 
       const [
-        { data: perms }, 
         { count: usersCount }, 
         { data: settings },
         { count: partidasCount },
         { count: duelosCount },
         { data: corrs }
       ] = await Promise.all([
-        supabase.from("permutas").select("*, materias(nombre)").order("created_at", { ascending: false }),
         supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("app_settings").select("*").eq("id", 1).single(),
         supabase.from("trivia_partidas").select("*", { count: "exact", head: true }),
@@ -144,6 +142,31 @@ export default function AdminPanel() {
 
       setTotalUsersCount(usersCount || 0);
       setCorrecciones(corrs || []);
+
+      // Paginación para obtener la totalidad de permutas superando el límite por defecto de 1000 filas de Supabase
+      let allPermutas: any[] = [];
+      let permFrom = 0;
+      const permStep = 1000;
+      let keepFetchingPerms = true;
+
+      while (keepFetchingPerms) {
+        const { data: chunk, error: chunkErr } = await supabase
+          .from("permutas")
+          .select("*, materias(nombre)")
+          .order("created_at", { ascending: false })
+          .range(permFrom, permFrom + permStep - 1);
+
+        if (chunkErr || !chunk || chunk.length === 0) {
+          keepFetchingPerms = false;
+        } else {
+          allPermutas.push(...chunk);
+          if (chunk.length < permStep) {
+            keepFetchingPerms = false;
+          } else {
+            permFrom += permStep;
+          }
+        }
+      }
 
       // Paginación para obtener la totalidad de perfiles superando el límite por defecto de 1000 filas de Supabase
       let allProfiles: any[] = [];
@@ -170,7 +193,7 @@ export default function AdminPanel() {
         }
       }
 
-      setPermutas(perms || []);
+      setPermutas(allPermutas);
       setProfiles(allProfiles);
       setAppSettings(settings || { id: 1, permutero_activo: true, modo_mantenimiento: false });
       setCustomPermutasCount(String((settings as any)?.personas_permutadas_count || 0));

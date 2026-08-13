@@ -74,9 +74,8 @@ const Permutero = () => {
 
   const load = async () => {
     try {
-      const [{ data: mats }, { data: perms }, { data: ms }, { data: settings }, { data: countData }] = await Promise.all([
+      const [{ data: mats }, { data: ms }, { data: settings }, { data: countData }] = await Promise.all([
         supabase.from("materias").select("id,nombre,anio,codigo").order("anio").order("nombre"),
-        supabase.from("permutas").select("*, materias(nombre, anio)").or("status.eq.activa,status.is.null").order("created_at", { ascending: false }),
         user
           ? supabase
               .from("matches")
@@ -85,8 +84,35 @@ const Permutero = () => {
         supabase.from("app_settings").select("permutero_activo").eq("id", 1).maybeSingle(),
         supabase.rpc("get_completed_permutas_count" as any),
       ]);
+
+      // Paginación para obtener la totalidad de permutas activas superando el límite por defecto de 1000 filas
+      let allPermutas: PermutaRow[] = [];
+      let permFrom = 0;
+      const permStep = 1000;
+      let keepFetchingPerms = true;
+
+      while (keepFetchingPerms) {
+        const { data: chunk, error: chunkErr } = await supabase
+          .from("permutas")
+          .select("*, materias(nombre, anio)")
+          .or("status.eq.activa,status.is.null")
+          .order("created_at", { ascending: false })
+          .range(permFrom, permFrom + permStep - 1);
+
+        if (chunkErr || !chunk || chunk.length === 0) {
+          keepFetchingPerms = false;
+        } else {
+          allPermutas.push(...(chunk as PermutaRow[]));
+          if (chunk.length < permStep) {
+            keepFetchingPerms = false;
+          } else {
+            permFrom += permStep;
+          }
+        }
+      }
+
       setMaterias(mats || []);
-      setPermutas((perms as PermutaRow[]) || []);
+      setPermutas(allPermutas);
       setMatches((ms as Match[]) || []);
       setAppSettings(settings || { permutero_activo: true });
       setCompletedCount(Number(countData) || 0);
