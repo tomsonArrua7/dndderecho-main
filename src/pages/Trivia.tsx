@@ -348,15 +348,35 @@ export default function Trivia() {
     userId: string | null;
     userName?: string;
     userAvatar?: string;
+    initialStats?: {
+      puntos?: number;
+      racha?: number;
+      aciertosPorcentaje?: number;
+      partidasJugadas?: number;
+      victoriasDuelo?: number;
+      derrotasDuelo?: number;
+    };
   }>({ isOpen: false, userId: null });
 
-  const handleInspectUser = (userId: string, userName?: string, avatarUrl?: string) => {
-    if (!userId) return;
+  const handleInspectUser = (
+    userId?: string | null,
+    userName?: string,
+    avatarUrl?: string,
+    initialStats?: {
+      puntos?: number;
+      racha?: number;
+      aciertosPorcentaje?: number;
+      partidasJugadas?: number;
+      victoriasDuelo?: number;
+      derrotasDuelo?: number;
+    }
+  ) => {
     setInspectUserModal({
       isOpen: true,
-      userId,
+      userId: userId || null,
       userName: userName || "Estudiante de Abogacía",
-      userAvatar: avatarUrl
+      userAvatar: avatarUrl,
+      initialStats
     });
   };
 
@@ -636,6 +656,84 @@ export default function Trivia() {
     }
   };
 
+  const [loadingGenerarIA, setLoadingGenerarIA] = useState(false);
+
+  const handleGenerarPreguntasConIA = async (materiaParam?: string) => {
+    const cat = CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria);
+    const materiaNombre = (materiaParam || (cat && cat.id !== "todas" ? cat.nombre : "Derecho Constitucional")).trim();
+
+    try {
+      setLoadingGenerarIA(true);
+      toast.info(`🧠 Invocando al Evaluador Académico IA (FCJyS UNLP) para ${materiaNombre}...`);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || "https://api.dndjursoc.com.ar").replace(/\/$/, "");
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/asistente`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token || ""}`,
+          "apikey": supabaseAnonKey
+        },
+        body: JSON.stringify({
+          accion: "generar_preguntas_trivia",
+          materia: materiaNombre,
+          cantidad: 5
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.preguntas && data.preguntas.length > 0) {
+          const catId = cat?.id || materiaNombre.toLowerCase().replace(/\s+/g, "_");
+          const formatted: TriviaQuestion[] = data.preguntas.map((q: any, idx: number) => ({
+            id: `ai_${catId}_${Date.now()}_${idx}`,
+            id_categoria: catId,
+            categoria_nombre: materiaNombre,
+            dificultad: "media" as const,
+            pregunta: q.pregunta,
+            opciones: q.opciones,
+            respuesta_correcta_index: typeof q.respuesta_correcta_index === "number" ? q.respuesta_correcta_index : 0,
+            fundamento_juridico: q.fundamento_juridico || `Fundamentado según programa de ${materiaNombre} de la FCJyS UNLP.`,
+            puntos_base: 100
+          }));
+
+          // Persistir en Supabase en segundo plano
+          try {
+            await supabase.from("trivia_preguntas").insert(
+              formatted.map(q => ({
+                materia: materiaNombre,
+                dificultad: "media",
+                pregunta: q.pregunta,
+                opciones: q.opciones,
+                respuesta_correcta_index: q.respuesta_correcta_index,
+                fundamento_juridico: q.fundamento_juridico,
+                aprobado: true
+              }))
+            );
+          } catch (dbErr) {
+            console.warn("No se pudo persistir en tabla trivia_preguntas:", dbErr);
+          }
+
+          // Añadir inmediatamente a la base en memoria
+          setDbTriviaQuestions(prev => [...formatted, ...prev]);
+          toast.success(`✨ ¡Se agregaron 5 nuevas preguntas oficiales de ${materiaNombre} al banco general!`);
+        } else {
+          toast.error("La IA no devolvió preguntas. Probá de nuevo.");
+        }
+      } else {
+        toast.error("No se pudo conectar con el servicio de IA.");
+      }
+    } catch (err: any) {
+      console.error("Error al invocar IA de Trivia:", err);
+      toast.error("Error al generar preguntas con IA.");
+    } finally {
+      setLoadingGenerarIA(false);
+    }
+  };
+
   // Estadísticas del usuario acumuladas (sincronizadas con DB / LocalStorage)
   const [rawUserStats, setUserStats] = useState<any>(() => {
     try {
@@ -723,16 +821,16 @@ export default function Trivia() {
 
       if (data && !error && data.length > 0) {
         const formatted: LeaderboardEntry[] = data.map((row: any, idx: number) => ({
-          id: row.user_id,
-          posicion: row.posicion || idx + 1,
-          nombre: row.nombre || "Estudiante de Abogacía",
+          id: row.user_id || row.id || `rank_user_${idx}`,
+          posicion: idx + 1,
+          nombre: row.nombre || row.nombre_completo || row.full_name || "Estudiante de Abogacía",
           facultad: "FCJyS - UNLP",
           materiaFav: row.materia_fav || "Toda la Carrera",
-          puntos: row.puntos || 0,
-          aciertosPorcentaje: row.aciertos_porcentaje || 0,
-          racha: row.racha || 0,
+          puntos: Number(row.puntos) || 0,
+          aciertosPorcentaje: Number(row.aciertos_porcentaje) || 0,
+          racha: Number(row.racha) || 0,
           avatarUrl: row.avatar_url || undefined,
-          rangoNombre: calcularRango(row.puntos || 0).nombre
+          rangoNombre: calcularRango(Number(row.puntos) || 0).nombre
         }));
         setLeaderboardList(formatted);
       } else {
@@ -1250,8 +1348,33 @@ export default function Trivia() {
     const isCorrect = optionIndex === currentQ.respuesta_correcta_index;
 
     if (isCorrect) {
-      const timeBonus = Math.floor(timeLeft * 1.5);
-      const pointsAdded = 10 + timeBonus;
+      // 📚 Cálculo escalonado de puntos según el año de la materia (1º a 5º año)
+      const catObj = CATEGORIAS_TRIVIA.find(c => c.id === currentQ.id_categoria);
+      const anio = catObj?.anio ?? 1;
+
+      // Base points progresivos por año académico:
+      // 1er año / Ingreso: 15 pts base
+      // 2do año: 25 pts base
+      // 3er año: 35 pts base
+      // 4to año: 45 pts base
+      // 5to año: 60 pts base
+      // Toda la carrera / Año 0: 30 pts base
+      let basePoints = 15;
+      if (anio === 1) basePoints = 15;
+      else if (anio === 2) basePoints = 25;
+      else if (anio === 3) basePoints = 35;
+      else if (anio === 4) basePoints = 45;
+      else if (anio === 5) basePoints = 60;
+      else if (anio === 0) basePoints = 30;
+
+      // Multiplicador por dificultad (fácil x1.0, media x1.25, difícil x1.5)
+      const diffMultiplier = currentQ.dificultad === "dificil" ? 1.5 : (currentQ.dificultad === "media" ? 1.25 : 1.0);
+      
+      // Bono de velocidad ponderado por el año académico
+      const speedMultiplier = 0.8 + (anio > 0 ? anio * 0.2 : 0.6);
+      const timeBonus = Math.floor(timeLeft * speedMultiplier);
+
+      const pointsAdded = Math.round((basePoints * diffMultiplier) + timeBonus);
       setScore((prev) => prev + pointsAdded);
       setStreak((prev) => {
         const next = prev + 1;
@@ -2468,19 +2591,30 @@ export default function Trivia() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 self-stretch md:self-auto justify-between md:justify-end relative z-10 border-t md:border-t-0 border-white/10 pt-3 md:pt-0">
-                <div className="p-3 rounded-2xl bg-slate-950/80 border border-white/10 text-right min-w-[140px]">
-                  <span className="text-[9px] font-black uppercase text-slate-400 block">Tu posición actual</span>
-                  <span className="text-xl md:text-2xl font-black text-white font-mono leading-tight">
+              <div className="flex items-center gap-3 self-stretch md:self-auto justify-between md:justify-end relative z-10 border-t md:border-t-0 border-slate-200 dark:border-white/10 pt-3 md:pt-0">
+                <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-white/10 text-right min-w-[140px]">
+                  <span className="text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 block">Tu posición actual</span>
+                  <span className="text-xl md:text-2xl font-black text-slate-900 dark:text-white font-mono leading-tight">
                     {(() => {
-                      if (!user?.id) return "--";
-                      const found = leaderboardList.find(e => e.id === user.id);
+                      const myUserId = user?.id;
+                      const myName = userName?.trim().toLowerCase();
+                      const myEmail = profile?.email?.toLowerCase();
+                      
+                      const found = leaderboardList.find(e => 
+                        (myUserId && e.id === myUserId) ||
+                        (myName && e.nombre && e.nombre.trim().toLowerCase() === myName) ||
+                        (myEmail && e.nombre && e.nombre.toLowerCase().includes(myEmail.split("@")[0]))
+                      );
+                      
                       if (found) return `#${found.posicion}`;
-                      if (userStats.puntosTotales > 0 && leaderboardList.length > 0) return `#${leaderboardList.length + 1}`;
+                      if (userStats.puntosTotales > 0 && leaderboardList.length > 0) {
+                        const betterPlayers = leaderboardList.filter(e => e.puntos > userStats.puntosTotales);
+                        return `#${betterPlayers.length + 1}`;
+                      }
                       return "--";
                     })()}
                   </span>
-                  <span className="text-[10px] text-red-400 font-mono font-bold block">{userStats.puntosTotales} pts</span>
+                  <span className="text-[10px] text-red-600 dark:text-red-400 font-mono font-bold block">{userStats.puntosTotales} pts</span>
                 </div>
 
                 <button
@@ -2646,7 +2780,7 @@ export default function Trivia() {
                       {/* PUESTO 2 (PLATA) */}
                       {leaderboardList[1] && (
                         <div 
-                          onClick={() => handleInspectUser(leaderboardList[1].id, leaderboardList[1].nombre, leaderboardList[1].avatarUrl)}
+                          onClick={() => handleInspectUser(leaderboardList[1].id, leaderboardList[1].nombre, leaderboardList[1].avatarUrl, { puntos: leaderboardList[1].puntos, racha: leaderboardList[1].racha, aciertosPorcentaje: leaderboardList[1].aciertosPorcentaje })}
                           className="flex flex-col items-center flex-1 space-y-2 cursor-pointer group"
                         >
                           <div className="relative">
@@ -2675,7 +2809,7 @@ export default function Trivia() {
                       {/* PUESTO 1 (ORO - MÁS ALTO) */}
                       {leaderboardList[0] && (
                         <div 
-                          onClick={() => handleInspectUser(leaderboardList[0].id, leaderboardList[0].nombre, leaderboardList[0].avatarUrl)}
+                          onClick={() => handleInspectUser(leaderboardList[0].id, leaderboardList[0].nombre, leaderboardList[0].avatarUrl, { puntos: leaderboardList[0].puntos, racha: leaderboardList[0].racha, aciertosPorcentaje: leaderboardList[0].aciertosPorcentaje })}
                           className="flex flex-col items-center flex-1 space-y-2 relative -top-3 cursor-pointer group"
                         >
                           <div className="relative">
@@ -2704,7 +2838,7 @@ export default function Trivia() {
                       {/* PUESTO 3 (BRONCE) */}
                       {leaderboardList[2] && (
                         <div 
-                          onClick={() => handleInspectUser(leaderboardList[2].id, leaderboardList[2].nombre, leaderboardList[2].avatarUrl)}
+                          onClick={() => handleInspectUser(leaderboardList[2].id, leaderboardList[2].nombre, leaderboardList[2].avatarUrl, { puntos: leaderboardList[2].puntos, racha: leaderboardList[2].racha, aciertosPorcentaje: leaderboardList[2].aciertosPorcentaje })}
                           className="flex flex-col items-center flex-1 space-y-2 cursor-pointer group"
                         >
                           <div className="relative">
@@ -2743,7 +2877,7 @@ export default function Trivia() {
                       <div className="hidden sm:block overflow-x-auto">
                         <table className="w-full text-left text-xs">
                           <thead>
-                            <tr className="text-slate-400 text-[10px] font-black uppercase border-b border-white/10">
+                            <tr className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase border-b border-slate-200 dark:border-white/10">
                               <th className="pb-3 px-3">POSICIÓN</th>
                               <th className="pb-3 px-3">USUARIO Y RANGO JURÍDICO</th>
                               <th className="pb-3 px-3 text-right">PUNTOS</th>
@@ -2751,21 +2885,21 @@ export default function Trivia() {
                               <th className="pb-3 px-3 text-right">PRECISIÓN</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-white/5 font-medium">
+                          <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-medium">
                             {leaderboardList.map((entry) => {
-                              const isMe = entry.id === user?.id;
+                              const isMe = entry.id === user?.id || (userName && entry.nombre?.trim().toLowerCase() === userName.trim().toLowerCase());
                               const rangoNombre = entry.rangoNombre || calcularRango(entry.puntos).nombre;
 
                               return (
                                 <tr 
                                   key={entry.id} 
                                   id={isMe ? "my-user-rank-row" : undefined}
-                                  onClick={() => handleInspectUser(entry.id, entry.nombre, entry.avatarUrl)}
+                                  onClick={() => handleInspectUser(entry.id, entry.nombre, entry.avatarUrl, { puntos: entry.puntos, racha: entry.racha, aciertosPorcentaje: entry.aciertosPorcentaje })}
                                   className={cn(
-                                    "hover:bg-white/[0.04] transition-colors cursor-pointer",
-                                    entry.posicion === 1 && "bg-amber-500/[0.04] border-l-2 border-l-amber-400",
-                                    entry.posicion === 2 && "bg-slate-300/[0.04] border-l-2 border-l-slate-300",
-                                    entry.posicion === 3 && "bg-amber-700/[0.04] border-l-2 border-l-amber-600",
+                                    "hover:bg-slate-100/80 dark:hover:bg-white/[0.04] transition-colors cursor-pointer",
+                                    entry.posicion === 1 && "bg-amber-500/[0.06] border-l-2 border-l-amber-500",
+                                    entry.posicion === 2 && "bg-slate-300/[0.1] border-l-2 border-l-slate-400",
+                                    entry.posicion === 3 && "bg-amber-700/[0.06] border-l-2 border-l-amber-600",
                                     isMe && "bg-red-500/10 border-l-2 border-l-red-500"
                                   )}
                                 >
@@ -2775,38 +2909,38 @@ export default function Trivia() {
                                       entry.posicion === 1 ? "bg-amber-500 text-slate-950 border-amber-300" :
                                       entry.posicion === 2 ? "bg-slate-300 text-slate-950 border-white" :
                                       entry.posicion === 3 ? "bg-amber-700 text-white border-amber-500" :
-                                      "bg-slate-950 text-slate-300 border-white/10"
+                                      "bg-slate-200 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-white/10"
                                     )}>
                                       #{entry.posicion}
                                     </span>
                                   </td>
                                   <td className="py-4 px-3">
                                     <div className="flex items-center gap-3">
-                                      <div className="w-9 h-9 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200 uppercase shrink-0">
+                                      <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-white/10 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200 uppercase shrink-0">
                                         {entry.nombre.split(" ").map(n => n[0]).slice(0, 2).join("")}
                                       </div>
                                       <div>
                                         <div className="flex items-center gap-2">
-                                          <span className="font-bold text-white text-sm hover:underline">{entry.nombre}</span>
+                                          <span className="font-bold text-slate-900 dark:text-white text-sm hover:underline">{entry.nombre}</span>
                                           {isMe && (
-                                            <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
+                                            <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-700 dark:text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
                                               TÚ
                                             </span>
                                           )}
                                         </div>
-                                        <span className="text-[11px] text-red-300/90 font-medium block">{rangoNombre}</span>
+                                        <span className="text-[11px] text-red-600 dark:text-red-300/90 font-medium block">{rangoNombre}</span>
                                       </div>
                                     </div>
                                   </td>
-                                  <td className="py-4 px-3 text-right font-black text-red-400 font-mono text-sm">
+                                  <td className="py-4 px-3 text-right font-black text-red-600 dark:text-red-400 font-mono text-sm">
                                     {entry.puntos} PTS
                                   </td>
                                   <td className="py-4 px-3 text-center">
-                                    <span className="inline-flex items-center gap-1 font-mono font-bold text-amber-400 text-xs">
-                                      x{entry.racha || 0} <Flame className="w-3.5 h-3.5 fill-amber-400" />
+                                    <span className="inline-flex items-center gap-1 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs">
+                                      x{entry.racha || 0} <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500 dark:fill-amber-400 dark:text-amber-400" />
                                     </span>
                                   </td>
-                                  <td className="py-4 px-3 text-right font-mono font-bold text-emerald-400 text-xs">
+                                  <td className="py-4 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">
                                     {entry.aciertosPorcentaje || 0}%
                                   </td>
                                 </tr>
@@ -2819,17 +2953,17 @@ export default function Trivia() {
                       {/* VISTA TARJETAS MOBILE DE JUGADORES REALES */}
                       <div className="sm:hidden space-y-2.5">
                         {leaderboardList.map((entry) => {
-                          const isMe = entry.id === user?.id;
+                          const isMe = entry.id === user?.id || (userName && entry.nombre?.trim().toLowerCase() === userName.trim().toLowerCase());
                           const rangoNombre = entry.rangoNombre || calcularRango(entry.puntos).nombre;
 
                           return (
                             <div 
                               key={entry.id} 
                               id={isMe ? "my-user-rank-row" : undefined}
-                              onClick={() => handleInspectUser(entry.id, entry.nombre, entry.avatarUrl)}
+                              onClick={() => handleInspectUser(entry.id, entry.nombre, entry.avatarUrl, { puntos: entry.puntos, racha: entry.racha, aciertosPorcentaje: entry.aciertosPorcentaje })}
                               className={cn(
                                 "p-3.5 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer",
-                                isMe ? "bg-red-500/10 border-red-500" : "bg-white/[0.03] border-white/10"
+                                isMe ? "bg-red-500/10 border-red-500" : "bg-slate-50 dark:bg-white/[0.03] border-slate-200 dark:border-white/10"
                               )}
                             >
                               <div className="flex items-center gap-3 min-w-0">
@@ -2838,28 +2972,28 @@ export default function Trivia() {
                                   entry.posicion === 1 ? "bg-amber-500 text-slate-950 border-amber-300" :
                                   entry.posicion === 2 ? "bg-slate-300 text-slate-950 border-white" :
                                   entry.posicion === 3 ? "bg-amber-700 text-white border-amber-500" :
-                                  "bg-slate-950 text-slate-300 border-white/10"
+                                  "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-white/10"
                                 )}>
                                   {entry.posicion}
                                 </span>
-                                <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold text-slate-200 uppercase shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-white/10 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200 uppercase shrink-0">
                                   {entry.nombre.split(" ").map(n => n[0]).slice(0, 2).join("")}
                                 </div>
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="font-bold text-xs text-white truncate">{entry.nombre}</span>
+                                    <span className="font-bold text-xs text-slate-900 dark:text-white truncate">{entry.nombre}</span>
                                     {isMe && (
-                                      <span className="px-1.5 py-0.2 rounded-full bg-red-500/30 text-red-200 text-[8px] font-black uppercase font-mono shrink-0">
+                                      <span className="px-1.5 py-0.2 rounded-full bg-red-500/30 text-red-700 dark:text-red-200 text-[8px] font-black uppercase font-mono shrink-0">
                                         TÚ
                                       </span>
                                     )}
                                   </div>
-                                  <span className="text-[10px] text-red-300/90 block truncate">{rangoNombre}</span>
+                                  <span className="text-[10px] text-red-600 dark:text-red-300/90 block truncate">{rangoNombre}</span>
                                 </div>
                               </div>
 
                               <div className="flex items-center gap-2 shrink-0">
-                                <span className="font-mono font-black text-red-400 text-xs">{entry.puntos} PTS</span>
+                                <span className="font-mono font-black text-red-600 dark:text-red-400 text-xs">{entry.puntos} PTS</span>
                               </div>
                             </div>
                           );
@@ -2867,20 +3001,20 @@ export default function Trivia() {
                       </div>
                     </>
                   ) : (
-                    <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-3">
-                      <Trophy className="w-10 h-10 mx-auto text-amber-400 opacity-60" />
-                      <h4 className="font-black text-base text-white">¡Iniciá la Tabla de Posiciones!</h4>
-                      <p className="text-xs text-slate-400 max-w-md mx-auto">
+                    <div className="p-8 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 text-center space-y-3">
+                      <Trophy className="w-10 h-10 mx-auto text-amber-500 dark:text-amber-400 opacity-60" />
+                      <h4 className="font-black text-base text-slate-900 dark:text-white">¡Iniciá la Tabla de Posiciones!</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                         Aún no hay registros en Supabase. Completá tu primera evaluación o duelo para ser el #1 de la Facultad.
                       </p>
                     </div>
                   )}
 
                   {/* PIE Y SYNC */}
-                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-mono">
+                  <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[11px] text-slate-300">Sincronizado en tiempo real con Supabase</span>
+                      <span className="text-[11px] text-slate-600 dark:text-slate-300">Sincronizado en tiempo real con Supabase</span>
                     </div>
                   </div>
 
@@ -2910,7 +3044,7 @@ export default function Trivia() {
                         return (
                           <div
                             key={entry.user_id || idx}
-                            onClick={() => handleInspectUser(entry.user_id, entry.nombre, entry.avatar_url)}
+                            onClick={() => handleInspectUser(entry.user_id, entry.nombre, entry.avatar_url, { puntos: entry.puntos_duelista, victoriasDuelo: entry.victorias, derrotasDuelo: entry.derrotas })}
                             className={cn(
                               "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 cursor-pointer",
                               isMe
@@ -2980,12 +3114,12 @@ export default function Trivia() {
                   {medallasLeaderboardList.length > 0 ? (
                     <div className="space-y-2.5">
                       {medallasLeaderboardList.map((entry, idx) => {
-                        const isMe = entry.user_id === user?.id;
+                        const isMe = entry.user_id === user?.id || (userName && entry.nombre?.trim().toLowerCase() === userName.trim().toLowerCase());
 
                         return (
                           <div
                             key={entry.user_id || idx}
-                            onClick={() => handleInspectUser(entry.user_id, entry.nombre, entry.avatar_url)}
+                            onClick={() => handleInspectUser(entry.user_id, entry.nombre, entry.avatar_url, { puntos: (entry.medallas_oro || 0) * 100 + (entry.medallas_plata || 0) * 50 })}
                             className={cn(
                               "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 cursor-pointer",
                               isMe
@@ -3405,6 +3539,7 @@ export default function Trivia() {
           userId={inspectUserModal.userId}
           userName={inspectUserModal.userName}
           userAvatar={inspectUserModal.userAvatar}
+          initialStats={inspectUserModal.initialStats}
         />
 
         {/* MODAL TUTORIAL Y GUÍA DE REGLAS Y PUNTOS DE LA TRIVIA */}

@@ -268,29 +268,57 @@ export const SKILLS_DISPONIBLES: SkillDefinition[] = [
     id: "litigio_penal",
     nombre: "Litigio Penal & Garantías",
     icono: "Scale",
-    descripcion: "Especialista en derecho penal bonaerense, habeas corpus y debate en juicios por jurados.",
-    beneficio: "Desbloquea maniobras de defensa técnica penal de alto rendimiento."
+    descripcion: "Especialista en derecho penal bonaerense, garantías constitucionales, hábeas corpus y juicios por jurados.",
+    beneficio: "Otorga bono de +20 en la rama Penal y destreza en causas criminales."
   },
   {
-    id: "contratos",
+    id: "civil_comercial",
     nombre: "Derecho Civil, Comercial & Corporativo",
     icono: "FileText",
-    descripcion: "Dominio de contratos complejos, fideicomisos, sociedades y auditoría comercial.",
-    beneficio: "Desbloquea estructuración de negocios millonarios y sociedades."
+    descripcion: "Dominio de contratos civiles y comerciales, fideicomisos, responsabilidad por daños y sociedades de la LGS.",
+    beneficio: "Otorga bono de +20 en la rama Civil/Comercial y apertura a asesorías corporativas."
   },
   {
-    id: "rosca_politica",
-    nombre: "Oratoria & Relaciones Institucionales",
-    icono: "Users",
-    descripcion: "Manejo fluido de vínculos académicos en la UNLP, la función pública y el Colegio de Abogados de La Plata.",
-    beneficio: "Desbloquea convenios institucionales e intermediación con organismos públicos."
+    id: "publico_administrativo",
+    nombre: "Derecho Público & Administrativo",
+    icono: "Landmark",
+    descripcion: "Experto en contrataciones públicas, amparos, derecho constitucional y litigios ante el fuero Contencioso Administrativo.",
+    beneficio: "Otorga bono de +20 en Derecho Público y relaciones clave con el Estado y la UNLP."
   },
   {
-    id: "ciberseguridad",
+    id: "ciberderecho_tech",
     nombre: "Ciberderecho & Prueba Digital",
     icono: "ShieldCheck",
-    descripcion: "Experto en evidencia informática, contratos inteligentes, fraudes telemáticos e Inteligencia Artificial.",
-    beneficio: "Desbloquea peritajes informáticos de vanguardia."
+    descripcion: "Especialista en evidencia digital, peritajes informáticos, contratos inteligentes, privacidad e Inteligencia Artificial.",
+    beneficio: "Otorga bono de +20 en Cibertech y resolución de fraudes informáticos complejos."
+  },
+  {
+    id: "laboral_seg_social",
+    nombre: "Derecho del Trabajo & Seguridad Social",
+    icono: "Briefcase",
+    descripcion: "Litigante en Tribunales del Trabajo de La Plata, despidos LCT, accidentes ART y negociaciones paritarias colectivas.",
+    beneficio: "Otorga bono de +20 en Derecho Laboral y convenios colectivos gremiales."
+  },
+  {
+    id: "familia_sucesiones",
+    nombre: "Derecho de Familia & Sucesiones",
+    icono: "Users",
+    descripcion: "Especialista en divorcios, alimentos, compensaciones económicas, adopciones y particiones hereditarias complejas.",
+    beneficio: "Otorga bono de +20 en Familia y Sucesiones con alta empatía procesal."
+  },
+  {
+    id: "internacional_ddhh",
+    nombre: "Derecho Internacional & DDHH",
+    icono: "Globe",
+    descripcion: "Enfocado en el Sistema Interamericano (CIDH / Corte IDH), derecho internacional público y privado, y litigio estratégico.",
+    beneficio: "Otorga bono de +20 en Internacional/DDHH y prestigio ante tribunales supranacionales."
+  },
+  {
+    id: "ambiental_recursos",
+    nombre: "Derecho Ambiental & Recursos Naturales",
+    icono: "Leaf",
+    descripcion: "Defensa de bienes colectivos, amparos ambientales de la Ley General del Ambiente, derecho agrario y minería.",
+    beneficio: "Otorga bono de +20 en Ambiental/Recursos y causas de impacto socio-ambiental."
   }
 ];
 

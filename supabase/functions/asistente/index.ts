@@ -118,26 +118,38 @@ Por favor, explica en un tono pedagógico, directo y muy claro (EN MÁXIMO 2 ORA
     }
 
     // =========================================================================
-    // ACCIÓN 2: GENERAR PARCIAL FLASH CON IA
+    // ACCIÓN 2: GENERAR PREGUNTAS Y PARCIAL FLASH CON IA PARA FCJyS UNLP
     // =========================================================================
-    if (accion === "generar_parcial_flash") {
-      const promptParcial = `Genera EXACTAMENTE 5 preguntas de opción múltiple (Multiple Choice) para un examen parcial universitario enfocado EXCLUSIVAMENTE en la materia o tema de Derecho: "${materia || 'Derecho General'}".
-¡REGLA OBLIGATORIA Y CRÍTICA!: Las 5 preguntas DEBEN tratar 100% sobre "${materia}". Está estrictamente prohibido incluir contenido o preguntas de otras materias o temas distintos.
-Responde ÚNICAMENTE en formato JSON plano como una lista de objetos (un arreglo JSON sin bloques de código markdown ni texto adicional).
-Estructura exacta de cada objeto:
-{
-  "id": "pf_1",
-  "id_categoria": "${(materia || 'general').toLowerCase().replace(/\s+/g, "_")}",
-  "categoria_nombre": "${materia || 'Derecho'}",
-  "dificultad": "media",
-  "pregunta": "¿Texto claro de la pregunta de la materia?",
-  "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
-  "respuesta_correcta_index": 0,
-  "fundamento_juridico": "Artículo de ley o concepto explicativo de ${materia}",
-  "puntos_base": 100
-}`;
+    if (accion === "generar_parcial_flash" || accion === "generar_preguntas_trivia") {
+      const cantidadPreguntas = cantidad || 5;
+      const promptParcial = `Sos el evaluador académico oficial de la Facultad de Ciencias Jurídicas y Sociales (FCJyS) de la Universidad Nacional de La Plata (UNLP), en la ciudad de La Plata, Provincia de Buenos Aires, República Argentina.
+Generá EXACTAMENTE ${cantidadPreguntas} preguntas académicas de opción múltiple (Multiple Choice con 4 opciones) enfocadas EXCLUSIVAMENTE en la materia de Derecho: "${materia || 'Derecho General'}".
+
+¡REGLAS CRÍTICAS OBLIGATORIAS!:
+1. Las preguntas DEBEN estar fundamentadas 100% en el ordenamiento jurídico argentino vigente (Código Civil y Comercial, Código Penal, CPCCBA, Ley de Procedimiento Administrativo PBA / Nacional, Ley de Contrato de Trabajo 20.744, Constitución Nacional y Provincial, y doctrina de las cátedras de la UNLP).
+2. Está terminantemente prohibido incluir preguntas de otras materias o jurisprudencia ajena a Argentina.
+3. Las opciones deben ser precisas, con 1 respuesta correcta y 3 distractores verosímiles pero erróneos.
+4. Incluí el fundamento normativo exacto (ej: Art. 752 CCyCN, Art. 79 CP, Art. 14 bis CN, etc.).
+5. Responde ÚNICAMENTE en formato JSON plano (un arreglo JSON sin bloques markdown ni texto adicional).
+
+Estructura de cada objeto JSON:
+[
+  {
+    "id": "ai_unlp_1",
+    "id_categoria": "${(materia || 'general').toLowerCase().replace(/\s+/g, "_")}",
+    "categoria_nombre": "${materia || 'Derecho'}",
+    "dificultad": "media",
+    "pregunta": "¿Texto de la pregunta?",
+    "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Artículo de ley o concepto normativo explicativo aplicable a la materia.",
+    "puntos_base": 100
+  }
+]`;
 
       let preguntas: any[] = [];
+      const geminiApiKey = Deno.env.get("GEMINI_API_KEY") || Deno.env.get("GOOGLE_AI_API_KEY");
+
       if (openrouterApiKey) {
         try {
           const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -149,17 +161,36 @@ Estructura exacta de cada objeto:
             body: JSON.stringify({
               model: openrouterModel,
               messages: [{ role: "user", content: promptParcial }],
-              temperature: 0.4
+              temperature: 0.3
             })
           });
           if (res.ok) {
             const data = await res.json();
             const rawText = data.choices?.[0]?.message?.content || "";
-            const cleanText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+            const cleanText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
             preguntas = JSON.parse(cleanText);
           }
         } catch (e: any) {
-          console.warn("Error al generar Parcial Flash:", e.message);
+          console.warn("Error al generar con OpenRouter:", e.message);
+        }
+      } else if (geminiApiKey) {
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: promptParcial }] }],
+              generationConfig: { temperature: 0.3 }
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            const cleanText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
+            preguntas = JSON.parse(cleanText);
+          }
+        } catch (e: any) {
+          console.warn("Error al generar con Gemini API:", e.message);
         }
       }
 
