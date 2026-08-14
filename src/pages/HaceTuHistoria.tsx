@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   ETAPAS_CARRERA, 
   SKILLS_DISPONIBLES, 
@@ -9,6 +10,7 @@ import {
   MUNICIPIOS_PBA,
   LOGROS_JUEGO,
   CarreraGuardada,
+  CareerScoreBreakdown,
   PreguntaJuridicaMinijuego,
   SkillDefinition, 
   EtapaVida, 
@@ -16,7 +18,8 @@ import {
   ImpactoStats,
   RamasPuntuacion,
   EventoInesperado,
-  LogroDefinition
+  LogroDefinition,
+  calculateCareerScore
 } from "@/data/haceTuHistoriaData";
 import { 
   Scale, 
@@ -49,7 +52,11 @@ import {
   Leaf,
   Shield,
   Home,
-  Activity
+  Activity,
+  Filter,
+  Eye,
+  X,
+  Medal
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -60,14 +67,26 @@ interface StaffConfig {
   estudioNombre: string;
 }
 
+const TODAS_LAS_RAMAS_FILTRO = [
+  "Todas las ramas",
+  "Penalista & Garantías",
+  "Civilista & Comercial",
+  "Derecho Público & Administrativo",
+  "Ciberderecho & Tech",
+  "Derecho del Trabajo & Laboral",
+  "Derecho Ambiental & Recursos",
+  "Derecho de Familia & Sucesiones",
+  "Derecho Internacional & DDHH"
+];
+
 export default function HaceTuHistoria() {
   const { user, profile, loading } = useAuth();
   
   // Verificación estricta de Beta (Admin o Betatester)
   const isBetaUser = profile?.role === "admin" || profile?.role === "betatester";
 
-  // Pestañas Pre-Juego: "setup" | "logros" | "historial"
-  const [activePreGameTab, setActivePreGameTab] = useState<"setup" | "logros" | "historial">("setup");
+  // Pestañas Pre-Juego: "setup" | "ranking" | "logros" | "historial"
+  const [activePreGameTab, setActivePreGameTab] = useState<"setup" | "ranking" | "logros" | "historial">("setup");
 
   // Setup Inicial de Personaje: Selector de Provincia y Ciudad
   const [selectedProvincia, setSelectedProvincia] = useState("Buenos Aires");
@@ -89,6 +108,9 @@ export default function HaceTuHistoria() {
   const [etica, setEtica] = useState(50);
   const [templanza, setTemplanza] = useState(75);
   const [dineroPesos, setDineroPesos] = useState(35000);
+
+  // Desafíos jurídicos acertados en la partida actual
+  const [desafiosAcertados, setDesafiosAcertados] = useState(0);
 
   // Modal de Confirmación de Renuncia Voluntaria
   const [showResignModal, setShowResignModal] = useState(false);
@@ -116,7 +138,7 @@ export default function HaceTuHistoria() {
     }
   });
 
-  // Historial de Carreras Anteriores
+  // Historial de Carreras Propias
   const [carrerasPasadas, setCarrerasPasadas] = useState<CarreraGuardada[]>(() => {
     try {
       const saved = localStorage.getItem("dnd_historia_carreras");
@@ -125,6 +147,12 @@ export default function HaceTuHistoria() {
       return [];
     }
   });
+
+  // Ranking Global desde Supabase
+  const [rankingGlobal, setRankingGlobal] = useState<CarreraGuardada[]>([]);
+  const [rankingLoading, setRankingLoading] = useState(false);
+  const [selectedRamaFilter, setSelectedRamaFilter] = useState("Todas las ramas");
+  const [inspectedCareer, setInspectedCareer] = useState<CarreraGuardada | null>(null);
 
   const [newLogroAlert, setNewLogroAlert] = useState<LogroDefinition | null>(null);
 
@@ -152,6 +180,7 @@ export default function HaceTuHistoria() {
   const [lastFeedback, setLastFeedback] = useState<string | null>(null);
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [isVictory, setIsVictory] = useState(false);
+  const [lastScoreBreakdown, setLastScoreBreakdown] = useState<CareerScoreBreakdown | null>(null);
 
   useEffect(() => {
     try {
@@ -169,7 +198,53 @@ export default function HaceTuHistoria() {
     }
   }, [carrerasPasadas]);
 
-  // Al cambiar de etapa, seleccionar evento inesperado y SELECCIONAR OPCIONES ALEATORIAS DEL POOL
+  // Cargar Ranking Global de Supabase
+  const fetchRankingGlobal = async () => {
+    try {
+      setRankingLoading(true);
+      const { data, error } = await supabase
+        .from("historia_carreras_ranking" as any)
+        .select("*")
+        .order("puntos_totales", { ascending: false })
+        .limit(100);
+
+      if (data && !error) {
+        const mapped: CarreraGuardada[] = data.map((row: any) => ({
+          id: row.id,
+          userId: row.user_id,
+          nombreJugador: row.nombre_jugador,
+          avatarUrl: row.avatar_url,
+          fechaISO: new Date(row.created_at).toLocaleDateString("es-AR"),
+          ciudadNatal: row.ciudad_natal,
+          edadFinal: row.edad_final,
+          ovrFinal: row.ovr_final,
+          patrimonioFinal: Number(row.patrimonio_final),
+          prestigioFinal: row.prestigio_final,
+          contactosFinal: row.contactos_final,
+          eticaFinal: row.etica_final,
+          templanzaFinal: row.templanza_final,
+          tituloObtenido: row.titulo_obtenido,
+          ramaPredominante: row.rama_predominante,
+          fueVictoria: row.fue_victoria,
+          motivoCierre: row.motivo_cierre || "",
+          desafiosAcertados: row.desafios_juridicos_acertados,
+          logrosCount: row.logros_obtenidos_count,
+          puntosTotales: row.puntos_totales
+        }));
+        setRankingGlobal(mapped);
+      }
+    } catch (err) {
+      console.error("Error al cargar ranking global:", err);
+    } finally {
+      setRankingLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRankingGlobal();
+  }, []);
+
+  // Al cambiar de etapa, seleccionar evento inesperado y opciones aleatorias del pool
   useEffect(() => {
     if (gameStarted && ETAPAS_CARRERA[currentEtapaIdx]) {
       const stage = ETAPAS_CARRERA[currentEtapaIdx];
@@ -187,34 +262,17 @@ export default function HaceTuHistoria() {
         setEtica(e => applyStatChange(e, imp.etica));
         setTemplanza(s => applyStatChange(s, imp.templanza));
         setDineroPesos(d => Math.max(0, d + imp.dineroPesos));
+      } else {
+        setActiveRandomEvent(null);
       }
 
-      // 2. Seleccionar 4-5 opciones aleatorias del pool de la etapa
+      // 2. Seleccionar 4-6 opciones aleatorias del pool de la etapa
       const pool = [...stage.opciones];
       const shuffled = pool.sort(() => 0.5 - Math.random());
       const selectedCount = Math.min(shuffled.length, 4 + Math.floor(Math.random() * 2));
       setCurrentRandomOpciones(shuffled.slice(0, selectedCount));
     }
   }, [currentEtapaIdx, gameStarted]);
-
-  const saveCareerToHistory = (fueVictoria: boolean, motivo: string) => {
-    const nuevaCarrera: CarreraGuardada = {
-      id: Date.now().toString(),
-      fechaISO: new Date().toLocaleDateString("es-AR"),
-      ciudadNatal: getCiudadNatalNombre(),
-      edadFinal: ETAPAS_CARRERA[currentEtapaIdx]?.edadFin || 65,
-      ovrFinal: calculateOVRGeneral(),
-      patrimonioFinal: dineroPesos,
-      ramaPredominante: getDominantBranch().name,
-      fueVictoria,
-      motivoCierre: motivo
-    };
-    setCarrerasPasadas(prev => [nuevaCarrera, ...prev]);
-  };
-
-  if (!loading && (!user || !isBetaUser)) {
-    return <Navigate to="/mi-espacio" replace />;
-  }
 
   const getCiudadNatalNombre = () => {
     if (selectedProvincia === "Buenos Aires") {
@@ -296,8 +354,8 @@ export default function HaceTuHistoria() {
     }
     if (contactos >= prestigio && contactos >= etica && contactos >= templanza) {
       return {
-        titulo: "🤝 Estratega Político & Operador Institucional",
-        mencion: "Destacado por tejer redes de influencia decisivas en la UNLP y la función pública."
+        titulo: "🤝 Referente del Foro & Operador Institucional",
+        mencion: "Destacado por tejer redes profesionales y académicas decisivas en la UNLP y la función pública."
       };
     }
     if (etica >= prestigio && etica >= contactos && etica >= templanza) {
@@ -334,12 +392,86 @@ export default function HaceTuHistoria() {
       if (logro.id === "logro_patria_chica" && selectedProvincia !== "Buenos Aires" && currentStageIdx >= 6) isUnlocked = true;
       if (logro.id === "logro_mente_acero" && newTemplanza >= 85) isUnlocked = true;
       if (logro.id === "logro_operador" && newContactos >= 85) isUnlocked = true;
+      if (logro.id === "logro_burnout_survivor" && newTemplanza > 0 && newTemplanza < 20) isUnlocked = true;
 
       if (isUnlocked) {
         setUnlockedLogros(prev => [...prev, logro.id]);
         setNewLogroAlert(logro);
       }
     });
+  };
+
+  const saveCareerToHistory = async (fueVictoria: boolean, motivo: string) => {
+    const finalOvr = calculateOVRGeneral();
+    const titleObj = getCustomCareerTitle();
+    const dominant = getDominantBranch();
+    const finalAge = ETAPAS_CARRERA[currentEtapaIdx]?.edadFin || 65;
+    const playerName = profile?.full_name || profile?.email?.split("@")[0] || "Estudiante de Jursoc";
+    const playerAvatar = profile?.avatar_url || null;
+
+    const breakdown = calculateCareerScore(
+      finalOvr,
+      etica,
+      desafiosAcertados,
+      dineroPesos,
+      unlockedLogros.length,
+      fueVictoria
+    );
+
+    setLastScoreBreakdown(breakdown);
+
+    const nuevaCarrera: CarreraGuardada = {
+      id: Date.now().toString(),
+      userId: user?.id,
+      nombreJugador: playerName,
+      avatarUrl: playerAvatar || undefined,
+      fechaISO: new Date().toLocaleDateString("es-AR"),
+      ciudadNatal: getCiudadNatalNombre(),
+      edadFinal: finalAge,
+      ovrFinal: finalOvr,
+      patrimonioFinal: dineroPesos,
+      prestigioFinal: prestigio,
+      contactosFinal: contactos,
+      eticaFinal: etica,
+      templanzaFinal: templanza,
+      tituloObtenido: titleObj.titulo,
+      ramaPredominante: dominant.name,
+      fueVictoria,
+      motivoCierre: motivo,
+      desafiosAcertados,
+      logrosCount: unlockedLogros.length,
+      puntosTotales: breakdown.puntosTotales,
+      scoreBreakdown: breakdown
+    };
+
+    setCarrerasPasadas(prev => [nuevaCarrera, ...prev]);
+
+    // Guardar en Supabase para el Hall de la Fama Global
+    try {
+      await supabase.from("historia_carreras_ranking" as any).insert({
+        user_id: user?.id || null,
+        nombre_jugador: playerName,
+        avatar_url: playerAvatar,
+        puntos_totales: breakdown.puntosTotales,
+        ovr_final: finalOvr,
+        patrimonio_final: dineroPesos,
+        prestigio_final: prestigio,
+        contactos_final: contactos,
+        etica_final: etica,
+        templanza_final: templanza,
+        edad_final: finalAge,
+        ciudad_natal: getCiudadNatalNombre(),
+        titulo_obtenido: titleObj.titulo,
+        rama_predominante: dominant.name,
+        fue_victoria: fueVictoria,
+        motivo_cierre: motivo,
+        desafios_juridicos_acertados: desafiosAcertados,
+        logros_obtenidos_count: unlockedLogros.length
+      });
+      fetchRankingGlobal();
+    } catch (err) {
+      console.error("Error al persistir carrera en Supabase:", err);
+    }
   };
 
   const startNewGame = () => {
@@ -352,6 +484,8 @@ export default function HaceTuHistoria() {
     setDineroPesos(selectedEdadInicial === 25 ? 450000 : 35000);
     setRamas({ penal: 0, civilComercial: 0, administrativoPublico: 0, cibertech: 0, laboral: 0, ambiental: 0, familia: 0, internacional: 0 });
     setStaff({ expertoCount: 0, juniorCount: 0, hasContador: false, estudioNombre: "DND & Asociados" });
+    setDesafiosAcertados(0);
+    setLastScoreBreakdown(null);
     
     setCurrentEtapaIdx(selectedEdadInicial === 25 ? 1 : 0);
     setActiveQuiz(null);
@@ -397,6 +531,7 @@ export default function HaceTuHistoria() {
       impact.templanza = -12;
     } else if (opcion.desafioJuridico) {
       impact.prestigio += 5;
+      setDesafiosAcertados(prev => prev + 1);
     }
 
     setLastImpact(impact);
@@ -492,7 +627,20 @@ export default function HaceTuHistoria() {
     setShowResignModal(false);
     setGameOverReason(null);
     setIsVictory(false);
+    setLastScoreBreakdown(null);
   };
+
+  // Filtrado del Ranking Global
+  const filteredRanking = useMemo(() => {
+    if (selectedRamaFilter === "Todas las ramas") {
+      return rankingGlobal;
+    }
+    return rankingGlobal.filter(c => c.ramaPredominante.toLowerCase().includes(selectedRamaFilter.toLowerCase().split(" ")[0]));
+  }, [rankingGlobal, selectedRamaFilter]);
+
+  if (!loading && (!user || !isBetaUser)) {
+    return <Navigate to="/mi-espacio" replace />;
+  }
 
   const currentEtapa: EtapaVida = ETAPAS_CARRERA[currentEtapaIdx];
   const dominantBranch = getDominantBranch();
@@ -515,10 +663,10 @@ export default function HaceTuHistoria() {
               HACÉ TU HISTORIA
             </h1>
             <p className="text-xs md:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Explorá la carrera de abogacía, consultá tus logros obtenidos y revisá tu historial de carreras anteriores.
+              Simulador RPG de vida profesional para estudiantes de Derecho de la UNLP. Competí en el Hall de la Fama, resolvé casos prácticos y forjá tu legado en Tribunales.
             </p>
 
-            <div className="flex items-center justify-center gap-2 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
               <button
                 onClick={() => setActivePreGameTab("setup")}
                 className={cn(
@@ -533,6 +681,19 @@ export default function HaceTuHistoria() {
               </button>
 
               <button
+                onClick={() => { setActivePreGameTab("ranking"); fetchRankingGlobal(); }}
+                className={cn(
+                  "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
+                  activePreGameTab === "ranking"
+                    ? "bg-amber-600 border-amber-500 text-white shadow-lg"
+                    : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
+                )}
+              >
+                <Trophy className="w-4 h-4 text-amber-400" />
+                <span>🏆 Hall de la Fama</span>
+              </button>
+
+              <button
                 onClick={() => setActivePreGameTab("logros")}
                 className={cn(
                   "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border",
@@ -541,7 +702,7 @@ export default function HaceTuHistoria() {
                     : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"
                 )}
               >
-                <Trophy className="w-4 h-4 text-amber-400" />
+                <Award className="w-4 h-4 text-emerald-400" />
                 <span>Logros ({unlockedLogros.length}/{LOGROS_JUEGO.length})</span>
               </button>
 
@@ -555,11 +716,12 @@ export default function HaceTuHistoria() {
                 )}
               >
                 <History className="w-4 h-4 text-indigo-400" />
-                <span>Carreras Anteriores ({carrerasPasadas.length})</span>
+                <span>Mis Carreras ({carrerasPasadas.length})</span>
               </button>
             </div>
           </div>
 
+          {/* PESTAÑA 1: SETUP DE NUEVA CARRERA */}
           {activePreGameTab === "setup" && (
             <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
               <div className="space-y-4">
@@ -704,11 +866,149 @@ export default function HaceTuHistoria() {
             </div>
           )}
 
+          {/* PESTAÑA 2: HALL DE LA FAMA / RANKING GLOBAL */}
+          {activePreGameTab === "ranking" && (
+            <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                <div>
+                  <h3 className="text-xl font-black text-white flex items-center gap-2">
+                    <Trophy className="w-6 h-6 text-amber-400" />
+                    <span>Hall de la Fama — Mejores Carreras de Jursoc</span>
+                  </h3>
+                  <p className="text-xs text-slate-400">Tabla de posiciones general clasificada por Puntos Totales de Carrera.</p>
+                </div>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <Filter className="w-4 h-4 text-amber-400 shrink-0" />
+                  <select
+                    value={selectedRamaFilter}
+                    onChange={(e) => setSelectedRamaFilter(e.target.value)}
+                    className="p-2 rounded-xl bg-slate-950 border border-white/15 text-white font-bold text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                  >
+                    {TODAS_LAS_RAMAS_FILTRO.map((rama) => (
+                      <option key={rama} value={rama}>{rama}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* PODIO TOP 3 */}
+              {filteredRanking.length >= 3 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                  {/* Puesto 2 */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-b from-slate-800/80 to-slate-950 border border-slate-400/40 text-center space-y-2 order-2 md:order-1">
+                    <div className="w-10 h-10 mx-auto rounded-full bg-slate-400/20 border border-slate-400/50 flex items-center justify-center text-slate-300 font-black text-sm">
+                      🥈 2º
+                    </div>
+                    <div>
+                      <p className="font-black text-sm text-white truncate">{filteredRanking[1].nombreJugador}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{filteredRanking[1].tituloObtenido}</p>
+                    </div>
+                    <div className="pt-1">
+                      <span className="text-lg font-black text-slate-300 font-mono">{(filteredRanking[1].puntosTotales || 0).toLocaleString("es-AR")} pts</span>
+                      <p className="text-[9px] text-amber-400 font-bold uppercase">{filteredRanking[1].ramaPredominante}</p>
+                    </div>
+                  </div>
+
+                  {/* Puesto 1 */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-b from-amber-500/20 via-slate-900 to-slate-950 border border-amber-500/50 text-center space-y-2 order-1 md:order-2 shadow-xl shadow-amber-500/10">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/30 border border-amber-500/60 flex items-center justify-center text-amber-300 font-black text-base shadow-lg animate-pulse">
+                      🥇 1º
+                    </div>
+                    <div>
+                      <p className="font-black text-base text-amber-300 truncate">{filteredRanking[0].nombreJugador}</p>
+                      <p className="text-[11px] text-slate-300 truncate">{filteredRanking[0].tituloObtenido}</p>
+                    </div>
+                    <div className="pt-1">
+                      <span className="text-2xl font-black text-amber-400 font-mono">{(filteredRanking[0].puntosTotales || 0).toLocaleString("es-AR")} pts</span>
+                      <p className="text-[10px] text-emerald-400 font-bold uppercase">{filteredRanking[0].ramaPredominante}</p>
+                    </div>
+                  </div>
+
+                  {/* Puesto 3 */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-b from-amber-900/30 to-slate-950 border border-amber-700/40 text-center space-y-2 order-3">
+                    <div className="w-10 h-10 mx-auto rounded-full bg-amber-700/20 border border-amber-700/50 flex items-center justify-center text-amber-600 font-black text-sm">
+                      🥉 3º
+                    </div>
+                    <div>
+                      <p className="font-black text-sm text-white truncate">{filteredRanking[2].nombreJugador}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{filteredRanking[2].tituloObtenido}</p>
+                    </div>
+                    <div className="pt-1">
+                      <span className="text-lg font-black text-amber-600 font-mono">{(filteredRanking[2].puntosTotales || 0).toLocaleString("es-AR")} pts</span>
+                      <p className="text-[9px] text-amber-400 font-bold uppercase">{filteredRanking[2].ramaPredominante}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* LISTA COMPLETA DE POSICIONES */}
+              {rankingLoading ? (
+                <div className="py-12 text-center text-slate-400 text-xs">Cargando Hall de la Fama...</div>
+              ) : filteredRanking.length === 0 ? (
+                <div className="p-8 text-center bg-white/[0.02] border border-white/10 rounded-2xl space-y-2">
+                  <Trophy className="w-8 h-8 text-slate-500 mx-auto" />
+                  <p className="text-sm font-bold text-slate-300">No hay carreras registradas con este filtro.</p>
+                  <p className="text-xs text-slate-500">Completá una partida para aparecer en el podio de Jursoc.</p>
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {filteredRanking.map((carrera, index) => (
+                    <div
+                      key={carrera.id}
+                      className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 hover:border-amber-500/40 hover:bg-white/[0.04] transition-all flex items-center justify-between gap-3 group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className={cn(
+                          "w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shrink-0",
+                          index === 0 && "bg-amber-500/20 text-amber-300 border border-amber-500/40",
+                          index === 1 && "bg-slate-400/20 text-slate-300 border border-slate-400/40",
+                          index === 2 && "bg-amber-700/20 text-amber-600 border border-amber-700/40",
+                          index > 2 && "bg-white/5 text-slate-400"
+                        )}>
+                          #{index + 1}
+                        </span>
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-black text-xs md:text-sm text-white truncate">{carrera.nombreJugador}</h4>
+                            <span className="px-2 py-0.5 rounded-full bg-white/10 text-[9px] font-bold text-slate-300 shrink-0">
+                              {carrera.ciudadNatal}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-400 truncate">{carrera.tituloObtenido}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className="text-right">
+                          <span className="font-black text-sm md:text-base text-amber-400 font-mono block">
+                            {(carrera.puntosTotales || 0).toLocaleString("es-AR")} pts
+                          </span>
+                          <span className="text-[9px] text-indigo-400 font-bold uppercase block">{carrera.ramaPredominante}</span>
+                        </div>
+
+                        <button
+                          onClick={() => setInspectedCareer(carrera)}
+                          className="p-2 rounded-xl bg-white/5 hover:bg-indigo-600/30 text-slate-300 hover:text-white border border-white/10 transition-all cursor-pointer"
+                          title="Inspeccionar Ficha de Carrera"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* PESTAÑA 3: LOGROS */}
           {activePreGameTab === "logros" && (
             <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
               <div className="space-y-1">
                 <h3 className="text-xl font-black text-white flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-amber-400" />
+                  <Award className="w-5 h-5 text-emerald-400" />
                   <span>Galería de Logros Desbloqueables ({LOGROS_JUEGO.length} Logros Totales)</span>
                 </h3>
                 <p className="text-xs text-slate-400">Los logros conseguidos se acumulan entre todas tus carreras jugadas.</p>
@@ -749,14 +1049,15 @@ export default function HaceTuHistoria() {
             </div>
           )}
 
+          {/* PESTAÑA 4: MIS CARRERAS PASADAS */}
           {activePreGameTab === "historial" && (
             <div className="bg-slate-900/90 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl backdrop-blur-xl">
               <div className="space-y-1">
                 <h3 className="text-xl font-black text-white flex items-center gap-2">
                   <History className="w-5 h-5 text-indigo-400" />
-                  <span>Historial de Carreras Anteriores (Hall of Fame)</span>
+                  <span>Mis Carreras Anteriores</span>
                 </h3>
-                <p className="text-xs text-slate-400">Registro histórico de todas las partidas jugadas hasta los 65 años o Game Over.</p>
+                <p className="text-xs text-slate-400">Registro histórico de todas las partidas jugadas en este dispositivo.</p>
               </div>
 
               {carrerasPasadas.length === 0 ? (
@@ -793,18 +1094,78 @@ export default function HaceTuHistoria() {
 
                       <div className="flex items-center gap-4 text-right self-end sm:self-center">
                         <div>
-                          <span className="text-[9px] uppercase font-black text-slate-400 block">OVR Final</span>
-                          <span className="text-lg font-black text-amber-400 font-mono">{carrera.ovrFinal}</span>
+                          <span className="text-[9px] uppercase font-black text-slate-400 block">Puntaje</span>
+                          <span className="text-lg font-black text-amber-400 font-mono">{(carrera.puntosTotales || 0).toLocaleString("es-AR")}</span>
                         </div>
                         <div className="border-l border-white/10 pl-4">
                           <span className="text-[9px] uppercase font-black text-slate-400 block">Patrimonio ($)</span>
                           <span className="text-base font-black text-emerald-400 font-mono">{formatPesos(carrera.patrimonioFinal)}</span>
                         </div>
+                        <button
+                          onClick={() => setInspectedCareer(carrera)}
+                          className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/10 cursor-pointer"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* MODAL DE INSPECCIÓN DE FICHA DE CARRERA */}
+          {inspectedCareer && (
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+              <div className="max-w-lg w-full bg-slate-900 border border-white/15 rounded-3xl p-6 space-y-6 shadow-2xl relative">
+                <button
+                  onClick={() => setInspectedCareer(null)}
+                  className="absolute top-4 right-4 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-400 hover:text-white cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                <div className="text-center space-y-2">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                    <Medal className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-xl font-black text-white">{inspectedCareer.nombreJugador || "Estudiante de Jursoc"}</h3>
+                  <p className="text-xs text-amber-400 font-bold">{inspectedCareer.tituloObtenido}</p>
+                  <p className="text-[11px] text-slate-400">Ciudad: {inspectedCareer.ciudadNatal} | Rama: {inspectedCareer.ramaPredominante}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Puntaje Total</span>
+                    <span className="text-xl font-black text-amber-400 font-mono">{(inspectedCareer.puntosTotales || 0).toLocaleString("es-AR")}</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">OVR Final</span>
+                    <span className="text-xl font-black text-indigo-400 font-mono">{inspectedCareer.ovrFinal}</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Patrimonio Neto</span>
+                    <span className="text-sm font-black text-emerald-400 font-mono">{formatPesos(inspectedCareer.patrimonioFinal)}</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Casos Acertados</span>
+                    <span className="text-sm font-black text-white font-mono">{inspectedCareer.desafiosAcertados || 0}</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 text-xs space-y-1">
+                  <span className="text-[10px] uppercase font-black text-slate-400 block">Desenlace:</span>
+                  <p className="text-slate-300 italic">{inspectedCareer.motivoCierre}</p>
+                </div>
+
+                <button
+                  onClick={() => setInspectedCareer(null)}
+                  className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase cursor-pointer"
+                >
+                  Cerrar Ficha
+                </button>
+              </div>
             </div>
           )}
 
@@ -883,7 +1244,7 @@ export default function HaceTuHistoria() {
             )}>
               <div className="flex items-center gap-2 font-black uppercase text-[11px]">
                 {isCorrectAnswer ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
-                <span>{isCorrectAnswer ? "¡FUNDAMENTACIÓN CORRECTA (+5 PRESTIGIO)!" : "FUNDAMENTACIÓN INCORRECTA (-15 PRESTIGIO / -12 TEMPLANZA)"}</span>
+                <span>{isCorrectAnswer ? "¡FUNDAMENTACIÓN CORRECTA (+5 PRESTIGIO / +500 PTS RANKING)!" : "FUNDAMENTACIÓN INCORRECTA (-15 PRESTIGIO / -12 TEMPLANZA)"}</span>
               </div>
               <p className="leading-relaxed text-slate-200">{desafio.explicacion}</p>
             </div>
@@ -1028,11 +1389,13 @@ export default function HaceTuHistoria() {
     );
   }
 
-  // 4. PANTALLA GAME OVER
+  // 4. PANTALLA GAME OVER (CON DESGLOSE DE PUNTOS)
   if (gameOverReason) {
+    const breakdown = lastScoreBreakdown || calculateCareerScore(currentOVRGeneral, etica, desafiosAcertados, dineroPesos, unlockedLogros.length, false);
+
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
-        <div className="max-w-lg w-full bg-slate-900 border border-red-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
+        <div className="max-w-xl w-full bg-slate-900 border border-red-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
           <div className="w-16 h-16 mx-auto rounded-full bg-red-500/20 border border-red-500/50 flex items-center justify-center text-red-400">
             <AlertTriangle className="w-8 h-8 animate-pulse" />
           </div>
@@ -1046,6 +1409,20 @@ export default function HaceTuHistoria() {
             <p className="font-bold">{gameOverReason}</p>
           </div>
 
+          {/* DESGLOSE DE PUNTUACIÓN */}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 space-y-3 text-left">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-300">Puntaje Final de Carrera</span>
+              <span className="text-xl font-black text-red-400 font-mono">{breakdown.puntosTotales.toLocaleString("es-AR")} pts</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-400">
+              <div>• Base OVR ({currentOVRGeneral}): <span className="font-mono text-white">+{breakdown.baseOvrScore}</span></div>
+              <div>• Casos Acertados ({desafiosAcertados}): <span className="font-mono text-white">+{breakdown.desafiosScore}</span></div>
+              <div>• Bono Ética ({etica}): <span className={cn("font-mono", breakdown.eticaBonus >= 0 ? "text-emerald-400" : "text-red-400")}>{breakdown.eticaBonus >= 0 ? `+${breakdown.eticaBonus}` : breakdown.eticaBonus}</span></div>
+              <div>• Patrimonio Neto: <span className="font-mono text-white">+{breakdown.patrimonioScore}</span></div>
+            </div>
+          </div>
+
           <div className="flex flex-col gap-3">
             <button
               onClick={resetGame}
@@ -1054,20 +1431,22 @@ export default function HaceTuHistoria() {
               <RotateCcw className="w-4 h-4" />
               <span>Configurar Nueva Carrera</span>
             </button>
-            <Link
-              to="/mi-espacio"
-              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all text-center"
+            <button
+              onClick={() => { resetGame(); setActivePreGameTab("ranking"); }}
+              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all text-center cursor-pointer"
             >
-              Volver a Mi Espacio
-            </Link>
+              Ver Hall de la Fama
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // 5. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS (CON TÍTULO PERSONALIZADO)
+  // 5. PANTALLA VICTORIA / JUBILACIÓN A LOS 65 AÑOS (CON DESGLOSE DETALLADO DE SCORE)
   if (isVictory) {
+    const breakdown = lastScoreBreakdown || calculateCareerScore(currentOVRGeneral, etica, desafiosAcertados, dineroPesos, unlockedLogros.length, true);
+
     return (
       <div className="min-h-screen bg-[#070A14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
         <div className="max-w-xl w-full bg-slate-900 border border-emerald-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
@@ -1081,7 +1460,44 @@ export default function HaceTuHistoria() {
             </span>
             <h2 className="text-2xl md:text-3xl font-black text-amber-400 pt-2">{customTitleObj.titulo}</h2>
             <p className="text-xs text-slate-300 italic max-w-md mx-auto">{customTitleObj.mencion}</p>
-            <p className="text-[11px] text-slate-400 pt-1">Origen: {getCiudadNatalNombre()} — FCJyS UNLP</p>
+            <p className="text-[11px] text-slate-400 pt-1">Origen: {getCiudadNatalNombre()} — FCJyS UNLP | Rama: {dominantBranch.name}</p>
+          </div>
+
+          {/* TARJETA GIGANTE DE PUNTAJE TOTAL DE CARRERA */}
+          <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500/20 via-slate-950 to-indigo-500/20 border border-amber-500/40 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="text-xs font-black text-amber-300 uppercase tracking-widest">PUNTAJE FINAL RANKING</span>
+              <span className="text-3xl font-black text-amber-400 font-mono tracking-tight">{breakdown.puntosTotales.toLocaleString("es-AR")} PTS</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-left text-xs">
+              <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                <span className="text-[9px] text-slate-400 uppercase font-black block">Base OVR ({currentOVRGeneral})</span>
+                <span className="text-emerald-400 font-mono font-bold">+{breakdown.baseOvrScore}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                <span className="text-[9px] text-slate-400 uppercase font-black block">Bono Ética ({etica})</span>
+                <span className={cn("font-mono font-bold", breakdown.eticaBonus >= 0 ? "text-emerald-400" : "text-red-400")}>
+                  {breakdown.eticaBonus >= 0 ? `+${breakdown.eticaBonus}` : breakdown.eticaBonus}
+                </span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                <span className="text-[9px] text-slate-400 uppercase font-black block">Casos Acertados ({desafiosAcertados})</span>
+                <span className="text-amber-400 font-mono font-bold">+{breakdown.desafiosScore}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                <span className="text-[9px] text-slate-400 uppercase font-black block">Patrimonio Neto</span>
+                <span className="text-emerald-400 font-mono font-bold">+{breakdown.patrimonioScore}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                <span className="text-[9px] text-slate-400 uppercase font-black block">Logros ({unlockedLogros.length})</span>
+                <span className="text-indigo-400 font-mono font-bold">+{breakdown.logrosScore}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                <span className="text-[9px] text-slate-400 uppercase font-black block">Bono Cúspide</span>
+                <span className="text-amber-400 font-mono font-bold">+{breakdown.victoriaBonus}</span>
+              </div>
+            </div>
           </div>
 
           <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-4">
@@ -1106,9 +1522,15 @@ export default function HaceTuHistoria() {
               <RotateCcw className="w-4 h-4" />
               <span>Jugar Otra Carrera</span>
             </button>
+            <button
+              onClick={() => { resetGame(); setActivePreGameTab("ranking"); }}
+              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all text-center cursor-pointer"
+            >
+              Ver en el Hall de la Fama
+            </button>
             <Link
               to="/mi-espacio"
-              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all text-center"
+              className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 font-bold text-xs transition-all text-center"
             >
               Volver a Mi Espacio
             </Link>
@@ -1135,6 +1557,12 @@ export default function HaceTuHistoria() {
                   <MapPin className="w-3 h-3 text-indigo-400" />
                   {getCiudadNatalNombre()}
                 </span>
+                {desafiosAcertados > 0 && (
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-500/30 flex items-center gap-1">
+                    <Scale className="w-3 h-3" />
+                    {desafiosAcertados} Casos Acertados
+                  </span>
+                )}
               </div>
               <h2 className="text-lg md:text-xl font-black text-white mt-1">{currentEtapa.puesto}</h2>
             </div>
@@ -1350,7 +1778,7 @@ export default function HaceTuHistoria() {
                       {hasQuizMinigame && (
                         <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1">
                           <Scale className="w-3 h-3 text-amber-400" />
-                          [Caso Práctico: Desafío Normativo]
+                          [Caso Práctico: Desafío Normativo +500 pts]
                         </span>
                       )}
 
