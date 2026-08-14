@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Bell, Sparkles, CheckCircle2, AlertCircle, ArrowRight, X, Repeat2, Check } from "lucide-react";
+import { Bell, Sparkles, CheckCircle2, AlertCircle, ArrowRight, X, Repeat2, Check, Swords } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ export interface NotificationItem {
   id: string;
   title: string;
   description: string;
-  type: "profile" | "permuta" | "system" | "apuntes";
+  type: "profile" | "permuta" | "system" | "apuntes" | "duelo";
   isPending: boolean;
   timestamp: string;
   actionText?: string;
@@ -22,6 +22,13 @@ export const NotificationCenter: React.FC = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [duelNotifs, setDuelNotifs] = useState<any[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
+    } catch {
+      return [];
+    }
+  });
   const [dismissedIds, setDismissedIds] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem("dnd_dismissed_notifications") || "[]");
@@ -30,6 +37,21 @@ export const NotificationCenter: React.FC = () => {
     }
   });
 
+  useEffect(() => {
+    const handleUpdate = () => {
+      try {
+        setDuelNotifs(JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]"));
+      } catch {}
+    };
+
+    window.addEventListener("dnd_duel_notification_event", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("dnd_duel_notification_event", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
+
   if (!user) return null;
 
   // Evaluate profile completeness
@@ -37,7 +59,7 @@ export const NotificationCenter: React.FC = () => {
   const missingAnio = !profile?.anio_ingreso;
   const isProfileIncomplete = missingPhone || missingAnio;
 
-  const notifications: NotificationItem[] = [
+  const baseNotifications: NotificationItem[] = [
     {
       id: "completar-perfil",
       title: isProfileIncomplete ? "¡Completá tu perfil!" : "Perfil completado",
@@ -61,13 +83,36 @@ export const NotificationCenter: React.FC = () => {
     },
   ];
 
+  const duelNotifications: NotificationItem[] = duelNotifs.map(dn => ({
+    id: `duel-${dn.id}`,
+    title: dn.title || "⚔️ Duelo 1v1 Finalizado",
+    description: dn.description || `Tu rival completó el duelo de ${dn.materiaNombre || 'Trivia'}. ¡Consultá el resultado!`,
+    type: "duelo",
+    isPending: !dn.seen,
+    timestamp: dn.timestamp || "Duelo 1v1",
+    actionText: "Ver Marcador",
+    actionPath: `/trivia?dueloId=${dn.id}`,
+  }));
+
+  const notifications: NotificationItem[] = [...duelNotifications, ...baseNotifications];
+
   // Active (non-dismissed) notifications count
-  const pendingCount = isProfileIncomplete ? 1 : 0;
+  const pendingCount = (isProfileIncomplete ? 1 : 0) + duelNotifications.filter(d => !dismissedIds.includes(d.id) && d.isPending).length;
 
   const handleAction = (item: NotificationItem) => {
     setOpen(false);
     if (item.type === "profile") {
       setIsModalOpen(true);
+    } else if (item.type === "duelo") {
+      // Marcar duelo notif como vista
+      const duelId = item.id.replace("duel-", "");
+      try {
+        const currentList = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
+        const updated = currentList.map((d: any) => d.id === duelId ? { ...d, seen: true } : d);
+        localStorage.setItem("dnd_duel_notifications", JSON.stringify(updated));
+        setDuelNotifs(updated);
+      } catch {}
+      if (item.actionPath) navigate(item.actionPath);
     } else if (item.actionPath) {
       navigate(item.actionPath);
     }
@@ -182,6 +227,11 @@ export const NotificationCenter: React.FC = () => {
                           {item.type === "permuta" && (
                             <div className="p-1.5 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400 shrink-0">
                               <Repeat2 className="w-4 h-4" />
+                            </div>
+                          )}
+                          {item.type === "duelo" && (
+                            <div className="p-1.5 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 shrink-0">
+                              <Swords className="w-4 h-4" />
                             </div>
                           )}
                           <h4 className={cn(
