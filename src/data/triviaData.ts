@@ -1,3 +1,4 @@
+import { EXTRA_MATERIAS_QUESTIONS } from './bankMateriasFaltantes';
 import { TRIVIA_QUESTIONS_EXTENDED } from './dbTriviaQuestionsExt';
 
 export interface TriviaQuestion {
@@ -5550,35 +5551,35 @@ const STATIC_QUESTIONS: TriviaQuestion[] = [
     fundamento_juridico: "Gustav Radbruch, 'Gesetzliches Unrecht und übergesetzliches Recht' (1946).", puntos_base: 25
   },
 {
-    id: "10123-02", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "facil",
+    id: "10114-101", id_categoria: "10114", categoria_nombre: "Derecho Político", dificultad: "facil",
     pregunta: "¿Quién es considerado el padre de la teoría de la separación de poderes?",
     opciones: ["Jean-Jacques Rousseau", "John Locke", "Montesquieu", "Thomas Hobbes"],
     respuesta_correcta_index: 2,
     fundamento_juridico: "Montesquieu, 'El Espíritu de las Leyes' (1748).", puntos_base: 10
   },
 {
-    id: "10123-03", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "media",
+    id: "10114-102", id_categoria: "10114", categoria_nombre: "Derecho Político", dificultad: "media",
     pregunta: "En la teoría de Thomas Hobbes, el 'estado de naturaleza' se caracteriza por:",
     opciones: ["La armonía social", "La guerra de todos contra todos", "La propiedad privada absoluta", "La democracia directa"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Thomas Hobbes, 'Leviatán' (1651), Capítulo XIII.", puntos_base: 25
   },
 {
-    id: "10123-04", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "dificil",
+    id: "10114-103", id_categoria: "10114", categoria_nombre: "Derecho Político", dificultad: "dificil",
     pregunta: "La 'voluntad general' de Rousseau se distingue de la 'voluntad de todos' porque:",
     opciones: ["Es la suma de las voluntades individuales", "Busca el interés común y no la mera agregación de intereses particulares", "Es decidida por un monarca ilustrado", "Se forma solo en asambleas representativas"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Jean-Jacques Rousseau, 'El Contrato Social' (1762), Libro II, Cap. III.", puntos_base: 50
   },
 {
-    id: "10123-05", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "facil",
+    id: "10114-104", id_categoria: "10114", categoria_nombre: "Derecho Político", dificultad: "facil",
     pregunta: "¿Cuál es la forma de Estado en la que el poder se distribuye territorialmente entre un gobierno central y gobiernos locales?",
     opciones: ["Estado unitario", "Estado federal", "Confederación", "Monarquía constitucional"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 1 CN: forma federal de gobierno.", puntos_base: 10
   },
 {
-    id: "10123-06", id_categoria: "10123", categoria_nombre: "Derecho Político", dificultad: "media",
+    id: "10114-105", id_categoria: "10114", categoria_nombre: "Derecho Político", dificultad: "media",
     pregunta: "El concepto de 'soberanía popular' implica que la autoridad suprema del Estado reside en:",
     opciones: ["El monarca", "Los jueces", "El pueblo", "El parlamento exclusivamente"],
     respuesta_correcta_index: 2,
@@ -5620,105 +5621,105 @@ const STATIC_QUESTIONS: TriviaQuestion[] = [
     fundamento_juridico: "Ley 22.278, Régimen Penal de Menores. A los 16 años son punibles por delitos graves.", puntos_base: 10
   },
 {
-    id: "10122-07", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "facil",
+    id: "10122-07", id_categoria: "10122", categoria_nombre: "Derecho Privado I - Civil", dificultad: "facil",
     pregunta: "Según el CCyCN, ¿desde cuándo comienza la existencia de la persona humana?",
     opciones: ["Desde el nacimiento", "Desde la concepción", "Desde la inscripción en el Registro Civil", "Desde la mayoría de edad"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 19 CCyCN: 'La existencia de la persona humana comienza con la concepción'.", puntos_base: 10
   },
 {
-    id: "10122-08", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "media",
+    id: "10122-08", id_categoria: "10122", categoria_nombre: "Derecho Privado I - Civil", dificultad: "media",
     pregunta: "¿Cuál es la edad para alcanzar la mayoría de edad según el CCyCN?",
     opciones: ["21 años", "18 años", "16 años", "25 años"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 25 CCyCN: 'Mayor de edad es la persona que cumple dieciocho años'.", puntos_base: 25
   },
 {
-    id: "10122-09", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "dificil",
+    id: "10122-09", id_categoria: "10122", categoria_nombre: "Derecho Privado I - Civil", dificultad: "dificil",
     pregunta: "La teoría del abuso del derecho está consagrada en el Art. 10 del CCyCN y establece que:",
     opciones: ["Todo ejercicio de un derecho es abusivo", "El ejercicio de un derecho es abusivo cuando contraría los fines del ordenamiento o excede los límites de la buena fe", "Solo los jueces pueden abusar del derecho", "El abuso del derecho solo se aplica a contratos"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 10 CCyCN: Abuso del derecho.", puntos_base: 50
   },
 {
-    id: "10122-10", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "media",
+    id: "10122-10", id_categoria: "10122", categoria_nombre: "Derecho Privado I - Civil", dificultad: "media",
     pregunta: "Los atributos de la personalidad según la doctrina son:",
     opciones: ["Nombre, domicilio, capacidad, estado y patrimonio", "Solo nombre y domicilio", "Patrimonio y nacionalidad", "Edad y profesión"],
     respuesta_correcta_index: 0,
     fundamento_juridico: "Doctrina general. Los atributos de la personalidad son nombre, domicilio, capacidad, estado civil y patrimonio.", puntos_base: 25
   },
 {
-    id: "10122-11", id_categoria: "10122", categoria_nombre: "D. Civil I - Privado II", dificultad: "facil",
+    id: "10122-11", id_categoria: "10122", categoria_nombre: "Derecho Privado I - Civil", dificultad: "facil",
     pregunta: "¿Qué tipo de persona jurídica es una sociedad anónima?",
     opciones: ["Persona humana", "Persona jurídica privada", "Persona jurídica pública", "No es persona jurídica"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 148 inc. a) CCyCN: Las sociedades son personas jurídicas privadas.", puntos_base: 10
   },
 {
-    id: "10131-02", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "facil",
+    id: "10133-07", id_categoria: "10133", categoria_nombre: "Derecho Privado III - Civil", dificultad: "facil",
     pregunta: "Según el CCyCN, el contrato es:",
     opciones: ["Un acuerdo unilateral", "El acto jurídico mediante el cual dos o más partes manifiestan su consentimiento para crear, regular, modificar, transferir o extinguir relaciones jurídicas patrimoniales", "Una declaración de voluntad sin efectos jurídicos", "Un acto ilícito que genera obligaciones"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 957 CCyCN.", puntos_base: 10
   },
 {
-    id: "10131-03", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "media",
+    id: "10133-08", id_categoria: "10133", categoria_nombre: "Derecho Privado III - Civil", dificultad: "media",
     pregunta: "La 'lesión subjetiva' como vicio del acto jurídico requiere:",
     opciones: ["Solo ventaja patrimonial desproporcionada", "Explotación de la necesidad, debilidad o inexperiencia de la otra parte y desproporción de las prestaciones", "Que ambas partes sean menores de edad", "Que el contrato sea verbal"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 332 CCyCN: Lesión.", puntos_base: 25
   },
 {
-    id: "10131-04", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "dificil",
+    id: "10133-09", id_categoria: "10133", categoria_nombre: "Derecho Privado III - Civil", dificultad: "dificil",
     pregunta: "La teoría de la imprevisión (Art. 1091 CCyCN) permite la resolución o adecuación del contrato cuando:",
     opciones: ["Una parte se arrepiente", "Eventos extraordinarios e imprevisibles alteran la ecuación económica de modo excesivo", "El contrato es nulo de nulidad absoluta", "El deudor simplemente no quiere pagar"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 1091 CCyCN: Imprevisión.", puntos_base: 50
   },
 {
-    id: "10131-05", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "media",
+    id: "10133-10", id_categoria: "10133", categoria_nombre: "Derecho Privado III - Civil", dificultad: "media",
     pregunta: "¿Cuáles son los elementos esenciales del contrato?",
     opciones: ["Capacidad, consentimiento, objeto y causa", "Solo consentimiento y objeto", "Plazo y precio", "Escritura pública y testigos"],
     respuesta_correcta_index: 0,
     fundamento_juridico: "Arts. 957 a 1065 CCyCN: Elementos esenciales del contrato.", puntos_base: 25
   },
 {
-    id: "10131-06", id_categoria: "10131", categoria_nombre: "D. Privado III - Contratos", dificultad: "facil",
+    id: "10133-11", id_categoria: "10133", categoria_nombre: "Derecho Privado III - Civil", dificultad: "facil",
     pregunta: "La seña (arras) en un contrato de compraventa, ¿permite arrepentirse del negocio?",
     opciones: ["Nunca", "Sí, perdiendo la seña o devolviéndola doblada, salvo pacto en contrario", "Solo si lo autoriza un juez", "Solo en contratos de locación"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 1059 CCyCN: Seña o arras.", puntos_base: 10
   },
 {
-    id: "10133-02", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "facil",
+    id: "10135-07", id_categoria: "10135", categoria_nombre: "Derecho Penal II", dificultad: "facil",
     pregunta: "El delito de homicidio simple está tipificado en el Art. 79 del Código Penal con una pena de:",
     opciones: ["3 a 6 años de prisión", "8 a 25 años de reclusión o prisión", "Prisión perpetua", "1 a 3 años de prisión"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 79 del Código Penal: 'Se aplicará reclusión o prisión de ocho a veinticinco años'.", puntos_base: 10
   },
 {
-    id: "10133-03", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "media",
+    id: "10135-08", id_categoria: "10135", categoria_nombre: "Derecho Penal II", dificultad: "media",
     pregunta: "El delito de estafa (Art. 172 CP) requiere como elemento típico:",
     opciones: ["Violencia física", "Ardid o engaño que induzca en error a la víctima", "Uso de armas", "Coacción psicológica únicamente"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 172 del Código Penal de la Nación.", puntos_base: 25
   },
 {
-    id: "10133-04", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "dificil",
+    id: "10135-09", id_categoria: "10135", categoria_nombre: "Derecho Penal II", dificultad: "dificil",
     pregunta: "La tentativa de delito (Art. 42 CP) se configura cuando el autor:",
     opciones: ["Piensa en cometer un delito", "Con el fin de cometer un delito determinado, comienza su ejecución pero no lo consuma por circunstancias ajenas a su voluntad", "Realiza actos preparatorios", "Confiesa su intención"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 42 del Código Penal de la Nación.", puntos_base: 50
   },
 {
-    id: "10133-05", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "media",
+    id: "10135-10", id_categoria: "10135", categoria_nombre: "Derecho Penal II", dificultad: "media",
     pregunta: "¿Cuál es la diferencia entre hurto y robo en el Código Penal argentino?",
     opciones: ["No existe diferencia", "El robo involucra fuerza en las cosas o violencia en las personas", "El hurto es más grave que el robo", "El hurto solo se aplica a bienes inmuebles"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Arts. 162 (hurto) y 164 (robo) del Código Penal.", puntos_base: 25
   },
 {
-    id: "10133-06", id_categoria: "10133", categoria_nombre: "D. Penal II", dificultad: "facil",
+    id: "10135-11", id_categoria: "10135", categoria_nombre: "Derecho Penal II", dificultad: "facil",
     pregunta: "La pena de prisión perpetua en Argentina se aplica, entre otros, al delito de:",
     opciones: ["Lesiones leves", "Homicidio agravado (Art. 80 CP)", "Daño simple", "Calumnias"],
     respuesta_correcta_index: 1,
@@ -5760,35 +5761,35 @@ const STATIC_QUESTIONS: TriviaQuestion[] = [
     fundamento_juridico: "Art. 330 del CPCCBA: requisitos de la demanda.", puntos_base: 10
   },
 {
-    id: "10135-02", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "facil",
+    id: "10144-07", id_categoria: "10144", categoria_nombre: "Derecho Procesal II", dificultad: "facil",
     pregunta: "¿Quién ejerce la acción penal pública en Argentina?",
     opciones: ["El juez de instrucción", "El Ministerio Público Fiscal", "La víctima exclusivamente", "El abogado defensor"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 120 CN y Art. 5 CPPN: El Ministerio Público Fiscal promueve la acción penal pública.", puntos_base: 10
   },
 {
-    id: "10135-03", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "media",
+    id: "10144-08", id_categoria: "10144", categoria_nombre: "Derecho Procesal II", dificultad: "media",
     pregunta: "El principio 'in dubio pro reo' significa que:",
     opciones: ["El acusado siempre es culpable", "En caso de duda, se debe estar a favor del imputado", "El fiscal puede modificar la acusación en cualquier momento", "El juez puede presumir la culpabilidad"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Principio derivado de la presunción de inocencia (Art. 18 CN y Art. 8.2 CADH).", puntos_base: 25
   },
 {
-    id: "10135-04", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "dificil",
+    id: "10144-09", id_categoria: "10144", categoria_nombre: "Derecho Procesal II", dificultad: "dificil",
     pregunta: "La suspensión del juicio a prueba ('probation') del Art. 76 bis del Código Penal es aplicable cuando:",
     opciones: ["El delito tiene pena de prisión perpetua", "El máximo de la pena no excede de 3 años y el imputado no tiene condenas anteriores", "El imputado es reincidente", "Solo en delitos de acción privada"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 76 bis del Código Penal de la Nación.", puntos_base: 50
   },
 {
-    id: "10135-05", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "media",
+    id: "10144-10", id_categoria: "10144", categoria_nombre: "Derecho Procesal II", dificultad: "media",
     pregunta: "¿Qué es el 'juicio abreviado' en el proceso penal?",
     opciones: ["Un juicio sin abogado defensor", "Un procedimiento donde el imputado admite el hecho y se acuerda la pena con el fiscal", "Un juicio sin prueba testimonial", "Un juicio ante la Corte Suprema"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 431 bis del CPPN.", puntos_base: 25
   },
 {
-    id: "10135-06", id_categoria: "10135", categoria_nombre: "D. Procesal II - Penal", dificultad: "facil",
+    id: "10144-11", id_categoria: "10144", categoria_nombre: "Derecho Procesal II", dificultad: "facil",
     pregunta: "La prisión preventiva es una medida:",
     opciones: ["Punitiva", "Cautelar de carácter excepcional", "Definitiva", "Administrativa"],
     respuesta_correcta_index: 1,
@@ -5865,245 +5866,245 @@ const STATIC_QUESTIONS: TriviaQuestion[] = [
     fundamento_juridico: "Art. 14 bis CN: derechos del trabajador, gremiales y de la seguridad social.", puntos_base: 10
   },
 {
-    id: "10143-01", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "facil",
+    id: "10151-07", id_categoria: "10151", categoria_nombre: "Derecho Administrativo II", dificultad: "facil",
     pregunta: "¿Qué tipo de responsabilidad tiene el Estado por los daños causados por la actividad legítima?",
     opciones: ["Responsabilidad subjetiva", "Responsabilidad objetiva y directa", "Ninguna responsabilidad", "Solo responsabilidad contractual"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Ley 26.944 de Responsabilidad del Estado.", puntos_base: 10
   },
 {
-    id: "10143-02", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "media",
+    id: "10151-08", id_categoria: "10151", categoria_nombre: "Derecho Administrativo II", dificultad: "media",
     pregunta: "El recurso jerárquico en sede administrativa se interpone ante:",
     opciones: ["El mismo funcionario que dictó el acto", "El superior jerárquico del funcionario que dictó el acto", "Un tribunal judicial", "El Defensor del Pueblo"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 89 del Reglamento de Procedimientos Administrativos (Dto. 1759/72).", puntos_base: 25
   },
 {
-    id: "10143-03", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "dificil",
+    id: "10151-09", id_categoria: "10151", categoria_nombre: "Derecho Administrativo II", dificultad: "dificil",
     pregunta: "La teoría de los 'actos separables' en materia de contratos administrativos permite:",
     opciones: ["Impugnar judicialmente los actos administrativos del procedimiento contractual de forma autónoma", "Modificar el contrato unilateralmente sin límites", "Anular todo el contrato por un vicio en un acto preparatorio", "Que el contratista se retire sin consecuencias"],
     respuesta_correcta_index: 0,
     fundamento_juridico: "CSJN, 'Mevopal S.A.' y doctrina de los actos separables.", puntos_base: 50
   },
 {
-    id: "10143-04", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "media",
+    id: "10151-10", id_categoria: "10151", categoria_nombre: "Derecho Administrativo II", dificultad: "media",
     pregunta: "El 'ius variandi' en los contratos administrativos faculta a la Administración a:",
     opciones: ["Rescindir el contrato sin indemnización", "Modificar unilateralmente las condiciones del contrato dentro de ciertos límites", "Celebrar contratos sin licitación", "Suspender todos los pagos al contratista"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Doctrina del contrato administrativo. Prerrogativa de la Administración.", puntos_base: 25
   },
 {
-    id: "10143-05", id_categoria: "10143", categoria_nombre: "D. Administrativo II", dificultad: "facil",
+    id: "10151-11", id_categoria: "10151", categoria_nombre: "Derecho Administrativo II", dificultad: "facil",
     pregunta: "La acción de amparo contra actos de autoridad pública está regulada en:",
     opciones: ["El Código Penal", "El Art. 43 de la Constitución Nacional", "La Ley de Procedimientos Administrativos", "El Código de Comercio"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 43 CN: Acción de amparo.", puntos_base: 10
   },
 {
-    id: "10144-01", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "facil",
+    id: "10138-07", id_categoria: "10138", categoria_nombre: "Derecho Internacional Público", dificultad: "facil",
     pregunta: "¿Cuál es la fuente principal del derecho internacional público según el Art. 38 del Estatuto de la CIJ?",
     opciones: ["Las resoluciones de la ONU", "Los tratados internacionales, la costumbre internacional y los principios generales del derecho", "Solo la doctrina de los publicistas", "Las decisiones de los tribunales nacionales"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 38 del Estatuto de la Corte Internacional de Justicia.", puntos_base: 10
   },
 {
-    id: "10144-02", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "media",
+    id: "10138-08", id_categoria: "10138", categoria_nombre: "Derecho Internacional Público", dificultad: "media",
     pregunta: "El principio 'pacta sunt servanda' en el derecho internacional significa:",
     opciones: ["Los tratados pueden ser modificados unilateralmente", "Los tratados deben cumplirse de buena fe", "Los Estados no están obligados por tratados", "Solo se aplica a tratados bilaterales"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 26 de la Convención de Viena sobre el Derecho de los Tratados (1969).", puntos_base: 25
   },
 {
-    id: "10144-03", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "dificil",
+    id: "10138-09", id_categoria: "10138", categoria_nombre: "Derecho Internacional Público", dificultad: "dificil",
     pregunta: "Las normas de 'ius cogens' en el derecho internacional son:",
     opciones: ["Normas dispositivas que los Estados pueden modificar", "Normas imperativas aceptadas por la comunidad internacional que no admiten derogación", "Costumbres locales", "Resoluciones de organismos internacionales"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 53 de la Convención de Viena sobre el Derecho de los Tratados (1969).", puntos_base: 50
   },
 {
-    id: "10144-04", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "media",
+    id: "10138-10", id_categoria: "10138", categoria_nombre: "Derecho Internacional Público", dificultad: "media",
     pregunta: "La inmunidad diplomática está regulada principalmente por:",
     opciones: ["La Carta de la ONU", "La Convención de Viena sobre Relaciones Diplomáticas de 1961", "El Tratado de Versalles", "La Convención Americana de DDHH"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Convención de Viena sobre Relaciones Diplomáticas (1961).", puntos_base: 25
   },
 {
-    id: "10144-05", id_categoria: "10144", categoria_nombre: "D. Internacional Público", dificultad: "facil",
+    id: "10138-11", id_categoria: "10138", categoria_nombre: "Derecho Internacional Público", dificultad: "facil",
     pregunta: "¿Cuál es el principal órgano judicial de las Naciones Unidas?",
     opciones: ["El Tribunal Penal Internacional", "La Corte Internacional de Justicia", "La Corte Interamericana de DDHH", "El Tribunal de Justicia de la Unión Europea"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 92 de la Carta de las Naciones Unidas.", puntos_base: 10
   },
 {
-    id: "10145-01", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "facil",
+    id: "10143-07", id_categoria: "10143", categoria_nombre: "Derecho Privado V - Civil", dificultad: "facil",
     pregunta: "Según el CCyCN, los derechos reales son:",
     opciones: ["Derechos relativos", "Derechos absolutos que recaen sobre cosas determinadas y son oponibles erga omnes", "Derechos que solo surgen de contratos", "Derechos que no requieren publicidad"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 1882 CCyCN: Concepto de derecho real.", puntos_base: 10
   },
 {
-    id: "10145-02", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "media",
+    id: "10143-08", id_categoria: "10143", categoria_nombre: "Derecho Privado V - Civil", dificultad: "media",
     pregunta: "¿Cuáles de los siguientes son derechos reales enumerados en el CCyCN?",
     opciones: ["Dominio, condominio, usufructo, uso, habitación, servidumbre, hipoteca, prenda, anticresis", "Solo dominio y posesión", "Solo hipoteca y prenda", "Locación y comodato"],
     respuesta_correcta_index: 0,
     fundamento_juridico: "Art. 1887 CCyCN: Enumeración taxativa de los derechos reales.", puntos_base: 25
   },
 {
-    id: "10145-03", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "dificil",
+    id: "10143-09", id_categoria: "10143", categoria_nombre: "Derecho Privado V - Civil", dificultad: "dificil",
     pregunta: "El principio de 'numerus clausus' en materia de derechos reales significa que:",
     opciones: ["Las partes pueden crear cualquier derecho real que deseen", "Los derechos reales solo pueden ser creados por la ley y su número es cerrado", "Los derechos reales no necesitan inscripción", "Solo existen dos derechos reales: dominio y posesión"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 1884 CCyCN: Estructura y numerus clausus.", puntos_base: 50
   },
 {
-    id: "10145-04", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "media",
+    id: "10143-10", id_categoria: "10143", categoria_nombre: "Derecho Privado V - Civil", dificultad: "media",
     pregunta: "La prescripción adquisitiva (usucapión) larga requiere posesión pública, pacífica y continua durante:",
     opciones: ["5 años", "10 años", "15 años", "20 años"],
     respuesta_correcta_index: 3,
     fundamento_juridico: "Art. 1899 CCyCN: Prescripción adquisitiva larga de 20 años.", puntos_base: 25
   },
 {
-    id: "10145-05", id_categoria: "10145", categoria_nombre: "D. Privado V - Reales", dificultad: "facil",
+    id: "10143-11", id_categoria: "10143", categoria_nombre: "Derecho Privado V - Civil", dificultad: "facil",
     pregunta: "El dominio es el derecho real que otorga:",
     opciones: ["Solo el uso de la cosa", "Todas las facultades de usar, gozar y disponer material y jurídicamente de una cosa", "Solo el goce de los frutos", "La tenencia temporal de la cosa"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 1941 CCyCN: Dominio perfecto.", puntos_base: 10
   },
 {
-    id: "10146-01", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "facil",
+    id: "10650-07", id_categoria: "10650", categoria_nombre: "Derecho Colectivo del Trabajo y Seg. Social", dificultad: "facil",
     pregunta: "El sistema de seguridad social en Argentina cubre contingencias como:",
     opciones: ["Solo accidentes de trabajo", "Vejez, invalidez, muerte, enfermedad, desempleo y cargas de familia", "Exclusivamente jubilaciones", "Solo riesgos del trabajo"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 14 bis CN y Ley 24.241 (SIPA).", puntos_base: 10
   },
 {
-    id: "10146-02", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "media",
+    id: "10650-08", id_categoria: "10650", categoria_nombre: "Derecho Colectivo del Trabajo y Seg. Social", dificultad: "media",
     pregunta: "¿Cuál es la edad jubilatoria ordinaria para hombres y mujeres en Argentina?",
     opciones: ["60 y 55 años respectivamente", "65 y 60 años respectivamente", "70 y 65 años respectivamente", "60 para ambos"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 19 de la Ley 24.241: 65 años para hombres y 60 para mujeres.", puntos_base: 25
   },
 {
-    id: "10146-03", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "dificil",
+    id: "10650-09", id_categoria: "10650", categoria_nombre: "Derecho Colectivo del Trabajo y Seg. Social", dificultad: "dificil",
     pregunta: "El caso 'Badaro' de la CSJN (2006/2007) fue relevante para la seguridad social porque:",
     opciones: ["Declaró inconstitucional el sistema jubilatorio", "Ordenó la movilidad de los haberes jubilatorios ante la falta de actualización por el Congreso", "Eliminó las contribuciones patronales", "Privatizó las jubilaciones"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "CSJN, 'Badaro, Adolfo V. c/ ANSES' (2006/2007).", puntos_base: 50
   },
 {
-    id: "10146-04", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "media",
+    id: "10650-10", id_categoria: "10650", categoria_nombre: "Derecho Colectivo del Trabajo y Seg. Social", dificultad: "media",
     pregunta: "Las asignaciones familiares son prestaciones de la seguridad social que:",
     opciones: ["Reemplazan el salario", "Compensan las cargas de familia del trabajador sin contraprestación", "Solo se pagan a trabajadores autónomos", "Son optativas para el empleador"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Ley 24.714 de Asignaciones Familiares.", puntos_base: 25
   },
 {
-    id: "10146-05", id_categoria: "10146", categoria_nombre: "D. Seg. Social", dificultad: "facil",
+    id: "10650-11", id_categoria: "10650", categoria_nombre: "Derecho Colectivo del Trabajo y Seg. Social", dificultad: "facil",
     pregunta: "Las ART (Aseguradoras de Riesgos del Trabajo) fueron creadas por:",
     opciones: ["La Ley 20.744", "La Ley 24.557", "La Constitución Nacional", "El Código Civil"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Ley 24.557 de Riesgos del Trabajo (1995).", puntos_base: 10
   },
 {
-    id: "10148-01", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "facil",
+    id: "10132-07", id_categoria: "10132", categoria_nombre: "Derecho Privado IV - Comercial", dificultad: "facil",
     pregunta: "¿Qué ley regula los concursos y quiebras en Argentina?",
     opciones: ["Ley 19.550", "Ley 24.522", "Ley 20.744", "Ley 26.994"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Ley 24.522 de Concursos y Quiebras.", puntos_base: 10
   },
 {
-    id: "10148-02", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "media",
+    id: "10132-08", id_categoria: "10132", categoria_nombre: "Derecho Privado IV - Comercial", dificultad: "media",
     pregunta: "El concurso preventivo tiene como finalidad principal:",
     opciones: ["Liquidar el patrimonio del deudor", "Permitir al deudor reestructurar sus pasivos y evitar la quiebra", "Castigar al deudor incumplidor", "Repartir los bienes entre los acreedores"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 5 de la Ley 24.522: Concurso preventivo.", puntos_base: 25
   },
 {
-    id: "10148-03", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "dificil",
+    id: "10132-09", id_categoria: "10132", categoria_nombre: "Derecho Privado IV - Comercial", dificultad: "dificil",
     pregunta: "El 'cramdown' o salvataje empresarial (Art. 48 LCQ) se aplica cuando:",
     opciones: ["El deudor obtiene las mayorías necesarias", "El deudor no obtiene las mayorías para el acuerdo y terceros pueden ofertar", "El deudor declara su quiebra voluntaria", "Solo en empresas con más de 100 empleados"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 48 de la Ley 24.522: Supuesto especial (cramdown).", puntos_base: 50
   },
 {
-    id: "10148-04", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "media",
+    id: "10132-10", id_categoria: "10132", categoria_nombre: "Derecho Privado IV - Comercial", dificultad: "media",
     pregunta: "¿Qué es el 'período de exclusividad' en el concurso preventivo?",
     opciones: ["El plazo para que el juez dicte sentencia", "El plazo que tiene el deudor para negociar y obtener conformidades de los acreedores", "El plazo de prescripción de las deudas", "El período de investigación penal"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 43 de la Ley 24.522.", puntos_base: 25
   },
 {
-    id: "10148-05", id_categoria: "10148", categoria_nombre: "D. Privado VII - Concursos", dificultad: "facil",
+    id: "10132-11", id_categoria: "10132", categoria_nombre: "Derecho Privado IV - Comercial", dificultad: "facil",
     pregunta: "La quiebra tiene como principal efecto sobre el deudor:",
     opciones: ["Le permite seguir administrando sus bienes", "Le produce el desapoderamiento de sus bienes", "Solo le impide viajar al exterior", "Le otorga un plazo de gracia para pagar"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 107 de la Ley 24.522: Desapoderamiento.", puntos_base: 10
   },
 {
-    id: "10149-01", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "facil",
+    id: "10156-07", id_categoria: "10156", categoria_nombre: "Derecho Internacional Privado", dificultad: "facil",
     pregunta: "El Derecho Internacional Privado se ocupa principalmente de:",
     opciones: ["Las relaciones entre Estados", "Los conflictos de leyes derivados de relaciones jurídicas con elementos internacionales", "El derecho penal internacional", "Los tratados de paz"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Doctrina general del DIPr. Goldschmidt, 'Derecho Internacional Privado'.", puntos_base: 10
   },
 {
-    id: "10149-02", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "media",
+    id: "10156-08", id_categoria: "10156", categoria_nombre: "Derecho Internacional Privado", dificultad: "media",
     pregunta: "La 'norma de conflicto' o 'norma indirecta' del DIPr tiene como función:",
     opciones: ["Resolver directamente el caso", "Señalar el derecho aplicable a una relación jurídica con elemento extranjero", "Impedir la aplicación de derecho extranjero", "Solo regular la competencia judicial"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Doctrina del DIPr. Arts. 2594 a 2671 del CCyCN.", puntos_base: 25
   },
 {
-    id: "10149-03", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "dificil",
+    id: "10156-09", id_categoria: "10156", categoria_nombre: "Derecho Internacional Privado", dificultad: "dificil",
     pregunta: "El 'orden público internacional' como límite a la aplicación del derecho extranjero opera cuando:",
     opciones: ["Siempre que se aplique derecho extranjero", "La ley extranjera es incompatible con los principios fundamentales del foro", "El derecho extranjero es más favorable al actor", "Solo en materia comercial"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 2600 CCyCN: Orden público.", puntos_base: 50
   },
 {
-    id: "10149-04", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "media",
+    id: "10156-10", id_categoria: "10156", categoria_nombre: "Derecho Internacional Privado", dificultad: "media",
     pregunta: "¿Qué es el 'reenvío' en el DIPr?",
     opciones: ["La remisión de un tribunal a otro", "Cuando la norma de conflicto del foro remite al derecho extranjero y éste, a su vez, remite a otro derecho", "La devolución de una mercadería importada", "El recurso ante un tribunal internacional"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 2596 CCyCN: Reenvío.", puntos_base: 25
   },
 {
-    id: "10149-05", id_categoria: "10149", categoria_nombre: "D. Internacional Privado", dificultad: "facil",
+    id: "10156-11", id_categoria: "10156", categoria_nombre: "Derecho Internacional Privado", dificultad: "facil",
     pregunta: "En materia de contratos internacionales, el CCyCN permite la autonomía de la voluntad para elegir:",
     opciones: ["Solo la jurisdicción", "El derecho aplicable al contrato", "Solo las cláusulas penales", "Nada, todo lo decide el juez"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 2651 CCyCN: Autonomía de la voluntad en contratos internacionales.", puntos_base: 10
   },
 {
-    id: "10654-01", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "facil",
+    id: "10649-07", id_categoria: "10649", categoria_nombre: "Mediación y Medios de Resolución de Conflictos", dificultad: "facil",
     pregunta: "Para ejercer la abogacía en la Provincia de Buenos Aires es necesario:",
     opciones: ["Solo tener el título universitario", "Tener título habilitante e inscripción en el Colegio de Abogados del Departamento Judicial correspondiente", "Ser mayor de 25 años", "Aprobar un examen del Poder Judicial"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Ley 5177 de Ejercicio de la Abogacía (Prov. Bs. As.).", puntos_base: 10
   },
 {
-    id: "10654-02", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "media",
+    id: "10649-08", id_categoria: "10649", categoria_nombre: "Mediación y Medios de Resolución de Conflictos", dificultad: "media",
     pregunta: "¿Qué es la mediación prejudicial obligatoria en la Provincia de Buenos Aires?",
     opciones: ["Un juicio abreviado", "Un procedimiento de resolución de conflictos previo a la demanda judicial", "Una audiencia ante el juez", "Una pericia contable"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Ley 13.951 de Mediación Prejudicial Obligatoria (Prov. Bs. As.).", puntos_base: 25
   },
 {
-    id: "10654-03", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "dificil",
+    id: "10649-09", id_categoria: "10649", categoria_nombre: "Mediación y Medios de Resolución de Conflictos", dificultad: "dificil",
     pregunta: "El secreto profesional del abogado implica que:",
     opciones: ["El abogado puede revelar la información del cliente si le conviene", "El abogado tiene el deber y el derecho de guardar secreto sobre los hechos conocidos en el ejercicio profesional", "Solo aplica en causas penales", "Es optativo para el abogado"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Art. 6 de la Ley 5177 y Código de Ética del COLPROBA.", puntos_base: 50
   },
 {
-    id: "10654-04", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "media",
+    id: "10649-10", id_categoria: "10649", categoria_nombre: "Mediación y Medios de Resolución de Conflictos", dificultad: "media",
     pregunta: "Los honorarios del abogado en la Provincia de Buenos Aires se regulan por:",
     opciones: ["Solo lo que acuerden las partes", "La Ley 14.967 de Honorarios Profesionales", "El Código Civil", "Las tablas del Poder Ejecutivo"],
     respuesta_correcta_index: 1,
     fundamento_juridico: "Ley 14.967 de Honorarios Profesionales de Abogados y Procuradores (Prov. Bs. As.).", puntos_base: 25
   },
 {
-    id: "10654-05", id_categoria: "10654", categoria_nombre: "Práctica Profesional", dificultad: "facil",
+    id: "10649-11", id_categoria: "10649", categoria_nombre: "Mediación y Medios de Resolución de Conflictos", dificultad: "facil",
     pregunta: "¿Qué documento da inicio formal a un proceso judicial civil?",
     opciones: ["La carta documento", "La demanda judicial", "El alegato", "La sentencia"],
     respuesta_correcta_index: 1,
@@ -6201,5 +6202,5 @@ const STATIC_QUESTIONS: TriviaQuestion[] = [
   }
 ];
 
-export const TRIVIA_QUESTIONS: TriviaQuestion[] = [...STATIC_QUESTIONS, ...TRIVIA_QUESTIONS_EXTENDED];
+export const TRIVIA_QUESTIONS: TriviaQuestion[] = [...STATIC_QUESTIONS, ...TRIVIA_QUESTIONS_EXTENDED, ...EXTRA_MATERIAS_QUESTIONS];
 

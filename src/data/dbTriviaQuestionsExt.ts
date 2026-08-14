@@ -18758,7 +18758,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1706",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo define el Código Civil y Comercial al derecho real?",
@@ -18769,7 +18769,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1707",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la finalidad principal de los derechos reales administrativos?",
@@ -18780,7 +18780,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1708",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Quién es siempre el titular de los derechos reales administrativos?",
@@ -18791,7 +18791,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1709",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué vertientes comprende el derecho real de propiedad estatal?",
@@ -18802,7 +18802,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1710",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo se clasifican los bienes del Estado según su origen?",
@@ -18813,7 +18813,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1711",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué postura doctrinaria niega la existencia de una relación real de propiedad y afirma un intenso poder reglamentario?",
@@ -18824,7 +18824,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1712",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "Según Bielsa, ¿quién es el titular del dominio público?",
@@ -18835,7 +18835,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1713",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué criterio sostiene Fiorini sobre la medida de los bienes estatales?",
@@ -18846,7 +18846,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1714",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál de los siguientes es un bien del dominio público según el art. 235 del CCyC?",
@@ -18857,7 +18857,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1715",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué se entiende por \"playas marítimas\" según el Código?",
@@ -18868,7 +18868,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1716",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el \"Elemento Subjetivo\" de los bienes dominiales?",
@@ -18879,7 +18879,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1717",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué comprende el \"Elemento Objetivo\" en una plaza pública?",
@@ -18890,7 +18890,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1718",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿A qué hace referencia el \"Elemento Teleológico\" de los bienes públicos?",
@@ -18901,7 +18901,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1719",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuáles son los caracteres de los bienes públicos del Estado según el art. 237 del CCyC?",
@@ -18912,7 +18912,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1720",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo se produce la afectación de los bienes públicos NATURALES?",
@@ -18923,7 +18923,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1721",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué requisito adicional necesitan los bienes ARTIFICIALES para ser del dominio público?",
@@ -18934,7 +18934,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1722",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es un edificio destinado a hospital mientras no sea efectivamente consagrado al uso público?",
@@ -18945,7 +18945,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1723",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué significa \"desafectar\" un bien del dominio público?",
@@ -18956,7 +18956,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1724",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo pueden desafectarse los bienes del dominio público NATURAL?",
@@ -18967,7 +18967,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1725",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la diferencia entre \"uso común\" y \"uso especial\" del dominio público?",
@@ -18978,7 +18978,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1726",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué carácter tiene generalmente el \"permiso de uso\" de un bien público?",
@@ -18989,7 +18989,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1727",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué caracteriza a la \"concesión de uso\" de un bien público?",
@@ -19000,7 +19000,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1728",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué se entiende por \"alineación\" en materia de vías públicas?",
@@ -19011,7 +19011,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1729",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿A quién corresponde el dominio originario de los recursos naturales según el art. 124 CN?",
@@ -19022,7 +19022,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1730",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué determinó la CSJN respecto al derecho sobre una sepultura en un cementerio público?",
@@ -19033,7 +19033,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1731",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Por qué rama del derecho se rigen las restricciones impuestas al dominio privado solo en el interés público?",
@@ -19044,7 +19044,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1732",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es un carácter de las restricciones administrativas?",
@@ -19055,7 +19055,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1733",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es una servidumbre administrativa?",
@@ -19066,7 +19066,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1734",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es una diferencia clave entre restricción y servidumbre administrativa?",
@@ -19077,7 +19077,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1735",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es el \"camino de sirga\" según el CCyC?",
@@ -19088,7 +19088,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1736",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la autoridad competente en materia de servidumbre de electroducto a nivel federal?",
@@ -19099,7 +19099,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1737",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿En qué consiste la \"requisición\" o \"requisa\"?",
@@ -19110,7 +19110,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1738",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué prohíbe el art. 17 de la Constitución Nacional respecto a la requisición?",
@@ -19121,7 +19121,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1739",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es el \"decomiso\" en el ámbito administrativo?",
@@ -19132,7 +19132,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1740",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es la \"ocupación temporánea\"?",
@@ -19143,7 +19143,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1741",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo se define la expropiación según Marienhoff?",
@@ -19154,7 +19154,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1742",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la naturaleza jurídica de la expropiación?",
@@ -19165,7 +19165,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1743",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué requisito constitucional exige el art. 17 para que proceda la expropiación?",
@@ -19176,7 +19176,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1744",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué tipo de bienes son expropiables según la ley 21.499?",
@@ -19187,7 +19187,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1745",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Quiénes pueden actuar como sujetos expropiantes?",
@@ -19198,7 +19198,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1746",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué comprende la indemnización expropiatoria según el art. 10 de la ley?",
@@ -19209,7 +19209,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1747",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿En qué forma debe pagarse la indemnización expropiatoria por regla general?",
@@ -19220,7 +19220,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1748",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es el \"avenimiento expropiatorio\"?",
@@ -19231,7 +19231,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1749",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué \"premio\" otorga la ley al propietario que acepta el avenimiento en bienes inmuebles?",
@@ -19242,7 +19242,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1750",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la función del Tribunal de Tasaciones de la Nación?",
@@ -19253,7 +19253,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1751",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuándo queda perfeccionada la expropiación en sede judicial?",
@@ -19264,7 +19264,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1752",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es la \"expropiación irregular\"?",
@@ -19275,7 +19275,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1753",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿En qué caso procede la acción de \"retrocesión\"?",
@@ -19286,7 +19286,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1754",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué requisito debe cumplir el expropiado para lograr la retrocesión?",
@@ -19297,7 +19297,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1755",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el plazo de prescripción para la acción de retrocesión?",
@@ -19308,7 +19308,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1756",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el carácter de la responsabilidad del Estado según la doctrina y jurisprudencia actual?",
@@ -19319,7 +19319,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1757",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué establecía el \"dogma de la irresponsabilidad\" histórica del Estado?",
@@ -19330,7 +19330,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1758",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál fue el primer caso (1864) donde la CSJN reconoció la responsabilidad contractual del Estado?",
@@ -19341,7 +19341,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1759",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué requería la \"Teoría del Fisco\" para poder demandar al Estado?",
@@ -19352,7 +19352,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1760",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es un recaudo esencial para la existencia de responsabilidad del Estado?",
@@ -19363,7 +19363,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1761",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿En qué consiste el factor de atribución \"falta de servicio\"?",
@@ -19374,7 +19374,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1762",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué reconoció la CSJN en el caso \"Tomás Devoto\" (1933)?",
@@ -19385,7 +19385,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1763",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué importancia tiene el caso \"Vadell\" (1984) en la evolución de la responsabilidad estatal?",
@@ -19396,7 +19396,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1764",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Es indemnizable el lucro cesante en la responsabilidad por ACTIVIDAD LEGÍTIMA según la ley 26.944?",
@@ -19407,7 +19407,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1765",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué requisito exige la ley 26.944 para que proceda la responsabilidad por actividad legítima?",
@@ -19418,7 +19418,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1766",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Responde el Estado por los daños causados por una ley declarada inconstitucional?",
@@ -19429,7 +19429,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1767",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo se define el \"error judicial\" para solicitar indemnización?",
@@ -19440,7 +19440,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1768",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué sucede con la responsabilidad por actividad judicial legítima?",
@@ -19451,7 +19451,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1769",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es la \"confianza legítima\" derivada del principio de buena fe contractual?",
@@ -19462,7 +19462,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1770",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es el \"rescate\" en materia de contratos administrativos?",
@@ -19473,7 +19473,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1771",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo define Gordillo al procedimiento administrativo?",
@@ -19484,7 +19484,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1772",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el \"cauce formal\" de la función administrativa?",
@@ -19495,7 +19495,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1773",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es una función del procedimiento administrativo?",
@@ -19506,7 +19506,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1774",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿En qué consiste el principio de \"Impulso de Oficio\"?",
@@ -19517,7 +19517,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1775",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué diferencia la \"Verdad Material\" de la \"Verdad Formal\"?",
@@ -19528,7 +19528,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1776",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿A favor de quién opera el principio del \"Informalismo\"?",
@@ -19539,7 +19539,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1777",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué garantiza el \"Debido Proceso Admnistrativo\" (Derecho a ser oído)?",
@@ -19550,7 +19550,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1778",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la regla sobre las \"Costas\" en el procedimiento administrativo?",
@@ -19561,7 +19561,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1779",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo es el ejercicio de la competencia administrativa?",
@@ -19572,7 +19572,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1780",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es la \"Avocación\"?",
@@ -19583,7 +19583,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1781",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el máximo organismo de asesoramiento jurídico del Poder Ejecutivo Nacional?",
@@ -19594,7 +19594,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1782",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Quién tiene a su cargo la defensa del patrimonio del Fisco en la Provincia de Buenos Aires?",
@@ -19605,7 +19605,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1783",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es el \"Expediente Administrativo\"?",
@@ -19616,7 +19616,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1784",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el plazo máximo de fojas para cada cuerpo de un expediente en PBA?",
@@ -19627,7 +19627,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1785",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo deben ser redactados los escritos ante la Administración en PBA?",
@@ -19638,7 +19638,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1786",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué sucede en caso de duda sobre la autenticidad de una firma en un escrito?",
@@ -19649,7 +19649,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1787",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Rige la libertad probatoria en el procedimiento administrativo?",
@@ -19660,7 +19660,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1788",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la regla general sobre el \"Silencio Administrativo\"?",
@@ -19671,7 +19671,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1789",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es un requisito esencial del acto administrativo según el art. 7 de la ley 19.549?",
@@ -19682,7 +19682,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1790",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué debe contener obligatoriamente una notificación para ser válida?",
@@ -19693,7 +19693,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1791",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cómo se cuentan los plazos en el procedimiento administrativo?",
@@ -19704,7 +19704,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1792",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el plazo de gracia en la Provincia de Buenos Aires?",
@@ -19715,7 +19715,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1793",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué recurso procede ante el mismo órgano que dictó el acto en el ámbito nacional?",
@@ -19726,7 +19726,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1794",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la regla general para la selección del cocontratante estatal (Licitación)?",
@@ -19737,7 +19737,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1795",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué diferencia la licitación del concurso?",
@@ -19748,7 +19748,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1796",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es el \"Pliego de Bases y Condiciones\"?",
@@ -19759,7 +19759,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1797",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué garantiza la \"Estabilidad del Empleado Público\" según la CN?",
@@ -19770,7 +19770,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1798",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el órgano encargado de examinar y aprobar las cuentas públicas en PBA?",
@@ -19781,7 +19781,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1799",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué sistema de control adoptó la Argentina en 1853 (trial against the State)?",
@@ -19792,7 +19792,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1800",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué estableció la CSJN en el caso \"Pietranera\" (1966) sobre sentencias contra el Estado?",
@@ -19803,7 +19803,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1801",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué es el CIADI?",
@@ -19814,7 +19814,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1802",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es el plazo de caducidad para demandar judicialmente un acto administrativo nacional?",
@@ -19825,7 +19825,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1803",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué pretensión busca que el Estado realice una conducta positiva para efectivizar un derecho social?",
@@ -19836,7 +19836,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1804",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Cuál es la vía sumarísima para garantizar derechos vulnerados de raigambre constitucional?",
@@ -19847,7 +19847,7 @@ export const TRIVIA_QUESTIONS_EXTENDED: TriviaQuestion[] = [
   },
   {
     id: "q_ext_1805",
-    id_categoria: "10126",
+    id_categoria: "10151",
     categoria_nombre: "Derecho Administrativo II",
     dificultad: "media",
     pregunta: "¿Qué plazo fija la ley 13.928 de PBA para deducir la acción de amparo?",

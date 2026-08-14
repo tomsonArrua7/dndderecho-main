@@ -227,6 +227,34 @@ function findExactMatchingQuestions(userSubject: string, questions: TriviaQuesti
   });
 }
 
+// Función para obtener de forma estricta y segura las preguntas de una materia/categoría específica
+function getQuestionsForCategory(
+  categoryId: string,
+  categoryName: string,
+  questions: TriviaQuestion[]
+): TriviaQuestion[] {
+  if (!categoryId || categoryId === "todas") {
+    return [...questions];
+  }
+
+  // 1. Coincidencia directa por ID de categoría
+  const matches = questions.filter(q => q.id_categoria === categoryId);
+
+  // 2. Coincidencia por nombre exacto de la materia si es necesario (ej. preguntas de DB)
+  if (categoryName && categoryName !== "Toda la Carrera") {
+    const byName = findExactMatchingQuestions(categoryName, questions);
+    const idSet = new Set(matches.map(q => q.id));
+    for (const q of byName) {
+      if (!idSet.has(q.id)) {
+        matches.push(q);
+        idSet.add(q.id);
+      }
+    }
+  }
+
+  return matches;
+}
+
 // Función para desordenar aleatoriamente las 4 opciones de cada pregunta de forma segura
 const prepareQuestionPool = (questions: TriviaQuestion[]): TriviaQuestion[] => {
   if (!Array.isArray(questions)) return [];
@@ -778,8 +806,18 @@ export default function Trivia() {
         markDuelAsSeen(duel.id);
         setActiveDuelRoom(duel);
 
-        let duelQuestions = TRIVIA_QUESTIONS.filter(q => duel.preguntasIds.includes(q.id));
-        if (duelQuestions.length === 0) duelQuestions = TRIVIA_QUESTIONS.slice(0, 5);
+        let duelQuestions = allQuestionsCombined.filter(q => duel.preguntasIds.includes(q.id));
+        if (duelQuestions.length < 5) {
+          const fallbackPool = getQuestionsForCategory(duel.materiaId, duel.materiaNombre, allQuestionsCombined);
+          const existingIds = new Set(duelQuestions.map(q => q.id));
+          const candidates = fallbackPool.filter(q => !existingIds.has(q.id));
+          const needed = 5 - duelQuestions.length;
+          const fillers = [...candidates].sort(() => 0.5 - Math.random()).slice(0, needed);
+          duelQuestions = [...duelQuestions, ...fillers];
+          while (duelQuestions.length < 5 && fallbackPool.length > 0) {
+            duelQuestions.push(fallbackPool[Math.floor(Math.random() * fallbackPool.length)]);
+          }
+        }
         setQuestionsPool(duelQuestions);
 
         setDuelOutcomeModal({
@@ -947,14 +985,17 @@ export default function Trivia() {
   const handleStartGame = () => {
     setActiveDuelRoom(null);
     setExplicacionIA(null);
-    let pool = [...allQuestionsCombined];
+    const cat = CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria);
+    const catNombre = cat ? cat.nombre : "";
 
-    if (selectedCategoria !== "todas") {
-      pool = pool.filter(q => q.id_categoria === selectedCategoria);
-    }
+    let pool = getQuestionsForCategory(selectedCategoria, catNombre, allQuestionsCombined);
 
     if (pool.length === 0) {
-      pool = [...allQuestionsCombined];
+      if (selectedCategoria === "todas") {
+        pool = [...allQuestionsCombined];
+      } else {
+        pool = findExactMatchingQuestions(catNombre, allQuestionsCombined);
+      }
     }
 
     pool = pool.sort(() => 0.5 - Math.random());
@@ -999,12 +1040,23 @@ export default function Trivia() {
     const randomCode = `DND-${Math.floor(100 + Math.random() * 900)}`;
     const cat = CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria) || CATEGORIAS_TRIVIA[0];
 
-    let pool = TRIVIA_QUESTIONS;
-    if (cat.id !== "todas") {
-      pool = pool.filter(q => q.id_categoria === cat.id);
+    const pool = getQuestionsForCategory(cat.id, cat.nombre, allQuestionsCombined);
+    let selectedQIds: string[] = [];
+
+    if (pool.length >= 5) {
+      selectedQIds = [...pool].sort(() => 0.5 - Math.random()).slice(0, 5).map(q => q.id);
+    } else if (pool.length > 0) {
+      const shuffled = [...pool].sort(() => 0.5 - Math.random());
+      const selected: TriviaQuestion[] = [];
+      while (selected.length < 5) {
+        for (const q of shuffled) {
+          if (selected.length < 5) selected.push(q);
+        }
+      }
+      selectedQIds = selected.map(q => q.id);
+    } else {
+      selectedQIds = [...allQuestionsCombined].sort(() => 0.5 - Math.random()).slice(0, 5).map(q => q.id);
     }
-    if (pool.length < 5) pool = TRIVIA_QUESTIONS;
-    const selectedQIds = [...pool].sort(() => 0.5 - Math.random()).slice(0, 5).map(q => q.id);
 
     const dbRow = {
       id: randomCode,
@@ -1051,10 +1103,18 @@ export default function Trivia() {
   const handleJoinDuelo = async (duelo: DueloTrivia) => {
     setActiveDuelRoom(duelo);
 
-    // Cargar siempre las preguntas del duelo a questionsPool por si el usuario abre la revisión
-    let duelQuestions = TRIVIA_QUESTIONS.filter(q => duelo.preguntasIds.includes(q.id));
-    if (duelQuestions.length === 0) {
-      duelQuestions = TRIVIA_QUESTIONS.slice(0, 5);
+    // Cargar siempre las preguntas del duelo garantizando estrictamente que coincidan con la materia del duelo
+    let duelQuestions = allQuestionsCombined.filter(q => duelo.preguntasIds.includes(q.id));
+    if (duelQuestions.length < 5) {
+      const fallbackPool = getQuestionsForCategory(duelo.materiaId, duelo.materiaNombre, allQuestionsCombined);
+      const existingIds = new Set(duelQuestions.map(q => q.id));
+      const candidates = fallbackPool.filter(q => !existingIds.has(q.id));
+      const needed = 5 - duelQuestions.length;
+      const fillers = [...candidates].sort(() => 0.5 - Math.random()).slice(0, needed);
+      duelQuestions = [...duelQuestions, ...fillers];
+      while (duelQuestions.length < 5 && fallbackPool.length > 0) {
+        duelQuestions.push(fallbackPool[Math.floor(Math.random() * fallbackPool.length)]);
+      }
     }
     setQuestionsPool(duelQuestions);
 
@@ -1391,8 +1451,9 @@ export default function Trivia() {
   };
 
   const getQuestionCountForCategory = (catId: string) => {
-    if (catId === "todas") return TRIVIA_QUESTIONS.length;
-    return TRIVIA_QUESTIONS.filter(q => q.id_categoria === catId).length;
+    if (catId === "todas") return allQuestionsCombined.length;
+    const cat = CATEGORIAS_TRIVIA.find(c => c.id === catId);
+    return getQuestionsForCategory(catId, cat ? cat.nombre : "", allQuestionsCombined).length;
   };
 
   // Renderizar Pregunta Activa
@@ -3107,9 +3168,19 @@ export default function Trivia() {
                   <button
                     onClick={() => {
                       if (questionsPool.length === 0 && activeDuelRoom?.preguntasIds) {
-                        let duelQs = TRIVIA_QUESTIONS.filter(q => activeDuelRoom.preguntasIds.includes(q.id));
-                        if (duelQs.length === 0) duelQs = TRIVIA_QUESTIONS.slice(0, 5);
-                        setQuestionsPool(duelQs);
+                        let duelQs = allQuestionsCombined.filter(q => activeDuelRoom.preguntasIds.includes(q.id));
+                        if (duelQs.length < 5) {
+                          const fallbackPool = getQuestionsForCategory(activeDuelRoom.materiaId, activeDuelRoom.materiaNombre, allQuestionsCombined);
+                          const existingIds = new Set(duelQs.map(q => q.id));
+                          const candidates = fallbackPool.filter(q => !existingIds.has(q.id));
+                          const needed = 5 - duelQs.length;
+                          const fillers = [...candidates].sort(() => 0.5 - Math.random()).slice(0, needed);
+                          duelQs = [...duelQs, ...fillers];
+                          while (duelQs.length < 5 && fallbackPool.length > 0) {
+                            duelQs.push(fallbackPool[Math.floor(Math.random() * fallbackPool.length)]);
+                          }
+                        }
+                        setQuestionsPool(prepareQuestionPool(duelQs));
                       }
                       setDuelOutcomeModal(null);
                       setShowReviewModal(true);
