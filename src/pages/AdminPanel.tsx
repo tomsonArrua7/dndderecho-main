@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { CATEGORIAS_TRIVIA, TRIVIA_QUESTIONS, TriviaQuestion } from "@/data/triviaData";
 
 export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
@@ -92,6 +93,144 @@ export default function AdminPanel() {
     const today = new Date().toISOString().split("T")[0];
     XLSX.writeFile(workbook, `Estudiantes_DND_Derecho_${today}.xlsx`);
     toast.success(`Exportados ${sortedProfiles.length} usuarios a Excel en orden alfabético.`);
+  };
+
+  // Trivia Search & Export States
+  const [triviaSearchQuery, setTriviaSearchQuery] = useState("");
+  const [triviaYearFilter, setTriviaYearFilter] = useState<number>(0);
+  const [triviaCategoryFilter, setTriviaCategoryFilter] = useState<string>("todas");
+  const [triviaViewMode, setTriviaViewMode] = useState<"banco" | "moderacion">("banco");
+
+  // Banco Consolidado Completo (100% de la Trivia: Base Local + Supabase DB)
+  const allTriviaQuestionsConsolidated = useMemo(() => {
+    const map = new Map<string, any>();
+    
+    // 1. Preguntas base del sistema
+    TRIVIA_QUESTIONS.forEach(q => {
+      if (q && q.id) {
+        const cat = CATEGORIAS_TRIVIA.find(c => c.id === q.id_categoria);
+        map.set(q.id, {
+          ...q,
+          anio: cat ? cat.anio : (q.anio || 1),
+          categoria_nombre: cat ? cat.nombre : (q.categoria_nombre || "General"),
+          origen: "Banco Base Oficial"
+        });
+      }
+    });
+
+    // 2. Preguntas de la base de datos Supabase
+    preguntasTriviaIA.forEach(dbQ => {
+      if (dbQ && dbQ.id) {
+        const cat = CATEGORIAS_TRIVIA.find(c => c.id === dbQ.categoria_id || c.nombre.toLowerCase() === (dbQ.materia || "").toLowerCase());
+        map.set(dbQ.id, {
+          id: dbQ.id,
+          id_categoria: dbQ.categoria_id || (cat ? cat.id : "todas"),
+          categoria_nombre: dbQ.materia || (cat ? cat.nombre : "General"),
+          anio: cat ? cat.anio : (dbQ.anio || 1),
+          pregunta: dbQ.pregunta,
+          opciones: Array.isArray(dbQ.opciones) ? dbQ.opciones : [dbQ.opcion_a, dbQ.opcion_b, dbQ.opcion_c, dbQ.opcion_d].filter(Boolean),
+          respuesta_correcta_index: dbQ.opcion_correcta ?? dbQ.respuesta_correcta_index ?? 0,
+          fundamento_juridico: dbQ.fundamento_juridico || "",
+          dificultad: dbQ.dificultad || "media",
+          puntos_base: dbQ.puntos_base || 100,
+          origen: dbQ.aprobado ? "Base de Datos (Aprobada)" : "Base de Datos (Pendiente IA)"
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [preguntasTriviaIA]);
+
+  // Preguntas filtradas para visualización en vivo en el panel
+  const filteredTriviaQuestions = useMemo(() => {
+    return allTriviaQuestionsConsolidated.filter(q => {
+      // Filtro Año
+      if (triviaYearFilter > 0 && q.anio !== triviaYearFilter) return false;
+      // Filtro Materia
+      if (triviaCategoryFilter !== "todas" && q.id_categoria !== triviaCategoryFilter && q.categoria_nombre !== triviaCategoryFilter) return false;
+      // Filtro Búsqueda
+      if (triviaSearchQuery.trim()) {
+        const query = triviaSearchQuery.toLowerCase();
+        const matchPregunta = (q.pregunta || "").toLowerCase().includes(query);
+        const matchMateria = (q.categoria_nombre || "").toLowerCase().includes(query);
+        const matchFundamento = (q.fundamento_juridico || "").toLowerCase().includes(query);
+        const matchId = (q.id || "").toLowerCase().includes(query);
+        return matchPregunta || matchMateria || matchFundamento || matchId;
+      }
+      return true;
+    });
+  }, [allTriviaQuestionsConsolidated, triviaYearFilter, triviaCategoryFilter, triviaSearchQuery]);
+
+  // Exportar a Excel
+  const exportAllTriviaToExcel = () => {
+    if (allTriviaQuestionsConsolidated.length === 0) {
+      toast.error("No hay preguntas para exportar.");
+      return;
+    }
+
+    const dataToExport = allTriviaQuestionsConsolidated.map((q, idx) => {
+      const opciones = Array.isArray(q.opciones) ? q.opciones : [];
+      const respIdx = q.respuesta_correcta_index ?? 0;
+      const letras = ["A", "B", "C", "D"];
+      const respLetra = letras[respIdx] || `(${respIdx + 1})`;
+      const respTexto = opciones[respIdx] || "";
+
+      return {
+        "N°": idx + 1,
+        "ID": q.id,
+        "Año": q.anio ? `${q.anio}º Año` : "1º Año",
+        "Materia": q.categoria_nombre || "General",
+        "Dificultad": q.dificultad || "media",
+        "Pregunta": q.pregunta || "",
+        "Opción A": opciones[0] || "",
+        "Opción B": opciones[1] || "",
+        "Opción C": opciones[2] || "",
+        "Opción D": opciones[3] || "",
+        "Opción Correcta": respLetra,
+        "Respuesta Correcta": respTexto,
+        "Fundamento Jurídico": q.fundamento_juridico || "",
+        "Puntos": q.puntos_base || 100,
+        "Origen": q.origen || "Banco Oficial"
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Banco Trivia UNLP");
+
+    worksheet["!cols"] = [
+      { wch: 5 },   // N°
+      { wch: 15 },  // ID
+      { wch: 10 },  // Año
+      { wch: 32 },  // Materia
+      { wch: 12 },  // Dificultad
+      { wch: 65 },  // Pregunta
+      { wch: 35 },  // Opción A
+      { wch: 35 },  // Opción B
+      { wch: 35 },  // Opción C
+      { wch: 35 },  // Opción D
+      { wch: 15 },  // Opción Correcta
+      { wch: 35 },  // Respuesta Correcta
+      { wch: 55 },  // Fundamento Jurídico
+      { wch: 10 },  // Puntos
+      { wch: 25 },  // Origen
+    ];
+
+    const today = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(workbook, `Banco_Trivia_DND_UNLP_Completo_${today}.xlsx`);
+    toast.success(`¡Exportadas exitosamente ${allTriviaQuestionsConsolidated.length} preguntas a Excel!`);
+  };
+
+  // Exportar a JSON
+  const exportAllTriviaToJSON = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allTriviaQuestionsConsolidated, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `banco_trivia_dnd_unlp_${new Date().toISOString().split("T")[0]}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    toast.success(`¡Descargadas ${allTriviaQuestionsConsolidated.length} preguntas en formato JSON!`);
   };
 
   const sortedAndFilteredProfiles = useMemo(() => {
@@ -586,7 +725,7 @@ export default function AdminPanel() {
           <TabsTrigger value="permutas" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Permutas ({permutas.length})</TabsTrigger>
           <TabsTrigger value="usuarios" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Usuarios ({totalUsersCount || profiles.length})</TabsTrigger>
           <TabsTrigger value="asistente" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Asistente IA ({correcciones.length})</TabsTrigger>
-          <TabsTrigger value="trivia" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Trivia IA ({preguntasTriviaIA.length})</TabsTrigger>
+          <TabsTrigger value="trivia" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Trivia ({allTriviaQuestionsConsolidated.length})</TabsTrigger>
         </TabsList>
 
         {/* --- TAB: GENERAL --- */}
@@ -976,97 +1115,292 @@ export default function AdminPanel() {
           </div>
         </TabsContent>
 
-        {/* --- TAB: TRIVIA IA PREGUNTAS --- */}
+        {/* --- TAB: TRIVIA COMPLETA & BANCO DE PREGUNTAS --- */}
         <TabsContent value="trivia" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="p-6 bg-card border rounded-2xl shadow-sm space-y-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-bold flex items-center gap-2 text-foreground">
-                <Brain className="text-accent h-5 w-5" /> Moderación de Preguntas de Trivia generadas por IA
-              </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed mt-1">
-                Las preguntas <strong className="text-emerald-400">aprobadas por administradores</strong> se integran automáticamente al pozo de Trivia del sitio.
-              </p>
+          {/* TARJETA PRINCIPAL DE ACCIONES Y DESCARGA */}
+          <div className="p-6 bg-card border rounded-3xl shadow-sm space-y-4">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-black flex items-center gap-2 text-foreground">
+                  <Brain className="text-accent h-6 w-6" /> Banco General y Completo de Preguntas de Trivia
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mt-1">
+                  Catálogo integral de <strong className="text-foreground">{allTriviaQuestionsConsolidated.length} preguntas</strong> de 1º a 5º Año (Plan 6 FCJyS UNLP) sincronizadas entre el banco oficial y la base de datos en tiempo real.
+                </p>
+              </div>
+
+              {/* BOTONES DE EXPORTACIÓN DIRECTA */}
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <Button
+                  onClick={exportAllTriviaToExcel}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all active:scale-95"
+                >
+                  <FileSpreadsheet className="w-4 h-4" />
+                  <span>Exportar Todo a Excel (.xlsx)</span>
+                </Button>
+                <Button
+                  onClick={exportAllTriviaToJSON}
+                  variant="outline"
+                  className="text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 border-border hover:bg-muted"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Descargar JSON (.json)</span>
+                </Button>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xs shrink-0">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold">
-                {preguntasTriviaIA.filter(p => p.aprobado).length} Aprobadas
-              </span>
-              <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold">
-                {preguntasTriviaIA.filter(p => !p.aprobado).length} Pendientes
-              </span>
+            {/* ESTADÍSTICAS RÁPIDAS */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+              <div className="p-3.5 rounded-2xl bg-muted/40 border border-border">
+                <span className="text-[10px] uppercase font-black text-muted-foreground block">Total Preguntas</span>
+                <span className="text-2xl font-black text-foreground font-mono">{allTriviaQuestionsConsolidated.length}</span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-muted/40 border border-border">
+                <span className="text-[10px] uppercase font-black text-muted-foreground block">1º Año (7 Materias)</span>
+                <span className="text-2xl font-black text-accent font-mono">
+                  {allTriviaQuestionsConsolidated.filter(q => q.anio === 1).length}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-muted/40 border border-border">
+                <span className="text-[10px] uppercase font-black text-muted-foreground block">2º a 5º Año</span>
+                <span className="text-2xl font-black text-emerald-500 font-mono">
+                  {allTriviaQuestionsConsolidated.filter(q => (q.anio || 0) > 1).length}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-muted/40 border border-border">
+                <span className="text-[10px] uppercase font-black text-muted-foreground block">En Base Supabase / IA</span>
+                <span className="text-2xl font-black text-indigo-400 font-mono">
+                  {preguntasTriviaIA.length}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 border-b">
-                <tr>
-                  <th className="px-6 py-4 text-left font-semibold">Materia</th>
-                  <th className="px-6 py-4 text-left font-semibold">Estado</th>
-                  <th className="px-6 py-4 text-left font-semibold">Pregunta</th>
-                  <th className="px-6 py-4 text-left font-semibold">Fundamento Jurídico</th>
-                  <th className="px-6 py-4 text-right font-semibold">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {preguntasTriviaIA.length === 0 ? (
+          {/* SELECTOR DE MODO: BANCO COMPLETO VS MODERACIÓN IA */}
+          <div className="flex items-center justify-between gap-4 border-b border-border pb-3">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setTriviaViewMode("banco")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  triviaViewMode === "banco"
+                    ? "bg-accent text-accent-foreground shadow-sm"
+                    : "bg-muted/50 hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                📚 Explorar Banco Completo ({filteredTriviaQuestions.length})
+              </button>
+              <button
+                onClick={() => setTriviaViewMode("moderacion")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  triviaViewMode === "moderacion"
+                    ? "bg-accent text-accent-foreground shadow-sm"
+                    : "bg-muted/50 hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                <span>🤖 Moderación de IA</span>
+                {preguntasTriviaIA.filter(p => !p.aprobado).length > 0 && (
+                  <span className="px-1.5 py-0.2 bg-amber-500 text-black text-[10px] font-black rounded-full">
+                    {preguntasTriviaIA.filter(p => !p.aprobado).length}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* VISTA 1: EXPLORADOR DEL BANCO COMPLETO */}
+          {triviaViewMode === "banco" && (
+            <div className="space-y-4">
+              {/* FILTROS DE BÚSQUEDA */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    value={triviaSearchQuery}
+                    onChange={(e) => setTriviaSearchQuery(e.target.value)}
+                    placeholder="Buscar por pregunta, fundamento o ID..."
+                    className="pl-9 bg-card rounded-xl text-xs"
+                  />
+                </div>
+
+                <select
+                  value={triviaYearFilter}
+                  onChange={(e) => setTriviaYearFilter(Number(e.target.value))}
+                  className="bg-card border border-input rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                >
+                  <option value={0}>Todos los Años (1º a 5º Año)</option>
+                  <option value={1}>1º Año</option>
+                  <option value={2}>2º Año</option>
+                  <option value={3}>3º Año</option>
+                  <option value={4}>4º Año</option>
+                  <option value={5}>5º Año</option>
+                </select>
+
+                <select
+                  value={triviaCategoryFilter}
+                  onChange={(e) => setTriviaCategoryFilter(e.target.value)}
+                  className="bg-card border border-input rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+                >
+                  <option value="todas">Todas las Materias ({CATEGORIAS_TRIVIA.length - 1})</option>
+                  {CATEGORIAS_TRIVIA.filter(c => c.id !== "todas").map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.anio > 0 ? `[${c.anio}º] ` : ""}{c.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* TABLA DE PREGUNTAS */}
+              <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+                <div className="max-h-[600px] overflow-y-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-muted/80 sticky top-0 border-b z-10">
+                      <tr>
+                        <th className="px-4 py-3 font-black text-muted-foreground w-16">N° / ID</th>
+                        <th className="px-4 py-3 font-black text-muted-foreground w-36">Materia / Año</th>
+                        <th className="px-4 py-3 font-black text-muted-foreground">Pregunta y Opciones</th>
+                        <th className="px-4 py-3 font-black text-muted-foreground w-64">Fundamento Jurídico</th>
+                        <th className="px-4 py-3 font-black text-muted-foreground w-28 text-right">Origen</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {filteredTriviaQuestions.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground italic">
+                            No se encontraron preguntas con los filtros seleccionados.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredTriviaQuestions.slice(0, 100).map((q, idx) => {
+                          const opciones = Array.isArray(q.opciones) ? q.opciones : [];
+                          const respIdx = q.respuesta_correcta_index ?? 0;
+                          const letras = ["A", "B", "C", "D"];
+
+                          return (
+                            <tr key={q.id || idx} className="hover:bg-muted/20 transition-colors">
+                              <td className="px-4 py-3 font-mono text-[11px] text-muted-foreground">
+                                <span className="font-bold text-foreground">#{idx + 1}</span>
+                                <span className="block text-[9px] truncate max-w-[70px]">{q.id}</span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="font-bold text-foreground block">{q.categoria_nombre}</span>
+                                <span className="text-[10px] text-accent font-black uppercase">
+                                  {q.anio ? `${q.anio}º Año` : "General"}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 space-y-1.5 max-w-md">
+                                <p className="font-semibold text-foreground leading-snug">{q.pregunta}</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px]">
+                                  {opciones.map((opc: string, oIdx: number) => (
+                                    <div
+                                      key={oIdx}
+                                      className={`px-2 py-1 rounded-lg border ${
+                                        oIdx === respIdx
+                                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-bold"
+                                          : "bg-muted/30 border-transparent text-muted-foreground"
+                                      }`}
+                                    >
+                                      <span className="font-mono mr-1">({letras[oIdx]})</span>
+                                      <span>{opc}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-[11px] text-muted-foreground leading-relaxed">
+                                {q.fundamento_juridico || <span className="italic text-muted-foreground/60">Sin fundamento cargado</span>}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-muted text-muted-foreground border border-border">
+                                  {q.origen}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {filteredTriviaQuestions.length > 100 && (
+                  <div className="p-3 bg-muted/40 border-t text-center text-xs text-muted-foreground font-semibold">
+                    Mostrando las primeras 100 preguntas de {filteredTriviaQuestions.length}. Usá el botón "Exportar Todo a Excel" para ver el catálogo completo.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* VISTA 2: MODERACIÓN DE PREGUNTAS IA */}
+          {triviaViewMode === "moderacion" && (
+            <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50 border-b">
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-xs text-muted-foreground italic">
-                      No hay preguntas de Trivia generadas por IA para revisar en este momento.
-                    </td>
+                    <th className="px-6 py-4 text-left font-semibold">Materia</th>
+                    <th className="px-6 py-4 text-left font-semibold">Estado</th>
+                    <th className="px-6 py-4 text-left font-semibold">Pregunta</th>
+                    <th className="px-6 py-4 text-left font-semibold">Fundamento Jurídico</th>
+                    <th className="px-6 py-4 text-right font-semibold">Acciones</th>
                   </tr>
-                ) : (
-                  preguntasTriviaIA.map(p => (
-                    <tr key={p.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="px-6 py-4 font-bold text-accent">
-                        {p.materia}
-                        {p.catedra && <span className="block text-[10px] text-muted-foreground font-normal">Cat: {p.catedra}</span>}
-                      </td>
-                      <td className="px-6 py-4">
-                        {p.aprobado ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
-                            <CheckCircle size={11} /> Aprobada
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500/15 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-                            <Clock size={11} /> Pendiente
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 max-w-xs text-xs font-semibold text-foreground leading-relaxed">
-                        {p.pregunta}
-                      </td>
-                      <td className="px-6 py-4 max-w-xs text-xs text-muted-foreground leading-relaxed">
-                        {p.fundamento_juridico || "Sin fundamento especificado"}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {!p.aprobado && (
-                            <Button
-                              size="sm"
-                              onClick={() => aprobarPreguntaTrivia(p.id)}
-                              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-lg"
-                            >
-                              Aprobar
-                            </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => eliminarPreguntaTrivia(p.id)}
-                            className="text-xs px-2.5 py-1 rounded-lg"
-                          >
-                            Eliminar
-                          </Button>
-                        </div>
+                </thead>
+                <tbody className="divide-y">
+                  {preguntasTriviaIA.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-8 text-center text-xs text-muted-foreground italic">
+                        No hay preguntas de Trivia generadas por IA para revisar en este momento.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    preguntasTriviaIA.map(p => (
+                      <tr key={p.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="px-6 py-4 font-bold text-accent">
+                          {p.materia}
+                          {p.catedra && <span className="block text-[10px] text-muted-foreground font-normal">Cat: {p.catedra}</span>}
+                        </td>
+                        <td className="px-6 py-4">
+                          {p.aprobado ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+                              <CheckCircle size={11} /> Aprobada
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500/15 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                              <Clock size={11} /> Pendiente
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 max-w-xs text-xs font-semibold text-foreground leading-relaxed">
+                          {p.pregunta}
+                        </td>
+                        <td className="px-6 py-4 max-w-xs text-xs text-muted-foreground leading-relaxed">
+                          {p.fundamento_juridico || "Sin fundamento especificado"}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {!p.aprobado && (
+                              <Button
+                                size="sm"
+                                onClick={() => aprobarPreguntaTrivia(p.id)}
+                                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-lg"
+                              >
+                                Aprobar
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => eliminarPreguntaTrivia(p.id)}
+                              className="text-xs px-2.5 py-1 rounded-lg"
+                            >
+                              Eliminar
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
