@@ -2400,12 +2400,12 @@ export default function Trivia() {
               </div>
             </div>
 
-            {/* PASO 1: SELECTOR INDEPENDIENTE DE MATERIA PARA EL DUELO */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/80 dark:bg-slate-950/80 bg-slate-50 border border-white/10 dark:border-white/10 border-slate-200 space-y-4">
+            {/* PASO 1: SELECTOR INDEPENDIENTE DE MATERIA PARA EL DUELO (DESPLEGABLE + FILTRO DE AÑO) */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/80 dark:bg-slate-950/80 bg-slate-50 border border-white/10 dark:border-white/10 border-slate-200 space-y-4 shadow-xl">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="text-xs font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
                   <GraduationCap className="w-4 h-4 text-amber-400" />
-                  1. Elegí la materia para el Duelo:
+                  Elegí la materia para desafiar en el Duelo:
                 </span>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
                   {dueloSelectedCategoria === "todas" 
@@ -2414,82 +2414,107 @@ export default function Trivia() {
                 </span>
               </div>
 
-              {/* Selector de Años de Carrera */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                {[
-                  { anio: 0, label: "Toda la Carrera" },
-                  { anio: 1, label: "1º Año" },
-                  { anio: 2, label: "2º Año" },
-                  { anio: 3, label: "3º Año" },
-                  { anio: 4, label: "4º Año" },
-                  { anio: 5, label: "5º Año" },
-                ].map((item) => (
-                  <button
-                    key={item.anio}
-                    onClick={() => {
-                      setDueloSelectedYearFilter(item.anio);
-                      if (item.anio === 0) setDueloSelectedCategoria("todas");
-                    }}
-                    className={cn(
-                      "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer shrink-0 border",
-                      dueloSelectedYearFilter === item.anio
-                        ? "bg-red-600 text-white border-red-500 shadow-md shadow-red-900/30"
-                        : "bg-white/5 dark:bg-white/5 bg-slate-200 text-slate-300 dark:text-slate-300 text-slate-700 border-white/10 dark:border-white/10 border-slate-300 hover:bg-white/10"
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Grid de Materias del Año Seleccionado */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-1">
-                {filteredDueloCategorias.map((cat) => {
-                  const isSelected = dueloSelectedCategoria === cat.id;
-                  const Icon = ICON_MAP[cat.icono] || BookOpen;
-                  const count = getCategoryQuestionCount(cat.id);
-
-                  return (
+              {/* Filtro Rápido de Años */}
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block">
+                  Filtrar por año de la carrera:
+                </span>
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                  {[
+                    { anio: 0, label: "Toda la Carrera" },
+                    { anio: 1, label: "1º Año" },
+                    { anio: 2, label: "2º Año" },
+                    { anio: 3, label: "3º Año" },
+                    { anio: 4, label: "4º Año" },
+                    { anio: 5, label: "5º Año" },
+                  ].map((item) => (
                     <button
-                      key={cat.id}
-                      onClick={() => setDueloSelectedCategoria(cat.id)}
+                      key={item.anio}
+                      onClick={() => {
+                        setDueloSelectedYearFilter(item.anio);
+                        if (item.anio === 0) setDueloSelectedCategoria("todas");
+                        else {
+                          const firstOfThatYear = CATEGORIAS_TRIVIA.find(c => c.anio === item.anio);
+                          if (firstOfThatYear) setDueloSelectedCategoria(firstOfThatYear.id);
+                        }
+                      }}
                       className={cn(
-                        "p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-2.5 relative group",
-                        isSelected
-                          ? "bg-red-950/50 dark:bg-red-950/50 bg-red-100 border-red-500 text-white dark:text-white text-slate-900 shadow-md"
-                          : "bg-white/[0.03] dark:bg-white/[0.03] bg-white border-white/10 dark:border-white/10 border-slate-200 text-slate-300 dark:text-slate-300 text-slate-700 hover:border-white/20"
+                        "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer shrink-0 border",
+                        dueloSelectedYearFilter === item.anio
+                          ? "bg-red-600 text-white border-red-500 shadow-md shadow-red-900/30"
+                          : "bg-white/5 dark:bg-white/5 bg-slate-200 text-slate-300 dark:text-slate-300 text-slate-700 border-white/10 dark:border-white/10 border-slate-300 hover:bg-white/10"
                       )}
                     >
-                      <div className={cn(
-                        "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border",
-                        isSelected ? "bg-red-600 border-red-400 text-white" : "bg-white/5 border-white/10 text-amber-400"
-                      )}>
-                        <Icon className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="truncate flex-1">
-                        <span className="text-[11px] font-black block truncate leading-tight">{cat.nombre}</span>
-                        <span className="text-[9px] text-slate-400 dark:text-slate-400 text-slate-500 font-mono">{count} preguntas</span>
-                      </div>
-                      {isSelected && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
-                      )}
+                      {item.label}
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
+
+              {/* Menú Desplegable de Materia */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Desplegable de Materias disponibles:</span>
+                </label>
+                <select
+                  value={dueloSelectedCategoria}
+                  onChange={(e) => setDueloSelectedCategoria(e.target.value)}
+                  className="w-full p-3.5 rounded-2xl bg-slate-900 dark:bg-slate-900 bg-white border-2 border-red-500/60 focus:border-red-500 text-white dark:text-white text-slate-900 text-xs sm:text-sm font-black focus:outline-none shadow-xl cursor-pointer transition-all"
+                >
+                  {filteredDueloCategorias.map(cat => (
+                    <option key={cat.id} value={cat.id} className="bg-slate-900 text-white py-2">
+                      {cat.nombre} {cat.id === "todas" ? "(Toda la Carrera)" : `(${getQuestionCountForCategory(cat.id)} preguntas)`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Tarjeta de Materia Seleccionada Actualmente */}
+              {(() => {
+                const currentCat = CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria) || CATEGORIAS_TRIVIA[0];
+                const Icon = ICON_MAP[currentCat.icono] || BookOpen;
+                const count = getQuestionCountForCategory(currentCat.id);
+
+                return (
+                  <div className="p-3.5 rounded-2xl bg-red-950/40 dark:bg-red-950/40 bg-red-50 border border-red-500/40 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 text-amber-400 flex items-center justify-center shrink-0">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black text-white dark:text-white text-slate-900 block">{currentCat.nombre}</span>
+                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-bold">
+                            {currentCat.anio === 0 ? "General" : `${currentCat.anio}º Año`}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-400 text-slate-600 block">
+                          Banco de {count} preguntas exclusivas listas para el duelo
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="hidden sm:block text-right">
+                      <span className="text-[10px] font-mono font-black text-amber-400 uppercase block">5 Preguntas 1v1</span>
+                      <span className="text-[9px] text-slate-400">20s por turno</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Botones de Acción para Crear la Sala con la Materia Seleccionada */}
               <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-white/10 dark:border-white/10 border-slate-200">
                 <button
                   onClick={() => handleCreateDuelo(true)}
-                  className="w-full sm:w-1/2 py-3 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-1/2 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Crear Sala Pública ({CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria)?.nombre || "Toda la Carrera"})</span>
                 </button>
                 <button
                   onClick={() => handleCreateDuelo(false)}
-                  className="w-full sm:w-1/2 py-3 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 bg-slate-200 hover:bg-slate-300 text-white dark:text-white text-slate-800 font-black text-xs uppercase tracking-wider border border-white/10 dark:border-white/10 border-slate-300 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-1/2 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 bg-slate-200 hover:bg-slate-300 text-white dark:text-white text-slate-800 font-black text-xs uppercase tracking-wider border border-white/10 dark:border-white/10 border-slate-300 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
                 >
                   <Lock className="w-4 h-4 text-amber-400" />
                   <span>Crear Sala Privada (Con Código)</span>
