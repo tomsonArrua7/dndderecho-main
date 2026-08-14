@@ -19,7 +19,9 @@ import {
   RamasPuntuacion,
   EventoInesperado,
   LogroDefinition,
-  calculateCareerScore
+  calculateCareerScore,
+  calcularArquetipoFinal,
+  ArquetipoFinal
 } from "@/data/haceTuHistoriaData";
 import { 
   Scale, 
@@ -266,11 +268,8 @@ export default function HaceTuHistoria() {
         setActiveRandomEvent(null);
       }
 
-      // 2. Seleccionar 4-6 opciones aleatorias del pool de la etapa
-      const pool = [...stage.opciones];
-      const shuffled = pool.sort(() => 0.5 - Math.random());
-      const selectedCount = Math.min(shuffled.length, 4 + Math.floor(Math.random() * 2));
-      setCurrentRandomOpciones(shuffled.slice(0, selectedCount));
+      // 2. Opciones de la etapa: Garantizar SIEMPRE todas las opciones auténticas del escenario
+      setCurrentRandomOpciones([...stage.opciones]);
     }
   }, [currentEtapaIdx, gameStarted]);
 
@@ -1471,6 +1470,30 @@ export default function HaceTuHistoria() {
             <p className="text-xs text-slate-600 dark:text-slate-300 italic max-w-md mx-auto">{customTitleObj.mencion}</p>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-1">Origen: {getCiudadNatalNombre()} — FCJyS UNLP | Rama: {dominantBranch.name}</p>
           </div>
+
+          {/* ARQUETIPO DE GRADUADO (PÁGINA 14 DEL MANUAL) */}
+          {(() => {
+            const arquetipo = calcularArquetipoFinal(templanza, contactos, etica, prestigio);
+            return (
+              <div className="p-4 rounded-3xl bg-amber-500/10 dark:bg-amber-500/10 border-2 border-amber-500/30 text-left space-y-2 shadow-md">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                    Arquetipo de Egresado UNLP
+                  </span>
+                  <Award className="w-4 h-4 text-amber-500" />
+                </div>
+                <h3 className="text-base font-black text-slate-900 dark:text-white">
+                  {arquetipo.titulo}
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {arquetipo.descripcion}
+                </p>
+                <div className="p-2.5 rounded-xl bg-white/70 dark:bg-slate-950/70 border border-amber-500/20 text-[11px] text-amber-900 dark:text-amber-200 italic">
+                  💬 <strong>El Copero dice:</strong> "{arquetipo.fraseCopero}"
+                </div>
+              </div>
+            );
+          })()}
 
           {/* TARJETA GIGANTE DE PUNTAJE TOTAL DE CARRERA */}
           <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-100 via-amber-50 to-indigo-50 dark:from-amber-500/20 dark:via-slate-950 dark:to-indigo-500/20 border border-amber-300 dark:border-amber-500/40 shadow-xl space-y-4">

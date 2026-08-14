@@ -110,6 +110,96 @@ export interface EtapaVida {
   opciones: OpcionDilema[];
 }
 
+export interface ArquetipoFinal {
+  id: string;
+  titulo: string;
+  icono: string;
+  descripcion: string;
+  fraseCopero: string;
+}
+
+export function calcularArquetipoFinal(
+  templanza: number,
+  contactos: number,
+  etica: number,
+  prestigio: number
+): ArquetipoFinal {
+  // 1. LEYENDA DE DERECHO UNLP: Alto en las 4 estadísticas (>= 65)
+  if (templanza >= 65 && contactos >= 65 && etica >= 65 && prestigio >= 65) {
+    return {
+      id: "leyenda_unlp",
+      titulo: "👑 LEYENDA DE DERECHO UNLP",
+      icono: "Crown",
+      descripcion: "Equilibrio supremo entre rigor técnico, valores éticos, red de vínculos y templanza ante la adversidad.",
+      fraseCopero: "Marcaste una época en la historia de la Facultad y de los Tribunales bonaerenses."
+    };
+  }
+
+  // 2. Alta Templanza + Alta Ética
+  if (templanza >= 70 && etica >= 70) {
+    return {
+      id: "abogado_calma",
+      titulo: "👨‍⚖️ El Abogado que Nunca Perdió la Calma",
+      icono: "Scale",
+      descripcion: "Inmutable ante la presión de los tribunales y fiel a los principios deontológicos de la abogacía.",
+      fraseCopero: "Tu templanza y conducta intachable fueron tu mayor capital en cada expediente."
+    };
+  }
+
+  // 3. Alto Contactos + Alto Prestigio
+  if (contactos >= 70 && prestigio >= 70) {
+    return {
+      id: "tribunales_conocido",
+      titulo: "🏛️ Conoce a Todo el Mundo en Tribunales",
+      icono: "Building2",
+      descripcion: "El operador y referente por excelencia de calle 13 y el foro platense.",
+      fraseCopero: "No hay despacho de juzgado ni pasillo de Jursoc donde no saluden tu nombre con respeto."
+    };
+  }
+
+  // 4. Alto Prestigio + Baja Ética
+  if (prestigio >= 70 && etica <= 45) {
+    return {
+      id: "brillante_oscuro",
+      titulo: "😈 Brillante... pero nadie sabe cómo llegó hasta ahí",
+      icono: "Sparkles",
+      descripcion: "Estratega implacable de victorias fulminantes en el filo del reglamento.",
+      fraseCopero: "Tus triunfos procesales son indiscutibles, aunque tus métodos despertaron más de una sospecha."
+    };
+  }
+
+  // 5. Alta Ética + Bajo Contactos
+  if (etica >= 70 && contactos <= 45) {
+    return {
+      id: "agenda_vacia",
+      titulo: "📚 Excelente Profesional, con la Agenda Vacía",
+      icono: "BookOpen",
+      descripcion: "Conocedor enciclopédico del derecho que prefirió el anonimato a las relaciones públicas.",
+      fraseCopero: "Tu rigor dogmático es intachable, aunque preferiste los libros a las mesas de café."
+    };
+  }
+
+  // 6. Alto Contactos + Baja Templanza
+  if (contactos >= 70 && templanza <= 45) {
+    return {
+      id: "vacaciones_segundo_anio",
+      titulo: "☕ Conocés a toda la Facultad, pero necesitás vacaciones desde 2do año",
+      icono: "Coffee",
+      descripcion: "El alma de los pasillos de Jursoc y Diagonal 74, exhausto por el vértigo universitario.",
+      fraseCopero: "Conectaste con todo el mundo, pero el estrés de la carrera te pasó factura."
+    };
+  }
+
+  // Por defecto: Graduado Consagrado UNLP
+  return {
+    id: "abogado_consagrado",
+    titulo: "⚖️ Jurista Graduado de la UNLP",
+    icono: "GraduationCap",
+    descripcion: "Trayectoria sólida forjada en las aulas de calle 48 y el ejercicio forense bonaerense.",
+    fraseCopero: "Completaste una carrera profesional íntegra y de gran aporte a la comunidad."
+  };
+}
+
 export function calculateCareerScore(
   ovr: number,
   etica: number,
@@ -381,43 +471,44 @@ export const MUNICIPIOS_PBA = [
 ];
 
 // BANCO AMPLIADO DE ETAPAS (CON FOCO EN FCJyS UNLP, TRIBUNALES PBA Y EJERCICIO PROFESIONAL)
+// INCORPORA LAS 50 SITUACIONES Y EVENTOS DEL MANUAL OFICIAL "OPCIONES HACE TU CARRERA"
 export const ETAPAS_CARRERA: EtapaVida[] = [
-  // ETAPA 1
+  // ETAPA 1 (18-19 AÑOS): 1er AÑO - INGRESO Y EL PRIMER PARCIAL DE DERECHO ROMANO
   {
     id: 1,
     edadInicio: 18,
     edadFin: 19,
     puesto: "Ingresante a 1er Año (Jursoc UNLP)",
-    titulo: "1. El Ingreso a la Universidad y el Parcial de Romano",
-    contextoEscenario: "Entrás por las escalinatas de la Facultad de Ciencias Jurídicas y Sociales (Jursoc) de la UNLP. El ambiente es vibrante: pasillos desbordados, apuntes en fotocopiadoras y clases multitudinarias. Es jueves por la noche: tus compañeros de comisión armaron previa para ir a los bares de diagonal 74, pero el sábado rendís tu primer parcial decisivo de Derecho Romano.",
-    dilemaTexto: "¿Cómo administrás tu tiempo en tu primera prueba de fuego universitaria?",
+    titulo: "1. El Ingreso a la Universidad y el Primer Parcial de Romano",
+    contextoEscenario: "Entrás por las escalinatas de la Facultad de Ciencias Jurídicas y Sociales (Jursoc) de la UNLP en calle 48. El ambiente es vibrante: pasillos desbordados, filas en las fotocopiadoras del subsuelo y clases multitudinarias. Faltan cinco días para tu primer parcial decisivo de Derecho Romano. Tenés 600 páginas, tres unidades y todavía no abriste el programa.",
+    dilemaTexto: "Faltan cinco días para tu primer parcial. Tenés 600 páginas, tres unidades y todavía no abriste el programa. ¿Qué hacés?",
     eventosInesperados: [
       {
-        id: "e1_ev1",
-        titulo: "🟢 Paro Sorpresa de Empleados de la UNLP",
-        descripcion: "Se suspendieron las clases del viernes. Tuviste 24 horas extra inesperadas para estudiar o descansar.",
+        id: "e1_ev_cargador",
+        titulo: "🔋 ¿Quién tiene cargador en el aula?",
+        descripcion: "Tu celular se queda sin batería en medio del aula 202 y un colega te comparte un cargador y su powerbank.",
         tipo: "positivo",
-        impacto: { prestigio: 2, contactos: 0, etica: 0, templanza: 5, dineroPesos: 0 }
+        impacto: { prestigio: 2, contactos: 5, etica: 4, templanza: 2, dineroPesos: 0 }
       },
       {
-        id: "e1_ev2",
-        titulo: "🔴 Corte de Luz en tu Depto de La Plata",
-        descripcion: "Apagón sorpresivo en la zona del centro la noche previa a rendir. Tuviste que estudiar a vela.",
-        tipo: "negativo",
-        impacto: { prestigio: -2, contactos: 0, etica: 0, templanza: -6, dineroPesos: -8000 }
+        id: "e1_ev_sinclases",
+        titulo: "🛌 Te enterás de que mañana no hay clases",
+        descripcion: "Se suspendieron las actividades docentes del viernes. Tuviste 24 horas extra inesperadas para adelantar estudio y descansar.",
+        tipo: "positivo",
+        impacto: { prestigio: 6, contactos: -1, etica: 5, templanza: -2, dineroPesos: 0 }
       },
       {
-        id: "e1_ev3",
-        titulo: "🟢 Sorteo del Centro de Fotocopiado",
-        descripcion: "Te ganaste un combo de fotocopias de fallos y una libreta universitaria en el subsuelo de Jursoc.",
-        tipo: "positivo",
-        impacto: { prestigio: 0, contactos: 3, etica: 0, templanza: 3, dineroPesos: 15000 }
+        id: "e1_ev_187msg",
+        titulo: "📱 El grupo de WhatsApp tiene 187 mensajes",
+        descripcion: "Aparecieron cientos de mensajes debatiendo qué fallos entran y los audios de la clase teórica.",
+        tipo: "neutro",
+        impacto: { prestigio: 1, contactos: 5, etica: 3, templanza: 2, dineroPesos: 0 }
       }
     ],
     opciones: [
       {
         id: "e1_op1",
-        texto: "📚 Estudio enfocado: Dedicar el fin de semana completo a leer fuentes romanas y latín jurídico.",
+        texto: "📖 Leer toda la bibliografía de punta a punta (Derecho Romano).",
         desafioJuridico: {
           id: "quiz_e1",
           pregunta: "Caso Práctico Romano: Un ciudadano vende una estatua ajena. ¿Qué principio romano ampara al verdadero dueño para entablar la reivindicatio?",
@@ -431,84 +522,79 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
           explicacion: "El principio 'Nemo plus iuris...' ampara la reivindicación: el vendedor no tenía el derecho para transmitir el dominio.",
           dificultad: 1
         },
-        impacto: { prestigio: 6, contactos: -2, etica: 3, templanza: -5, dineroPesos: -15000, impactoRamas: { civilComercial: 6 } },
-        feedbackNarrativo: "Respondiste con precisión la máxima romana en el examen oral, impresionando a la cátedra."
+        impacto: { prestigio: 4, contactos: -1, etica: 3, templanza: -4, dineroPesos: -15000, impactoRamas: { civilComercial: 6 } },
+        feedbackNarrativo: "Dedicaste el fin de semana entero a leer fuentes y latín jurídico. Respondiste con precisión e impresionaste a la cátedra."
       },
       {
         id: "e1_op2",
-        texto: "🍺 Salir a diagonal 74 con amigos y estudiar sin dormir la noche previa.",
-        impacto: { prestigio: -3, contactos: 8, etica: -2, templanza: 6, dineroPesos: -35000, impactoRamas: { administrativoPublico: 4 } },
-        feedbackNarrativo: "La noche en los bares platenses fue memorable. Hiciste un grupo de amigos muy unido y aprobaste con lo justo."
+        texto: "📝 Conseguir el resumen que 'usa toda la Facultad' en el centro de fotocopiado.",
+        impacto: { prestigio: 1, contactos: 3, etica: 1, templanza: 3, dineroPesos: -6000, impactoRamas: { civilComercial: 4 } },
+        feedbackNarrativo: "El resumen anillado del subsuelo te salvó las papas. Llegaste con los conceptos justos para aprobar."
       },
       {
         id: "e1_op3",
-        texto: "🎓 [Curso Certificado Arancelado] Inscribirte al Seminario Inicial de Litigación y Oratoria ($120.000).",
-        costoPesosRequerido: 120000,
-        impacto: { prestigio: 8, contactos: 4, etica: 3, templanza: -3, dineroPesos: -120000, impactoRamas: { penal: 6 } },
-        feedbackNarrativo: "Invertiste en el seminario de la facultad y ganaste soltura argumentativa."
+        texto: "🃏 Conseguir parciales viejos y estudiar lo que más toman los profesores.",
+        impacto: { prestigio: 2, contactos: 4, etica: -1, templanza: 2, dineroPesos: 0, impactoRamas: { civilComercial: 3 } },
+        feedbackNarrativo: "Identificaste las 10 preguntas fijas del titular y fuiste a lo seguro rindiendo con tranquilidad."
       },
       {
         id: "e1_op4",
-        texto: "👷 Sumarte como voluntario al Consultorio Jurídico Popular barrial.",
-        impacto: { prestigio: 4, contactos: 6, etica: 7, templanza: -2, dineroPesos: 30000, impactoRamas: { laboral: 8 } },
-        feedbackNarrativo: "Ayudaste a vecinos en primeros reclamos y entendiste el valor social del Derecho."
+        texto: "🙏 Confiar en que algo vas a recordar en el examen y salir a Diagonal 74 con amigos.",
+        impacto: { prestigio: -4, contactos: -2, etica: 1, templanza: 5, dineroPesos: -25000 },
+        feedbackNarrativo: "La noche en los bares platenses fue inolvidable, aunque en el examen transpiraste la camiseta hasta el último minuto."
       },
       {
         id: "e1_op5",
-        texto: "🌿 Asistir como oyente al Taller de Derecho Ambiental y Recursos Naturales.",
-        impacto: { prestigio: 5, contactos: 4, etica: 6, templanza: 2, dineroPesos: -10000, impactoRamas: { ambiental: 8 } },
-        feedbackNarrativo: "Te interiorizaste en la Ley General del Ambiente y la protección de humedales."
-      },
-      {
-        id: "e1_op6",
-        texto: "📖 Armar grupo de estudio en la Biblioteca Central de calle 48 y debatir fallos clásicos.",
-        impacto: { prestigio: 5, contactos: 5, etica: 4, templanza: 3, dineroPesos: -12000, impactoRamas: { civilComercial: 5 } },
-        feedbackNarrativo: "Las tardes en los boxes de la biblioteca te permitieron consolidar conceptos sin quemarte la cabeza."
-      },
-      {
-        id: "e1_op7",
-        texto: "🌐 Participar del Modelo de Naciones Unidas (MNU) en el Rectorado de la UNLP.",
-        impacto: { prestigio: 7, contactos: 7, etica: 4, templanza: -3, dineroPesos: -25000, impactoRamas: { internacional: 9 } },
-        feedbackNarrativo: "Ganaste experiencia en diplomacia, tratados internacionales y debate formal."
+        texto: "🎓 [Seminario Arancelado] Inscribirte al Seminario Inicial de Litigación y Oratoria en Jursoc ($120.000).",
+        costoPesosRequerido: 120000,
+        impacto: { prestigio: 8, contactos: 4, etica: 3, templanza: -3, dineroPesos: -120000, impactoRamas: { penal: 6 } },
+        feedbackNarrativo: "Invertiste en tu formación y adquiriste una soltura argumentativa destacada."
       }
     ]
   },
 
-  // ETAPA 2
+  // ETAPA 2 (19-20 AÑOS): 2do AÑO - EL MATE EN LA FACULTAD Y EL PROFESOR QUE SE ACUERDA DE TU NOMBRE
   {
     id: 2,
     edadInicio: 19,
     edadFin: 20,
     puesto: "Estudiante de 2do Año (Jursoc UNLP)",
-    titulo: "2. Las Cursadas en Calle 48 y las Primeras Recorridas por Tribunales",
-    contextoEscenario: "Tenés 19 años. Cursás Derecho Político, Constitucional y Penal I. Tus amigos organizaron una escapada de fin de semana a la costa y, en simultáneo, un conocido abogado penalista te ofrece acompañarlo a audiencias de flagrancia y excarcelación en el Fuero Penal de calle 8.",
-    dilemaTexto: "¿Aceptás el viaje de relax con amigos o te metés de lleno en la práctica penal bonaerense?",
+    titulo: "2. Las Cursadas en Calle 48, El Mate y la Relación Docente",
+    contextoEscenario: "Cursás Derecho Político, Constitucional y Penal I. Tenés dos horas libres entre cursadas en la puerta de la Facultad donde un grupo está tomando mate. Además, tras varias semanas de clases, el profesor titular te reconoce cuando entrás al aula.",
+    dilemaTexto: "¿Cómo administrás tus pausas entre cursadas y cómo te posicionás académicamente frente al docente?",
     eventosInesperados: [
       {
-        id: "e2_ev1",
-        titulo: "🟢 Invitación a Charla Magistral de un Juez de Garantías",
-        descripcion: "Un Juez de Garantías de La Plata dictó una conferencia sobre garantías constitucionales y elogió tus preguntas.",
-        tipo: "positivo",
-        impacto: { prestigio: 4, contactos: 4, etica: 2, templanza: 3, dineroPesos: 0 }
+        id: "e2_ev_comision",
+        titulo: "🌅 Tenés que elegir comisión para el próximo cuatrimestre",
+        descripcion: "Salió la grilla de horarios: ¿madrugar a las 8 AM con el profesor más exigente o cursar a la noche?",
+        tipo: "neutro",
+        impacto: { prestigio: 3, contactos: 3, etica: 3, templanza: 3, dineroPesos: 0 }
       },
       {
-        id: "e2_ev2",
-        titulo: "🔴 Demora por Paro de Transporte en La Plata",
-        descripcion: "Tuviste que pagar un taxi caro para no perder el examen parcial de Constitucional.",
-        tipo: "negativo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: -5, dineroPesos: -18000 }
+        id: "e2_ev_apuntes",
+        titulo: "📚 Te piden apuntes de Constitucional",
+        descripcion: "Varios compañeros te piden tus notas completas y los fallos de la Corte Suprema comentados.",
+        tipo: "positivo",
+        impacto: { prestigio: 5, contactos: 6, etica: 6, templanza: -1, dineroPesos: 0 }
+      },
+      {
+        id: "e2_ev_micro",
+        titulo: "🚌 El micro 273 a las 21:30 saliendo de cursar",
+        descripcion: "Salís tarde de la Facultad con la cabeza explotada y tenés 40 minutos de viaje hasta tu casa.",
+        tipo: "neutro",
+        impacto: { prestigio: 2, contactos: 6, etica: 2, templanza: 3, dineroPesos: 0 }
       }
     ],
     opciones: [
       {
         id: "e2_op1",
-        texto: "🌊 Viajar a la costa con tus amigos para despejar la cabeza y recargar templanza.",
-        impacto: { prestigio: -2, contactos: 6, etica: 0, templanza: 10, dineroPesos: -90000 },
-        feedbackNarrativo: "Volviste relajado y renovado. Afianzaste tu grupo de estudio y amistad de la facultad."
+        texto: "🧉 Quedarte a tomar mate en las escalinatas y conocer a todo el mundo.",
+        impacto: { prestigio: 2, contactos: 7, etica: 1, templanza: 3, dineroPesos: 0 },
+        feedbackNarrativo: "Te hiciste amigo de compañeros de todas las comisiones y construiste una red estudiantil muy sólida."
       },
       {
         id: "e2_op2",
-        texto: "⚖️ Quedarte asistiendo al penalista en las audiencias de prisión preventiva en calle 8.",
+        texto: "📚 Ir a la Biblioteca Central de calle 48 a estudiar a fondo doctrina y fallos de la Corte.",
         desafioJuridico: {
           id: "quiz_e2",
           pregunta: "Caso Práctico Penal: El Fiscal solicita prisión preventiva sin fundar peligro de fuga ni entorpecimiento probatorio. ¿En qué garantía del Art. 18 de la Constitución Nacional te basás para oponerte?",
@@ -522,58 +608,66 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
           explicacion: "El principio de inocencia (Art. 18 CN) exige que la prisión preventiva sea excepcional y fundada estrictamente en riesgos procesales.",
           dificultad: 1
         },
-        impacto: { prestigio: 7, contactos: 5, etica: 3, templanza: -5, dineroPesos: 150000, impactoRamas: { penal: 8 } },
-        feedbackNarrativo: "Fundamentaste la libertad procesal amparado en el Art. 18 de la Constitución Nacional."
+        impacto: { prestigio: 4, contactos: -3, etica: 4, templanza: 1, dineroPesos: 0, impactoRamas: { penal: 7, civilComercial: 5 } },
+        feedbackNarrativo: "Las horas en los boxes de la biblioteca te permitieron dominar las garantías del Art. 18 CN."
       },
       {
         id: "e2_op3",
-        texto: "📖 Cursar Taller de Redacción de Escritos Judiciales y Cédulas en la facultad.",
-        impacto: { prestigio: 6, contactos: 3, etica: 4, templanza: -2, dineroPesos: -20000, impactoRamas: { civilComercial: 6 } },
-        feedbackNarrativo: "Aprendiste la estructura formal de demandas, contestaciones y oficios de ley."
+        texto: "🙋 Empezar a participar activamente en todas las clases y debatir con el titular.",
+        impacto: { prestigio: 6, contactos: 3, etica: 3, templanza: -2, dineroPesos: 0, impactoRamas: { penal: 8 } },
+        feedbackNarrativo: "Tus intervenciones orales fundamentadas te posicionaron como uno de los alumnos más destacados de la comisión."
       },
       {
         id: "e2_op4",
-        texto: "👷 Redactar telegramas laborales de despido sin causa y reclamos de horas extras.",
-        impacto: { prestigio: 4, contactos: 5, etica: 5, templanza: -3, dineroPesos: 180000, impactoRamas: { laboral: 9 } },
-        feedbackNarrativo: "Ganaste soltura redactando intimaciones laborales oficiales de la Ley de Contrato de Trabajo."
+        texto: "🤐 Seguir siendo un fantasma académico de bajo perfil y rendir en silencio.",
+        impacto: { prestigio: -3, contactos: -2, etica: 1, templanza: 4, dineroPesos: 0 },
+        feedbackNarrativo: "Mantuviste perfil bajo sin exponerte ni sumar estrés extra durante las cursadas."
       },
       {
         id: "e2_op5",
-        texto: "🌿 Presentar un pedido de acceso a la información pública ambiental por efluentes en el Río de La Plata.",
-        impacto: { prestigio: 6, contactos: 4, etica: 7, templanza: -3, dineroPesos: 0, impactoRamas: { ambiental: 10 } },
-        feedbackNarrativo: "Impulsaste un expediente administrativo de transparencia ambiental."
-      },
-      {
-        id: "e2_op6",
-        texto: "👨‍👩‍👧 Tramitar convenios de homologación de alimentos en el Juzgado de Familia de calle 45.",
-        impacto: { prestigio: 5, contactos: 5, etica: 6, templanza: -2, dineroPesos: 120000, impactoRamas: { familia: 8 } },
-        feedbackNarrativo: "Lograste un acuerdo homologado velando por el interés superior del niño."
+        texto: "☕ Quedarte después de clase a hablar con el profesor sobre doctrina y futuras pasantías.",
+        impacto: { prestigio: 4, contactos: 6, etica: 3, templanza: -1, dineroPesos: 0 },
+        feedbackNarrativo: "El profesor valoró tu interés técnico y te recomendó bibliografía avanzada y contactos en el fuero."
       }
     ]
   },
 
-  // ETAPA 3
+  // ETAPA 3 (20-21 AÑOS): 3er AÑO - EL GRUPO DE WHATSAPP, LA MESA DE EXAMEN Y EL GRUPO DE ESTUDIO
   {
     id: 3,
     edadInicio: 20,
     edadFin: 21,
     puesto: "Estudiante de 3er Año (Jursoc UNLP)",
-    titulo: "3. La Beca Académica vs La Procuración en Calle 13",
-    contextoEscenario: "Llegás a los 20 años en la mitad de la carrera cursando Obligaciones y Contratos. Te ofrecen dos caminos formativos: sumarte como Ayudante Alumno ad-honorem de cátedra con una Beca de Investigación en Derecho Administrativo o entrar de procurador junior a caminar los juzgados civiles del Palacio de Tribunales de calle 13.",
-    dilemaTexto: "¿Dónde invertís tus esfuerzos intelectuales y tu tiempo en este año bisagra?",
+    titulo: "3. La Medianoche en WhatsApp, el Cierre de Mesas y el Grupo de Estudio",
+    contextoEscenario: "Cursás Obligaciones y Contratos. A las 23:58 en el grupo de WhatsApp alguien pregunta desesperado: '¿Alguien sabe qué entra mañana?'. Además, descubrís que la inscripción para la mesa de examen cerró ayer en el SIU Guaraní y tus compañeros te invitan a un grupo de estudio.",
+    dilemaTexto: "¿Cómo respondés ante la urgencia de tus compañeros, el olvido administrativo y la organización del estudio?",
     eventosInesperados: [
       {
-        id: "e3_ev1",
-        titulo: "🟢 Reconocimiento Académico en Jursoc",
-        descripcion: "Tu artículo sobre vicios del acto administrativo fue seleccionado para la revista de doctrina de la facultad.",
+        id: "e3_ev_error_apunte",
+        titulo: "⚠️ Descubrís que el apunte que todos estudian tiene un error importante",
+        descripcion: "El resumen viral confundía prescripción con caducidad. Avisaste de inmediato y salvaste a toda la comisión.",
         tipo: "positivo",
-        impacto: { prestigio: 5, contactos: 4, etica: 3, templanza: 4, dineroPesos: 0 }
+        impacto: { prestigio: 4, contactos: 5, etica: 7, templanza: 2, dineroPesos: 0 }
+      },
+      {
+        id: "e3_ev_bar_profe",
+        titulo: "☕ Te cruzás al profesor titular en un café de calle 49",
+        descripcion: "Tuviste una charla distendida sobre la carrera, la práctica profesional en Tribunales y el ejercicio del derecho.",
+        tipo: "positivo",
+        impacto: { prestigio: 3, contactos: 5, etica: 4, templanza: 4, dineroPesos: 0 }
+      },
+      {
+        id: "e3_ev_parcial_4",
+        titulo: "📝 Sacaste un 4 y revisás los errores con el docente",
+        descripcion: "Aprovechaste la devolución del parcial para entender exactamente los criterios de corrección de la cátedra.",
+        tipo: "positivo",
+        impacto: { prestigio: 4, contactos: 3, etica: 6, templanza: -2, dineroPesos: 0 }
       }
     ],
     opciones: [
       {
         id: "e3_op1",
-        texto: "🎓 Beca de Investigación Académica: Estudiar derecho público y escribir artículos de doctrina.",
+        texto: "📚 Responder en el grupo con el programa oficial y organizar un cronograma de estudio.",
         desafioJuridico: {
           id: "quiz_e3",
           pregunta: "Caso Práctico Administrativo: Un decreto municipal revoca un permiso comercial sin motivación ni dictamen jurídico previo. Según la Ley 19.549 y el DL 7647 PBA, ¿qué vicio padece el acto?",
@@ -587,71 +681,72 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
           explicacion: "La falta de motivación en el acto administrativo vicia su validez formal y sustancial, habilitando la impugnación de nulidad.",
           dificultad: 2
         },
-        impacto: { prestigio: 8, contactos: 4, etica: 5, templanza: -3, dineroPesos: 250000, impactoRamas: { civilComercial: 6, administrativoPublico: 8 } },
-        feedbackNarrativo: "Publicaste tu primer artículo de doctrina jurídica analizando los vicios esenciales del acto administrativo."
+        impacto: { prestigio: 3, contactos: 5, etica: 5, templanza: 2, dineroPesos: 0, impactoRamas: { civilComercial: 7, administrativoPublico: 6 } },
+        feedbackNarrativo: "Pusiste orden en el caos del grupo, compartiste el programa y armaron un cronograma que los llevó al éxito."
       },
       {
         id: "e3_op2",
-        texto: "🏃 Procurar expedientes en la barandilla de Tribunales de calle 13: Cédulas, mandamientos y oficios.",
-        impacto: { prestigio: 4, contactos: 9, etica: 3, templanza: -4, dineroPesos: 480000, impactoRamas: { civilComercial: 7 } },
-        feedbackNarrativo: "Aprendiste el oficio real de la procuración y te hiciste conocido en todas las secretarías de juzgado."
+        texto: "🃏 Mandar el parcial del año pasado que tenías guardado en Drive.",
+        impacto: { prestigio: 2, contactos: 5, etica: -3, templanza: 1, dineroPesos: 0 },
+        feedbackNarrativo: "El parcial filtrado circuló por todos lados. Te ganaste el aprecio del grupo aunque la cátedra se molestó."
       },
       {
         id: "e3_op3",
-        texto: "💼 [Diplomatura Arancelada] Cursar la Diplomatura en Ciberderecho y Evidencia Digital ($180.000).",
-        costoPesosRequerido: 180000,
-        impacto: { prestigio: 9, contactos: 4, etica: 4, templanza: -4, dineroPesos: -180000, impactoRamas: { cibertech: 12 } },
-        feedbackNarrativo: "Te capacitaste en preservación de prueba digital, hash criptográfico y contratos inteligentes."
+        texto: "🏛️ Ir personalmente a hablar con el Departamento de Alumnos a pedir excepción de inscripción a la mesa.",
+        impacto: { prestigio: 3, contactos: 2, etica: 4, templanza: -2, dineroPesos: 0 },
+        feedbackNarrativo: "Explicaste tu situación con respeto en ventanilla y lograste que te habiliten el acta complementaria."
       },
       {
         id: "e3_op4",
-        texto: "🏠 Negociar legalmente cláusulas abusivas del contrato de alquiler platense ante la inmobiliaria.",
-        impacto: { prestigio: 5, contactos: 3, etica: 6, templanza: 4, dineroPesos: 120000, impactoRamas: { civilComercial: 8 } },
-        feedbackNarrativo: "Aplicaste la normativa de locaciones urbanas del CCyCN para defender tus derechos y ahorrar dinero."
+        texto: "🏃 Procurar expedientes en la barandilla de Tribunales de calle 13: Cédulas, mandamientos y oficios.",
+        impacto: { prestigio: 4, contactos: 9, etica: 3, templanza: -4, dineroPesos: 480000, impactoRamas: { civilComercial: 8 } },
+        feedbackNarrativo: "Aprendiste el oficio real de la procuración y te hiciste conocido en todas las secretarías de juzgado."
       },
       {
         id: "e3_op5",
-        texto: "👷 Colaborar con la asesoría gremial en la redacción de un convenio colectivo de trabajo.",
-        impacto: { prestigio: 5, contactos: 8, etica: 4, templanza: -3, dineroPesos: 220000, impactoRamas: { laboral: 10 } },
-        feedbackNarrativo: "Interviniste en la mesa de redacción de condiciones laborales y escalas salariales."
-      },
-      {
-        id: "e3_op6",
-        texto: "🌐 Escribir una monografía sobre el Pacto de San José de Costa Rica y el control de convencionalidad.",
-        impacto: { prestigio: 7, contactos: 3, etica: 7, templanza: 2, dineroPesos: 80000, impactoRamas: { internacional: 10 } },
-        feedbackNarrativo: "Tu trabajo sobre control de convencionalidad fue destacado por la cátedra de DDHH."
+        texto: "🧠 Sumarte al grupo de estudio para explicar los temas complejos y debatir fallos.",
+        impacto: { prestigio: 5, contactos: 4, etica: 5, templanza: -1, dineroPesos: 0 },
+        feedbackNarrativo: "Explicar los temas a tus compañeros te obligó a fijar conceptos y consolidar tu liderazgo académico."
       }
     ]
   },
 
-  // ETAPA 4
+  // ETAPA 4 (21-22 AÑOS): 4to AÑO - EL PARCIAL IMPOSIBLE, EL APUNTE DE 327 PÁGINAS Y LA PREVIA
   {
     id: 4,
     edadInicio: 21,
     edadFin: 22,
     puesto: "Estudiante Avanzado de 4to Año",
-    titulo: "4. Derecho Penal II, Daños y la Presión Económica de Alquiler",
-    contextoEscenario: "A los 21 años las materias son de alto peso: cursás Penal II, Reales y Obligaciones/Daños. La inflación y el costo del alquiler en La Plata te aprietan el bolsillo. Tenés que decidir si estiras la carrera para trabajar más horas o rendís materias en mesa libre sacrificando templanza.",
-    dilemaTexto: "¿Cómo encaras la recta de materias complejas frente a las exigencias financieras?",
+    titulo: "4. El Parcial Imposible, el Apunte Legendario y la Previa",
+    contextoEscenario: "Cursás Derecho Penal II, Daños y Reales. En el parcial la primera pregunta es exactamente el tema que decidiste no estudiar. Al mismo tiempo te llega el PDF 'RESUMEN DEFINITIVO FINAL AHORA SÍ 2026.pdf' de 327 páginas, tus amigos organizan una previa antes de rendir y la plata del alquiler aprieta.",
+    dilemaTexto: "¿Cómo sorteás el parcial con temas imprevistos, el volumen inmenso de lectura y las salidas nocturnas?",
     eventosInesperados: [
       {
-        id: "e4_ev1",
-        titulo: "🟢 Devolución de Depósito de Garantía",
-        descripcion: "Recuperaste el dinero del depósito de tu alquiler anterior en La Plata tras una rescisión impecable.",
+        id: "e4_ev_tarde",
+        titulo: "🕗 Son las 7:57 y la clase empieza a las 8",
+        descripcion: "Corriste desde Plaza Moreno hasta la Facultad esquivando el tráfico y llegaste justo a tiempo.",
+        tipo: "neutro",
+        impacto: { prestigio: 3, contactos: 0, etica: 4, templanza: -3, dineroPesos: 0 }
+      },
+      {
+        id: "e4_ev_congreso",
+        titulo: "🎓 Te invitan a un Congreso de Derecho en Mar del Plata",
+        descripcion: "Viajaste con compañeros de la UNLP a debatir ponencias de derecho procesal y conocer juristas de todo el país.",
         tipo: "positivo",
-        impacto: { prestigio: 0, contactos: 0, etica: 0, templanza: 5, dineroPesos: 180000 }
+        impacto: { prestigio: 7, contactos: 8, etica: 3, templanza: 2, dineroPesos: -40000 }
+      },
+      {
+        id: "e4_ev_pasar",
+        titulo: "🙋 El profesor pregunta quién quiere pasar al frente a exponer",
+        descripcion: "Levantaste la mano con firmeza y resolviste el caso práctico en el pizarrón ganándote la felicitación de la cátedra.",
+        tipo: "positivo",
+        impacto: { prestigio: 7, contactos: 3, etica: 5, templanza: -3, dineroPesos: 0 }
       }
     ],
     opciones: [
       {
         id: "e4_op1",
-        texto: "💸 Atrasar 2 materias un cuatrimestre y trabajar de procurador senior ($600.000/mes).",
-        impacto: { prestigio: 3, contactos: 7, etica: 3, templanza: 4, dineroPesos: 1400000, impactoRamas: { penal: 5, civilComercial: 5 } },
-        feedbackNarrativo: "Sumaste $1.400.000, estabilizaste tu economía y ganaste experiencia procesal."
-      },
-      {
-        id: "e4_op2",
-        texto: "🔥 Rendir Responsabilidad Civil / Daños en mesa libre: Estudiar sin descanso durante 3 semanas.",
+        texto: "🧠 Improvisar relacionando doctrina, jurisprudencia y principios del Código Civil y Comercial.",
         desafioJuridico: {
           id: "quiz_e4",
           pregunta: "Caso Práctico Civil: Un cliente reclama daños tras un choque provocado por una falla en los frenos de un colectivo. ¿Qué artículo del Código Civil y Comercial funda la responsabilidad objetiva por el riesgo o vicio de la cosa?",
@@ -665,52 +760,72 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
           explicacion: "El Art. 1757 CCyCN establece la responsabilidad objetiva por actividades riesgosas o cosas con vicios, sin exigir culpa del dueño o guardián.",
           dificultad: 2
         },
-        impacto: { prestigio: 9, contactos: -2, etica: 3, templanza: -10, dineroPesos: -60000, impactoRamas: { civilComercial: 9 } },
-        feedbackNarrativo: "Citaste con soltura el Art. 1757 del CCyCN y aprobaste la mesa libre con nota sobresaliente."
+        impacto: { prestigio: 3, contactos: -1, etica: 2, templanza: 6, dineroPesos: 0, impactoRamas: { civilComercial: 8, penal: 6 } },
+        feedbackNarrativo: "Mantuviste la calma, aplicaste principios generales del derecho y saliste airoso de una pregunta tramposa."
+      },
+      {
+        id: "e4_op2",
+        texto: "📖 Leer el apunte legendario de 327 páginas completo y compararlo con la bibliografía oficial.",
+        impacto: { prestigio: 5, contactos: -1, etica: 4, templanza: -5, dineroPesos: -15000, impactoRamas: { civilComercial: 9 } },
+        feedbackNarrativo: "Te quemaste las pestañas leyendo las 327 páginas pero dominaste cada artículo del programa."
       },
       {
         id: "e4_op3",
-        texto: "🤝 Armar un emprendimiento de resúmenes y esquemas procesales para ingresantes de Jursoc.",
-        impacto: { prestigio: 2, contactos: 7, etica: 3, templanza: -2, dineroPesos: 750000, impactoRamas: { administrativoPublico: 4 } },
-        feedbackNarrativo: "Tus guías y esquemas procesales se volvieron muy populares entre los alumnos de 1er año."
+        texto: "🍕 Quedarte estudiando la noche previa y rechazar la previa con amigos.",
+        impacto: { prestigio: 4, contactos: -4, etica: 5, templanza: -3, dineroPesos: 0 },
+        feedbackNarrativo: "Priorizaste el examen y llegaste descansado y con la mente lúcida."
       },
       {
         id: "e4_op4",
-        texto: "👨‍👩‍👧 Asistir en una mediación familiar de divorcio vincular y régimen de comunicación.",
-        impacto: { prestigio: 5, contactos: 5, etica: 6, templanza: -2, dineroPesos: 450000, impactoRamas: { familia: 9 } },
-        feedbackNarrativo: "Interviniste en la resolución pacífica de un conflicto de familia protegiendo los derechos de las partes."
+        texto: "💸 Trabajar de procurador senior en La Plata para bancar el costo del alquiler ($1.400.000).",
+        impacto: { prestigio: 4, contactos: 7, etica: 3, templanza: 4, dineroPesos: 1400000, impactoRamas: { penal: 5, civilComercial: 6 } },
+        feedbackNarrativo: "Equilibraste las materias con el trabajo, ganando autonomía económica y roce profesional."
       },
       {
         id: "e4_op5",
-        texto: "🌿 Redactar una acción de amparo ambiental contra la tala no autorizada en el Parque Pereyra Iraola.",
-        impacto: { prestigio: 7, contactos: 4, etica: 8, templanza: -3, dineroPesos: 100000, impactoRamas: { ambiental: 10 } },
-        feedbackNarrativo: "Lograste una medida de no innovar que frenó la tala indiscriminada."
+        texto: "🤡 Estudiar solamente las 17 páginas que 'seguro toman' según los de años superiores.",
+        impacto: { prestigio: -3, contactos: 2, etica: -2, templanza: 5, dineroPesos: 0 },
+        feedbackNarrativo: "Apostaste a la suerte. Aprobaste con lo justo pero te quedó un bache conceptual en temas clave."
       }
     ]
   },
 
-  // ETAPA 5
+  // ETAPA 5 (22-23 AÑOS): 5to AÑO - LA PRÁCTICA SUPERVISADA, EL PRIMER TRABAJO Y LA IA
   {
     id: 5,
     edadInicio: 22,
     edadFin: 23,
     puesto: "Práctica Profesional / Último Año",
-    titulo: "5. La Práctica Profesional Supervisada y la Recta Final",
-    contextoEscenario: "Llegás a los 22 años a la materia final de Práctica Profesional en el Consultorio Jurídico Gratuito de la UNLP. Atendés casos reales de sectores vulnerables de La Plata. En paralelo, te ofrecen entrar como pasante meritorio en un Juzgado Civil de primera instancia.",
-    dilemaTexto: "¿Dedicarte de lleno a los amparos del Consultorio Gratuito o meter la cabeza en el Poder Judicial?",
+    titulo: "5. La Práctica Supervisada, el Primer Trabajo y la IA",
+    contextoEscenario: "Llegás al último año de la carrera. Una escribanía te ofrece trabajar cuatro tardes por semana, tenés que entregar un trabajo práctico complejo donde descubrís que una IA puede asistirte, y en el Consultorio Jurídico Gratuito de la UNLP atendés amparos reales de personas vulnerables.",
+    dilemaTexto: "¿Cómo balanceás el primer empleo formal, la ética con las nuevas tecnologías y el compromiso social en el Consultorio?",
     eventosInesperados: [
       {
-        id: "e5_ev1",
-        titulo: "🟢 Elogio Público del Juez de Cámara",
-        descripcion: "Un Juez de Cámara de La Plata elogió la solidez dogmática de tu primer escrito de práctica profesional.",
+        id: "e5_ev_tramite",
+        titulo: "🏛️ El trámite en la Facultad: Ventanilla vs Página web",
+        descripcion: "Mostraste la normativa oficial de la UNLP y lograste destrabar la equivalencia de tu última cursada.",
         tipo: "positivo",
-        impacto: { prestigio: 6, contactos: 4, etica: 4, templanza: 4, dineroPesos: 0 }
+        impacto: { prestigio: 5, contactos: 2, etica: 6, templanza: 2, dineroPesos: 0 }
+      },
+      {
+        id: "e5_ev_ayudante",
+        titulo: "🤝 Te ofrecen ser Ayudante Alumno ad-honorem de Cátedra",
+        descripcion: "El titular de Derecho Civil te convocó para sumarte al equipo docente de la Facultad.",
+        tipo: "positivo",
+        impacto: { prestigio: 8, contactos: 6, etica: 6, templanza: -3, dineroPesos: 0 }
+      },
+      {
+        id: "e5_ev_delegado",
+        titulo: "👥 Te eligen delegado de comisión",
+        descripcion: "Defendiste los reclamos del curso ante la secretaría académica logrando reprogramar fechas superpuestas.",
+        tipo: "positivo",
+        impacto: { prestigio: 7, contactos: 8, etica: 6, templanza: -3, dineroPesos: 0 }
       }
     ],
     opciones: [
       {
         id: "e5_op1",
-        texto: "❤️ Dedicación total al Consultorio Gratuito: Resolver amparos de salud urgentes contra obras sociales/IOMA.",
+        texto: "❤️ Dedicación total al Consultorio Gratuito de la UNLP: Resolver amparos de salud urgentes contra obras sociales/IOMA.",
         desafioJuridico: {
           id: "quiz_e5",
           pregunta: "Caso Práctico Amparo: Una obra social niega la cobertura de una cirugía urgente a un paciente vulnerable. Según el Art. 43 CN y la ley de amparo ante peligro en la demora, ¿qué trámite corresponde?",
@@ -729,34 +844,40 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       },
       {
         id: "e5_op2",
-        texto: "⚖️ Pasantía en el Juzgado Civil: Aprender los criterios de despacho y elaboración de sentencias.",
-        impacto: { prestigio: 7, contactos: 7, etica: 5, templanza: -4, dineroPesos: 420000, impactoRamas: { civilComercial: 8 } },
-        feedbackNarrativo: "Conociste por dentro el funcionamiento del despacho judicial y el sistema Augusta."
+        texto: "💼 Aceptar el trabajo en la escribanía cuatro tardes por semana ($800.000).",
+        impacto: { prestigio: 6, contactos: 7, etica: 3, templanza: -5, dineroPesos: 800000, impactoRamas: { civilComercial: 8 } },
+        feedbackNarrativo: "Adquiriste experiencia invaluable en escrituración, certificaciones y derecho notarial."
       },
       {
         id: "e5_op3",
-        texto: "🌿 Patrocinar a vecinos damnificados por la contaminación de una cantera clandestina en las afueras de La Plata.",
-        impacto: { prestigio: 7, contactos: 5, etica: 9, templanza: -3, dineroPesos: 160000, impactoRamas: { ambiental: 11 } },
-        feedbackNarrativo: "Obtuviste la clausura preventiva del predio contaminante."
+        texto: "🤖 Usar la IA para investigar doctrina y jurisprudencia, y redactar vos mismo el dictamen.",
+        impacto: { prestigio: 4, contactos: -1, etica: 5, templanza: 3, dineroPesos: 0, impactoRamas: { cibertech: 8 } },
+        feedbackNarrativo: "Utilizaste la tecnología como asistente de investigación sin descuidar el análisis crítico personal."
       },
       {
         id: "e5_op4",
-        texto: "💼 Intervenir en la verificación de créditos de un concurso preventivo comercial de una PyME platense.",
-        impacto: { prestigio: 6, contactos: 6, etica: 4, templanza: -2, dineroPesos: 380000, impactoRamas: { civilComercial: 8 } },
-        feedbackNarrativo: "Presentaste el incidente de verificación tempestiva en el juzgado comercial."
+        texto: "⚖️ Negociar trabajar solamente dos tardes en la escribanía para no descuidar los últimos finales.",
+        impacto: { prestigio: 5, contactos: 5, etica: 4, templanza: 2, dineroPesos: 450000, impactoRamas: { civilComercial: 6 } },
+        feedbackNarrativo: "Lograste un equilibrio perfecto entre experiencia laboral e impulso académico final."
+      },
+      {
+        id: "e5_op5",
+        texto: "👨‍⚖️ 'Como estudiás derecho...': Explicarle a un familiar qué hacer con una carta documento con rigor ético.",
+        impacto: { prestigio: 5, contactos: 4, etica: 5, templanza: 3, dineroPesos: 0, impactoRamas: { civilComercial: 5 } },
+        feedbackNarrativo: "Asesoraste a tu familia con claridad explicando los alcances legales y los límites de tu rol como estudiante."
       }
     ]
   },
 
-  // ETAPA 6
+  // ETAPA 6 (23-24 AÑOS): ¡LA RECIBIDA EN CALLE 48 Y FOTO DE FIN DE CURSADA!
   {
     id: 6,
     edadInicio: 23,
     edadFin: 24,
     puesto: "¡Egresado de la FCJyS (UNLP)!",
-    titulo: "6. La Firma de la Libreta y la Graduación en Calle 48",
-    contextoEscenario: "¡Día inolvidable! A los 23 años saliste del aula del 3er piso tras rendir y aprobar tu última materia. En las escalinatas de calle 48 te esperan tus compañeros, amigos y familia con cotillón, carteles y harina.",
-    dilemaTexto: "¿Cómo elegís celebrar la obtención del título de Abogado/a de la UNLP?",
+    titulo: "6. La Firma de la Libreta, la Foto de Fin de Cursada y la Graduación",
+    contextoEscenario: "¡Momento inolvidable! A los 23 años saliste del aula del 3er piso tras rendir y aprobar tu última materia de la carrera. En las escalinatas de calle 48 te esperan tus compañeros, amigos y familia con carteles, cotillón y harina.",
+    dilemaTexto: "¿Cómo elegís celebrar la obtención del título de Abogado/a de la UNLP y la foto de fin de carrera?",
     esFestejoRecibida: true,
     eventosInesperados: [],
     opciones: [
@@ -764,7 +885,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
         id: "recibida_op1",
         texto: "🥚 Festejo tradicional descontrolado: Huevos, harina, témpera, cotillón y fiesta en la vereda de calle 48.",
         impacto: { prestigio: 3, contactos: 8, etica: -1, templanza: 10, dineroPesos: -80000 },
-        feedbackNarrativo: "¡Terminaste enharinado festejando con toda la camada! Un momento inolvidable que quedó en fotos históricas."
+        feedbackNarrativo: "¡Terminaste enharinado festejando con toda la camada! Un momento histórico que quedó inmortalizado en fotos."
       },
       {
         id: "recibida_op2",
@@ -774,6 +895,12 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
       },
       {
         id: "recibida_op3",
+        texto: "📸 Organizar la foto grupal de la camada dejando que se luzcan los que organizaron todo.",
+        impacto: { prestigio: 5, contactos: 8, etica: 7, templanza: 4, dineroPesos: -20000 },
+        feedbackNarrativo: "Coordinaste una emotiva foto en el patio de la Reforma que todos guardarán de recuerdo para siempre."
+      },
+      {
+        id: "recibida_op4",
         texto: "🤫 Graduación en silencio: Guardar la libreta firmada y salir directo a iniciar los trámites del diploma.",
         impacto: { prestigio: 5, contactos: -2, etica: 5, templanza: 2, dineroPesos: 40000 },
         feedbackNarrativo: "Sin festejos ruidosos. Totalmente enfocado en agilizar la expedición de tu título oficial."
@@ -781,7 +908,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 7
+  // ETAPA 7 (24-26 AÑOS): LA JURA DE LA MATRÍCULA EN EL CALP Y EL PRIMER EMPLEO
   {
     id: 7,
     edadInicio: 24,
@@ -839,7 +966,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 8
+  // ETAPA 8 (26-28 AÑOS): LITIGIO SENIOR, CASO MEDIÁTICO Y ÉTICA FORENSE
   {
     id: 8,
     edadInicio: 26,
@@ -878,7 +1005,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 9
+  // ETAPA 9 (28-32 AÑOS): FUNDAR DESPACHO PROPIO O SOCIO MANAGING
   {
     id: 9,
     edadInicio: 28,
@@ -917,7 +1044,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 10
+  // ETAPA 10 (32-45 AÑOS): JUICIO POR JURADOS, CAUSAS COLECTIVAS Y DOCTORADO
   {
     id: 10,
     edadInicio: 32,
@@ -969,7 +1096,7 @@ export const ETAPAS_CARRERA: EtapaVida[] = [
     ]
   },
 
-  // ETAPA 11
+  // ETAPA 11 (45-65 AÑOS): EL JURY DE ENJUICIAMIENTO, LA CONDUCCIÓN DEL CALP Y LA CÁTEDRA EMÉRITA
   {
     id: 11,
     edadInicio: 45,
