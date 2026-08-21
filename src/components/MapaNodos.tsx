@@ -37,12 +37,25 @@ function nodeTopLeft(m: MateriaNode) {
 function buildArrowPath(from: MateriaNode, to: MateriaNode): string {
   const f = nodeCenter(from);
   const t = nodeCenter(to);
+
+  // Si están en la misma columna (mismo año), trazar curva lateral limpia
+  if (from.col === to.col) {
+    const fx = f.x + NODE_W / 2;
+    const fy = f.y;
+    const tx = t.x + NODE_W / 2 + 4;
+    const ty = t.y;
+    const offset = Math.min(50, 24 + Math.abs(fy - ty) * 0.15);
+    const cx1 = fx + offset;
+    const cx2 = tx + offset;
+    return `M ${fx} ${fy} C ${cx1} ${fy}, ${cx2} ${ty}, ${tx} ${ty}`;
+  }
+
   const fx = f.x + NODE_W / 2;
   const fy = f.y;
   const tx = t.x - NODE_W / 2 - 4;
   const ty = t.y;
   
-  // Curva bezier suave de izquierda a derecha
+  // Curva bezier suave de izquierda a derecha entre columnas
   const cx1 = fx + (tx - fx) * 0.4;
   const cx2 = tx - (tx - fx) * 0.4;
   return `M ${fx} ${fy} C ${cx1} ${fy}, ${cx2} ${ty}, ${tx} ${ty}`;
