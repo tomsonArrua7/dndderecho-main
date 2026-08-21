@@ -46,7 +46,7 @@ const plan6Materias: MateriaNode[] = [
   // --- 2do Año ---
   { id: "p6_dcho_const",       nombre: "Derecho Constitucional",           anio: 2, tipo: "anual",         col: 0, row: 1, prereqs: ["p6_intro_dcho", "p6_hist_const"] },
   { id: "p6_dcho_priv1",       nombre: "Derecho Privado I (Civil)",        anio: 2, tipo: "anual",         col: 1, row: 1, prereqs: ["p6_dcho_romano"] },
-  { id: "p6_dcho_penal1",      nombre: "Derecho Penal I",                  anio: 2, tipo: "anual",         col: 2, row: 1, prereqs: ["p6_intro_dcho"] },
+  { id: "p6_dcho_penal1",      nombre: "Derecho Penal I",                  anio: 2, tipo: "anual",         col: 2, row: 1, prereqs: ["p6_dcho_priv1", "p6_dcho_const"] },
   { id: "p6_fil_dcho",         nombre: "Filosofía del Derecho",            anio: 2, tipo: "cuatrimestral", col: 3, row: 1, prereqs: ["p6_intro_dcho", "p6_soc_dcho"] },
   { id: "p6_dcho_adm1",        nombre: "Derecho Administrativo I",        anio: 2, tipo: "anual",         col: 4, row: 1, prereqs: ["p6_dcho_const", "p6_intro_dcho"] },
   { id: "p6_dcho_intern_pub",  nombre: "Derecho Internacional Público",   anio: 2, tipo: "cuatrimestral", col: 5, row: 1, prereqs: ["p6_dcho_const"] },
