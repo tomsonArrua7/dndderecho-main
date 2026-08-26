@@ -51,10 +51,12 @@ jobs:
             NODE_OPTIONS="--max-old-space-size=512" npm run build
             sync; echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
 
-            echo "STEP 4: COPY DIST FILES"
+            echo "STEP 4: COPY DIST FILES & FIX PERMISSIONS"
             cp -r dist/* .
             mkdir -p dist
             cp -r index.html assets dist/ 2>/dev/null || true
+            chmod -R 755 /home/dndjursoc/htdocs/dndjursoc.com.ar/
+            chown -R dndjursoc:dndjursoc /home/dndjursoc/htdocs/dndjursoc.com.ar/ 2>/dev/null || chown -R www-data:www-data /home/dndjursoc/htdocs/dndjursoc.com.ar/ 2>/dev/null || true
             echo "DEPLOY FINISHED AT $(date) - ACTIVE BUNDLE: $(ls assets/index-*.js 2>/dev/null)" > deploy-status.txt
             cp deploy-status.txt dist/deploy-status.txt 2>/dev/null || true
 
