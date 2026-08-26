@@ -46,9 +46,9 @@ jobs:
             fi
 
             echo "STEP 3: BUILD"
-            rm -rf dist assets index.html 2>/dev/null || true
+            rm -rf dist assets 2>/dev/null || true
             sync; echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
-            NODE_OPTIONS="--max-old-space-size=512" npm run build
+            NODE_OPTIONS="--max-old-space-size=512" npm run build >> deploy-status.txt 2>&1 || (npm install && NODE_OPTIONS="--max-old-space-size=512" npm run build >> deploy-status.txt 2>&1)
             sync; echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
 
             echo "STEP 4: COPY DIST FILES & FIX PERMISSIONS"
@@ -57,7 +57,7 @@ jobs:
             cp -r index.html assets dist/ 2>/dev/null || true
             chmod -R 755 /home/dndjursoc/htdocs/dndjursoc.com.ar/
             chown -R dndjursoc:dndjursoc /home/dndjursoc/htdocs/dndjursoc.com.ar/ 2>/dev/null || chown -R www-data:www-data /home/dndjursoc/htdocs/dndjursoc.com.ar/ 2>/dev/null || true
-            echo "DEPLOY FINISHED AT $(date) - ACTIVE BUNDLE: $(ls assets/index-*.js 2>/dev/null)" > deploy-status.txt
+            echo "DEPLOY FINISHED AT $(date) - ACTIVE BUNDLE: $(ls assets/index-*.js 2>/dev/null)" >> deploy-status.txt
             cp deploy-status.txt dist/deploy-status.txt 2>/dev/null || true
 
             # Auto-run SQL migrations on PostgreSQL container
