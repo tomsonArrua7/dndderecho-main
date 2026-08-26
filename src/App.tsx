@@ -140,6 +140,10 @@ const AppContent = () => {
       return;
     }
 
+    const timer = setTimeout(() => {
+      setSettingsLoading(false);
+    }, 3000);
+
     const fetchSettings = async () => {
       try {
         const { data, error } = await supabase
@@ -154,6 +158,7 @@ const AppContent = () => {
       } catch (err) {
         console.error("Error loading app settings:", err);
       } finally {
+        clearTimeout(timer);
         setSettingsLoading(false);
       }
     };

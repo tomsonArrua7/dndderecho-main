@@ -52,6 +52,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    // Safety fallback timer to prevent infinite loading on network stall
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
     // Only use onAuthStateChange for multi-tab robust sync
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       try {
@@ -63,19 +68,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // Esto evita el error: 'Lock was released because another request stole it'
           setTimeout(async () => {
             await loadProfile(newSession.user.id);
+            clearTimeout(timer);
             setLoading(false);
           }, 100);
         } else {
           setProfile(null);
+          clearTimeout(timer);
           setLoading(false);
         }
       } catch (err) {
         console.error("Error in onAuthStateChange:", err);
+        clearTimeout(timer);
         setLoading(false);
       }
     });
 
     return () => {
+      clearTimeout(timer);
       subscription.unsubscribe();
     };
   }, []);
