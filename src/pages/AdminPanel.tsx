@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { 
   Loader2, Trash2, Search, UserMinus, UserCheck, Mail, ShieldAlert, 
   Users, Repeat, Trophy, Sparkles, TrendingUp, ShieldCheck, Activity, GraduationCap,
-  FileSpreadsheet, Download, Eye, CheckCircle, Clock, Check, Brain
+  FileSpreadsheet, Download, Eye, CheckCircle, Clock, Check, Brain,
+  BarChart2, BookOpen, Layers, CheckCircle2, Percent
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -45,6 +46,15 @@ export default function AdminPanel() {
 
   // Permutas Counter State
   const [customPermutasCount, setCustomPermutasCount] = useState<string>("");
+
+  // Permutas Histórico & Períodos Permanentes
+  const [historicoPeriodos, setHistoricoPeriodos] = useState<any[]>([]);
+  const [selectedPeriodFilter, setSelectedPeriodFilter] = useState<string>("consolidado");
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [archivePeriodName, setArchivePeriodName] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()} - ${d.getMonth() < 6 ? "1° Cuatrimestre" : "2° Cuatrimestre"}`;
+  });
 
   // User Filter & Sort States
   const [searchUserProfile, setSearchUserProfile] = useState("");
@@ -93,6 +103,97 @@ export default function AdminPanel() {
     const today = new Date().toISOString().split("T")[0];
     XLSX.writeFile(workbook, `Estudiantes_DND_Derecho_${today}.xlsx`);
     toast.success(`Exportados ${sortedProfiles.length} usuarios a Excel en orden alfabético.`);
+  };
+
+  const exportPermutasToExcel = () => {
+    const workbook = XLSX.utils.book_new();
+
+    // 1. Hoja: Resumen General
+    const resumenData = [
+      { "Métrica": "Período Analizado", "Valor": permutaStats.nombrePeriodo },
+      { "Métrica": "Personas Efectivamente Permutadas (Histórico + Activo)", "Valor": permutaStats.personasEfectivasTotal },
+      { "Métrica": "Contador Histórico Acumulado (app_settings)", "Valor": permutaStats.historicoContador },
+      { "Métrica": "Permutas Totales Registradas", "Valor": permutaStats.total },
+      { "Métrica": "Permutas Activas (En búsqueda)", "Valor": permutaStats.activas },
+      { "Métrica": "Permutas Realizadas (Concretadas)", "Valor": permutaStats.realizadas },
+      { "Métrica": "Permutas Canceladas", "Valor": permutaStats.canceladas },
+      { "Métrica": "Materia con Mayor Demanda", "Valor": permutaStats.topMateria ? `${permutaStats.topMateria.nombre} (${permutaStats.topMateria.total} publicaciones)` : "N/A" },
+      { "Métrica": "Año de la Carrera con Mayor Demanda", "Valor": permutaStats.topAnio ? `${permutaStats.topAnio.anio}° Año (${permutaStats.topAnio.total} publicaciones, ${permutaStats.topAnio.pct}%)` : "N/A" },
+    ];
+    const wsResumen = XLSX.utils.json_to_sheet(resumenData);
+    wsResumen["!cols"] = [{ wch: 55 }, { wch: 35 }];
+    XLSX.utils.book_append_sheet(workbook, wsResumen, "Resumen General");
+
+    // 2. Hoja: Por Año de la Carrera
+    const anioData = permutaStats.porAnioCarrera.map((a: any) => ({
+      "Año de Carrera": `${a.anio}° Año`,
+      "Total Permutas": a.total,
+      "% del Total": `${a.pct}%`,
+      "Permutas Activas": a.activas,
+      "Permutas Realizadas": a.realizadas,
+    }));
+    const wsAnio = XLSX.utils.json_to_sheet(anioData);
+    wsAnio["!cols"] = [{ wch: 18 }, { wch: 16 }, { wch: 14 }, { wch: 18 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(workbook, wsAnio, "Por Año de Carrera");
+
+    // 3. Hoja: Ranking de Materias
+    const materiasData = permutaStats.rankingMaterias.map((m: any, idx: number) => ({
+      "Posición": idx + 1,
+      "Materia": m.nombre,
+      "Año de Cursada": `${m.anio}° Año`,
+      "Total Permutas": m.total,
+      "% sobre Total": `${permutaStats.total > 0 ? ((m.total / permutaStats.total) * 100).toFixed(1) : 0}%`,
+      "Activas": m.activas,
+      "Realizadas": m.realizadas,
+    }));
+    const wsMaterias = XLSX.utils.json_to_sheet(materiasData);
+    wsMaterias["!cols"] = [{ wch: 10 }, { wch: 40 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 14 }];
+    XLSX.utils.book_append_sheet(workbook, wsMaterias, "Ranking Materias");
+
+    // 4. Hoja: Historial de Períodos Archivados
+    if (historicoPeriodos.length > 0) {
+      const periodosSheetData = historicoPeriodos.map((p, idx) => ({
+        "N°": idx + 1,
+        "Período / Temporada": p.nombre_periodo,
+        "Fecha Cierre": p.fecha_cierre ? new Date(p.fecha_cierre).toLocaleDateString("es-AR") : "",
+        "Total Permutas": p.total_permutas,
+        "Realizadas": p.total_realizadas,
+        "Activas": p.total_activas,
+        "Personas Beneficiadas": p.personas_beneficiadas,
+      }));
+      const wsPeriodos = XLSX.utils.json_to_sheet(periodosSheetData);
+      wsPeriodos["!cols"] = [{ wch: 5 }, { wch: 30 }, { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 14 }, { wch: 22 }];
+      XLSX.utils.book_append_sheet(workbook, wsPeriodos, "Historial de Períodos");
+    }
+
+    // 5. Hoja: Detalle Permutas Actuales (si hay)
+    if (permutas.length > 0) {
+      const detalleData = permutas.map((p, idx) => {
+        const prof = profiles.find(f => f.id === p.user_id);
+        return {
+          "N°": idx + 1,
+          "Estudiante": prof?.full_name || p.nombre_contacto || "Desconocido",
+          "Teléfono": p.telefono || "No especificado",
+          "Materia": p.materias?.nombre || "No especificada",
+          "Año Carrera": p.materias?.anio ? `${p.materias.anio}° Año` : "No especificado",
+          "Comisión Tiene": p.comision_tiene,
+          "Comisiones Busca": Array.isArray(p.comisiones_busca) ? p.comisiones_busca.join(", ") : p.comisiones_busca,
+          "Estado": p.status || (p.activa ? "activa" : "inactiva"),
+          "Fecha Publicación": p.created_at ? new Date(p.created_at).toLocaleString("es-AR") : "",
+          "Notas": p.notas || "",
+        };
+      });
+      const wsDetalle = XLSX.utils.json_to_sheet(detalleData);
+      wsDetalle["!cols"] = [
+        { wch: 5 }, { wch: 28 }, { wch: 16 }, { wch: 35 }, { wch: 14 },
+        { wch: 16 }, { wch: 20 }, { wch: 12 }, { wch: 20 }, { wch: 30 }
+      ];
+      XLSX.utils.book_append_sheet(workbook, wsDetalle, "Detalle Permutas Actuales");
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(workbook, `Estadisticas_Permutas_DND_${today}.xlsx`);
+    toast.success("¡Reporte estadístico de permutas exportado a Excel exitosamente!");
   };
 
   // Trivia Search & Export States
@@ -291,7 +392,7 @@ export default function AdminPanel() {
       while (keepFetchingPerms) {
         const { data: chunk, error: chunkErr } = await supabase
           .from("permutas")
-          .select("*, materias(nombre)")
+          .select("*, materias(nombre, anio, codigo)")
           .order("created_at", { ascending: false })
           .range(permFrom, permFrom + permStep - 1);
 
@@ -332,6 +433,18 @@ export default function AdminPanel() {
         }
       }
 
+      let periodosData: any[] = [];
+      try {
+        const { data: pData } = await supabase
+          .from("permutas_historico_periodos" as any)
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (pData) periodosData = pData;
+      } catch (e) {
+        console.warn("Tabla permutas_historico_periodos no lista:", e);
+      }
+
+      setHistoricoPeriodos(periodosData);
       setPermutas(allPermutas);
       setProfiles(allProfiles);
       setAppSettings(settings || { id: 1, permutero_activo: true, modo_mantenimiento: false });
@@ -583,6 +696,330 @@ export default function AdminPanel() {
     }
   };
 
+  // Estadísticas Completas del Permutero (Período Actual, Históricos y Consolidado)
+  const permutaStats = useMemo(() => {
+    const historicoContador = (appSettings as any)?.personas_permutadas_count || 0;
+
+    // Caso 1: Se seleccionó un período histórico específico archivado
+    if (selectedPeriodFilter !== "consolidado" && selectedPeriodFilter !== "actual") {
+      const pArchivado = historicoPeriodos.find(p => p.id === selectedPeriodFilter);
+      if (pArchivado) {
+        const total = pArchivado.total_permutas || 0;
+        const realizadas = pArchivado.total_realizadas || 0;
+        const activas = pArchivado.total_activas || 0;
+        const canceladas = pArchivado.total_canceladas || 0;
+        const porAnioCarrera = Array.isArray(pArchivado.stats_por_anio) ? pArchivado.stats_por_anio : [];
+        const rankingMaterias = Array.isArray(pArchivado.stats_por_materia) ? pArchivado.stats_por_materia : [];
+        const comisionesOfrecidas = pArchivado.stats_comisiones?.ofrecidas || [];
+        const comisionesBuscadas = pArchivado.stats_comisiones?.buscadas || [];
+        const topMateria = rankingMaterias[0] || null;
+        const topAnio = [...porAnioCarrera].sort((a: any, b: any) => (b.total || 0) - (a.total || 0))[0] || null;
+
+        return {
+          nombrePeriodo: pArchivado.nombre_periodo,
+          esArchivado: true,
+          total,
+          realizadas,
+          activas,
+          canceladas,
+          historicoContador,
+          personasEfectivasTotal: pArchivado.personas_beneficiadas || (realizadas * 2),
+          porAnioCarrera,
+          rankingMaterias,
+          topMateria,
+          topAnio,
+          porAnioCalendario: {},
+          comisionesOfrecidas,
+          comisionesBuscadas,
+        };
+      }
+    }
+
+    // Datos del ciclo actual activo
+    const totalActual = permutas.length;
+    const realizadasActual = permutas.filter(p => p.status === "realizada").length;
+    const activasActual = permutas.filter(p => p.status === "activa" || (!p.status && p.activa)).length;
+    const canceladasActual = permutas.filter(p => p.status === "cancelada").length;
+
+    // Por año carrera del actual
+    const porAnioActual: Record<number, { total: number; realizadas: number; activas: number }> = {
+      1: { total: 0, realizadas: 0, activas: 0 },
+      2: { total: 0, realizadas: 0, activas: 0 },
+      3: { total: 0, realizadas: 0, activas: 0 },
+      4: { total: 0, realizadas: 0, activas: 0 },
+      5: { total: 0, realizadas: 0, activas: 0 },
+      6: { total: 0, realizadas: 0, activas: 0 },
+    };
+
+    const materiasActualMap: Record<string, { id: string; nombre: string; anio: number; total: number; realizadas: number; activas: number }> = {};
+    const comisionesOfrecidasActual: Record<number, number> = {};
+    const comisionesBuscadasActual: Record<number, number> = {};
+    const porAnioCalendario: Record<string, number> = {};
+
+    permutas.forEach(p => {
+      const anio = p.materias?.anio || 1;
+      const mNombre = p.materias?.nombre || "Materia no especificada";
+      const mId = p.materia_id || "desconocido";
+      const isRealizada = p.status === "realizada";
+      const isActiva = p.status === "activa" || (!p.status && p.activa);
+
+      if (porAnioActual[anio]) {
+        porAnioActual[anio].total++;
+        if (isRealizada) porAnioActual[anio].realizadas++;
+        if (isActiva) porAnioActual[anio].activas++;
+      }
+
+      if (!materiasActualMap[mNombre]) {
+        materiasActualMap[mNombre] = { id: mId, nombre: mNombre, anio, total: 0, realizadas: 0, activas: 0 };
+      }
+      materiasActualMap[mNombre].total++;
+      if (isRealizada) materiasActualMap[mNombre].realizadas++;
+      if (isActiva) materiasActualMap[mNombre].activas++;
+
+      if (p.comision_tiene) {
+        comisionesOfrecidasActual[p.comision_tiene] = (comisionesOfrecidasActual[p.comision_tiene] || 0) + 1;
+      }
+      if (Array.isArray(p.comisiones_busca)) {
+        p.comisiones_busca.forEach((c: number) => {
+          comisionesBuscadasActual[c] = (comisionesBuscadasActual[c] || 0) + 1;
+        });
+      }
+
+      if (p.created_at) {
+        const calYear = String(new Date(p.created_at).getFullYear());
+        porAnioCalendario[calYear] = (porAnioCalendario[calYear] || 0) + 1;
+      }
+    });
+
+    // Caso 2: Solo período actual en curso
+    if (selectedPeriodFilter === "actual") {
+      const rankingMaterias = Object.values(materiasActualMap).sort((a, b) => b.total - a.total);
+      const anioEntries = Object.entries(porAnioActual).map(([anio, data]) => ({
+        anio: Number(anio),
+        ...data,
+        pct: totalActual > 0 ? Math.round((data.total / totalActual) * 100) : 0,
+      }));
+
+      return {
+        nombrePeriodo: "Período Actual en Curso",
+        esArchivado: false,
+        total: totalActual,
+        realizadas: realizadasActual,
+        activas: activasActual,
+        canceladas: canceladasActual,
+        historicoContador,
+        personasEfectivasTotal: realizadasActual * 2,
+        porAnioCarrera: anioEntries,
+        rankingMaterias,
+        topMateria: rankingMaterias[0] || null,
+        topAnio: [...anioEntries].sort((a, b) => b.total - a.total)[0] || null,
+        porAnioCalendario,
+        comisionesOfrecidas: Object.entries(comisionesOfrecidasActual).sort((a, b) => b[1] - a[1]),
+        comisionesBuscadas: Object.entries(comisionesBuscadasActual).sort((a, b) => b[1] - a[1]),
+      };
+    }
+
+    // Caso 3: Consolidado Perpetuo (Actual + Todos los Históricos Archivados)
+    let totalConsolidado = totalActual;
+    let realizadasConsolidado = realizadasActual;
+    let activasConsolidado = activasActual;
+    let canceladasConsolidado = canceladasActual;
+
+    const porAnioConsolidado: Record<number, { total: number; realizadas: number; activas: number }> = {
+      1: { ...porAnioActual[1] },
+      2: { ...porAnioActual[2] },
+      3: { ...porAnioActual[3] },
+      4: { ...porAnioActual[4] },
+      5: { ...porAnioActual[5] },
+      6: { ...porAnioActual[6] },
+    };
+
+    const materiasConsolidadasMap: Record<string, { id: string; nombre: string; anio: number; total: number; realizadas: number; activas: number }> = { ...materiasActualMap };
+    const comisionesOfrecidasConsolidado: Record<number, number> = { ...comisionesOfrecidasActual };
+    const comisionesBuscadasConsolidado: Record<number, number> = { ...comisionesBuscadasActual };
+
+    historicoPeriodos.forEach(hist => {
+      totalConsolidado += (hist.total_permutas || 0);
+      realizadasConsolidado += (hist.total_realizadas || 0);
+      activasConsolidado += (hist.total_activas || 0);
+      canceladasConsolidado += (hist.total_canceladas || 0);
+
+      // Sumar desglose por año
+      if (Array.isArray(hist.stats_por_anio)) {
+        hist.stats_por_anio.forEach((a: any) => {
+          if (porAnioConsolidado[a.anio]) {
+            porAnioConsolidado[a.anio].total += (a.total || 0);
+            porAnioConsolidado[a.anio].realizadas += (a.realizadas || 0);
+            porAnioConsolidado[a.anio].activas += (a.activas || 0);
+          }
+        });
+      }
+
+      // Sumar desglose por materias
+      if (Array.isArray(hist.stats_por_materia)) {
+        hist.stats_por_materia.forEach((m: any) => {
+          if (!materiasConsolidadasMap[m.nombre]) {
+            materiasConsolidadasMap[m.nombre] = { id: m.id || m.nombre, nombre: m.nombre, anio: m.anio || 1, total: 0, realizadas: 0, activas: 0 };
+          }
+          materiasConsolidadasMap[m.nombre].total += (m.total || 0);
+          materiasConsolidadasMap[m.nombre].realizadas += (m.realizadas || 0);
+          materiasConsolidadasMap[m.nombre].activas += (m.activas || 0);
+        });
+      }
+
+      // Sumar comisiones
+      if (hist.stats_comisiones?.ofrecidas && Array.isArray(hist.stats_comisiones.ofrecidas)) {
+        hist.stats_comisiones.ofrecidas.forEach(([c, n]: [any, number]) => {
+          comisionesOfrecidasConsolidado[Number(c)] = (comisionesOfrecidasConsolidado[Number(c)] || 0) + n;
+        });
+      }
+      if (hist.stats_comisiones?.buscadas && Array.isArray(hist.stats_comisiones.buscadas)) {
+        hist.stats_comisiones.buscadas.forEach(([c, n]: [any, number]) => {
+          comisionesBuscadasConsolidado[Number(c)] = (comisionesBuscadasConsolidado[Number(c)] || 0) + n;
+        });
+      }
+    });
+
+    const rankingMateriasConsolidado = Object.values(materiasConsolidadasMap).sort((a, b) => b.total - a.total);
+    const anioEntriesConsolidado = Object.entries(porAnioConsolidado).map(([anio, data]) => ({
+      anio: Number(anio),
+      ...data,
+      pct: totalConsolidado > 0 ? Math.round((data.total / totalConsolidado) * 100) : 0,
+    }));
+
+    return {
+      nombrePeriodo: "Histórico Consolidado (Todos los Períodos)",
+      esArchivado: false,
+      total: totalConsolidado,
+      realizadas: realizadasConsolidado,
+      activas: activasConsolidado,
+      canceladas: canceladasConsolidado,
+      historicoContador,
+      personasEfectivasTotal: historicoContador + (realizadasActual * 2),
+      porAnioCarrera: anioEntriesConsolidado,
+      rankingMaterias: rankingMateriasConsolidado,
+      topMateria: rankingMateriasConsolidado[0] || null,
+      topAnio: [...anioEntriesConsolidado].sort((a, b) => b.total - a.total)[0] || null,
+      porAnioCalendario,
+      comisionesOfrecidas: Object.entries(comisionesOfrecidasConsolidado).sort((a, b) => b[1] - a[1]),
+      comisionesBuscadas: Object.entries(comisionesBuscadasConsolidado).sort((a, b) => b[1] - a[1]),
+    };
+  }, [permutas, appSettings, historicoPeriodos, selectedPeriodFilter]);
+
+  const archivarPeriodoYLimpiar = async () => {
+    if (!archivePeriodName.trim()) {
+      toast.error("Por favor indicá un nombre para el período a archivar.");
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const actuales = permutas;
+      const realizadasCount = actuales.filter(p => p.status === "realizada").length;
+      const activasCount = actuales.filter(p => p.status === "activa" || (!p.status && p.activa)).length;
+      const canceladasCount = actuales.filter(p => p.status === "cancelada").length;
+
+      const porAnio: Record<number, { total: number; realizadas: number; activas: number }> = {
+        1: { total: 0, realizadas: 0, activas: 0 },
+        2: { total: 0, realizadas: 0, activas: 0 },
+        3: { total: 0, realizadas: 0, activas: 0 },
+        4: { total: 0, realizadas: 0, activas: 0 },
+        5: { total: 0, realizadas: 0, activas: 0 },
+        6: { total: 0, realizadas: 0, activas: 0 },
+      };
+
+      const materiasMap: Record<string, { nombre: string; anio: number; total: number; realizadas: number; activas: number }> = {};
+      const comisionesOfrecidas: Record<number, number> = {};
+      const comisionesBuscadas: Record<number, number> = {};
+
+      actuales.forEach(p => {
+        const anio = p.materias?.anio || 1;
+        const mNombre = p.materias?.nombre || "Materia no especificada";
+        const isRealizada = p.status === "realizada";
+        const isActiva = p.status === "activa" || (!p.status && p.activa);
+
+        if (porAnio[anio]) {
+          porAnio[anio].total++;
+          if (isRealizada) porAnio[anio].realizadas++;
+          if (isActiva) porAnio[anio].activas++;
+        }
+
+        if (!materiasMap[mNombre]) {
+          materiasMap[mNombre] = { nombre: mNombre, anio, total: 0, realizadas: 0, activas: 0 };
+        }
+        materiasMap[mNombre].total++;
+        if (isRealizada) materiasMap[mNombre].realizadas++;
+        if (isActiva) materiasMap[mNombre].activas++;
+
+        if (p.comision_tiene) comisionesOfrecidas[p.comision_tiene] = (comisionesOfrecidas[p.comision_tiene] || 0) + 1;
+        if (Array.isArray(p.comisiones_busca)) {
+          p.comisiones_busca.forEach((c: number) => {
+            comisionesBuscadas[c] = (comisionesBuscadas[c] || 0) + 1;
+          });
+        }
+      });
+
+      const anioArray = Object.entries(porAnio).map(([a, d]) => ({
+        anio: Number(a),
+        ...d,
+        pct: actuales.length > 0 ? Math.round((d.total / actuales.length) * 100) : 0,
+      }));
+
+      const payload = {
+        nombre_periodo: archivePeriodName.trim(),
+        total_permutas: actuales.length,
+        total_realizadas: realizadasCount,
+        total_activas: activasCount,
+        total_canceladas: canceladasCount,
+        personas_beneficiadas: realizadasCount * 2,
+        stats_por_anio: anioArray,
+        stats_por_materia: Object.values(materiasMap).sort((a, b) => b.total - a.total),
+        stats_comisiones: {
+          ofrecidas: Object.entries(comisionesOfrecidas).sort((a, b) => b[1] - a[1]),
+          buscadas: Object.entries(comisionesBuscadas).sort((a, b) => b[1] - a[1]),
+        },
+        raw_data_backup: actuales.map(p => ({
+          id: p.id,
+          materia: p.materias?.nombre,
+          anio: p.materias?.anio,
+          tiene: p.comision_tiene,
+          busca: p.comisiones_busca,
+          status: p.status,
+          created_at: p.created_at
+        }))
+      };
+
+      try {
+        await supabase.from("permutas_historico_periodos" as any).insert(payload);
+      } catch (errIns) {
+        console.warn("Aviso insertando periodo historico:", errIns);
+      }
+
+      if (realizadasCount > 0) {
+        try {
+          await supabase.rpc("increment_personas_permutadas", { inc_val: realizadasCount * 2 });
+        } catch (e) {
+          const currentCount = (appSettings?.personas_permutadas_count || 0) + (realizadasCount * 2);
+          await supabase.from("app_settings").update({ personas_permutadas_count: currentCount } as any).eq("id", 1);
+        }
+      }
+
+      await supabase.from("matches").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      const { error: delErr } = await supabase.from("permutas").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      if (delErr) throw delErr;
+
+      setPermutas([]);
+      toast.success(`¡Período "${archivePeriodName}" guardado en el histórico permanente y lista limpiada con éxito!`);
+      setIsArchiveModalOpen(false);
+      loadData();
+    } catch (err: any) {
+      console.error("Error al archivar período:", err);
+      toast.error("Error al archivar período: " + (err.message || "Error"));
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   // Memoized Filters
   const filteredPermutas = useMemo(() => {
     return permutas.filter(p => {
@@ -778,25 +1215,69 @@ export default function AdminPanel() {
           </section>
         </TabsContent>
 
-        {/* --- TAB: PERMUTAS --- */}
-        <TabsContent value="permutas" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* --- TAB: PERMUTAS & ESTADÍSTICAS --- */}
+        <TabsContent value="permutas" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {/* BARRA SUPERIOR DE CONTROL, SELECTOR DE PERÍODO Y EXPORTACIÓN */}
           <div className="flex flex-wrap gap-4 items-center justify-between bg-card p-6 rounded-2xl border shadow-sm">
             <div className="space-y-1">
-              <h2 className="text-lg font-bold text-foreground">Gestión de Permutas</h2>
+              <div className="flex items-center gap-2">
+                <BarChart2 className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-bold text-foreground">Estadísticas y Gestión de Permutas</h2>
+              </div>
               <p className="text-muted-foreground text-xs">
-                Administrá las permutas activas o ajustá manualmente el contador de personas que lograron permutar.
+                Métricas de permutas efectivas, análisis por año de cursada, materias con mayor demanda y archivo perpetuo por cuatrimestre.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2 bg-muted/40 p-1.5 rounded-xl border">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* SELECTOR DE PERÍODO / TEMPORADA */}
+              <div className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-xl border">
+                <span className="text-xs font-semibold text-muted-foreground px-1.5">Vista:</span>
+                <select
+                  value={selectedPeriodFilter}
+                  onChange={e => setSelectedPeriodFilter(e.target.value)}
+                  className="bg-background text-foreground text-xs font-bold rounded-lg px-2.5 py-1 border border-white/10 outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                >
+                  <option value="consolidado">📊 Todo el Histórico Consolidado (Permanente)</option>
+                  <option value="actual">🟢 Período Actual Abierto ({permutas.length} permutas)</option>
+                  {historicoPeriodos.map(h => (
+                    <option key={h.id} value={h.id}>
+                      📁 {h.nombre_periodo} ({h.total_permutas} permutas, {h.personas_beneficiadas} exitosas)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* BOTÓN EXPORTAR A EXCEL */}
+              <Button
+                onClick={exportPermutasToExcel}
+                variant="outline"
+                className="rounded-xl text-xs font-bold px-3.5 h-9 flex items-center gap-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 shadow-sm"
+              >
+                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                <span>Exportar a Excel (.xlsx)</span>
+              </Button>
+
+              {/* BOTÓN CERRAR PERÍODO Y ARCHIVAR */}
+              <Button
+                onClick={() => setIsArchiveModalOpen(true)}
+                variant="outline"
+                disabled={updating || permutas.length === 0}
+                className="rounded-xl text-xs font-bold px-3.5 h-9 flex items-center gap-1.5 border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 shadow-sm"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Cerrar Período y Guardar Histórico ({permutas.length})</span>
+              </Button>
+
+              {/* CONTADOR HISTÓRICO PERSISTENTE */}
+              <div className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-xl border">
                 <span className="text-xs font-semibold px-2 text-muted-foreground whitespace-nowrap">
                   🎉 Contador histórico:
                 </span>
                 <Input
                   type="number"
                   min={0}
-                  className="w-24 h-8 text-xs font-bold bg-background text-center rounded-lg border-muted"
+                  className="w-16 h-7 text-xs font-bold bg-background text-center rounded-lg border-muted"
                   value={customPermutasCount}
                   onChange={e => setCustomPermutasCount(e.target.value)}
                 />
@@ -805,88 +1286,374 @@ export default function AdminPanel() {
                   variant="outline"
                   onClick={updatePermutasCount}
                   disabled={updating}
-                  className="h-8 text-xs font-bold rounded-lg px-3"
+                  className="h-7 text-xs font-bold rounded-lg px-2"
                 >
                   Guardar
                 </Button>
               </div>
 
+              {/* BORRAR TODAS */}
               <Button
                 variant="destructive"
                 onClick={deleteAllPermutas}
                 disabled={updating || permutas.length === 0}
-                className="rounded-xl text-xs font-bold px-4 h-10 flex items-center gap-2 shadow-sm transition-all active:scale-95"
+                className="rounded-xl text-xs font-bold px-3 h-9 flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
               >
-                <Trash2 size={16} />
-                Borrar todas las permutas ({permutas.length})
+                <Trash2 size={14} />
+                Borrar ({permutas.length})
               </Button>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4 items-center justify-between bg-muted/30 p-4 rounded-2xl border">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Buscar por materia..." 
-                className="pl-10 bg-background border-none shadow-none" 
-                value={searchMateria}
-                onChange={e => setSearchMateria(e.target.value)}
-              />
+          {/* TARJETAS DE KPIS PRINCIPALES */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* KPI 1: PERSONAS EFECTIVAMENTE PERMUTADAS */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-950/40 via-card to-card border border-emerald-500/30 shadow-sm space-y-2">
+              <div className="flex items-center justify-between text-emerald-400">
+                <CheckCircle2 className="w-5 h-5" />
+                <span className="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+                  Efectivas
+                </span>
+              </div>
+              <div className="text-3xl font-black text-foreground font-mono">
+                {permutaStats.personasEfectivasTotal}
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-200">Personas Permutadas</h4>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {permutaStats.historicoContador} histórico + {permutaStats.realizadas * 2} activas realizadas
+                </p>
+              </div>
             </div>
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Buscar por usuario..." 
-                className="pl-10 bg-background border-none shadow-none"
-                value={searchUser}
-                onChange={e => setSearchUser(e.target.value)}
-              />
+
+            {/* KPI 2: TOTAL DE PUBLICACIONES */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-950/40 via-card to-card border border-blue-500/30 shadow-sm space-y-2">
+              <div className="flex items-center justify-between text-blue-400">
+                <Repeat className="w-5 h-5" />
+                <span className="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300">
+                  Publicaciones
+                </span>
+              </div>
+              <div className="text-3xl font-black text-foreground font-mono">
+                {permutaStats.total}
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-200">Permutas Registradas</h4>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {permutaStats.activas} en búsqueda · {permutaStats.realizadas} concretadas
+                </p>
+              </div>
+            </div>
+
+            {/* KPI 3: MATERIA MÁS DEMANDADA */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-purple-950/40 via-card to-card border border-purple-500/30 shadow-sm space-y-2">
+              <div className="flex items-center justify-between text-purple-400">
+                <Trophy className="w-5 h-5" />
+                <span className="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">
+                  Top Materia
+                </span>
+              </div>
+              <div className="text-xl font-black text-foreground truncate" title={permutaStats.topMateria?.nombre || "Sin datos"}>
+                {permutaStats.topMateria?.nombre || "Sin permutas"}
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-200">Materia con Más Permutas</h4>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {permutaStats.topMateria ? `${permutaStats.topMateria.total} publicaciones (${permutaStats.total > 0 ? ((permutaStats.topMateria.total / permutaStats.total) * 100).toFixed(1) : 0}%)` : "Aún sin datos"}
+                </p>
+              </div>
+            </div>
+
+            {/* KPI 4: AÑO DE LA CARRERA CON MÁS PERMUTAS */}
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-950/40 via-card to-card border border-amber-500/30 shadow-sm space-y-2">
+              <div className="flex items-center justify-between text-amber-400">
+                <GraduationCap className="w-5 h-5" />
+                <span className="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">
+                  Año Líder
+                </span>
+              </div>
+              <div className="text-3xl font-black text-foreground font-mono">
+                {permutaStats.topAnio ? `${permutaStats.topAnio.anio}° Año` : "Sin datos"}
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-200">Año de Cursada con Más Demanda</h4>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {permutaStats.topAnio ? `${permutaStats.topAnio.total} permutas (${permutaStats.topAnio.pct}% del total)` : "Aún sin datos"}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="bg-card border rounded-2xl overflow-x-auto shadow-sm">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 border-b">
-                <tr>
-                  <th className="px-6 py-4 text-left font-semibold">Usuario</th>
-                  <th className="px-6 py-4 text-left font-semibold">Materia</th>
-                  <th className="px-6 py-4 text-left font-semibold">Fecha</th>
-                  <th className="px-6 py-4 text-left font-semibold">Estado</th>
-                  <th className="px-6 py-4 text-right font-semibold">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {filteredPermutas.map(p => {
-                  const prof = profiles.find(f => f.id === p.user_id);
-                  return (
-                    <tr key={p.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-foreground">{prof?.full_name || "Usuario Desconocido"}</div>
-                        <div className="text-[10px] text-muted-foreground uppercase tracking-tight">{p.telefono}</div>
-                      </td>
-                      <td className="px-6 py-4 font-medium">{p.materias?.nombre}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          p.status === 'activa' ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'
-                        }`}>
-                          {p.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Button variant="ghost" size="icon" onClick={() => deletePermuta(p.id)} className="text-destructive hover:bg-destructive/10">
-                          <Trash2 size={16} />
-                        </Button>
+          {/* SECCIÓN DETALLADA: DESGLOSE POR AÑO DE LA CARRERA (1° A 6°) */}
+          <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-4">
+              <div>
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-primary" />
+                  <span>Distribución por Año de la Carrera</span>
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Cantidad y porcentaje de permutas solicitadas según el año académico de la materia (1° a 6° año).
+                </p>
+              </div>
+              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-muted text-muted-foreground w-fit">
+                Total: {permutaStats.total} permutas
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+              {permutaStats.porAnioCarrera.map((item) => (
+                <div key={item.anio} className="p-4 rounded-xl bg-muted/30 border space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-foreground flex items-center gap-1.5">
+                      <GraduationCap className="w-3.5 h-3.5 text-primary" />
+                      <span>{item.anio}° Año de la Carrera</span>
+                    </span>
+                    <span className="text-xs font-bold font-mono text-primary">
+                      {item.pct}%
+                    </span>
+                  </div>
+
+                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all duration-500 rounded-full"
+                      style={{ width: `${Math.max(item.pct, item.total > 0 ? 5 : 0)}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
+                    <span><strong>{item.total}</strong> permutas</span>
+                    <span>{item.activas} activas · {item.realizadas} realizadas</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* SECCIÓN DETALLADA: RANKING DE MATERIAS CON MÁS PERMUTAS */}
+          <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-4">
+              <div>
+                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-amber-400" />
+                  <span>Ranking de Materias con Más Permutas</span>
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Materias ordenadas de mayor a menor cantidad de solicitudes de permuta registradas.
+                </p>
+              </div>
+              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-muted text-muted-foreground w-fit">
+                {permutaStats.rankingMaterias.length} materias con actividad
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead className="bg-muted/40 border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-bold text-muted-foreground">Posición</th>
+                    <th className="px-4 py-3 text-left font-bold text-muted-foreground">Materia</th>
+                    <th className="px-4 py-3 text-left font-bold text-muted-foreground">Año de Cursada</th>
+                    <th className="px-4 py-3 text-center font-bold text-muted-foreground">Total Permutas</th>
+                    <th className="px-4 py-3 text-center font-bold text-muted-foreground">% del Total</th>
+                    <th className="px-4 py-3 text-center font-bold text-muted-foreground">Activas</th>
+                    <th className="px-4 py-3 text-center font-bold text-muted-foreground">Realizadas</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {permutaStats.rankingMaterias.slice(0, 10).map((mat, idx) => {
+                    const pct = permutaStats.total > 0 ? ((mat.total / permutaStats.total) * 100).toFixed(1) : "0";
+                    return (
+                      <tr key={mat.nombre} className="hover:bg-muted/10 transition-colors">
+                        <td className="px-4 py-3 font-mono font-bold">
+                          {idx === 0 ? "🥇 1°" : idx === 1 ? "🥈 2°" : idx === 2 ? "🥉 3°" : `${idx + 1}°`}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-foreground">
+                          {mat.nombre}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-0.5 rounded-md bg-muted text-muted-foreground text-[10px] font-semibold">
+                            {mat.anio}° Año
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center font-mono font-bold text-primary">
+                          {mat.total}
+                        </td>
+                        <td className="px-4 py-3 text-center font-mono text-muted-foreground">
+                          {pct}%
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/10 text-green-500">
+                            {mat.activas}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400">
+                            {mat.realizadas}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {permutaStats.rankingMaterias.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-muted-foreground italic">
+                        No hay permutas cargadas en la base de datos para generar el ranking.
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            {filteredPermutas.length === 0 && (
-              <div className="p-12 text-center text-muted-foreground italic">No se encontraron permutas con los filtros actuales.</div>
-            )}
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* BUSCADOR Y LISTADO INDIVIDUAL DE PERMUTAS */}
+          <div className="space-y-4 pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-base font-bold text-foreground">Listado Detallado de Publicaciones</h3>
+                <p className="text-xs text-muted-foreground">Filtrá y gestioná cada permuta individualmente.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4 items-center justify-between bg-muted/30 p-4 rounded-2xl border">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Buscar por materia..." 
+                  className="pl-10 bg-background border-none shadow-none text-xs" 
+                  value={searchMateria}
+                  onChange={e => setSearchMateria(e.target.value)}
+                />
+              </div>
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Buscar por estudiante..." 
+                  className="pl-10 bg-background border-none shadow-none text-xs" 
+                  value={searchUser}
+                  onChange={e => setSearchUser(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="bg-card border rounded-2xl overflow-x-auto shadow-sm">
+              <table className="w-full text-xs">
+                <thead className="bg-muted/50 border-b">
+                  <tr>
+                    <th className="px-6 py-4 text-left font-semibold">Estudiante</th>
+                    <th className="px-6 py-4 text-left font-semibold">Materia</th>
+                    <th className="px-6 py-4 text-center font-semibold">Tiene Comisión</th>
+                    <th className="px-6 py-4 text-center font-semibold">Busca Comisión</th>
+                    <th className="px-6 py-4 text-left font-semibold">Fecha</th>
+                    <th className="px-6 py-4 text-left font-semibold">Estado</th>
+                    <th className="px-6 py-4 text-right font-semibold">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredPermutas.map(p => {
+                    const prof = profiles.find(f => f.id === p.user_id);
+                    return (
+                      <tr key={p.id} className="hover:bg-muted/10 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-foreground">{prof?.full_name || p.nombre_contacto || "Usuario Desconocido"}</div>
+                          <div className="text-[10px] text-muted-foreground font-mono">{p.telefono}</div>
+                        </td>
+                        <td className="px-6 py-4 font-medium">
+                          <div>{p.materias?.nombre || "No especificada"}</div>
+                          {p.materias?.anio && (
+                            <span className="text-[10px] text-muted-foreground">{p.materias.anio}° Año</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center font-mono font-bold text-primary">
+                          Comisión {p.comision_tiene}
+                        </td>
+                        <td className="px-6 py-4 text-center font-mono text-muted-foreground">
+                          {Array.isArray(p.comisiones_busca) ? p.comisiones_busca.join(", ") : p.comisiones_busca}
+                        </td>
+                        <td className="px-6 py-4 text-muted-foreground">{p.created_at ? new Date(p.created_at).toLocaleDateString("es-AR") : ""}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            p.status === 'activa' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 
+                            p.status === 'realizada' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                            'bg-muted text-muted-foreground'
+                          }`}>
+                            {p.status || (p.activa ? 'activa' : 'inactiva')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <Button variant="ghost" size="icon" onClick={() => deletePermuta(p.id)} className="text-destructive hover:bg-destructive/10 h-8 w-8">
+                            <Trash2 size={14} />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {filteredPermutas.length === 0 && (
+                <div className="p-12 text-center text-muted-foreground italic">No se encontraron permutas con los filtros actuales.</div>
+              )}
+            </div>
+          </div>
+
+          {/* MODAL DE CIERRE DE PERÍODO Y ARCHIVADO PERPETUO */}
+          <Dialog open={isArchiveModalOpen} onOpenChange={setIsArchiveModalOpen}>
+            <DialogContent className="max-w-md bg-card border border-white/15">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-bold flex items-center gap-2 text-foreground">
+                  <Layers className="w-5 h-5 text-primary" />
+                  <span>Cerrar Período y Guardar Histórico</span>
+                </DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  Esta acción guardará un snapshot permanente con todas las estadísticas (por materia, por año, totales y concretadas) en el histórico perpetuo antes de reiniciar la lista para el próximo cuatrimestre.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-2">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground">Nombre del Período / Temporada</label>
+                  <Input
+                    value={archivePeriodName}
+                    onChange={e => setArchivePeriodName(e.target.value)}
+                    placeholder="Ej: 2026 - 1° Cuatrimestre"
+                    className="text-xs"
+                  />
+                </div>
+
+                <div className="p-3 rounded-xl bg-muted/40 border text-xs space-y-1.5">
+                  <div className="font-semibold text-foreground">Resumen de este período a archivar:</div>
+                  <div className="text-muted-foreground flex justify-between">
+                    <span>Permutas publicadas:</span>
+                    <strong className="text-foreground">{permutas.length}</strong>
+                  </div>
+                  <div className="text-muted-foreground flex justify-between">
+                    <span>Realizadas (exitosas):</span>
+                    <strong className="text-emerald-400">{permutas.filter(p => p.status === 'realizada').length}</strong>
+                  </div>
+                  <div className="text-muted-foreground flex justify-between">
+                    <span>Personas a sumar al contador:</span>
+                    <strong className="text-emerald-400">+{permutas.filter(p => p.status === 'realizada').length * 2} personas</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" size="sm" onClick={() => setIsArchiveModalOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={archivarPeriodoYLimpiar} 
+                  disabled={updating || !archivePeriodName.trim()}
+                  className="bg-primary text-primary-foreground font-bold text-xs flex items-center gap-1.5"
+                >
+                  {updating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  <span>Guardar Histórico y Reiniciar</span>
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
 
         {/* --- TAB: USUARIOS --- */}

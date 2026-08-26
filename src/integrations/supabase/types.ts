@@ -198,6 +198,57 @@ export type Database = {
           },
         ]
       }
+      permutas_historico_periodos: {
+        Row: {
+          id: string
+          nombre_periodo: string
+          fecha_inicio: string
+          fecha_cierre: string
+          total_permutas: number
+          total_realizadas: number
+          total_activas: number
+          total_canceladas: number
+          personas_beneficiadas: number
+          stats_por_anio: Json
+          stats_por_materia: Json
+          stats_comisiones: Json
+          raw_data_backup: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          nombre_periodo: string
+          fecha_inicio?: string
+          fecha_cierre?: string
+          total_permutas?: number
+          total_realizadas?: number
+          total_activas?: number
+          total_canceladas?: number
+          personas_beneficiadas?: number
+          stats_por_anio?: Json
+          stats_por_materia?: Json
+          stats_comisiones?: Json
+          raw_data_backup?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          nombre_periodo?: string
+          fecha_inicio?: string
+          fecha_cierre?: string
+          total_permutas?: number
+          total_realizadas?: number
+          total_activas?: number
+          total_canceladas?: number
+          personas_beneficiadas?: number
+          stats_por_anio?: Json
+          stats_por_materia?: Json
+          stats_comisiones?: Json
+          raw_data_backup?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           anio_cursada: number | null
