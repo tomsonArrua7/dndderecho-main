@@ -21,9 +21,9 @@ jobs:
           username: root
           password: ${{ secrets.DEPLOY_ROOT_PASSWORD }}
           port: 5696
-          timeout: 180s
+          timeout: 300s
           script: |
-            echo "DEPLOY START: $(date)" > /home/dndjursoc/htdocs/dndjursoc.com.ar/dist/deploy-status.txt 2>/dev/null || true
+            echo "DEPLOY START: $(date)" > /home/dndjursoc/htdocs/dndjursoc.com.ar/deploy-status.txt 2>/dev/null || true
             killall -9 node 2>/dev/null || true
             rm -f /home/dndjursoc/htdocs/dndjursoc.com.ar/.git/index.lock 2>/dev/null || true
             git config --global --add safe.directory '*'
@@ -45,14 +45,18 @@ jobs:
               fi
             fi
 
-            echo "STEP 3: LOW-RAM BUILD"
+            echo "STEP 3: BUILD"
+            rm -rf dist assets index.html 2>/dev/null || true
             sync; echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
-            NODE_OPTIONS="--max-old-space-size=256" npm run build
+            NODE_OPTIONS="--max-old-space-size=512" npm run build
             sync; echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
 
             echo "STEP 4: COPY DIST FILES"
             cp -r dist/* .
-            echo "DEPLOY FINISHED AT $(date)" > dist/deploy-status.txt
+            mkdir -p dist
+            cp -r index.html assets dist/ 2>/dev/null || true
+            echo "DEPLOY FINISHED AT $(date) - ACTIVE BUNDLE: $(ls assets/index-*.js 2>/dev/null)" > deploy-status.txt
+            cp deploy-status.txt dist/deploy-status.txt 2>/dev/null || true
 
             # Auto-run SQL migrations on PostgreSQL container
             DB_CONTAINER=$(docker ps -q -f ancestor=supabase/postgres | head -n 1)
