@@ -9,7 +9,7 @@ import {
   Loader2, Trash2, Search, UserMinus, UserCheck, Mail, ShieldAlert, 
   Users, Repeat, Trophy, Sparkles, TrendingUp, ShieldCheck, Activity, GraduationCap,
   FileSpreadsheet, Download, Eye, CheckCircle, Clock, Check, Brain,
-  BarChart2, BookOpen, Layers, CheckCircle2, Percent
+  BarChart2, BookOpen, Layers, CheckCircle2, Percent, Plus, ExternalLink, Edit2, ImageIcon
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
@@ -65,6 +65,14 @@ export default function AdminPanel() {
   const [savingIgToken, setSavingIgToken] = useState(false);
   const [igLastSync, setIgLastSync] = useState<string | null>(null);
   const [igPostsCount, setIgPostsCount] = useState<number>(0);
+  const [igPosts, setIgPosts] = useState<any[]>([]);
+  const [isAddIgModalOpen, setIsAddIgModalOpen] = useState(false);
+  const [editingIgPost, setEditingIgPost] = useState<any | null>(null);
+  const [igFormLink, setIgFormLink] = useState("");
+  const [igFormImage, setIgFormImage] = useState("");
+  const [igFormCaption, setIgFormCaption] = useState("");
+  const [igFormLikes, setIgFormLikes] = useState<number>(150);
+  const [savingIgPost, setSavingIgPost] = useState(false);
 
   const exportUsersToExcel = () => {
     if (!profiles || profiles.length === 0) {
@@ -379,7 +387,7 @@ export default function AdminPanel() {
         { count: duelosCount },
         { data: corrs },
         { data: igConfig },
-        { count: igCount }
+        { data: igPostsData }
       ] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("app_settings").select("*").eq("id", 1).single(),
@@ -387,14 +395,15 @@ export default function AdminPanel() {
         supabase.from("trivia_duelos").select("*", { count: "exact", head: true }),
         supabase.from("asistente_correcciones").select("*").order("created_at", { ascending: false }),
         supabase.from("instagram_config").select("*").eq("id", 1).maybeSingle(),
-        supabase.from("instagram_feed").select("*", { count: "exact", head: true })
+        supabase.from("instagram_feed").select("*").order("timestamp", { ascending: false })
       ]);
 
       setTotalUsersCount(usersCount || 0);
       setCorrecciones(corrs || []);
       if (igConfig?.access_token) setInstagramToken(igConfig.access_token);
       setIgLastSync(igConfig?.last_sync_at || null);
-      setIgPostsCount(igCount || 0);
+      setIgPosts(igPostsData || []);
+      setIgPostsCount((igPostsData || []).length);
 
       // Paginación para obtener la totalidad de permutas superando el límite por defecto de 1000 filas de Supabase
       let allPermutas: any[] = [];
@@ -1235,89 +1244,329 @@ export default function AdminPanel() {
                   <h2 className="text-lg sm:text-xl font-semibold">Feed Autónomo de Instagram (@agrupaciondnd)</h2>
                 </div>
                 <p className="text-muted-foreground text-xs sm:text-sm">
-                  Almacenado localmente en PostgreSQL. Sin intermediarios ni límites de visitas.
+                  Gestioná los posteos que se muestran en la portada. 0 intermediarios, sin límites de visitas.
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs bg-muted/60 text-muted-foreground px-3 py-1.5 rounded-lg border font-mono">
-                  {igPostsCount} posts en base de datos
-                </span>
-                {igLastSync && (
-                  <span className="text-xs text-muted-foreground hidden sm:inline">
-                    Última sinc: {new Date(igLastSync).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="grid gap-3 pt-2 border-t">
-              <label className="text-xs font-bold text-foreground flex items-center justify-between">
-                <span>Access Token de Meta / Instagram Graph API (Larga duración)</span>
-                <span className="text-[11px] text-muted-foreground font-normal">
-                  Se auto-renueva cada 30 días de por vida una vez cargado
-                </span>
-              </label>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Input
-                  type="password"
-                  placeholder="Pegá tu token de Instagram aquí (ej: IGQJ...)"
-                  value={instagramToken}
-                  onChange={(e) => setInstagramToken(e.target.value)}
-                  className="bg-background font-mono text-xs flex-1"
-                />
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
-                  onClick={async () => {
-                    setSavingIgToken(true);
-                    try {
-                      const tokenVal = instagramToken.trim();
-                      const { error: updErr } = await supabase
-                        .from("instagram_config")
-                        .update({
-                          access_token: tokenVal || null,
-                          last_token_refresh: new Date().toISOString(),
-                          updated_at: new Date().toISOString(),
-                        })
-                        .eq("id", 1);
-
-                      if (updErr) throw updErr;
-
-                      toast.info("Token guardado. Sincronizando con Instagram...");
-                      const { data: syncRes, error: syncErr } = await supabase.functions.invoke("sync-instagram-feed");
-                      
-                      if (syncErr) {
-                        toast.warning("Token guardado, pero hubo un detalle al sincronizar: " + syncErr.message);
-                      } else {
-                        toast.success("¡Sincronizado con éxito con Meta Instagram!");
-                      }
-
-                      // Recargar datos
-                      const [c1, c2] = await Promise.all([
-                        supabase.from("instagram_config").select("*").eq("id", 1).maybeSingle(),
-                        supabase.from("instagram_feed").select("*", { count: "exact", head: true }),
-                      ]);
-                      setIgLastSync(c1.data?.last_sync_at || null);
-                      setIgPostsCount(c2.count || 0);
-                    } catch (e: any) {
-                      console.error("Error guardando token:", e);
-                      toast.error("Error al guardar token: " + (e.message || ""));
-                    } finally {
-                      setSavingIgToken(false);
-                    }
+                  onClick={() => {
+                    setEditingIgPost(null);
+                    setIgFormLink("");
+                    setIgFormImage("");
+                    setIgFormCaption("");
+                    setIgFormLikes(180);
+                    setIsAddIgModalOpen(true);
                   }}
-                  disabled={savingIgToken}
-                  className="rounded-xl font-bold gap-2 text-xs min-w-[170px]"
+                  className="rounded-xl font-bold gap-2 text-xs bg-primary hover:bg-primary/90 text-white"
                 >
-                  {savingIgToken ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Activity className="w-4 h-4 text-accent" /> Guardar y Sincronizar
-                    </>
-                  )}
+                  <Plus className="w-4 h-4" /> Agregar Publicación
                 </Button>
               </div>
             </div>
+
+            {/* LISTA DE PUBLICACIONES EN BASE DE DATOS */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  Publicaciones activas en portada ({igPosts.length})
+                </span>
+                {igPosts.length > 0 && (
+                  <span className="text-[11px] text-muted-foreground">
+                    Se muestran las más recientes primero
+                  </span>
+                )}
+              </div>
+
+              {igPosts.length === 0 ? (
+                <div className="p-8 text-center border border-dashed rounded-2xl bg-muted/20 space-y-3">
+                  <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground/50" />
+                  <p className="text-sm text-muted-foreground">No hay publicaciones cargadas todavía.</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEditingIgPost(null);
+                      setIgFormLink("https://www.instagram.com/p/");
+                      setIgFormImage("");
+                      setIgFormCaption("");
+                      setIgFormLikes(210);
+                      setIsAddIgModalOpen(true);
+                    }}
+                    className="rounded-xl text-xs gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Crear Primera Publicación
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {igPosts.map((post) => (
+                    <div
+                      key={post.id}
+                      className="group relative border rounded-2xl p-3.5 bg-background/50 hover:bg-background hover:border-primary/40 transition-all flex flex-col justify-between gap-3 shadow-sm"
+                    >
+                      <div className="flex gap-3 items-start">
+                        {post.media_url ? (
+                          <img
+                            src={post.media_url}
+                            alt="Instagram Post"
+                            className="w-16 h-16 rounded-xl object-cover border shrink-0 bg-muted"
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <div className="w-16 h-16 rounded-xl bg-muted border flex items-center justify-center shrink-0">
+                            <ImageIcon className="w-6 h-6 text-muted-foreground/40" />
+                          </div>
+                        )}
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-foreground line-clamp-2 leading-relaxed">
+                            {post.caption || "Sin descripción"}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {new Date(post.timestamp).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t text-xs">
+                        <a
+                          href={post.permalink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
+                        >
+                          Ver en IG <ExternalLink className="w-3 h-3" />
+                        </a>
+                        <div className="flex items-center gap-1.5">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setEditingIgPost(post);
+                              setIgFormLink(post.permalink || "");
+                              setIgFormImage(post.media_url || "");
+                              setIgFormCaption(post.caption || "");
+                              setIgFormLikes(post.like_count || 150);
+                              setIsAddIgModalOpen(true);
+                            }}
+                            className="h-7 px-2 text-xs rounded-lg text-muted-foreground hover:text-foreground"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={async () => {
+                              if (!window.confirm("¿Seguro que deseas eliminar esta publicación?")) return;
+                              try {
+                                const { error } = await supabase.from("instagram_feed").delete().eq("id", post.id);
+                                if (error) throw error;
+                                toast.success("Publicación eliminada");
+                                setIgPosts((prev) => prev.filter((p) => p.id !== post.id));
+                                setIgPostsCount((prev) => Math.max(0, prev - 1));
+                              } catch (e: any) {
+                                toast.error("Error al eliminar: " + e.message);
+                              }
+                            }}
+                            className="h-7 px-2 text-xs rounded-lg text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* CONFIGURACIÓN AVANZADA OPCIONAL META TOKEN */}
+            <div className="pt-4 border-t space-y-3">
+              <details className="text-xs text-muted-foreground cursor-pointer group">
+                <summary className="font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-2">
+                  <span>⚙️ Configuración Opcional: Auto-Sincronización con Meta Token</span>
+                </summary>
+                <div className="mt-3 p-4 rounded-xl border bg-background/40 space-y-3">
+                  <p className="text-[11px] leading-relaxed">
+                    Si en algún momento generás un token en Meta Developers, podés pegarlo aquí para que el servidor sincronice automáticamente en segundo plano.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Input
+                      type="password"
+                      placeholder="Pegá tu token de Meta aquí (opcional)"
+                      value={instagramToken}
+                      onChange={(e) => setInstagramToken(e.target.value)}
+                      className="bg-background font-mono text-xs flex-1"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={async () => {
+                        setSavingIgToken(true);
+                        try {
+                          const { error: updErr } = await supabase
+                            .from("instagram_config")
+                            .update({
+                              access_token: instagramToken.trim() || null,
+                              last_token_refresh: new Date().toISOString(),
+                              updated_at: new Date().toISOString(),
+                            })
+                            .eq("id", 1);
+                          if (updErr) throw updErr;
+                          toast.success("Token de Meta guardado.");
+                          const { data: syncRes } = await supabase.functions.invoke("sync-instagram-feed");
+                          const { data: freshPosts } = await supabase.from("instagram_feed").select("*").order("timestamp", { ascending: false });
+                          setIgPosts(freshPosts || []);
+                          setIgPostsCount((freshPosts || []).length);
+                        } catch (e: any) {
+                          toast.error("Error: " + e.message);
+                        } finally {
+                          setSavingIgToken(false);
+                        }
+                      }}
+                      disabled={savingIgToken}
+                      className="rounded-xl text-xs font-bold"
+                    >
+                      {savingIgToken ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Guardar Token"}
+                    </Button>
+                  </div>
+                </div>
+              </details>
+            </div>
           </section>
+
+          {/* MODAL: AGREGAR / EDITAR PUBLICACIÓN DE INSTAGRAM */}
+          <Dialog open={isAddIgModalOpen} onOpenChange={setIsAddIgModalOpen}>
+            <DialogContent className="sm:max-w-[520px] rounded-3xl p-6 bg-card border shadow-2xl">
+              <DialogHeader className="space-y-2">
+                <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-accent" />
+                  {editingIgPost ? "Editar Publicación" : "Nueva Publicación de Instagram"}
+                </DialogTitle>
+                <DialogDescription className="text-xs">
+                  Completá los datos del posteo de Instagram que querés que aparezca en la portada.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-2">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground">
+                    Enlace de la publicación en Instagram *
+                  </label>
+                  <Input
+                    placeholder="https://www.instagram.com/p/DB123456789/"
+                    value={igFormLink}
+                    onChange={(e) => setIgFormLink(e.target.value)}
+                    className="bg-background text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground">
+                    URL de la Imagen / Portada *
+                  </label>
+                  <Input
+                    placeholder="https://ejemplo.com/imagen.jpg"
+                    value={igFormImage}
+                    onChange={(e) => setIgFormImage(e.target.value)}
+                    className="bg-background text-xs"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    Podés hacer clic derecho en la foto de Instagram {"->"} "Copiar dirección de imagen", o usar cualquier enlace de imagen.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground">
+                    Texto / Epígrafe
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Escribí o pegá la descripción de la publicación..."
+                    value={igFormCaption}
+                    onChange={(e) => setIgFormCaption(e.target.value)}
+                    className="w-full p-3 rounded-xl border bg-background text-xs outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-foreground">
+                      Me Gusta estimados
+                    </label>
+                    <Input
+                      type="number"
+                      value={igFormLikes}
+                      onChange={(e) => setIgFormLikes(Number(e.target.value) || 0)}
+                      className="bg-background text-xs"
+                    />
+                  </div>
+                </div>
+
+                {igFormImage && (
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[11px] font-bold text-muted-foreground">Vista Previa de Imagen:</span>
+                    <img
+                      src={igFormImage}
+                      alt="Vista Previa"
+                      className="w-full h-36 object-cover rounded-xl border bg-muted"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsAddIgModalOpen(false)}
+                  className="rounded-xl text-xs"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={savingIgPost || !igFormLink.trim() || !igFormImage.trim()}
+                  onClick={async () => {
+                    setSavingIgPost(true);
+                    try {
+                      const postId = editingIgPost ? editingIgPost.id : `ig-${Date.now()}`;
+                      const { error } = await supabase.from("instagram_feed").upsert({
+                        id: postId,
+                        permalink: igFormLink.trim(),
+                        media_url: igFormImage.trim(),
+                        caption: igFormCaption.trim(),
+                        like_count: Number(igFormLikes) || 0,
+                        timestamp: editingIgPost ? editingIgPost.timestamp : new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                      });
+
+                      if (error) throw error;
+                      toast.success(editingIgPost ? "Publicación actualizada" : "Publicación agregada al feed");
+                      setIsAddIgModalOpen(false);
+                      setEditingIgPost(null);
+
+                      // Recargar posts
+                      const { data } = await supabase.from("instagram_feed").select("*").order("timestamp", { ascending: false });
+                      setIgPosts(data || []);
+                      setIgPostsCount((data || []).length);
+                    } catch (err: any) {
+                      console.error("Error al guardar publicación:", err);
+                      toast.error("Error: " + err.message);
+                    } finally {
+                      setSavingIgPost(false);
+                    }
+                  }}
+                  className="rounded-xl text-xs font-bold gap-2"
+                >
+                  {savingIgPost ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Guardar Publicación"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
 
         {/* --- TAB: PERMUTAS & ESTADÍSTICAS --- */}
