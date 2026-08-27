@@ -320,6 +320,81 @@ export type Database = {
           },
         ]
       }
+      instagram_feed: {
+        Row: {
+          id: string
+          media_type: string
+          media_url: string
+          thumbnail_url: string | null
+          permalink: string
+          caption: string | null
+          timestamp: string
+          like_count: number
+          comments_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          media_type?: string
+          media_url: string
+          thumbnail_url?: string | null
+          permalink?: string
+          caption?: string | null
+          timestamp?: string
+          like_count?: number
+          comments_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          media_type?: string
+          media_url?: string
+          thumbnail_url?: string | null
+          permalink?: string
+          caption?: string | null
+          timestamp?: string
+          like_count?: number
+          comments_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      instagram_config: {
+        Row: {
+          id: number
+          access_token: string | null
+          instagram_user_id: string | null
+          last_token_refresh: string | null
+          last_sync_at: string | null
+          last_error: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          access_token?: string | null
+          instagram_user_id?: string | null
+          last_token_refresh?: string | null
+          last_sync_at?: string | null
+          last_error?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          access_token?: string | null
+          instagram_user_id?: string | null
+          last_token_refresh?: string | null
+          last_sync_at?: string | null
+          last_error?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1213,6 +1213,39 @@ export default function AdminPanel() {
               </div>
             </div>
           </section>
+
+          <section className="p-5 sm:p-8 bg-card border rounded-2xl shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-accent" />
+                  <h2 className="text-lg sm:text-xl font-semibold">Feed Autónomo de Instagram (@agrupaciondnd)</h2>
+                </div>
+                <p className="text-muted-foreground text-xs sm:text-sm">
+                  Almacenado localmente en PostgreSQL. Sin intermediarios ni límites de visitas.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    toast.info("Ejecutando sincronización de Instagram...");
+                    try {
+                      const { data, error } = await supabase.functions.invoke("sync-instagram-feed");
+                      if (error) throw error;
+                      toast.success("Feed de Instagram sincronizado correctamente");
+                    } catch (e: any) {
+                      toast.error("Error al sincronizar: " + (e.message || ""));
+                    }
+                  }}
+                  className="rounded-xl font-bold gap-2 text-xs"
+                >
+                  <Activity className="w-4 h-4 text-accent" /> Sincronizar Ahora
+                </Button>
+              </div>
+            </div>
+          </section>
         </TabsContent>
 
         {/* --- TAB: PERMUTAS & ESTADÍSTICAS --- */}

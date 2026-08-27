@@ -3,6 +3,7 @@ import { Instagram, Heart, MessageCircle, Mic, BookOpen, Clipboard, Info, Extern
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BeholdPost {
   id: string;
@@ -97,26 +98,37 @@ const FALLBACK_POSTS: BeholdPost[] = [
 export function InstagramFeed() {
   const [posts, setPosts] = useState<BeholdPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("https://feeds.behold.so/VLE0e125oUyyQydPF11F");
-        if (!response.ok) throw new Error("Failed to fetch");
-        const data = await response.json();
-        let postsArray: BeholdPost[] = Array.isArray(data) ? data : data.posts || [];
-        
-        // Ordenar por fecha más reciente primero
-        postsArray.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        const { data, error } = await supabase
+          .from("instagram_feed")
+          .select("*")
+          .order("timestamp", { ascending: false })
+          .limit(6);
 
-        if (postsArray.length === 0) {
-          postsArray = FALLBACK_POSTS;
+        if (error) {
+          console.warn("Error al obtener posts de instagram_feed:", error.message);
+          setPosts(FALLBACK_POSTS);
+        } else if (data && data.length > 0) {
+          const formattedPosts: BeholdPost[] = data.map((item: any) => ({
+            id: item.id,
+            mediaUrl: item.media_url,
+            thumbnailUrl: item.thumbnail_url || undefined,
+            permalink: item.permalink || "https://www.instagram.com/agrupaciondnd/",
+            caption: item.caption || "",
+            timestamp: item.timestamp,
+            mediaType: (item.media_type as any) || "IMAGE",
+            likeCount: item.like_count,
+            commentCount: item.comments_count,
+          }));
+          setPosts(formattedPosts.slice(0, 4));
+        } else {
+          setPosts(FALLBACK_POSTS);
         }
-
-        setPosts(postsArray.slice(0, 4));
       } catch (err) {
-        console.error("Error fetching Instagram posts:", err);
+        console.error("Error fetching Instagram posts from DB:", err);
         setPosts(FALLBACK_POSTS);
       } finally {
         setLoading(false);
