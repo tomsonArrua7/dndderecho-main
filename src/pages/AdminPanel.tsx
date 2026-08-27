@@ -60,6 +60,12 @@ export default function AdminPanel() {
   const [searchUserProfile, setSearchUserProfile] = useState("");
   const [userSortOrder, setUserSortOrder] = useState<"recent" | "az" | "year">("recent");
 
+  // Instagram Feed States
+  const [instagramToken, setInstagramToken] = useState("");
+  const [savingIgToken, setSavingIgToken] = useState(false);
+  const [igLastSync, setIgLastSync] = useState<string | null>(null);
+  const [igPostsCount, setIgPostsCount] = useState<number>(0);
+
   const exportUsersToExcel = () => {
     if (!profiles || profiles.length === 0) {
       toast.error("No hay usuarios para exportar");
@@ -371,17 +377,24 @@ export default function AdminPanel() {
         { data: settings },
         { count: partidasCount },
         { count: duelosCount },
-        { data: corrs }
+        { data: corrs },
+        { data: igConfig },
+        { count: igCount }
       ] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("app_settings").select("*").eq("id", 1).single(),
         supabase.from("trivia_partidas").select("*", { count: "exact", head: true }),
         supabase.from("trivia_duelos").select("*", { count: "exact", head: true }),
-        supabase.from("asistente_correcciones").select("*").order("created_at", { ascending: false })
+        supabase.from("asistente_correcciones").select("*").order("created_at", { ascending: false }),
+        supabase.from("instagram_config").select("*").eq("id", 1).maybeSingle(),
+        supabase.from("instagram_feed").select("*", { count: "exact", head: true })
       ]);
 
       setTotalUsersCount(usersCount || 0);
       setCorrecciones(corrs || []);
+      if (igConfig?.access_token) setInstagramToken(igConfig.access_token);
+      setIgLastSync(igConfig?.last_sync_at || null);
+      setIgPostsCount(igCount || 0);
 
       // Paginación para obtener la totalidad de permutas superando el límite por defecto de 1000 filas de Supabase
       let allPermutas: any[] = [];
@@ -1214,7 +1227,7 @@ export default function AdminPanel() {
             </div>
           </section>
 
-          <section className="p-5 sm:p-8 bg-card border rounded-2xl shadow-sm space-y-4">
+          <section className="p-5 sm:p-8 bg-card border rounded-2xl shadow-sm space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -1225,23 +1238,82 @@ export default function AdminPanel() {
                   Almacenado localmente en PostgreSQL. Sin intermediarios ni límites de visitas.
                 </p>
               </div>
-              <div className="flex items-center gap-2 self-end sm:self-auto">
+              <div className="flex items-center gap-2">
+                <span className="text-xs bg-muted/60 text-muted-foreground px-3 py-1.5 rounded-lg border font-mono">
+                  {igPostsCount} posts en base de datos
+                </span>
+                {igLastSync && (
+                  <span className="text-xs text-muted-foreground hidden sm:inline">
+                    Última sinc: {new Date(igLastSync).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-3 pt-2 border-t">
+              <label className="text-xs font-bold text-foreground flex items-center justify-between">
+                <span>Access Token de Meta / Instagram Graph API (Larga duración)</span>
+                <span className="text-[11px] text-muted-foreground font-normal">
+                  Se auto-renueva cada 30 días de por vida una vez cargado
+                </span>
+              </label>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="password"
+                  placeholder="Pegá tu token de Instagram aquí (ej: IGQJ...)"
+                  value={instagramToken}
+                  onChange={(e) => setInstagramToken(e.target.value)}
+                  className="bg-background font-mono text-xs flex-1"
+                />
                 <Button
-                  variant="outline"
-                  size="sm"
                   onClick={async () => {
-                    toast.info("Ejecutando sincronización de Instagram...");
+                    setSavingIgToken(true);
                     try {
-                      const { data, error } = await supabase.functions.invoke("sync-instagram-feed");
-                      if (error) throw error;
-                      toast.success("Feed de Instagram sincronizado correctamente");
+                      const tokenVal = instagramToken.trim();
+                      const { error: updErr } = await supabase
+                        .from("instagram_config")
+                        .update({
+                          access_token: tokenVal || null,
+                          last_token_refresh: new Date().toISOString(),
+                          updated_at: new Date().toISOString(),
+                        })
+                        .eq("id", 1);
+
+                      if (updErr) throw updErr;
+
+                      toast.info("Token guardado. Sincronizando con Instagram...");
+                      const { data: syncRes, error: syncErr } = await supabase.functions.invoke("sync-instagram-feed");
+                      
+                      if (syncErr) {
+                        toast.warning("Token guardado, pero hubo un detalle al sincronizar: " + syncErr.message);
+                      } else {
+                        toast.success("¡Sincronizado con éxito con Meta Instagram!");
+                      }
+
+                      // Recargar datos
+                      const [c1, c2] = await Promise.all([
+                        supabase.from("instagram_config").select("*").eq("id", 1).maybeSingle(),
+                        supabase.from("instagram_feed").select("*", { count: "exact", head: true }),
+                      ]);
+                      setIgLastSync(c1.data?.last_sync_at || null);
+                      setIgPostsCount(c2.count || 0);
                     } catch (e: any) {
-                      toast.error("Error al sincronizar: " + (e.message || ""));
+                      console.error("Error guardando token:", e);
+                      toast.error("Error al guardar token: " + (e.message || ""));
+                    } finally {
+                      setSavingIgToken(false);
                     }
                   }}
-                  className="rounded-xl font-bold gap-2 text-xs"
+                  disabled={savingIgToken}
+                  className="rounded-xl font-bold gap-2 text-xs min-w-[170px]"
                 >
-                  <Activity className="w-4 h-4 text-accent" /> Sincronizar Ahora
+                  {savingIgToken ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Activity className="w-4 h-4 text-accent" /> Guardar y Sincronizar
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
