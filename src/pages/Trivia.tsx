@@ -5,6 +5,10 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfileModal } from "@/components/trivia/UserProfileModal";
 import { TriviaGuideModal } from "@/components/trivia/TriviaGuideModal";
+import { TriviaMobileDashboard } from "@/components/trivia/TriviaMobileDashboard";
+import { TriviaInGameView, PowerUpsState } from "@/components/trivia/TriviaInGameView";
+import { TriviaPostMatchModal } from "@/components/trivia/TriviaPostMatchModal";
+import { toast } from "sonner";
 import { 
   Trophy, 
   Timer, 
@@ -462,6 +466,38 @@ export default function Trivia() {
   const [timeLeft, setTimeLeft] = useState(20);
   const [gameOver, setGameOver] = useState(false);
 
+  // Estados de Power-Ups (Nulidad 50/50, Apelación, Prórroga +10s)
+  const [powerUps, setPowerUps] = useState<PowerUpsState>({
+    nulidadCount: 2,
+    apelacionCount: 1,
+    prorrogaCount: 2,
+    isApelacionActive: false,
+    disabledOptionIndices: []
+  });
+
+  // Modal Post-Partida con animación de Elo y badge flotante de MMR
+  const puntosTotalesAntesRef = useRef(0);
+  const [postMatchModal, setPostMatchModal] = useState<{
+    isOpen: boolean;
+    resultado: "victoria" | "derrota" | "empate" | "evaluacion_completada";
+    puntosCambio: number;
+    puntosTotalesAntes: number;
+    puntosTotalesDespues: number;
+    correctAnswersCount: number;
+    totalQuestions: number;
+    maxStreak: number;
+    isDuel1v1?: boolean;
+    duelDetails?: {
+      rivalNombre: string;
+      p1Nombre: string;
+      p1Puntos: number;
+      p1Aciertos: number;
+      p2Nombre: string;
+      p2Puntos: number;
+      p2Aciertos: number;
+    };
+  } | null>(null);
+
   // Estados para funciones de IA
   const [explicacionIA, setExplicacionIA] = useState<string | null>(null);
   const [loadingExplicacion, setLoadingExplicacion] = useState(false);
@@ -817,6 +853,9 @@ export default function Trivia() {
   const progresoPorcentaje = proximoRango
     ? Math.min(100, Math.round(((userStats.puntosTotales - rangoActual.minPuntos) / (proximoRango.minPuntos - rangoActual.minPuntos)) * 100))
     : 100;
+  const puntosFaltantes = proximoRango
+    ? Math.max(0, proximoRango.minPuntos - userStats.puntosTotales)
+    : 0;
 
   // 1. Cargar Estadísticas del usuario desde Supabase
   const fetchUserStatsFromSupabase = async () => {
@@ -1186,10 +1225,56 @@ export default function Trivia() {
     ? CATEGORIAS_TRIVIA
     : CATEGORIAS_TRIVIA.filter(cat => cat.anio === dueloSelectedYearFilter || cat.id === "todas");
 
+  // Power-Ups Handlers
+  const handleUseNulidad = () => {
+    if (isAnswered || powerUps.nulidadCount <= 0 || powerUps.disabledOptionIndices.length > 0) return;
+    const currentQ = questionsPool[currentIndex];
+    if (!currentQ) return;
+    const wrongIndices = currentQ.opciones
+      .map((_, idx) => idx)
+      .filter(idx => idx !== currentQ.respuesta_correcta_index);
+    const shuffledWrong = [...wrongIndices].sort(() => 0.5 - Math.random()).slice(0, 2);
+    setPowerUps(prev => ({
+      ...prev,
+      nulidadCount: Math.max(0, prev.nulidadCount - 1),
+      disabledOptionIndices: shuffledWrong
+    }));
+    toast.success("⚖️ ¡Nulidad planteada! Se anularon 2 opciones incorrectas.");
+  };
+
+  const handleUseApelacion = () => {
+    if (isAnswered || powerUps.apelacionCount <= 0 || powerUps.isApelacionActive) return;
+    setPowerUps(prev => ({
+      ...prev,
+      apelacionCount: Math.max(0, prev.apelacionCount - 1),
+      isApelacionActive: true
+    }));
+    toast.info("📜 ¡Recurso de Apelación preparado! Si errás esta pregunta, tendrás una segunda oportunidad.");
+  };
+
+  const handleUseProrroga = () => {
+    if (isAnswered || powerUps.prorrogaCount <= 0) return;
+    setTimeLeft(prev => prev + 10);
+    setPowerUps(prev => ({
+      ...prev,
+      prorrogaCount: Math.max(0, prev.prorrogaCount - 1)
+    }));
+    toast.success("⏱️ ¡Prórroga de plazo solicitada! +10 segundos.");
+  };
+
   // Iniciar Trivia Solo (con desorden de opciones aleatorio y CERO duplicados)
   const handleStartGame = () => {
     setActiveDuelRoom(null);
     setExplicacionIA(null);
+    puntosTotalesAntesRef.current = userStats.puntosTotales;
+    setPowerUps({
+      nulidadCount: 2,
+      apelacionCount: 1,
+      prorrogaCount: 2,
+      isApelacionActive: false,
+      disabledOptionIndices: []
+    });
+
     const cat = CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria);
     const catNombre = cat ? cat.nombre : "";
 
@@ -1221,6 +1306,15 @@ export default function Trivia() {
   const handleStartFlashGame = () => {
     setActiveDuelRoom(null);
     setExplicacionIA(null);
+    puntosTotalesAntesRef.current = userStats.puntosTotales;
+    setPowerUps({
+      nulidadCount: 2,
+      apelacionCount: 1,
+      prorrogaCount: 2,
+      isApelacionActive: false,
+      disabledOptionIndices: []
+    });
+
     const finalPool = getStrictUniqueQuestions(allQuestionsCombined, 5);
 
     setQuestionsPool(prepareQuestionPool(finalPool));
@@ -1333,7 +1427,7 @@ export default function Trivia() {
         ptsBonus = 50;
       } else if (oppScore > myScore) {
         res = "derrota";
-        ptsBonus = 10;
+        ptsBonus = -15;
       } else {
         res = "empate";
         ptsBonus = 25;
@@ -1341,16 +1435,25 @@ export default function Trivia() {
 
       markDuelAsSeen(duelo.id);
 
-      setDuelOutcomeModal({
+      setPostMatchModal({
+        isOpen: true,
         resultado: res,
-        puntosGanados: ptsBonus,
-        rivalNombre: oppName,
-        p1Nombre: duelo.player1Nombre || "Jugador 1",
-        p1Puntos: p1Score,
-        p1Aciertos: p1Aciertos,
-        p2Nombre: duelo.player2Nombre || "Jugador 2",
-        p2Puntos: p2Score,
-        p2Aciertos: p2Aciertos
+        puntosCambio: ptsBonus,
+        puntosTotalesAntes: Math.max(0, userStats.puntosTotales - ptsBonus),
+        puntosTotalesDespues: userStats.puntosTotales,
+        correctAnswersCount: isPlayer1 ? p1Aciertos : p2Aciertos,
+        totalQuestions: 5,
+        maxStreak: 0,
+        isDuel1v1: true,
+        duelDetails: {
+          rivalNombre: oppName,
+          p1Nombre: duelo.player1Nombre || "Jugador 1",
+          p1Puntos: p1Score,
+          p1Aciertos: p1Aciertos,
+          p2Nombre: duelo.player2Nombre || "Jugador 2",
+          p2Puntos: p2Score,
+          p2Aciertos: p2Aciertos
+        }
       });
       return;
     }
@@ -1380,6 +1483,14 @@ export default function Trivia() {
 
     // 3. Si aún NO ha respondido, iniciar sesión de juego para este usuario
     setActiveDuelRoom(duelo);
+    puntosTotalesAntesRef.current = userStats.puntosTotales;
+    setPowerUps({
+      nulidadCount: 2,
+      apelacionCount: 1,
+      prorrogaCount: 2,
+      isApelacionActive: false,
+      disabledOptionIndices: []
+    });
 
     // Si entra como Rival (Jugador 2) por primera vez
     if (!isPlayer1 && !duelo.player2Id) {
@@ -1432,24 +1543,30 @@ export default function Trivia() {
   const handleAnswer = (optionIndex: number) => {
     if (isAnswered) return;
 
+    const currentQ = questionsPool[currentIndex];
+    if (!currentQ) return;
+
+    const isCorrect = optionIndex === currentQ.respuesta_correcta_index;
+
+    // Si falló pero tiene la Apelación activa:
+    if (!isCorrect && powerUps.isApelacionActive && optionIndex >= 0) {
+      setPowerUps(prev => ({
+        ...prev,
+        isApelacionActive: false,
+        disabledOptionIndices: [...prev.disabledOptionIndices, optionIndex]
+      }));
+      toast.error("🛡️ ¡Apelación admitida! El fallo fue revocado. Elegí otra opción.");
+      return;
+    }
+
     setSelectedOption(optionIndex);
     setIsAnswered(true);
-
-    const currentQ = questionsPool[currentIndex];
-    const isCorrect = optionIndex === currentQ.respuesta_correcta_index;
 
     if (isCorrect) {
       // 📚 Cálculo escalonado de puntos según el año de la materia (1º a 5º año)
       const catObj = CATEGORIAS_TRIVIA.find(c => c.id === currentQ.id_categoria);
       const anio = catObj?.anio ?? 1;
 
-      // Base points progresivos por año académico:
-      // 1er año / Ingreso: 15 pts base
-      // 2do año: 25 pts base
-      // 3er año: 35 pts base
-      // 4to año: 45 pts base
-      // 5to año: 60 pts base
-      // Toda la carrera / Año 0: 30 pts base
       let basePoints = 15;
       if (anio === 1) basePoints = 15;
       else if (anio === 2) basePoints = 25;
@@ -1458,10 +1575,7 @@ export default function Trivia() {
       else if (anio === 5) basePoints = 60;
       else if (anio === 0) basePoints = 30;
 
-      // Multiplicador por dificultad (fácil x1.0, media x1.25, difícil x1.5)
       const diffMultiplier = currentQ.dificultad === "dificil" ? 1.5 : (currentQ.dificultad === "media" ? 1.25 : 1.0);
-      
-      // Bono de velocidad ponderado por el año académico
       const speedMultiplier = 0.8 + (anio > 0 ? anio * 0.2 : 0.6);
       const timeBonus = Math.floor(timeLeft * speedMultiplier);
 
@@ -1484,18 +1598,19 @@ export default function Trivia() {
       setSelectedOption(null);
       setIsAnswered(false);
       setTimeLeft(20);
+      setPowerUps(prev => ({
+        ...prev,
+        disabledOptionIndices: [],
+        isApelacionActive: false
+      }));
     } else {
       finishGame();
     }
   };
 
   const finishGame = async () => {
-    if (!activeDuelRoom) {
-      setGameOver(true);
-    } else {
-      setInGame(false);
-      setGameOver(false);
-    }
+    setInGame(false);
+    setGameOver(true);
 
     const totalPreguntas = questionsPool.length || 5;
     const umbralAprobado = Math.ceil(totalPreguntas / 2);
@@ -1509,16 +1624,32 @@ export default function Trivia() {
       puntosCambio = -penalizacion;
     }
 
+    const oldPuntos = puntosTotalesAntesRef.current || userStats.puntosTotales;
+    const newPuntos = Math.max(0, oldPuntos + puntosCambio);
+
     let updatedStats = { ...userStats };
     updatedStats.totalJugadas += 1;
     updatedStats.totalCorrectas += correctAnswersCount;
-    updatedStats.puntosTotales = Math.max(0, userStats.puntosTotales + puntosCambio);
+    updatedStats.puntosTotales = newPuntos;
     updatedStats.mejorRacha = Math.max(userStats.mejorRacha, maxStreak);
     setUserStats(updatedStats);
 
     try {
       localStorage.setItem("dnd_trivia_user_stats", JSON.stringify(updatedStats));
     } catch {}
+
+    if (!activeDuelRoom) {
+      setPostMatchModal({
+        isOpen: true,
+        resultado: esAprobado ? "victoria" : "derrota",
+        puntosCambio,
+        puntosTotalesAntes: oldPuntos,
+        puntosTotalesDespues: newPuntos,
+        correctAnswersCount,
+        totalQuestions: totalPreguntas,
+        maxStreak
+      });
+    }
 
     if (user) {
       try {
@@ -1537,9 +1668,6 @@ export default function Trivia() {
           .select("puntos_totales")
           .eq("user_id", user.id)
           .maybeSingle();
-
-        const oldPuntos = currentStats?.puntos_totales || 0;
-        const newPuntos = Math.max(0, oldPuntos + puntosCambio);
 
         await supabase.from("trivia_estadisticas_usuario").upsert({
           user_id: user.id,
@@ -1611,7 +1739,7 @@ export default function Trivia() {
             ptsBonus = 50;
           } else if (oppScore > myScore) {
             res = "derrota";
-            ptsBonus = 10;
+            ptsBonus = -15;
           } else {
             res = "empate";
             ptsBonus = 25;
@@ -1626,16 +1754,25 @@ export default function Trivia() {
 
           markDuelAsSeen(activeDuelRoom.id);
 
-          setDuelOutcomeModal({
+          setPostMatchModal({
+            isOpen: true,
             resultado: res,
-            puntosGanados: ptsBonus,
-            rivalNombre: p2Name,
-            p1Nombre: room.player1_nombre || "Jugador 1",
-            p1Puntos: p1Score,
-            p1Aciertos: p1Aciertos,
-            p2Nombre: room.player2_nombre || "Jugador 2",
-            p2Puntos: p2Score,
-            p2Aciertos: p2Aciertos
+            puntosCambio: ptsBonus,
+            puntosTotalesAntes: oldPuntos,
+            puntosTotalesDespues: Math.max(0, oldPuntos + ptsBonus),
+            correctAnswersCount,
+            totalQuestions: totalPreguntas,
+            maxStreak,
+            isDuel1v1: true,
+            duelDetails: {
+              rivalNombre: p2Name,
+              p1Nombre: room.player1_nombre || "Jugador 1",
+              p1Puntos: p1Score,
+              p1Aciertos: p1Aciertos,
+              p2Nombre: room.player2_nombre || "Jugador 2",
+              p2Puntos: p2Score,
+              p2Aciertos: p2Aciertos
+            }
           });
         } else {
           setDuelOutcomeModal({
@@ -1670,228 +1807,33 @@ export default function Trivia() {
     return getQuestionsForCategory(catId, cat ? cat.nombre : "", allQuestionsCombined).length;
   };
 
-  // Renderizar Pregunta Activa
+  // Renderizar Pregunta Activa (con componente mobile-first TriviaInGameView)
   if (inGame && questionsPool.length > 0 && !gameOver) {
     const currentQ = questionsPool[currentIndex];
     const isLastQuestion = currentIndex + 1 === questionsPool.length;
-    const progressPercent = (timeLeft / 20) * 100;
 
     return (
-      <div className="min-h-screen bg-[#050B14] text-white py-6 md:py-10 px-3 sm:px-4 flex items-center justify-center relative overflow-hidden">
-        {/* Glow ambient background */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-2xl w-full bg-[#0D1527] border border-white/15 rounded-3xl p-5 md:p-8 space-y-6 shadow-2xl relative z-10 backdrop-blur-xl">
-          
-          {/* BARRA DE PROGRESO DEL TEMPORIZADOR (20 SEGUNDOS) */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-[#0A1C3D] text-blue-300 text-xs font-black uppercase tracking-wider border border-[#0F2A5C]">
-                  Pregunta {currentIndex + 1} de {questionsPool.length}
-                </span>
-                <span className="text-xs text-slate-400 font-mono hidden sm:inline">
-                  [{currentQ.categoria_nombre}]
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                {streak > 1 && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black border border-amber-500/30 animate-pulse">
-                    <Flame className="w-4 h-4 text-amber-400" />
-                    <span>Racha x{streak}</span>
-                  </div>
-                )}
-
-                {/* RELOJ VISUAL LLAMATIVO */}
-                <div className={cn(
-                  "flex items-center gap-2 px-3.5 py-1.5 rounded-2xl font-mono font-black text-sm md:text-base border transition-all duration-300 shadow-md",
-                  timeLeft > 10
-                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 shadow-emerald-950/20"
-                    : timeLeft > 5
-                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-amber-950/20"
-                    : "bg-rose-500/30 text-rose-200 border-rose-500/60 animate-pulse scale-105 shadow-rose-950/50"
-                )}>
-                  <Timer className={cn("w-4 h-4 md:w-5 md:h-5", timeLeft <= 5 && "animate-spin text-rose-400")} />
-                  <span>{timeLeft}s</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Barra de progreso de tiempo con gradiente dinámico */}
-            <div className="w-full h-2.5 bg-slate-950/80 rounded-full overflow-hidden border border-white/10 relative">
-              <motion.div 
-                initial={{ width: "100%" }}
-                animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className={cn(
-                  "h-full rounded-full transition-colors duration-500",
-                  timeLeft > 10
-                    ? "bg-gradient-to-r from-emerald-500 to-teal-400 shadow-sm shadow-emerald-500/50"
-                    : timeLeft > 5
-                    ? "bg-gradient-to-r from-amber-500 to-yellow-400 shadow-sm shadow-amber-500/50"
-                    : "bg-gradient-to-r from-rose-600 via-red-500 to-rose-400 shadow-md shadow-rose-600/80"
-                )}
-              />
-            </div>
-          </div>
-
-          {/* ENUNCIADO DE LA PREGUNTA */}
-          <div className="space-y-2 pt-1">
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-relaxed">
-              {currentQ.pregunta}
-            </h3>
-          </div>
-
-          {/* OPCIONES DE RESPUESTA (OPTIMIZADAS PARA CELULAR) */}
-          <div className="space-y-3">
-            {currentQ.opciones.map((opc, idx) => {
-              const isSelected = selectedOption === idx;
-              const isRight = idx === currentQ.respuesta_correcta_index;
-
-              let style = "bg-white/[0.04] border-white/10 hover:bg-white/[0.08] hover:border-white/20 text-white";
-
-              if (isAnswered) {
-                if (isRight) style = "bg-emerald-600/30 border-emerald-500 text-emerald-100 font-bold shadow-lg shadow-emerald-950/50";
-                else if (isSelected && !isRight) style = "bg-rose-600/30 border-rose-500 text-rose-100 font-bold shadow-lg shadow-rose-950/50";
-                else style = "bg-slate-950/50 border-white/5 text-slate-500 opacity-40";
-              }
-
-              return (
-                <button
-                  key={idx}
-                  disabled={isAnswered}
-                  onClick={() => handleAnswer(idx)}
-                  className={cn(
-                    "w-full text-left p-4 sm:p-5 rounded-2xl border transition-all text-xs sm:text-sm md:text-base flex items-center justify-between gap-3 cursor-pointer min-h-[54px] active:scale-[0.98]",
-                    style
-                  )}
-                >
-                  <div className="flex items-center gap-3.5">
-                    <span className={cn(
-                      "w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 font-mono border",
-                      isAnswered && isRight ? "bg-emerald-500/30 border-emerald-400 text-emerald-200" :
-                      isAnswered && isSelected && !isRight ? "bg-rose-500/30 border-rose-400 text-rose-200" :
-                      "bg-white/10 border-white/15 text-slate-200"
-                    )}>
-                      {String.fromCharCode(65 + idx)}
-                    </span>
-                    <span className="leading-snug">{opc}</span>
-                  </div>
-
-                  {isAnswered && isRight && <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-emerald-400 shrink-0" />}
-                  {isAnswered && isSelected && !isRight && <XCircle className="w-5 h-5 md:w-6 md:h-6 text-rose-400 shrink-0" />}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* FUNDAMENTO JURÍDICO EXPLICATIVO */}
-          {isAnswered && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 rounded-2xl bg-[#0A1C3D]/40 border border-[#0F2A5C] text-blue-200 text-xs space-y-2.5 shadow-lg"
-            >
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <span className="font-black uppercase tracking-wider text-[10px] text-blue-300 flex items-center gap-1.5">
-                  <BookOpenCheck className="w-4 h-4 text-blue-400" /> Fundamento Normativo Oficial:
-                </span>
-                {selectedOption !== currentQ.respuesta_correcta_index && (
-                  <button
-                    onClick={() => solicitarExplicacionIA(currentQ, selectedOption!)}
-                    disabled={loadingExplicacion}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                    <span>{loadingExplicacion ? "Consultando IA..." : "¿Por qué me equivoqué? (IA)"}</span>
-                  </button>
-                )}
-              </div>
-
-              <p className="leading-relaxed text-slate-300 text-xs sm:text-sm">{currentQ.fundamento_juridico}</p>
-
-              {explicacionIA && (
-                <div className="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1.5">
-                  <span className="font-bold flex items-center gap-1.5 text-amber-300">
-                    <Sparkles className="w-4 h-4 text-amber-400" /> Explicación Pedagógica del Tutor IA:
-                  </span>
-                  <p className="leading-relaxed font-medium text-slate-200 text-xs sm:text-sm">{explicacionIA}</p>
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {/* BOTÓN SIGUIENTE PREGUNTA */}
-          {isAnswered && (
-            <button
-              onClick={handleNextQuestion}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] min-h-[52px]"
-            >
-              <span>{isLastQuestion ? "Ver Resultados de Partida" : "Siguiente Pregunta"}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          )}
-
-        </div>
-      </div>
-    );
-  }
-
-  // Renderizar Pantalla de Resultados de Partida
-  if (gameOver) {
-    return (
-      <div className="min-h-screen bg-[#050B14] text-white py-12 px-4 flex items-center justify-center relative overflow-hidden">
-        <div className="max-w-lg w-full bg-[#0D1527] border border-red-500/40 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl text-center relative z-10">
-          <div className="w-20 h-20 mx-auto rounded-full bg-red-500/15 border border-red-500/40 flex items-center justify-center text-red-400 shadow-inner">
-            <Trophy className="w-10 h-10" />
-          </div>
-
-          <div className="space-y-1">
-            <span className="px-3 py-1 rounded-full bg-red-500/15 text-red-300 text-[10px] font-black uppercase tracking-widest border border-red-500/30">
-              PARTIDA FINALIZADA
-            </span>
-            <h2 className="text-2xl md:text-3xl font-black text-white pt-2">Resumen de Evaluación</h2>
-            <p className="text-xs text-slate-400">Puntaje obtenido: <span className="text-red-400 font-mono font-black text-base">+{score} PTS</span></p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3 text-xs font-bold">
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10">
-              <span className="text-[10px] text-slate-400 block uppercase font-black">Aciertos</span>
-              <span className="text-lg font-black text-emerald-400 font-mono">{correctAnswersCount} / {questionsPool.length}</span>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10">
-              <span className="text-[10px] text-slate-400 block uppercase font-black">Precisión</span>
-              <span className="text-lg font-black text-red-400 font-mono">
-                {Math.round((correctAnswersCount / questionsPool.length) * 100)}%
-              </span>
-            </div>
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10">
-              <span className="text-[10px] text-slate-400 block uppercase font-black">Mejor Racha</span>
-              <span className="text-lg font-black text-blue-400 font-mono">x{maxStreak}</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={handleStartGame}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Jugar Otra Partida</span>
-            </button>
-            <button
-              onClick={() => {
-                setInGame(false);
-                setGameOver(false);
-              }}
-              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 font-bold text-xs transition-all cursor-pointer"
-            >
-              Volver al Menú de Materias
-            </button>
-          </div>
-        </div>
-      </div>
+      <TriviaInGameView
+        currentQuestion={currentQ}
+        currentIndex={currentIndex}
+        totalQuestions={questionsPool.length}
+        timeLeft={timeLeft}
+        maxTime={activeDuelRoom ? 20 : (questionsPool.length === 5 && timeLeft <= 10 ? 10 : 20)}
+        streak={streak}
+        selectedOption={selectedOption}
+        isAnswered={isAnswered}
+        onSelectOption={handleAnswer}
+        onNextQuestion={handleNextQuestion}
+        isLastQuestion={isLastQuestion}
+        solicitarExplicacionIA={solicitarExplicacionIA}
+        loadingExplicacion={loadingExplicacion}
+        explicacionIA={explicacionIA}
+        powerUps={powerUps}
+        onUseNulidad={handleUseNulidad}
+        onUseApelacion={handleUseApelacion}
+        onUseProrroga={handleUseProrroga}
+        isDuelMode={!!activeDuelRoom}
+      />
     );
   }
 
@@ -1904,91 +1846,34 @@ export default function Trivia() {
 
       <div className="max-w-6xl mx-auto space-y-6 md:space-y-8 relative z-10">
         
-        {/* HEADER PRINCIPAL */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#0D1527]/90 border border-white/15 rounded-3xl p-5 md:p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-red-600/20 via-rose-500/10 to-[#0A1C3D] border border-red-500/40 flex items-center justify-center text-red-400 shrink-0 shadow-lg shadow-red-950/40">
-              <BookOpen className="w-6 h-6 md:w-7 md:h-7" />
-            </div>
-            <div>
-              <h1 className="text-xl md:text-3xl font-black text-white tracking-tight">Trivia Jurídica</h1>
-              <p className="text-xs md:text-sm text-slate-400 pt-0.5">Poné a prueba tus conocimientos y subí de rango respondiendo preguntas.</p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 self-stretch sm:self-auto relative z-10 border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
-            <div className="text-left sm:text-right">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Puntos Acumulados:</span>
-              <span className="text-xl md:text-3xl font-black text-white font-mono leading-none">{userStats.puntosTotales} PTS</span>
-              <span className="text-[10px] sm:text-[11px] text-amber-300 font-bold block pt-0.5">
-                ⚔️ {userStats.victoriasDuelo}V / {userStats.derrotasDuelo}D ({userStats.puntosDuelista} PTS 1v1)
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowGuideModal(true)}
-                className="px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95 flex items-center gap-1.5"
-              >
-                <BookOpen className="w-4 h-4 text-amber-400" />
-                <span className="text-[11px] sm:text-xs">Guía</span>
-              </button>
-
-              <button
-                onClick={() => setShowRangosModal(true)}
-                className="px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0 active:scale-95 flex items-center gap-1.5"
-              >
-                <Award className="w-4 h-4 text-amber-400" />
-                <span className="hidden sm:inline">Escala de Rangos</span>
-                <span className="sm:hidden text-[11px]">Rangos</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* HERO RANK CARD (TU RANGO JURÍDICO) */}
-        <div className="bg-gradient-to-br from-[#121A2D] via-[#0D1527] to-[#1A0B12] border border-red-500/30 rounded-3xl p-5 sm:p-6 md:p-8 space-y-5 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-          {/* Marca de agua de templo judicial */}
-          <div className="absolute -right-4 -bottom-6 opacity-10 text-red-500 pointer-events-none">
-            <Landmark className="w-56 h-56 md:w-72 md:h-72" />
-          </div>
-
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
-            <div className="flex items-start gap-4">
-              {/* Badge Hexagonal Rojo */}
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-red-600 to-rose-700 flex items-center justify-center text-white shadow-lg shadow-red-600/30 shrink-0 border border-red-400/30">
-                <RangoIcon className="w-6 h-6 sm:w-7 sm:h-7" />
-              </div>
-
-              <div className="space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-red-400 block">TU RANGO JURÍDICO</span>
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white">{rangoActual.nombre}</h2>
-                <p className="text-xs md:text-sm text-slate-300 max-w-xl leading-relaxed">{rangoActual.descripcion}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* BARRA DE PROGRESO DE RANGO */}
-          {proximoRango && (
-            <div className="space-y-2 pt-2 border-t border-white/10 relative z-10">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-bold gap-1">
-                <span className="text-slate-300">
-                  Progreso de rango: <span className="text-white font-black">{proximoRango.nombre}</span>
-                </span>
-                <span className="text-red-400 font-mono font-black">
-                  {proximoRango.minPuntos - userStats.puntosTotales} PTS para el siguiente rango
-                </span>
-              </div>
-
-              <div className="w-full h-3 bg-slate-950/80 rounded-full overflow-hidden border border-white/10 relative">
-                <div 
-                  className="h-full bg-gradient-to-r from-red-600 via-rose-500 to-red-400 rounded-full transition-all duration-500 shadow-md shadow-red-600/50"
-                  style={{ width: `${progresoPorcentaje}%` }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        {/* DASHBOARD PRINCIPAL MOBILE-FIRST (PLAYER CARD, BARRA ELO Y BOTONES GIGANTES TOUCH-FRIENDLY) */}
+        <TriviaMobileDashboard
+          userName={userName}
+          userStats={userStats}
+          rangoActual={rangoActual}
+          proximoRango={proximoRango}
+          progresoPorcentaje={progresoPorcentaje}
+          puntosFaltantes={puntosFaltantes}
+          seasonInfo={seasonInfo}
+          onStartRanked={() => {
+            const openRoom = duelosList.find(d => d.status === "esperando_rival" && d.esPublico && d.player1Id !== user?.id);
+            if (openRoom) {
+              toast.success(`⚡ ¡Oponente encontrado! Ingresando a la sala ${openRoom.id}...`);
+              handleJoinDuelo(openRoom);
+            } else {
+              setActiveTab("duelos");
+              handleCreateDuelo(true);
+            }
+          }}
+          onStartSolo={() => {
+            handleStartGame();
+          }}
+          onOpenParcialFlash={() => setIsParcialFlashModalOpen(true)}
+          onOpenRangosModal={() => setShowRangosModal(true)}
+          onOpenGuideModal={() => setShowGuideModal(true)}
+          onSelectTab={(tab) => setActiveTab(tab)}
+          activeTab={activeTab}
+        />
 
         {/* PESTAÑAS PRINCIPALES (3 PILLS) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -3807,6 +3692,38 @@ export default function Trivia() {
           isOpen={showGuideModal}
           onClose={() => setShowGuideModal(false)}
         />
+
+        {/* MODAL DE RESULTADOS POST-PARTIDA CON ANIMACIÓN DE ELO Y TEXTO FLOTANTE DE MMR */}
+        {postMatchModal && (
+          <TriviaPostMatchModal
+            isOpen={postMatchModal.isOpen}
+            onClose={() => {
+              setPostMatchModal(null);
+              setInGame(false);
+              setGameOver(false);
+              setActiveDuelRoom(null);
+            }}
+            onPlayAgain={() => {
+              setPostMatchModal(null);
+              setGameOver(false);
+              if (postMatchModal.isDuel1v1) {
+                setActiveTab("duelos");
+                handleCreateDuelo(true);
+              } else {
+                handleStartGame();
+              }
+            }}
+            resultado={postMatchModal.resultado}
+            puntosCambio={postMatchModal.puntosCambio}
+            puntosTotalesAntes={postMatchModal.puntosTotalesAntes}
+            puntosTotalesDespues={postMatchModal.puntosTotalesDespues}
+            correctAnswersCount={postMatchModal.correctAnswersCount}
+            totalQuestions={postMatchModal.totalQuestions}
+            maxStreak={postMatchModal.maxStreak}
+            isDuel1v1={postMatchModal.isDuel1v1}
+            duelDetails={postMatchModal.duelDetails}
+          />
+        )}
 
       </div>
     </div>

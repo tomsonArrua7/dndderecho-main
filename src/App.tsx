@@ -229,7 +229,7 @@ const AppContent = () => {
         <Route path="/asistente"       element={<AsistenteDND />} />
         <Route path="/ingresantes"     element={<Ingresantes />} />
         <Route path="/quienes-somos"   element={<QuienesSomos />} />
-        <Route path="/trivia"          element={<ProtectedRoute><Trivia /></ProtectedRoute>} />
+        <Route path="/trivia"          element={<BetaRoute><Trivia /></BetaRoute>} />
         <Route path="/hace-tu-historia" element={<BetaRoute><HaceTuHistoria /></BetaRoute>} />
         <Route path="/juegos"           element={<BetaRoute><Juegos /></BetaRoute>} />
 
