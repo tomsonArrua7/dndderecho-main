@@ -960,7 +960,9 @@ export default function Trivia() {
 
   // Evaluar automáticamente si hay un duelo recién finalizado del jugador sin haber visto el modal (Estilo Preguntados)
   const checkAndTriggerUnseenResults = (duelos: DueloTrivia[], seenList: string[]) => {
-    if (duelOutcomeModalRef.current) return;
+    // Si el modal ya está abierto con un resultado FINAL (victoria/derrota/empate), no interrumpir
+    const isModalOpenWithFinalResult = duelOutcomeModalRef.current && duelOutcomeModalRef.current.resultado !== "esperando_rival";
+    if (isModalOpenWithFinalResult) return;
 
     for (const duel of duelos) {
       const isP1 = (user?.id && duel.player1Id === user.id) || duel.player1Nombre === userName;
@@ -969,8 +971,10 @@ export default function Trivia() {
       if (!isP1 && !isP2) continue;
 
       const isFinished = duel.status === "finalizado" || (duel.player1Completed && duel.player2Completed);
+      const isWaitingThisDuel = duelOutcomeModalRef.current?.resultado === "esperando_rival";
+      const isUnseen = !seenList.includes(duel.id);
 
-      if (isFinished && !seenList.includes(duel.id)) {
+      if (isFinished && (isUnseen || isWaitingThisDuel)) {
         const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
         const oppScore = isP1 ? (duel.player2Puntos || 0) : (duel.player1Puntos || 0);
         const p1Score = duel.player1Puntos || 0;
@@ -987,7 +991,7 @@ export default function Trivia() {
           ptsBonus = 50;
         } else if (oppScore > myScore) {
           res = "derrota";
-          ptsBonus = 10;
+          ptsBonus = -15;
         } else {
           res = "empate";
           ptsBonus = 25;
@@ -996,24 +1000,28 @@ export default function Trivia() {
         markDuelAsSeen(duel.id);
         setActiveDuelRoom(duel);
 
-        // Guardar notificación persistente en el Centro de Notificaciones
+        // Guardar notificación persistente en el Centro de Notificaciones y disparar evento en vivo
         try {
           const currentNotifs = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
-          if (!currentNotifs.some((n: any) => n.id === duel.id)) {
-            const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (+10 pts)" : "¡Empate! (+25 pts)";
-            const newNotif = {
-              id: duel.id,
-              title: `⚔️ Duelo 1v1: ${duel.materiaNombre}`,
-              description: `Tu rival ${oppName} completó el duelo. Resultado: ${outcomeLabel}`,
-              materiaNombre: duel.materiaNombre,
-              timestamp: duel.createdAt || "Reciente",
-              seen: false,
-              date: Date.now()
-            };
-            localStorage.setItem("dnd_duel_notifications", JSON.stringify([newNotif, ...currentNotifs].slice(0, 20)));
-            window.dispatchEvent(new CustomEvent("dnd_duel_notification_event"));
-            toast.success(`⚔️ ¡${oppName} completó el duelo de ${duel.materiaNombre}! Resultado: ${outcomeLabel}`);
+          const existingIndex = currentNotifs.findIndex((n: any) => n.id === duel.id);
+          const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
+          const newNotif = {
+            id: duel.id,
+            title: `⚔️ Duelo 1v1: ${duel.materiaNombre}`,
+            description: `Tu rival ${oppName} completó el duelo. Resultado: ${outcomeLabel}`,
+            materiaNombre: duel.materiaNombre,
+            timestamp: duel.createdAt || "Reciente",
+            seen: false,
+            date: Date.now()
+          };
+          if (existingIndex >= 0) {
+            currentNotifs[existingIndex] = newNotif;
+          } else {
+            currentNotifs.unshift(newNotif);
           }
+          localStorage.setItem("dnd_duel_notifications", JSON.stringify(currentNotifs.slice(0, 20)));
+          window.dispatchEvent(new CustomEvent("dnd_duel_notification_event"));
+          toast.success(`⚔️ ¡${oppName} completó el duelo de ${duel.materiaNombre}! Resultado: ${outcomeLabel}`);
         } catch {}
 
         let duelQuestions = allQuestionsCombined.filter(q => duel.preguntasIds.includes(q.id));
@@ -1104,23 +1112,39 @@ export default function Trivia() {
 
         if (isInitialLoadRef.current) {
           isInitialLoadRef.current = false;
-          // Marcar duelos finalizados preexistentes como vistos para no mostrar popups antiguos al abrir la app
-          const finishedIds = mapped
-            .filter(d => d.status === "finalizado" || (d.player1Completed && d.player2Completed))
-            .map(d => d.id);
-          
-          if (finishedIds.length > 0) {
-            setSeenDuelResults(prev => {
-              const updated = Array.from(new Set([...prev, ...finishedIds]));
-              seenDuelResultsRef.current = updated;
+          // En la carga inicial, sincronizar las notificaciones de los duelos finalizados para no perder ningún resultado
+          for (const duel of mapped) {
+            const isP1 = (user?.id && duel.player1Id === user.id) || duel.player1Nombre === userName;
+            const isP2 = (user?.id && duel.player2Id === user.id) || (duel.player2Nombre && duel.player2Nombre === userName);
+            if (!isP1 && !isP2) continue;
+            const isFinished = duel.status === "finalizado" || (duel.player1Completed && duel.player2Completed);
+            if (isFinished && !seenDuelResultsRef.current.includes(duel.id)) {
+              const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
+              const oppScore = isP1 ? (duel.player2Puntos || 0) : (duel.player1Puntos || 0);
+              const oppName = isP1 ? (duel.player2Nombre || "Rival") : (duel.player1Nombre || "Rival");
+              const res = myScore > oppScore ? "victoria" : oppScore > myScore ? "derrota" : "empate";
+              const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
               try {
-                localStorage.setItem("dnd_seen_duel_results", JSON.stringify(updated));
+                const currentNotifs = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
+                if (!currentNotifs.some((n: any) => n.id === duel.id)) {
+                  const newNotif = {
+                    id: duel.id,
+                    title: `⚔️ Duelo 1v1: ${duel.materiaNombre}`,
+                    description: `Tu rival ${oppName} completó el duelo. Resultado: ${outcomeLabel}`,
+                    materiaNombre: duel.materiaNombre,
+                    timestamp: duel.createdAt || "Reciente",
+                    seen: false,
+                    date: Date.now()
+                  };
+                  localStorage.setItem("dnd_duel_notifications", JSON.stringify([newNotif, ...currentNotifs].slice(0, 20)));
+                  window.dispatchEvent(new CustomEvent("dnd_duel_notification_event"));
+                }
               } catch {}
-              return updated;
-            });
+            }
           }
+          checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
         } else {
-          // Auto-activar modal únicamente para duelos que finalicen en tiempo real durante la sesión
+          // Auto-activar modal y actualizar cuando el rival termina
           checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
         }
       }
@@ -1194,6 +1218,30 @@ export default function Trivia() {
       }
     }
   }, [searchParams, duelosList]);
+
+  // Fast-sync activo específicamente mientras se espera que el rival termine el duelo 1v1
+  useEffect(() => {
+    if (duelOutcomeModal?.resultado !== "esperando_rival" || !activeDuelRoom?.id) return;
+
+    const fastSyncInterval = setInterval(async () => {
+      try {
+        const { data, error } = await supabase
+          .from("trivia_duelos")
+          .select("*")
+          .eq("id", activeDuelRoom.id)
+          .maybeSingle();
+
+        if (data && !error) {
+          const isFinished = data.status === "finalizado" || (data.player1_completed && data.player2_completed);
+          if (isFinished) {
+            fetchDuelosFromSupabase();
+          }
+        }
+      } catch {}
+    }, 2000);
+
+    return () => clearInterval(fastSyncInterval);
+  }, [duelOutcomeModal?.resultado, activeDuelRoom?.id]);
 
   // Persistir stats localmente como fallback
   useEffect(() => {
