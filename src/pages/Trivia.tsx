@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { UserProfileModal } from "@/components/trivia/UserProfileModal";
 import { TriviaGuideModal } from "@/components/trivia/TriviaGuideModal";
 import { TriviaMobileDashboard } from "@/components/trivia/TriviaMobileDashboard";
+import { PracticeSetupModal } from "@/components/trivia/PracticeSetupModal";
 import { TriviaInGameView, PowerUpsState } from "@/components/trivia/TriviaInGameView";
 import { TriviaPostMatchModal } from "@/components/trivia/TriviaPostMatchModal";
 import { toast } from "sonner";
@@ -327,8 +328,9 @@ export default function Trivia() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Pestañas Principales: "evaluacion" | "duelos" | "ranking"
-  const [activeTab, setActiveTab] = useState<"evaluacion" | "duelos" | "ranking">("evaluacion");
+  // Pestañas Principales: "jugar" | "duelos" | "ranking" | "historial"
+  const [activeTab, setActiveTab] = useState<"jugar" | "duelos" | "ranking" | "historial">("jugar");
+  const [isPracticeModalOpen, setIsPracticeModalOpen] = useState(false);
   const [duelosSubTab, setDuelosSubTab] = useState<"disponibles" | "historial">("disponibles");
   const [showRangosModal, setShowRangosModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -1846,7 +1848,7 @@ export default function Trivia() {
 
       <div className="max-w-6xl mx-auto space-y-6 md:space-y-8 relative z-10">
         
-        {/* DASHBOARD PRINCIPAL MOBILE-FIRST (PLAYER CARD, BARRA ELO Y BOTONES GIGANTES TOUCH-FRIENDLY) */}
+        {/* DASHBOARD PRINCIPAL GAME HUB (PLAYER STATUS, NAVEGACIÓN Y CARDS 3D) */}
         <TriviaMobileDashboard
           userName={userName}
           userStats={userStats}
@@ -1865,9 +1867,7 @@ export default function Trivia() {
               handleCreateDuelo(true);
             }
           }}
-          onStartSolo={() => {
-            handleStartGame();
-          }}
+          onOpenPracticeModal={() => setIsPracticeModalOpen(true)}
           onOpenParcialFlash={() => setIsParcialFlashModalOpen(true)}
           onOpenRangosModal={() => setShowRangosModal(true)}
           onOpenGuideModal={() => setShowGuideModal(true)}
@@ -1875,294 +1875,22 @@ export default function Trivia() {
           activeTab={activeTab}
         />
 
-        {/* PESTAÑAS PRINCIPALES (3 PILLS) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <button
-            onClick={() => setActiveTab("evaluacion")}
-            className={cn(
-              "p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 relative overflow-hidden group shadow-lg active:scale-98",
-              activeTab === "evaluacion"
-                ? "bg-[#0D1527] border-red-500/60 text-white shadow-red-950/30"
-                : "bg-[#0D1527]/60 border-white/10 text-slate-400 hover:bg-[#0D1527] hover:text-slate-200"
-            )}
-          >
-            {activeTab === "evaluacion" && (
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-rose-500 shadow-md shadow-red-600/80" />
-            )}
-            <div className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-              activeTab === "evaluacion" ? "bg-red-500/20 text-red-400 border border-red-500/40" : "bg-white/5 text-slate-400"
-            )}>
-              <BookOpen className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-black text-xs sm:text-sm block text-white">Evaluación por Materia</span>
-              <span className="text-[11px] text-slate-400 block truncate">Preguntas de múltiples materias</span>
-            </div>
-          </button>
+        {/* MODAL LIMPIO DE CONFIGURACIÓN DE PRÁCTICA */}
+        <PracticeSetupModal
+          isOpen={isPracticeModalOpen}
+          onClose={() => setIsPracticeModalOpen(false)}
+          selectedYearFilter={selectedYearFilter}
+          onSelectYear={(yr) => setSelectedYearFilter(yr)}
+          selectedCategoria={selectedCategoria}
+          onSelectCategoria={(cat) => setSelectedCategoria(cat)}
+          questionsCount={questionsCount}
+          onSelectQuestionsCount={(cnt) => setQuestionsCount(cnt)}
+          onStartGame={handleStartGame}
+        />
 
-          <button
-            onClick={() => setActiveTab("duelos")}
-            className={cn(
-              "p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 relative overflow-hidden group shadow-lg active:scale-98",
-              activeTab === "duelos"
-                ? "bg-[#0D1527] border-red-500/60 text-white shadow-red-950/30"
-                : "bg-[#0D1527]/60 border-white/10 text-slate-400 hover:bg-[#0D1527] hover:text-slate-200"
-            )}
-          >
-            {activeTab === "duelos" && (
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-rose-500 shadow-md shadow-red-600/80" />
-            )}
-            <div className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-              activeTab === "duelos" ? "bg-amber-500/20 text-amber-400 border border-amber-500/40" : "bg-white/5 text-slate-400"
-            )}>
-              <Swords className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-black text-xs sm:text-sm block text-white">Duelos 1vs1 (Salas)</span>
-              <span className="text-[11px] text-slate-400 block truncate">Competí contra otros usuarios</span>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("ranking")}
-            className={cn(
-              "p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 relative overflow-hidden group shadow-lg active:scale-98",
-              activeTab === "ranking"
-                ? "bg-[#0D1527] border-red-500/60 text-white shadow-red-950/30"
-                : "bg-[#0D1527]/60 border-white/10 text-slate-400 hover:bg-[#0D1527] hover:text-slate-200"
-            )}
-          >
-            {activeTab === "ranking" && (
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-rose-500 shadow-md shadow-red-600/80" />
-            )}
-            <div className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-              activeTab === "ranking" ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/40" : "bg-white/5 text-slate-400"
-            )}>
-              <Trophy className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-black text-xs sm:text-sm block text-white">Ranking General Único</span>
-              <span className="text-[11px] text-slate-400 block truncate">Top jugadores del ranking</span>
-            </div>
-          </button>
-        </div>
-
-        {/* PESTAÑA 1: EVALUACIÓN POR MATERIA */}
-        {activeTab === "evaluacion" && (
+        {/* PESTAÑA: MI HISTORIAL Y CONSEJOS */}
+        {activeTab === "historial" && (
           <div className="space-y-6">
-            
-            {/* SECCIÓN 1: FILTRO DE MATERIA POR AÑO DE CARRERA (AHORA ARRIBA) */}
-            <div className="bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-red-400" />
-                    <span>Elegí la Materia o Año (Paso 1)</span>
-                  </h3>
-                  <p className="text-xs text-slate-400 pt-0.5">Filtrá las preguntas por año de cursada o elegí una materia específica del plan de estudios.</p>
-                </div>
-
-                {selectedCategoria !== "todas" && (
-                  <button
-                    onClick={() => {
-                      setSelectedYearFilter(0);
-                      setSelectedCategoria("todas");
-                    }}
-                    className="text-xs text-red-400 hover:underline font-bold px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/30"
-                  >
-                    Limpiar Filtro (Toda la Carrera)
-                  </button>
-                )}
-              </div>
-
-              {/* BOTONES DE AÑO DE CARRERA */}
-              <div className="flex items-center justify-start gap-2 overflow-x-auto pb-2 scrollbar-none">
-                <button
-                  onClick={() => {
-                    setSelectedYearFilter(0);
-                    setSelectedCategoria("todas");
-                  }}
-                  className={cn(
-                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
-                    selectedYearFilter === 0
-                      ? "bg-red-600 border-red-500 text-white shadow-lg shadow-red-600/30"
-                      : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
-                  )}
-                >
-                  🎓 Toda la Carrera
-                </button>
-                {[
-                  { id: 1, label: "1º Año" },
-                  { id: 2, label: "2º Año" },
-                  { id: 3, label: "3º Año" },
-                  { id: 4, label: "4º Año" },
-                  { id: 5, label: "5º Año" }
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelectedYearFilter(item.id)}
-                    className={cn(
-                      "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
-                      selectedYearFilter === item.id
-                        ? "bg-red-600 border-red-500 text-white shadow-lg shadow-red-600/30"
-                        : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* LISTA DE MATERIAS SEGÚN EL AÑO SELECCIONADO */}
-              {selectedYearFilter > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-1">
-                  {filteredCategorias.filter(cat => cat.id !== "todas").map((cat) => {
-                    const CatIcon = ICON_MAP[cat.icono] || BookOpen;
-                    const isSelected = selectedCategoria === cat.id;
-
-                    return (
-                      <div
-                        key={cat.id}
-                        onClick={() => setSelectedCategoria(cat.id)}
-                        className={cn(
-                          "p-3.5 rounded-2xl border transition-all cursor-pointer space-y-2 flex items-center justify-between gap-3",
-                          isSelected
-                            ? "bg-red-500/20 border-red-500 text-white shadow-lg shadow-red-950/40 ring-1 ring-red-500/40"
-                            : "bg-slate-950/60 border-white/10 hover:border-red-500/30 text-slate-300"
-                        )}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={cn(
-                            "w-9 h-9 rounded-xl flex items-center justify-center border font-bold text-xs shrink-0",
-                            isSelected ? "bg-red-500/30 border-red-400 text-red-200" : "bg-white/5 border-white/10 text-slate-400"
-                          )}>
-                            <CatIcon className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0">
-                            <h4 className="font-bold text-xs text-white truncate">{cat.nombre}</h4>
-                            <span className="text-[10px] text-slate-400 block">{cat.anio}º Año</span>
-                          </div>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* SECCIÓN 2: ELEGÍ TU DESAFÍO (AHORA PASO 2) */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-amber-400" />
-                  <span>Configurá tu Evaluación (Paso 2)</span>
-                </h3>
-                {selectedCategoria !== "todas" && (
-                  <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 text-xs font-bold font-mono">
-                    Materia: {CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre}
-                  </span>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                
-                {/* COLUMNA IZQUIERDA: SELECCIÓN DE CANTIDAD DE PREGUNTAS (lg:col-span-5) */}
-                <div className="lg:col-span-5 bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between relative overflow-hidden backdrop-blur-xl">
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="font-black text-sm text-white">Cantidad de preguntas</h4>
-                      <p className="text-xs text-slate-400 pt-0.5">Seleccioná la cantidad de preguntas para tu evaluación</p>
-                    </div>
-
-                    {/* 4 PILLS DE CANTIDAD (5, 10, 15, 20) */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-                      {[5, 10, 15, 20].map((cnt) => (
-                        <button
-                          key={cnt}
-                          onClick={() => setQuestionsCount(cnt)}
-                          className={cn(
-                            "p-3 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center min-h-[64px] active:scale-95",
-                            questionsCount === cnt
-                              ? "bg-red-500/10 border-red-500 text-white shadow-lg shadow-red-950/40 ring-1 ring-red-500/50"
-                              : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
-                          )}
-                        >
-                          <span className="text-base font-black font-mono leading-none">{cnt}</span>
-                          <span className="text-[10px] text-slate-400 font-medium pt-1">preguntas</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-                    <div>
-                      <span className="font-bold text-slate-300 block">Sobre las preguntas</span>
-                      <p className="text-[11px] text-slate-400 leading-snug">
-                        {selectedCategoria === "todas"
-                          ? "Las preguntas son aleatorias y abarcan diferentes materias del derecho."
-                          : `Las preguntas corresponden a ${CATEGORIAS_TRIVIA.find(c => c.id === selectedCategoria)?.nombre}.`}
-                      </p>
-                    </div>
-                    <BookOpen className="w-8 h-8 text-slate-600 shrink-0 ml-2" />
-                  </div>
-                </div>
-
-                {/* COLUMNA CENTRAL: TARJETA EVALUACIÓN COMPLETA (lg:col-span-4) - RED GLOW FEATURED */}
-                <div className="lg:col-span-4 bg-gradient-to-br from-[#2D0B12] via-[#1A0B12] to-[#0D1527] border border-red-500/50 rounded-3xl p-6 flex flex-col items-center justify-between text-center space-y-6 shadow-2xl relative overflow-hidden group hover:border-red-500 transition-all">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-red-600/20 rounded-full blur-2xl pointer-events-none" />
-
-                  <div className="space-y-4 pt-2 relative z-10">
-                    <div className="w-16 h-16 mx-auto rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-600/50 group-hover:scale-110 transition-transform">
-                      <Play className="w-8 h-8 fill-white ml-1" />
-                    </div>
-
-                    <div>
-                      <h4 className="text-lg font-black text-white">Evaluación Completa</h4>
-                      <p className="text-xs text-red-200/80 pt-1">Respondé {questionsCount} preguntas</p>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleStartGame}
-                    className="w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-red-600/40 cursor-pointer transition-all active:scale-[0.98] min-h-[48px] relative z-10"
-                  >
-                    COMENZAR EVALUACIÓN
-                  </button>
-                </div>
-
-                {/* COLUMNA DERECHA: TARJETA MODO FLASH (lg:col-span-3) - GOLD GLOW */}
-                <div className="lg:col-span-3 bg-gradient-to-br from-[#1A160B] via-[#0D1527] to-[#0D1527] border border-amber-500/40 rounded-3xl p-6 flex flex-col items-center justify-between text-center space-y-6 shadow-2xl relative overflow-hidden group hover:border-amber-500 transition-all">
-                  <div className="space-y-4 pt-2 relative z-10">
-                    <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shadow-lg shadow-amber-950/50 group-hover:scale-110 transition-transform">
-                      <Zap className="w-7 h-7 fill-amber-400 text-amber-400" />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-center gap-1.5">
-                        <h4 className="text-base font-black text-white">Modo Flash (IA)</h4>
-                        <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[9px] uppercase tracking-wider">NUEVO</span>
-                      </div>
-                      <p className="text-xs text-slate-400 pt-1 leading-relaxed">Respondé 5 preguntas de examen generadas en tiempo real con Inteligencia Artificial.</p>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => setIsParcialFlashModalOpen(true)}
-                    className="w-full py-3 rounded-2xl bg-transparent hover:bg-amber-500/10 border border-amber-500/40 text-amber-300 font-black text-xs uppercase tracking-wider shadow-md cursor-pointer transition-all active:scale-[0.98] min-h-[48px] relative z-10 flex items-center justify-center gap-1.5"
-                  >
-                    <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-                    <span>MODO FLASH (IA)</span>
-                  </button>
-                </div>
-
-              </div>
-            </div>
-
-            {/* FILA INFERIOR: TU ACTIVIDAD RECIENTE Y CONSEJOS */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
               
               {/* IZQUIERDA: TU ACTIVIDAD RECIENTE (lg:col-span-8) */}
@@ -2268,7 +1996,6 @@ export default function Trivia() {
               </div>
 
             </div>
-
           </div>
         )}
 
