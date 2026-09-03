@@ -9,6 +9,7 @@ import { CommunityButton } from "./CommunityButton";
 export const Layout = () => {
   const location = useLocation();
   const { isFocusMode } = useApp();
+  const isTrivia = location.pathname.startsWith("/trivia");
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-background selection:bg-accent/30">
@@ -30,7 +31,7 @@ export const Layout = () => {
       </main>
 
       {!isFocusMode && <Footer />}
-      {!isFocusMode && <CommunityButton />}
+      {!isFocusMode && !isTrivia && <CommunityButton />}
     </div>
   );
 };

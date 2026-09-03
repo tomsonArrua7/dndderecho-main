@@ -2,12 +2,17 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Bot, X } from "lucide-react";
 
 export const CommunityButton = () => {
+  const location = useLocation();
   const [isHovered, setIsHovered] = useState(false);
   const [showSpeechBubble, setShowSpeechBubble] = useState(true);
+
+  if (location.pathname.startsWith("/trivia")) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex flex-col gap-3 items-end pointer-events-none">

@@ -86,10 +86,10 @@ export const Footer = () => (
     </div>
 
     {/* ── Cuerpo principal ──────────────────────────────────────────── */}
-    <div className="container py-12 grid gap-10 md:grid-cols-3">
+    <div className="container py-12 grid gap-10 md:grid-cols-2 justify-between items-start">
 
       {/* Col 1: Logo DndMark + descripción */}
-      <div>
+      <div className="max-w-md">
         {/* La D icónica grande con el texto de la marca */}
         <Link to="/" className="flex items-center gap-3 group mb-4 w-fit">
           {/* D mark grande en versión onBlue (sobre fondo oscuro del footer) */}
@@ -109,11 +109,11 @@ export const Footer = () => (
       </div>
 
       {/* Col 2: Navegación */}
-      <div>
+      <div className="md:ml-auto">
         <h4 className="font-display font-semibold mb-5 text-xs uppercase tracking-widest text-muted-foreground">
           Plataforma
         </h4>
-        <ul className="space-y-2.5">
+        <ul className="grid grid-cols-2 gap-x-8 gap-y-2.5">
           {NAV_LINKS.map(({ href, label }) => (
             <li key={href}>
               <Link
@@ -126,31 +126,6 @@ export const Footer = () => (
             </li>
           ))}
         </ul>
-      </div>
-
-      {/* Col 3: Contacto */}
-      <div>
-        <h4 className="font-display font-semibold mb-5 text-xs uppercase tracking-widest text-muted-foreground">
-          Contacto
-        </h4>
-        <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-          Consultas académicas, comunicados o sumarte a la agrupación.
-        </p>
-
-        <div className="flex gap-2">
-          {REDES.slice(0, 4).map(({ label, href, icon: Icon }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={label}
-              className="p-2 rounded-lg border border-white/10 bg-white/5 text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-200"
-            >
-              <Icon />
-            </a>
-          ))}
-        </div>
       </div>
     </div>
 
