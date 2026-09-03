@@ -121,20 +121,21 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
         <div className="relative z-10 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             
-            {/* Jugador + Rango */}
+            {/* Jugador + Rango con Medalla Oficial */}
             <div className="flex items-center gap-3.5 min-w-0">
               <div 
                 onClick={onOpenRangosModal}
-                className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center p-0.5 border shadow-xl shrink-0 cursor-pointer active:scale-95 transition-transform bg-gradient-to-br",
-                  rangoActual.colorGradient || "from-amber-500 to-red-600",
-                  "border-white/30"
-                )}
-                title="Tocar para ver escala de rangos"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center p-1 border border-amber-500/40 bg-gradient-to-br from-amber-500/20 via-black/60 to-white/5 shadow-xl shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all relative group"
+                title="Tocar para ver Escala de Rangos Oficial"
               >
-                <div className="w-full h-full rounded-[14px] bg-[#070D1D]/90 flex items-center justify-center text-amber-300 shadow-inner font-black text-xl">
-                  ⚖️
-                </div>
+                <img
+                  src={rangoActual.imagenUrl || `/logos-rangos/Nivel${rangoActual.nivel || 1}.png`}
+                  alt={rangoActual.nombre}
+                  className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] group-hover:scale-110 transition-transform"
+                />
+                <span className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-md bg-amber-500 text-black font-black text-[9px] uppercase tracking-wider shadow">
+                  NIVEL {rangoActual.nivel || 1}
+                </span>
               </div>
 
               <div className="min-w-0">
@@ -148,7 +149,7 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
                   onClick={onOpenRangosModal}
                   className="text-xs text-amber-300 font-black hover:underline flex items-center gap-1 cursor-pointer pt-0.5"
                 >
-                  <span>{rangoActual.nombre}</span>
+                  <span>Nivel {rangoActual.nivel || 1} • {rangoActual.nombre}</span>
                   <ChevronRight className="w-3 h-3 text-amber-400/80" />
                 </button>
               </div>
@@ -190,8 +191,15 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
             <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 pt-0.5">
               <span>
                 {proximoRango ? (
-                  <span>
-                    Faltan <strong className="text-amber-300 font-mono font-black">{puntosFaltantes} pts</strong> para <strong className="text-white">{proximoRango.nombre}</strong>
+                  <span className="flex items-center gap-1.5">
+                    <img 
+                      src={proximoRango.imagenUrl || `/logos-rangos/Nivel${proximoRango.nivel || 2}.png`} 
+                      alt={proximoRango.nombre} 
+                      className="w-4 h-4 object-contain inline-block"
+                    />
+                    <span>
+                      Faltan <strong className="text-amber-300 font-mono font-black">{puntosFaltantes} pts</strong> para <strong className="text-white">{proximoRango.nombre}</strong>
+                    </span>
                   </span>
                 ) : (
                   <span className="text-amber-300 font-black">👑 ¡Rango Máximo Jurídico Alcanzado!</span>

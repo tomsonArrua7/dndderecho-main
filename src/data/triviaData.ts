@@ -64,10 +64,12 @@ export interface DueloTrivia {
 
 export interface RangoJuridico {
   id: string;
+  nivel: number;
   nombre: string;
   minPuntos: number;
   maxPuntos: number;
   iconoNombre: string;
+  imagenUrl: string;
   colorGradient: string;
   badgeStyle: string;
   descripcion: string;
@@ -79,120 +81,144 @@ export interface RangoJuridico {
 export const RANGOS_JURIDICOS: RangoJuridico[] = [
   {
     id: "ingresante",
+    nivel: 1,
     nombre: "Ingresante",
     minPuntos: 0,
     maxPuntos: 99,
     iconoNombre: "BookOpen",
+    imagenUrl: "/logos-rangos/Nivel1.png",
     colorGradient: "from-slate-500 to-zinc-600",
     badgeStyle: "bg-slate-500/20 text-slate-300 border-slate-500/30",
     descripcion: "Dando los primeros pasos en las aulas de la FCJyS y adaptándose al ingreso."
   },
   {
     id: "practicante",
+    nivel: 2,
     nombre: "Practicante",
     minPuntos: 100,
     maxPuntos: 249,
     iconoNombre: "Building2",
+    imagenUrl: "/logos-rangos/Nivel2.png",
     colorGradient: "from-blue-500 to-cyan-600",
     badgeStyle: "bg-blue-500/20 text-blue-300 border-blue-500/30",
     descripcion: "Recorriendo mesas de entradas, pasillos de Tribunales y con el Plan al día."
   },
   {
     id: "estudiante_avanzado",
+    nivel: 3,
     nombre: "Estudiante Avanzado",
     minPuntos: 250,
     maxPuntos: 499,
     iconoNombre: "GraduationCap",
+    imagenUrl: "/logos-rangos/Nivel3.png",
     colorGradient: "from-cyan-500 to-teal-600",
     badgeStyle: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
     descripcion: "Con las materias más pesadas metidas y los codos gastados en la biblioteca."
   },
   {
     id: "graduado_reciente",
+    nivel: 4,
     nombre: "Graduado Reciente",
     minPuntos: 500,
     maxPuntos: 899,
     iconoNombre: "FileText",
+    imagenUrl: "/logos-rangos/Nivel4.png",
     colorGradient: "from-teal-500 to-emerald-600",
     badgeStyle: "bg-teal-500/20 text-teal-300 border-teal-500/30",
     descripcion: "Título en mano, juramento cumplido y esperando la habilitación del diploma."
   },
   {
     id: "abogado_joven",
+    nivel: 5,
     nombre: "Abogado Joven",
     minPuntos: 900,
     maxPuntos: 1499,
     iconoNombre: "Briefcase",
+    imagenUrl: "/logos-rangos/Nivel5.png",
     colorGradient: "from-emerald-500 to-green-600",
     badgeStyle: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
     descripcion: "Matriculado con sello fresco, token en mano y los primeros escritos ingresados."
   },
   {
     id: "especialista_docente",
+    nivel: 6,
     nombre: "Especialista / Docente Adscripto",
     minPuntos: 1500,
     maxPuntos: 2299,
     iconoNombre: "Award",
+    imagenUrl: "/logos-rangos/Nivel6.png",
     colorGradient: "from-green-500 to-lime-600",
     badgeStyle: "bg-green-500/20 text-green-300 border-green-500/30",
     descripcion: "Dominio de cátedra, posgrados en marcha y sólidas estrategias en el fuero."
   },
   {
     id: "abogado_experto",
+    nivel: 7,
     nombre: "Abogado Experto",
     minPuntos: 2300,
     maxPuntos: 3499,
     iconoNombre: "Scale",
+    imagenUrl: "/logos-rangos/Nivel7.png",
     colorGradient: "from-amber-500 to-orange-600",
     badgeStyle: "bg-amber-500/20 text-amber-300 border-amber-500/30",
     descripcion: "Litigante de peso, referencia de doctrina, jurisprudencia y casos complejos."
   },
   {
     id: "secretario_juzgado",
+    nivel: 8,
     nombre: "Secretario de Juzgado",
     minPuntos: 3500,
     maxPuntos: 4999,
     iconoNombre: "BookOpenCheck",
+    imagenUrl: "/logos-rangos/Nivel8.png",
     colorGradient: "from-orange-500 to-rose-600",
     badgeStyle: "bg-orange-500/20 text-orange-300 border-orange-500/30",
     descripcion: "Brazo ejecutor del despacho judicial, despachando expedientes con rigor técnico."
   },
   {
     id: "juez_primera_instancia",
+    nivel: 9,
     nombre: "Juez de Primera Instancia",
     minPuntos: 5000,
     maxPuntos: 6999,
     iconoNombre: "Gavel",
+    imagenUrl: "/logos-rangos/Nivel9.png",
     colorGradient: "from-rose-500 to-red-600",
     badgeStyle: "bg-rose-500/20 text-rose-300 border-rose-500/30",
     descripcion: "Titular de juzgado con solvencia jurídica, imparcialidad y firma decisiva."
   },
   {
     id: "camarista",
+    nivel: 10,
     nombre: "Camarista / Juez",
     minPuntos: 7000,
     maxPuntos: 9999,
     iconoNombre: "Landmark",
+    imagenUrl: "/logos-rangos/Nivel10.png",
     colorGradient: "from-purple-500 to-violet-600",
     badgeStyle: "bg-purple-500/20 text-purple-300 border-purple-500/30",
     descripcion: "Integrante de Cámara de Apelaciones revisando fallos y sentando jurisprudencia."
   },
   {
     id: "ministro_scba",
+    nivel: 11,
     nombre: "Ministro de la Suprema Corte Provincial",
     minPuntos: 10000,
     maxPuntos: 14999,
     iconoNombre: "Medal",
+    imagenUrl: "/logos-rangos/Nivel11.png",
     colorGradient: "from-violet-500 to-indigo-600",
     badgeStyle: "bg-violet-500/20 text-violet-300 border-violet-500/30",
     descripcion: "Máxima autoridad jurisprudencial a nivel provincial con impacto institucional."
   },
   {
     id: "juez_csjn",
+    nivel: 12,
     nombre: "Juez de la Corte Suprema de la Nación",
     minPuntos: 15000,
     maxPuntos: 999999,
     iconoNombre: "Sparkles",
+    imagenUrl: "/logos-rangos/Nivel12.png",
     colorGradient: "from-yellow-400 via-amber-500 to-orange-500",
     badgeStyle: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 font-black",
     descripcion: "Cúspide de la magistratura constitucional de la República Argentina."

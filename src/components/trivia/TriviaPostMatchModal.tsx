@@ -153,7 +153,7 @@ export const TriviaPostMatchModal: React.FC<TriviaPostMatchModalProps> = ({
           
           <div className="flex items-center justify-between text-xs font-bold text-slate-300">
             <span className="flex items-center gap-1 text-slate-400">
-              <span>Progreso de Elo / Rango</span>
+              <span>{isDuel1v1 ? "Progreso de ELO / Rango 1v1" : "Entrenamiento (Sin variación de ELO)"}</span>
             </span>
             <span className="font-mono text-amber-300 font-black">
               {puntosTotalesDespues.toLocaleString()} MMR
@@ -163,7 +163,7 @@ export const TriviaPostMatchModal: React.FC<TriviaPostMatchModalProps> = ({
           {/* CONTENEDOR DE LA BARRA CON TEXTO FLOTANTE */}
           <div className="relative pt-6 pb-1">
             
-            {/* TEXTO FLOTANTE ANIMADO (+25 MMR en verde brillante o -15 MMR en rojo) */}
+            {/* TEXTO FLOTANTE ANIMADO (+50 MMR en verde brillante, -15 MMR en rojo o +0 en práctica) */}
             <AnimatePresence>
               {showFloatingText && (
                 <motion.div
@@ -173,13 +173,17 @@ export const TriviaPostMatchModal: React.FC<TriviaPostMatchModalProps> = ({
                   transition={{ type: "spring", stiffness: 400, damping: 15 }}
                   className={cn(
                     "absolute top-0 right-2 px-3 py-1 rounded-full text-xs sm:text-sm font-black font-mono shadow-xl border flex items-center gap-1 z-20",
-                    puntosCambio >= 0 
+                    !isDuel1v1
+                      ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                      : puntosCambio >= 0 
                       ? "bg-emerald-500 text-black border-emerald-300 shadow-emerald-500/50 animate-bounce" 
                       : "bg-rose-600 text-white border-rose-300 shadow-rose-600/50 animate-pulse"
                   )}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>{puntosCambio >= 0 ? `+${puntosCambio}` : puntosCambio} MMR</span>
+                  <span>
+                    {!isDuel1v1 ? "Modo Práctica (0 MMR)" : (puntosCambio >= 0 ? `+${puntosCambio}` : puntosCambio) + " MMR"}
+                  </span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -203,9 +207,23 @@ export const TriviaPostMatchModal: React.FC<TriviaPostMatchModalProps> = ({
           </div>
 
           <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
-            <span>Rango: <strong className="text-white">{rangoDespues.nombre}</strong></span>
+            <div className="flex items-center gap-1.5">
+              <img 
+                src={rangoDespues.imagenUrl || `/logos-rangos/Nivel${rangoDespues.nivel || 1}.png`} 
+                alt={rangoDespues.nombre} 
+                className="w-4 h-4 object-contain shrink-0" 
+              />
+              <span>Rango: <strong className="text-white">Nivel {rangoDespues.nivel || 1} • {rangoDespues.nombre}</strong></span>
+            </div>
             {proximoRango && (
-              <span>Próximo: <strong className="text-amber-300">{proximoRango.nombre}</strong></span>
+              <div className="flex items-center gap-1.5">
+                <img 
+                  src={proximoRango.imagenUrl || `/logos-rangos/Nivel${proximoRango.nivel || 2}.png`} 
+                  alt={proximoRango.nombre} 
+                  className="w-3.5 h-3.5 object-contain shrink-0" 
+                />
+                <span>Próximo: <strong className="text-amber-300">{proximoRango.nombre}</strong></span>
+              </div>
             )}
           </div>
 

@@ -1673,33 +1673,29 @@ export default function Trivia() {
     const umbralAprobado = Math.ceil(totalPreguntas / 2);
     const esAprobado = correctAnswersCount >= umbralAprobado;
 
-    // Si aprueba (>=50% aciertos) suma puntos; si reprueba (<50%), sufre penalización de puntos
-    let puntosCambio = score;
-    if (!activeDuelRoom && !esAprobado) {
-      const errCount = totalPreguntas - correctAnswersCount;
-      const penalizacion = Math.max(50, errCount * 25);
-      puntosCambio = -penalizacion;
-    }
-
-    const oldPuntos = puntosTotalesAntesRef.current || userStats.puntosTotales;
-    const newPuntos = Math.max(0, oldPuntos + puntosCambio);
+    // ⚔️ IMPORTANTE: La práctica individual es entrenamiento de estudio y NO varía el MMR competitivo.
+    // Solo los Duelos 1vs1 otorgan y descuentan puntos de MMR / ELO.
+    const isPracticeSolo = !activeDuelRoom;
+    let puntosCambio = 0; // En práctica el delta de MMR es 0
+    const oldPuntos = userStats.puntosTotales;
+    const newPuntos = oldPuntos; // Inalterado en práctica
 
     let updatedStats = { ...userStats };
     updatedStats.totalJugadas += 1;
     updatedStats.totalCorrectas += correctAnswersCount;
-    updatedStats.puntosTotales = newPuntos;
     updatedStats.mejorRacha = Math.max(userStats.mejorRacha, maxStreak);
+    // puntosTotales permanece intacto en práctica
     setUserStats(updatedStats);
 
     try {
       localStorage.setItem("dnd_trivia_user_stats", JSON.stringify(updatedStats));
     } catch {}
 
-    if (!activeDuelRoom) {
+    if (isPracticeSolo) {
       setPostMatchModal({
         isOpen: true,
         resultado: esAprobado ? "victoria" : "derrota",
-        puntosCambio,
+        puntosCambio: 0,
         puntosTotalesAntes: oldPuntos,
         puntosTotalesDespues: newPuntos,
         correctAnswersCount,
@@ -1714,23 +1710,22 @@ export default function Trivia() {
           user_id: user.id,
           categoria_id: selectedCategoria,
           dificultad: "todas",
-          puntos: puntosCambio,
+          puntos: score, // Guarda el puntaje académico obtenido en la práctica
           aciertos: correctAnswersCount,
           total_preguntas: totalPreguntas,
           racha_maxima: maxStreak
         });
 
-        const { data: currentStats } = await supabase
-          .from("trivia_estadisticas_usuario")
-          .select("puntos_totales")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        await supabase.from("trivia_estadisticas_usuario").upsert({
-          user_id: user.id,
-          puntos_totales: newPuntos,
-          updated_at: new Date().toISOString()
-        }, { onConflict: "user_id" });
+        // En modo práctica solo actualizamos partidas jugadas y mejor racha sin tocar puntos_totales ni MMR
+        if (isPracticeSolo) {
+          await supabase.from("trivia_estadisticas_usuario").upsert({
+            user_id: user.id,
+            partidas_jugadas: updatedStats.totalJugadas,
+            preguntas_acertadas: updatedStats.totalCorrectas,
+            mejor_racha: updatedStats.mejorRacha,
+            updated_at: new Date().toISOString()
+          }, { onConflict: "user_id" });
+        }
 
         fetchRankingFromSupabase();
       } catch (err) {
@@ -2681,9 +2676,14 @@ export default function Trivia() {
                           </div>
                           <div className="text-center">
                             <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px] group-hover:text-slate-200">{leaderboardList[1].nombre}</h5>
-                            <span className="text-[10px] text-slate-400 block truncate max-w-[100px]">
-                              {leaderboardList[1].rangoNombre || calcularRango(leaderboardList[1].puntos).nombre}
-                            </span>
+                            <div className="flex items-center justify-center gap-1 text-[10px] text-slate-400 truncate max-w-[110px] mx-auto">
+                              <img 
+                                src={calcularRango(leaderboardList[1].puntos).imagenUrl} 
+                                alt="Rango" 
+                                className="w-3.5 h-3.5 object-contain shrink-0" 
+                              />
+                              <span className="truncate">{leaderboardList[1].rangoNombre || calcularRango(leaderboardList[1].puntos).nombre}</span>
+                            </div>
                             <span className="text-[11px] font-mono font-bold text-slate-300 block pt-0.5">{leaderboardList[1].puntos} pts</span>
                           </div>
                           <div className="w-full h-24 bg-gradient-to-t from-slate-800/80 to-slate-700/60 rounded-t-2xl border-t-2 border-slate-400 flex items-center justify-center font-mono font-black text-slate-400 text-lg">
@@ -2710,9 +2710,14 @@ export default function Trivia() {
                           </div>
                           <div className="text-center">
                             <h5 className="font-black text-xs sm:text-base text-white truncate max-w-[120px] group-hover:text-amber-300">{leaderboardList[0].nombre}</h5>
-                            <span className="text-[10px] text-amber-300/80 block truncate max-w-[120px]">
-                              {leaderboardList[0].rangoNombre || calcularRango(leaderboardList[0].puntos).nombre}
-                            </span>
+                            <div className="flex items-center justify-center gap-1 text-[10px] text-amber-300/80 truncate max-w-[130px] mx-auto">
+                              <img 
+                                src={calcularRango(leaderboardList[0].puntos).imagenUrl} 
+                                alt="Rango" 
+                                className="w-4 h-4 object-contain shrink-0" 
+                              />
+                              <span className="truncate">{leaderboardList[0].rangoNombre || calcularRango(leaderboardList[0].puntos).nombre}</span>
+                            </div>
                             <span className="text-xs font-mono font-black text-amber-400 block pt-0.5">{leaderboardList[0].puntos} pts</span>
                           </div>
                           <div className="w-full h-32 bg-gradient-to-t from-amber-950/80 via-amber-600/40 to-amber-500/50 rounded-t-2xl border-t-2 border-amber-400 flex items-center justify-center font-mono font-black text-amber-300 text-2xl shadow-lg shadow-amber-500/20">
@@ -2739,9 +2744,14 @@ export default function Trivia() {
                           </div>
                           <div className="text-center">
                             <h5 className="font-black text-xs sm:text-sm text-white truncate max-w-[100px] group-hover:text-amber-400">{leaderboardList[2].nombre}</h5>
-                            <span className="text-[10px] text-slate-400 block truncate max-w-[100px]">
-                              {leaderboardList[2].rangoNombre || calcularRango(leaderboardList[2].puntos).nombre}
-                            </span>
+                            <div className="flex items-center justify-center gap-1 text-[10px] text-slate-400 truncate max-w-[110px] mx-auto">
+                              <img 
+                                src={calcularRango(leaderboardList[2].puntos).imagenUrl} 
+                                alt="Rango" 
+                                className="w-3.5 h-3.5 object-contain shrink-0" 
+                              />
+                              <span className="truncate">{leaderboardList[2].rangoNombre || calcularRango(leaderboardList[2].puntos).nombre}</span>
+                            </div>
                             <span className="text-[11px] font-mono font-bold text-amber-500 block pt-0.5">{leaderboardList[2].puntos} pts</span>
                           </div>
                           <div className="w-full h-20 bg-gradient-to-t from-amber-950/80 to-amber-900/60 rounded-t-2xl border-t-2 border-amber-600 flex items-center justify-center font-mono font-black text-amber-600 text-lg">
@@ -2774,7 +2784,8 @@ export default function Trivia() {
                           <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-medium">
                             {leaderboardList.map((entry) => {
                               const isMe = entry.id === user?.id || (userName && entry.nombre?.trim().toLowerCase() === userName.trim().toLowerCase());
-                              const rangoNombre = entry.rangoNombre || calcularRango(entry.puntos).nombre;
+                              const userRango = calcularRango(entry.puntos);
+                              const rangoNombre = entry.rangoNombre || userRango.nombre;
 
                               return (
                                 <tr 
@@ -2814,7 +2825,16 @@ export default function Trivia() {
                                             </span>
                                           )}
                                         </div>
-                                        <span className="text-[11px] text-red-600 dark:text-red-300/90 font-medium block">{rangoNombre}</span>
+                                        <div className="flex items-center gap-1.5 pt-0.5">
+                                          <img 
+                                            src={userRango.imagenUrl} 
+                                            alt={userRango.nombre} 
+                                            className="w-4 h-4 object-contain shrink-0" 
+                                          />
+                                          <span className="text-[11px] text-red-600 dark:text-red-300/90 font-medium block truncate">
+                                            Nivel {userRango.nivel} • {rangoNombre}
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   </td>
@@ -2840,7 +2860,8 @@ export default function Trivia() {
                       <div className="sm:hidden space-y-2.5">
                         {leaderboardList.map((entry) => {
                           const isMe = entry.id === user?.id || (userName && entry.nombre?.trim().toLowerCase() === userName.trim().toLowerCase());
-                          const rangoNombre = entry.rangoNombre || calcularRango(entry.puntos).nombre;
+                          const userRango = calcularRango(entry.puntos);
+                          const rangoNombre = entry.rangoNombre || userRango.nombre;
 
                           return (
                             <div 
@@ -2874,7 +2895,16 @@ export default function Trivia() {
                                       </span>
                                     )}
                                   </div>
-                                  <span className="text-[10px] text-red-600 dark:text-red-300/90 block truncate">{rangoNombre}</span>
+                                  <div className="flex items-center gap-1 pt-0.5">
+                                    <img 
+                                      src={userRango.imagenUrl} 
+                                      alt={userRango.nombre} 
+                                      className="w-3.5 h-3.5 object-contain shrink-0" 
+                                    />
+                                    <span className="text-[10px] text-red-600 dark:text-red-300/90 block truncate">
+                                      Nivel {userRango.nivel} • {rangoNombre}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
 
@@ -3372,7 +3402,6 @@ export default function Trivia() {
 
                 <div className="space-y-3">
                   {RANGOS_JURIDICOS.map((rango, idx) => {
-                    const RIcon = ICON_MAP[rango.iconoNombre] || BookOpen;
                     const isUserCurrent = rango.id === rangoActual.id;
 
                     return (
@@ -3381,19 +3410,24 @@ export default function Trivia() {
                         className={cn(
                           "p-4 rounded-2xl border transition-all flex items-start gap-3.5",
                           isUserCurrent
-                            ? "bg-[#0A1C3D]/30 border-red-500/60 text-white shadow-lg"
+                            ? "bg-[#0A1C3D]/40 border-amber-500/60 text-white shadow-xl shadow-amber-950/20"
                             : "bg-white/[0.02] border-white/10 text-slate-300"
                         )}
                       >
-                        <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-bold shrink-0 text-amber-400 border border-white/10">
-                          <RIcon className="w-5 h-5" />
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-black/60 p-1 flex items-center justify-center shrink-0 border border-amber-500/30 shadow-xl relative overflow-hidden">
+                          <img
+                            src={rango.imagenUrl || `/logos-rangos/Nivel${rango.nivel || idx + 1}.png`}
+                            alt={rango.nombre}
+                            className="w-full h-full object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                            loading="lazy"
+                          />
                         </div>
 
                         <div className="space-y-1 w-full">
                           <div className="flex items-center justify-between flex-wrap gap-2">
                             <h4 className="font-black text-sm text-white flex items-center gap-2">
                               <span>Nivel {idx + 1}: {rango.nombre}</span>
-                              {isUserCurrent && <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Tu Rango</span>}
+                              {isUserCurrent && <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Tu Rango Actual</span>}
                             </h4>
                             <span className="text-xs font-mono font-black text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
                               {rango.minPuntos} – {rango.maxPuntos > 100000 ? "15.000+" : `${rango.maxPuntos} PTS`}

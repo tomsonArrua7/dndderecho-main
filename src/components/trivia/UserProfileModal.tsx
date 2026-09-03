@@ -142,8 +142,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               </span>
               <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white truncate">{userName}</h3>
               <div className="flex items-center justify-center sm:justify-start gap-2 pt-0.5">
+                <img 
+                  src={rangoActual.imagenUrl || `/logos-rangos/Nivel${rangoActual.nivel || 1}.png`} 
+                  alt={rangoActual.nombre} 
+                  className="w-5 h-5 object-contain shrink-0" 
+                />
                 <span className="px-2.5 py-0.5 rounded-full bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-200 border border-red-500/30 text-[11px] sm:text-xs font-bold font-mono">
-                  {rangoActual.nombre}
+                  Nivel {rangoActual.nivel || 1} • {rangoActual.nombre}
                 </span>
                 <span className="text-[11px] sm:text-xs text-amber-600 dark:text-amber-400 font-mono font-bold">
                   {puntosTotales} PTS
@@ -181,8 +186,30 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   <span>Vitrina de Medallas y Logros</span>
                 </h4>
                 <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                  {medallas.length + (totalJugadas >= 10 ? 1 : 0)} Medallas
+                  {medallas.length + (totalJugadas >= 10 ? 1 : 0) + 1} Medallas
                 </span>
+              </div>
+
+              {/* MEDALLA OFICIAL DEL RANGO ACTUAL */}
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-red-500/5 to-transparent border border-amber-500/30 flex items-center gap-3.5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-black/50 p-1 flex items-center justify-center shrink-0 border border-amber-500/40 shadow-lg relative overflow-hidden">
+                  <img 
+                    src={rangoActual.imagenUrl || `/logos-rangos/Nivel${rangoActual.nivel || 1}.png`} 
+                    alt={rangoActual.nombre} 
+                    className="w-full h-full object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]" 
+                  />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[9px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-black block font-mono">
+                    Medalla de Rango Académico
+                  </span>
+                  <h5 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">
+                    Nivel {rangoActual.nivel}: {rangoActual.nombre}
+                  </h5>
+                  <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-snug line-clamp-2">
+                    {rangoActual.descripcion}
+                  </p>
+                </div>
               </div>
 
               {/* MEDALLAS COMPETITIVAS (ORO, PLATA, BRONCE) */}
