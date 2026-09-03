@@ -51,7 +51,7 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
             Configurá tu Práctica
           </DialogTitle>
           <DialogDescription className="text-xs text-slate-400">
-            Elegí qué materias querés repasar y la cantidad de preguntas. Sin penalización de ELO.
+            Elegí qué materias querés repasar y la cantidad de preguntas. Modo entrenamiento libre sin riesgo de Puntos de Rango.
           </DialogDescription>
         </DialogHeader>
 

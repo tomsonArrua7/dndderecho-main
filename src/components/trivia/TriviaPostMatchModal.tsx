@@ -148,22 +148,22 @@ export const TriviaPostMatchModal: React.FC<TriviaPostMatchModalProps> = ({
           </p>
         </div>
 
-        {/* 2. ANIMACIÓN CENTRAL DE LA BARRA DE ELO / MMR + TEXTO FLOTANTE */}
+        {/* 2. ANIMACIÓN CENTRAL DE LA BARRA DE PUNTOS DE RANGO + TEXTO FLOTANTE */}
         <div className="relative z-10 bg-black/40 border border-white/10 rounded-2xl p-4 space-y-3">
           
           <div className="flex items-center justify-between text-xs font-bold text-slate-300">
             <span className="flex items-center gap-1 text-slate-400">
-              <span>{isDuel1v1 ? "Progreso de ELO / Rango 1v1" : "Entrenamiento (Sin variación de ELO)"}</span>
+              <span>{isDuel1v1 ? "Progreso de Rango Oficial (1vs1)" : "Entrenamiento Individual (Sin variación de Rango)"}</span>
             </span>
             <span className="font-mono text-amber-300 font-black">
-              {puntosTotalesDespues.toLocaleString()} MMR
+              {puntosTotalesDespues.toLocaleString()} PTS DE RANGO
             </span>
           </div>
 
           {/* CONTENEDOR DE LA BARRA CON TEXTO FLOTANTE */}
           <div className="relative pt-6 pb-1">
             
-            {/* TEXTO FLOTANTE ANIMADO (+50 MMR en verde brillante, -15 MMR en rojo o +0 en práctica) */}
+            {/* TEXTO FLOTANTE ANIMADO (+50 PTS en verde brillante, -15 PTS en rojo o +0 en práctica) */}
             <AnimatePresence>
               {showFloatingText && (
                 <motion.div
@@ -182,7 +182,7 @@ export const TriviaPostMatchModal: React.FC<TriviaPostMatchModalProps> = ({
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>
-                    {!isDuel1v1 ? "Modo Práctica (0 MMR)" : (puntosCambio >= 0 ? `+${puntosCambio}` : puntosCambio) + " MMR"}
+                    {!isDuel1v1 ? "Modo Práctica (0 Pts de Rango)" : (puntosCambio >= 0 ? `+${puntosCambio}` : puntosCambio) + " PTS DE RANGO"}
                   </span>
                 </motion.div>
               )}

@@ -386,8 +386,8 @@ export default function Trivia() {
     activeDuelRoomRef.current = activeDuelRoom;
   }, [activeDuelRoom]);
 
-  // Ranking conectado a Supabase (General, Duelistas y Medallas)
-  const [rankingSubTab, setRankingSubTab] = useState<"global" | "duelistas" | "medallas">("global");
+  // Ranking conectado a Supabase (Oficial y Medallas)
+  const [rankingSubTab, setRankingSubTab] = useState<"oficial" | "medallas">("oficial");
   const [leaderboardList, setLeaderboardList] = useState<LeaderboardEntry[]>([]);
   const [duelistasLeaderboardList, setDuelistasLeaderboardList] = useState<any[]>([]);
   const [medallasLeaderboardList, setMedallasLeaderboardList] = useState<any[]>([]);
@@ -2597,44 +2597,32 @@ export default function Trivia() {
 
             </div>
 
-            {/* BOTONES DE SUB-PESTAÑA (GENERAL, DUELISTAS, MEDALLERO) + IR A MI POSICIÓN */}
+            {/* BOTONES DE SUB-PESTAÑA (OFICIAL Y MEDALLERO) + IR A MI POSICIÓN */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-              <div className="flex items-center gap-2 p-1.5 bg-[#0D1527] border border-white/10 rounded-2xl w-full sm:w-auto overflow-x-auto scrollbar-none">
+              <div className="flex items-center gap-2 p-1.5 bg-[#0D1527] border border-white/10 rounded-2xl w-full sm:w-auto">
                 <button
-                  onClick={() => setRankingSubTab("global")}
+                  onClick={() => setRankingSubTab("oficial")}
                   className={cn(
-                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 text-center flex items-center justify-center gap-1.5",
-                    rankingSubTab === "global"
+                    "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer text-center flex items-center justify-center gap-2",
+                    rankingSubTab === "oficial"
                       ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
                       : "text-slate-400 hover:text-white"
                   )}
                 >
                   <Trophy className="w-4 h-4 text-amber-400" />
-                  <span>Ranking General</span>
-                </button>
-                <button
-                  onClick={() => setRankingSubTab("duelistas")}
-                  className={cn(
-                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 text-center flex items-center justify-center gap-1.5",
-                    rankingSubTab === "duelistas"
-                      ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
-                      : "text-slate-400 hover:text-white"
-                  )}
-                >
-                  <Swords className="w-4 h-4 text-amber-400" />
-                  <span>Ranking Duelistas (1v1)</span>
+                  <span>Ranking Oficial de la Facultad</span>
                 </button>
                 <button
                   onClick={() => setRankingSubTab("medallas")}
                   className={cn(
-                    "px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 text-center flex items-center justify-center gap-1.5",
+                    "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer text-center flex items-center justify-center gap-2",
                     rankingSubTab === "medallas"
                       ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
                       : "text-slate-400 hover:text-white"
                   )}
                 >
                   <Award className="w-4 h-4 text-amber-400" />
-                  <span>🥇 Medallero Olímpico</span>
+                  <span>Medallero de Temporadas</span>
                 </button>
               </div>
 
@@ -2649,8 +2637,8 @@ export default function Trivia() {
               </button>
             </div>
 
-            {/* CONTENIDO 1: RANKING GENERAL CON DATOS REALES DE SUPABASE */}
-            {rankingSubTab === "global" && (
+            {/* CONTENIDO 1: RANKING OFICIAL UNIFICADO */}
+            {rankingSubTab === "oficial" && (
               <div className="space-y-6">
                 
                 {/* EXHIBICIÓN VISUAL DEL PODIO TOP 3 REAL (SI HAY AL MENOS 1 JUGADOR) */}
@@ -2776,7 +2764,7 @@ export default function Trivia() {
                             <tr className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase border-b border-slate-200 dark:border-white/10">
                               <th className="pb-3 px-3">POSICIÓN</th>
                               <th className="pb-3 px-3">USUARIO Y RANGO JURÍDICO</th>
-                              <th className="pb-3 px-3 text-right">PUNTOS</th>
+                              <th className="pb-3 px-3 text-right">PUNTOS DE RANGO</th>
                               <th className="pb-3 px-3 text-center">RACHA</th>
                               <th className="pb-3 px-3 text-right">PRECISIÓN</th>
                             </tr>
@@ -2930,7 +2918,9 @@ export default function Trivia() {
                   <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[11px] text-slate-600 dark:text-slate-300">Sincronizado en tiempo real con Supabase</span>
+                      <span className="text-[11px] text-slate-600 dark:text-slate-300">
+                        Ranking Oficial de la Facultad • Ordenado por Puntos de Rango acumulados en Duelos 1vs1
+                      </span>
                     </div>
                   </div>
 
@@ -2939,83 +2929,7 @@ export default function Trivia() {
               </div>
             )}
 
-            {/* CONTENIDO 2: RANKING DE DUELISTAS 1V1 CON DATOS REALES DE SUPABASE */}
-            {rankingSubTab === "duelistas" && (
-              <div className="space-y-4">
-                
-                <div className="bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                    <h3 className="font-black text-xs md:text-sm text-white uppercase tracking-wider flex items-center gap-2">
-                      <Swords className="w-4 h-4 text-red-400" />
-                      <span>Tabla Oficial de Duelistas (1vs1)</span>
-                    </h3>
-                    <span className="text-[11px] text-slate-400 font-mono">Ordenado por Puntos de Duelo</span>
-                  </div>
-
-                  {duelistasLeaderboardList.length > 0 ? (
-                    <div className="space-y-2.5">
-                      {duelistasLeaderboardList.map((entry, idx) => {
-                        const isMe = entry.user_id === user?.id;
-
-                        return (
-                          <div
-                            key={entry.user_id || idx}
-                            onClick={() => handleInspectUser(entry.user_id, entry.nombre, entry.avatar_url, { puntos: entry.puntos_duelista, victoriasDuelo: entry.victorias, derrotasDuelo: entry.derrotas })}
-                            className={cn(
-                              "p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 cursor-pointer",
-                              isMe
-                                ? "bg-red-950/30 border-red-500/60 shadow-lg shadow-red-900/10 ring-1 ring-red-500/30"
-                                : "bg-slate-950/60 border-white/10 text-slate-300 hover:bg-white/[0.04]"
-                            )}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className={cn(
-                                "w-8 h-8 rounded-xl font-bold text-xs flex items-center justify-center font-mono border shrink-0",
-                                (entry.posicion || idx + 1) === 1 ? "bg-amber-500/20 text-amber-300 border-amber-500/40 font-black" :
-                                (entry.posicion || idx + 1) === 2 ? "bg-slate-300/20 text-slate-200 border-slate-300/40 font-black" :
-                                (entry.posicion || idx + 1) === 3 ? "bg-amber-700/20 text-amber-400 border-amber-700/40 font-black" :
-                                "bg-slate-800 text-slate-300 border-white/10"
-                              )}>
-                                #{entry.posicion || idx + 1}
-                              </span>
-                              <div>
-                                <h5 className="font-bold text-sm text-white flex items-center gap-2 hover:underline">
-                                  <span>{entry.nombre || "Duelista"}</span>
-                                  {isMe && (
-                                    <span className="px-2 py-0.5 rounded-full bg-red-500/30 text-red-200 border border-red-500/40 text-[9px] font-black uppercase font-mono">
-                                      TÚ
-                                    </span>
-                                  )}
-                                </h5>
-                                <span className="text-[11px] text-slate-400">
-                                  <span className="text-emerald-400 font-bold">{entry.victorias || 0}V</span> - <span className="text-red-400 font-bold">{entry.derrotas || 0}D</span> - <span className="text-amber-400 font-bold">{entry.empates || 0}E</span>
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="text-right">
-                              <span className="text-sm font-black text-amber-400 font-mono">{entry.puntos_duelista || 0} PTS</span>
-                              <span className="text-[10px] text-slate-400 block font-mono">Puntos 1v1</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
-                      <Swords className="w-10 h-10 mx-auto text-red-400 opacity-60" />
-                      <h4 className="font-black text-base text-white">¡No hay duelistas registrados en Supabase aún!</h4>
-                      <p className="text-xs text-slate-400 max-w-md mx-auto">
-                        Completá un duelo 1v1 en la pestaña de Salas para acumular victorias y registrar tu nombre en este ranking.
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-              </div>
-            )}
-
-            {/* CONTENIDO 3: MEDALLERO OLÍMPICO CON CLASIFICACIÓN DE MEDALLAS ORO, PLATA Y BRONCE */}
+            {/* CONTENIDO 2: MEDALLERO OLÍMPICO CON CLASIFICACIÓN DE MEDALLAS ORO, PLATA Y BRONCE */}
             {rankingSubTab === "medallas" && (
               <div className="space-y-4">
                 <div className="bg-[#0D1527]/90 border border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl backdrop-blur-xl">

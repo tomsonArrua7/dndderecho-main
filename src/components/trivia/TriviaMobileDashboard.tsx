@@ -12,7 +12,8 @@ import {
   HelpCircle,
   Play,
   Users,
-  Target
+  Target,
+  Lock
 } from "lucide-react";
 import { RangoJuridico } from "@/data/triviaData";
 import { cn } from "@/lib/utils";
@@ -155,11 +156,11 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
               </div>
             </div>
 
-            {/* Puntos ELO / MMR */}
+            {/* Puntos de Rango */}
             <div className="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 border-white/10 pt-2 sm:pt-0">
               <div className="text-left sm:text-right">
                 <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider block font-mono">
-                  PUNTOS ELO / MMR
+                  PUNTOS DE RANGO
                 </span>
                 <span className="text-xl sm:text-2xl font-black text-amber-400 font-mono tracking-tight drop-shadow-md">
                   {userStats.puntosTotales.toLocaleString()} <span className="text-xs text-amber-300/70 font-sans">PTS</span>
@@ -322,7 +323,7 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
 
               <div>
                 <span className="text-[10px] font-black uppercase tracking-wider text-rose-400 font-mono block">
-                  ⚡ Competitivo · MMR en juego
+                  ⚡ Competitivo · Puntos de Rango en juego
                 </span>
                 <h3 className="text-xl font-black text-white tracking-tight pt-0.5">
                   Duelos 1vs1
@@ -423,21 +424,21 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[10px] font-mono font-black uppercase">
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                  <span>IA Gemini UNLP</span>
+                <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[10px] font-mono font-black uppercase">
+                  <Lock className="w-3 h-3 text-amber-400" />
+                  <span>En Calibración Técnica</span>
                 </div>
               </div>
 
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 font-mono block">
-                  ⚡ Examen en Tiempo Real
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400/80 font-mono block">
+                  🔧 Mantenimiento & Ajuste
                 </span>
                 <h3 className="text-xl font-black text-white tracking-tight pt-0.5">
                   Parcial Flash IA
                 </h3>
                 <p className="text-xs text-slate-300 pt-1.5 leading-relaxed">
-                  Ingresá cualquier materia o tema puntual y la IA genera un parcial único de 5 preguntas al instante.
+                  Estamos optimizando los modelos de inteligencia artificial para una mayor precisión en el temario. Próximamente disponible.
                 </p>
               </div>
             </div>
@@ -445,11 +446,11 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
             <div className="pt-5 relative z-10">
               <button
                 type="button"
-                onClick={onOpenParcialFlash}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-600 via-orange-600 to-amber-500 hover:from-amber-500 hover:to-orange-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-600/40 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+                disabled
+                className="w-full py-3.5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed opacity-80"
               >
-                <Sparkles className="w-4 h-4 text-amber-200 fill-amber-200" />
-                <span>Generar Parcial IA</span>
+                <Lock className="w-4 h-4 text-slate-400" />
+                <span>Módulo en Calibración</span>
               </button>
             </div>
           </motion.div>

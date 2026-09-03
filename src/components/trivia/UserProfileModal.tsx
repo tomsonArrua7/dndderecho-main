@@ -22,10 +22,12 @@ export interface UserProfileModalProps {
 }
 
 export const LOGROS_MEDALLAS = [
-  { id: 'partidas_10', titulo: 'Primeros Pasos', descripcion: 'Completar 10 evaluaciones', icono: '🎯', minPartidas: 10 },
-  { id: 'partidas_50', titulo: 'Constancia Académica', descripcion: 'Completar 50 evaluaciones', icono: '⚡', minPartidas: 50 },
-  { id: 'partidas_100', titulo: 'Veterano de Trivia', descripcion: 'Completar 100 evaluaciones', icono: '🔥', minPartidas: 100 },
-  { id: 'partidas_250', titulo: 'Maestro del Examen', descripcion: 'Completar 250 evaluaciones', icono: '👑', minPartidas: 250 }
+  { id: 'partidas_1', titulo: 'Iniciación Jurídica', descripcion: 'Completar 1 evaluación individual', icono: '🎯', minPartidas: 1 },
+  { id: 'partidas_5', titulo: 'Hábito de Estudio', descripcion: 'Completar 5 evaluaciones de práctica', icono: '📘', minPartidas: 5 },
+  { id: 'partidas_15', titulo: 'Codos Gastados', descripcion: 'Completar 15 evaluaciones en biblioteca', icono: '🏛️', minPartidas: 15 },
+  { id: 'partidas_30', titulo: 'Doctrinario Serial', descripcion: 'Completar 30 evaluaciones de práctica', icono: '⚖️', minPartidas: 30 },
+  { id: 'partidas_50', titulo: 'Maestría Práctica', descripcion: 'Completar 50 exámenes con rigor técnico', icono: '📜', minPartidas: 50 },
+  { id: 'partidas_100', titulo: 'Jurisconsulto Incansable', descripcion: 'Alcanzar 100 evaluaciones de práctica', icono: '👑', minPartidas: 100 }
 ];
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({
@@ -39,6 +41,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<any>(null);
   const [medallas, setMedallas] = useState<any[]>([]);
+
+  // Bloquear scroll de la página de fondo en dispositivos móviles cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -103,14 +120,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     <AnimatePresence>
       <div 
         onClick={onClose}
-        className="fixed inset-0 z-50 bg-black/80 dark:bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 cursor-pointer overflow-y-auto"
+        className="fixed inset-0 z-50 bg-black/80 dark:bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 cursor-pointer overflow-hidden safe-area-inset"
       >
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-xl bg-white dark:bg-gradient-to-b dark:from-[#0D1527] dark:via-[#080E1A] dark:to-[#050B14] border border-slate-200 dark:border-white/15 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 relative overflow-hidden max-h-[92vh] flex flex-col cursor-default text-slate-900 dark:text-white"
+          className="w-full max-w-xl bg-white dark:bg-gradient-to-b dark:from-[#0D1527] dark:via-[#080E1A] dark:to-[#050B14] border border-slate-200 dark:border-white/15 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 relative overflow-hidden max-h-[85dvh] sm:max-h-[88vh] flex flex-col cursor-default text-slate-900 dark:text-white my-auto"
         >
           {/* BOTÓN CERRAR CON ÁREA TOUCH AMPLIADA */}
           <button
@@ -151,14 +168,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   Nivel {rangoActual.nivel || 1} • {rangoActual.nombre}
                 </span>
                 <span className="text-[11px] sm:text-xs text-amber-600 dark:text-amber-400 font-mono font-bold">
-                  {puntosTotales} PTS
+                  {puntosTotales} PTS DE RANGO
                 </span>
               </div>
             </div>
           </div>
 
           {/* CONTENIDO INTERACTIVO DESPLAZABLE */}
-          <div className="overflow-y-auto pr-1 space-y-4 text-xs leading-relaxed flex-1 scrollbar-none">
+          <div className="overflow-y-auto pr-1 space-y-4 text-xs leading-relaxed flex-1 scrollbar-none overscroll-contain touch-pan-y">
             
             {/* RESUMEN DE ESTADÍSTICAS GLOBALES */}
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -186,7 +203,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   <span>Vitrina de Medallas y Logros</span>
                 </h4>
                 <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                  {medallas.length + (totalJugadas >= 10 ? 1 : 0) + 1} Medallas
+                  {medallas.length + (totalJugadas >= 1 ? 1 : 0) + 1} Medallas
                 </span>
               </div>
 
@@ -267,8 +284,20 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                             : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 opacity-35"
                         )}
                       >
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center text-xs sm:text-sm shrink-0">
-                          {unlocked ? '🏅' : '🔒'}
+                        <div className={cn(
+                          "w-8 h-8 sm:w-9 sm:h-9 rounded-xl border flex items-center justify-center p-0.5 shrink-0 relative",
+                          unlocked ? "bg-black/40 border-amber-500/40 shadow" : "bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-white/10 grayscale opacity-60"
+                        )}>
+                          <img 
+                            src={rango.imagenUrl || `/logos-rangos/Nivel${rango.nivel}.png`} 
+                            alt={rango.nombre} 
+                            className="w-full h-full object-contain" 
+                          />
+                          {!unlocked && (
+                            <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center text-[10px]">
+                              🔒
+                            </div>
+                          )}
                         </div>
                         <div className="min-w-0">
                           <span className="font-bold text-[10px] sm:text-[11px] text-slate-900 dark:text-white block truncate">{rango.nombre}</span>
@@ -280,29 +309,69 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </div>
               </div>
 
-              {/* MEDALLAS DE LOGROS DE PARTIDAS */}
+              {/* MEDALLAS DE LOGROS DE EVALUACIONES DE PRÁCTICA */}
               <div className="space-y-1.5 sm:space-y-2 pt-1">
-                <span className="text-[9px] sm:text-[10px] font-black uppercase text-blue-600 dark:text-blue-400/80 block font-mono">Medallas por Hitos de Evaluaciones</span>
-                <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase text-blue-600 dark:text-blue-400/80 block font-mono">
+                    Logros de Evaluaciones y Estudio Individual
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
+                    {totalJugadas} Realizadas
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                   {LOGROS_MEDALLAS.map((logro) => {
                     const unlocked = totalJugadas >= logro.minPartidas;
+                    const progresoPct = Math.min(100, Math.round((totalJugadas / logro.minPartidas) * 100));
+
                     return (
                       <div
                         key={logro.id}
                         className={cn(
-                          "p-2.5 sm:p-3 rounded-2xl border flex items-center gap-2.5 transition-all",
+                          "p-2.5 sm:p-3 rounded-2xl border flex flex-col justify-between gap-1.5 transition-all",
                           unlocked
-                            ? "bg-blue-500/10 border-blue-500/40 text-slate-900 dark:text-white"
-                            : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 opacity-35"
+                            ? "bg-blue-500/10 border-blue-500/40 text-slate-900 dark:text-white shadow-sm"
+                            : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 opacity-60"
                         )}
                       >
-                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center text-sm sm:text-lg shrink-0">
-                          {unlocked ? logro.icono : '🔒'}
+                        <div className="flex items-center gap-2.5">
+                          <div className={cn(
+                            "w-8 h-8 sm:w-9 sm:h-9 rounded-xl border flex items-center justify-center text-base shrink-0",
+                            unlocked 
+                              ? "bg-blue-600/20 border-blue-500/40 text-blue-300" 
+                              : "bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-white/10 text-slate-500"
+                          )}>
+                            {unlocked ? logro.icono : '🔒'}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="font-bold text-[11px] sm:text-xs text-slate-900 dark:text-white truncate">
+                                {logro.titulo}
+                              </span>
+                              {unlocked ? (
+                                <span className="text-[9px] font-black font-mono text-emerald-500 bg-emerald-500/10 px-1.5 py-0.2 rounded">
+                                  COMPLETO
+                                </span>
+                              ) : (
+                                <span className="text-[9px] font-mono text-slate-400">
+                                  {totalJugadas}/{logro.minPartidas}
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                              {logro.descripcion}
+                            </span>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <span className="font-bold text-[11px] sm:text-xs text-slate-900 dark:text-white block truncate">{logro.titulo}</span>
-                          <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 block truncate">{logro.descripcion}</span>
-                        </div>
+
+                        {!unlocked && (
+                          <div className="w-full bg-slate-200 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
+                            <div 
+                              className="bg-blue-500 h-full rounded-full transition-all duration-500"
+                              style={{ width: `${progresoPct}%` }}
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   })}
