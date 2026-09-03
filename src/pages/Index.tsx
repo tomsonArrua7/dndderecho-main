@@ -6,7 +6,6 @@ import logoDndNuevo from "@/assets/logo-dnd-nuevo.png";
 import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { InstagramFeed } from "@/components/InstagramFeed";
 import { HeroActions } from "@/components/HeroActions";
 import { motion } from "framer-motion";
 import { YouTubeSection } from "@/components/YouTubeSection";
@@ -155,22 +154,6 @@ const Index = () => {
         <HeroActions />
       </motion.div>
 
-      {/* ════════════════════════════════════════════════════════════
-          INSTAGRAM — SCROLL REVEAL
-          ════════════════════════════════════════════════════════════ */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.98 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1 }}
-        viewport={{ once: true }}
-        className="container py-24"
-      >
-        <div className="p-1 rounded-[3rem] bg-gradient-to-b from-white/5 to-transparent">
-          <div className="bg-[#0A0E1A]/40 backdrop-blur-3xl rounded-[2.9rem] p-8 md:p-12 shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
-            <InstagramFeed />
-          </div>
-        </div>
-      </motion.div>
 
       {/* YouTube Section */}
       <YouTubeSection />
