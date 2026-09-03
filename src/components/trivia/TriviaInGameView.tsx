@@ -98,7 +98,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
   }, [currentIndex]);
 
   return (
-    <div className="w-full min-h-[100dvh] bg-[#050B14] text-white flex flex-col items-center justify-start sm:justify-center px-3 sm:px-4 py-4 pb-20 relative overflow-x-hidden select-none">
+    <div className="w-full min-h-[100dvh] bg-slate-50 dark:bg-[#050B14] text-slate-900 dark:text-white flex flex-col items-center justify-start sm:justify-center px-3 sm:px-4 py-4 pb-24 relative overflow-x-hidden select-none transition-colors">
       
       {/* Background glow effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -109,10 +109,10 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
         {/* 1. TOP BAR: Conteo de Preguntas, Racha y Materia */}
         <div className="w-full flex items-center justify-between gap-2 px-1">
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full bg-[#0A1C3D] text-blue-300 text-xs font-black uppercase tracking-wider border border-[#0F2A5C] shadow-sm">
+            <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-[#0A1C3D] text-blue-700 dark:text-blue-300 text-xs font-black uppercase tracking-wider border border-blue-200 dark:border-[#0F2A5C] shadow-sm">
               {currentIndex + 1} / {totalQuestions}
             </span>
-            <span className="text-xs text-slate-400 font-bold max-w-[150px] sm:max-w-[200px] truncate">
+            <span className="text-xs text-slate-600 dark:text-slate-400 font-bold max-w-[150px] sm:max-w-[200px] truncate">
               {currentQuestion.categoria_nombre}
             </span>
           </div>
@@ -121,9 +121,9 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black border border-amber-500/40 animate-pulse shadow-md"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-black border border-amber-500/30 animate-pulse shadow-sm"
             >
-              <Flame className="w-4 h-4 text-amber-400" />
+              <Flame className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               <span>Racha x{streak}</span>
             </motion.div>
           )}
@@ -132,7 +132,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
         {/* 2. TEMPORIZADOR CIRCULAR EN LA PARTE SUPERIOR CENTRAL */}
         <div className="w-full flex justify-center py-1">
           <div className={cn(
-            "relative w-20 h-20 rounded-full flex items-center justify-center bg-[#0B1325]/90 border backdrop-blur-xl transition-all duration-300",
+            "relative w-20 h-20 rounded-full flex items-center justify-center bg-white dark:bg-[#0B1325]/90 border border-slate-200 dark:border-white/10 backdrop-blur-xl transition-all duration-300 shadow-lg",
             timerGlow,
             isCriticalTime && "animate-pulse scale-105"
           )}>
@@ -142,7 +142,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
                 cx="35"
                 cy="35"
                 r={radius}
-                className="stroke-slate-800/80"
+                className="stroke-slate-200 dark:stroke-slate-800/80"
                 strokeWidth="5"
                 fill="transparent"
               />
@@ -164,11 +164,11 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
             <div className="absolute flex flex-col items-center justify-center">
               <span className={cn(
                 "font-mono font-black text-xl tracking-tight transition-colors duration-300",
-                isCriticalTime ? "text-rose-400 scale-110" : isWarningTime ? "text-amber-300" : "text-emerald-300"
+                isCriticalTime ? "text-rose-500 dark:text-rose-400 scale-110" : isWarningTime ? "text-amber-600 dark:text-amber-300" : "text-emerald-600 dark:text-emerald-300"
               )}>
                 {timeLeft}
               </span>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 font-mono -mt-1">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 font-mono -mt-1">
                 seg
               </span>
             </div>
@@ -187,22 +187,22 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
           key={`q_${currentQuestion.id}`}
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full rounded-3xl bg-gradient-to-b from-[#0F1A30]/95 via-[#0A1325]/95 to-[#060D1B]/98 border border-white/15 p-5 sm:p-6 shadow-2xl shadow-black/80 backdrop-blur-xl relative overflow-hidden space-y-4"
+          className="w-full rounded-3xl bg-white dark:bg-gradient-to-b dark:from-[#0F1A30]/95 dark:via-[#0A1325]/95 dark:to-[#060D1B]/98 border border-slate-200 dark:border-white/15 p-5 sm:p-6 shadow-xl dark:shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4 text-slate-900 dark:text-white"
         >
           <div className="space-y-1">
-            <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
               <span>Pregunta de Evaluación</span>
               <span className={cn(
                 "px-2 py-0.5 rounded text-[10px] font-black uppercase",
-                currentQuestion.dificultad === "dificil" ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" :
-                currentQuestion.dificultad === "media" ? "bg-amber-500/20 text-amber-300 border border-amber-500/30" :
-                "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                currentQuestion.dificultad === "dificil" ? "bg-rose-500/15 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30" :
+                currentQuestion.dificultad === "media" ? "bg-amber-500/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30" :
+                "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30"
               )}>
                 {currentQuestion.dificultad || "media"}
               </span>
             </div>
 
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-relaxed pt-1">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-relaxed pt-1">
               {currentQuestion.pregunta}
             </h3>
           </div>
@@ -215,17 +215,17 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
             const isRight = idx === currentQuestion.respuesta_correcta_index;
             const isDisabledBy5050 = powerUps.disabledOptionIndices.includes(idx);
 
-            let buttonStyle = "bg-[#0A1326]/90 border-white/10 hover:bg-[#101C35] hover:border-white/20 text-slate-100";
+            let buttonStyle = "bg-white hover:bg-slate-50 border-slate-200 dark:bg-[#0A1326]/90 dark:border-white/10 dark:hover:bg-[#101C35] dark:hover:border-white/20 text-slate-800 dark:text-slate-100 shadow-sm";
 
             if (isDisabledBy5050) {
-              buttonStyle = "bg-slate-950/40 border-white/5 text-slate-600 line-through opacity-40 cursor-not-allowed pointer-events-none";
+              buttonStyle = "bg-slate-100 dark:bg-slate-950/40 border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-600 line-through opacity-40 cursor-not-allowed pointer-events-none";
             } else if (isAnswered) {
               if (isRight) {
-                buttonStyle = "bg-emerald-600/30 border-emerald-400 text-emerald-100 font-black shadow-lg shadow-emerald-950/60 ring-2 ring-emerald-500/40";
+                buttonStyle = "bg-emerald-500/15 dark:bg-emerald-600/30 border-emerald-500 text-emerald-950 dark:text-emerald-100 font-black shadow-md ring-2 ring-emerald-500/30";
               } else if (isSelected && !isRight) {
-                buttonStyle = "bg-rose-600/30 border-rose-500 text-rose-100 font-black shadow-lg shadow-rose-950/60 ring-2 ring-rose-500/40";
+                buttonStyle = "bg-rose-500/15 dark:bg-rose-600/30 border-rose-500 text-rose-950 dark:text-rose-100 font-black shadow-md ring-2 ring-rose-500/30";
               } else {
-                buttonStyle = "bg-slate-950/50 border-white/5 text-slate-500 opacity-40";
+                buttonStyle = "bg-slate-100 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-500 opacity-40";
               }
             }
 
@@ -236,7 +236,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
                 onClick={() => onSelectOption(idx)}
                 whileTap={!isAnswered && !isDisabledBy5050 ? { scale: 0.98 } : {}}
                 className={cn(
-                  "w-full text-left p-4 sm:p-4.5 rounded-2xl border transition-all duration-200 text-xs sm:text-sm md:text-base flex items-center justify-between gap-3 cursor-pointer min-h-[58px] active:scale-[0.98] active:brightness-125 shadow-md",
+                  "w-full text-left p-4 sm:p-4.5 rounded-2xl border transition-all duration-200 text-xs sm:text-sm md:text-base flex items-center justify-between gap-3 cursor-pointer min-h-[58px] active:scale-[0.98] shadow-sm",
                   buttonStyle
                 )}
               >
@@ -244,15 +244,15 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
                   {/* Letra A, B, C, D */}
                   <span className={cn(
                     "w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 font-mono border transition-colors",
-                    isDisabledBy5050 ? "bg-black/30 border-white/5 text-slate-600" :
-                    isAnswered && isRight ? "bg-emerald-500/40 border-emerald-300 text-emerald-100 shadow-sm" :
-                    isAnswered && isSelected && !isRight ? "bg-rose-500/40 border-rose-300 text-rose-100 shadow-sm" :
-                    "bg-white/10 border-white/15 text-slate-200"
+                    isDisabledBy5050 ? "bg-slate-200 dark:bg-black/30 border-slate-300 dark:border-white/5 text-slate-400 dark:text-slate-600" :
+                    isAnswered && isRight ? "bg-emerald-500/30 dark:bg-emerald-500/40 border-emerald-400 text-emerald-900 dark:text-emerald-100 shadow-sm" :
+                    isAnswered && isSelected && !isRight ? "bg-rose-500/30 dark:bg-rose-500/40 border-rose-400 text-rose-900 dark:text-rose-100 shadow-sm" :
+                    "bg-slate-100 dark:bg-white/10 border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200"
                   )}>
                     {isDisabledBy5050 ? <Lock className="w-3.5 h-3.5" /> : String.fromCharCode(65 + idx)}
                   </span>
 
-                  <span className="leading-snug break-words">
+                  <span className="leading-snug break-words font-medium">
                     {opc}
                   </span>
                 </div>
@@ -275,35 +275,35 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="p-4 rounded-2xl bg-[#0A1C3D]/60 border border-[#0F2A5C] text-blue-200 text-xs space-y-2.5 shadow-xl backdrop-blur-md"
+              className="p-4 rounded-2xl bg-blue-50 dark:bg-[#0A1C3D]/60 border border-blue-200 dark:border-[#0F2A5C] text-slate-800 dark:text-blue-200 text-xs space-y-2.5 shadow-lg backdrop-blur-md"
             >
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <span className="font-black uppercase tracking-wider text-[10px] text-blue-300 flex items-center gap-1.5">
-                  <BookOpenCheck className="w-4 h-4 text-blue-400" /> Fundamento Normativo Oficial:
+                <span className="font-black uppercase tracking-wider text-[10px] text-blue-800 dark:text-blue-300 flex items-center gap-1.5">
+                  <BookOpenCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Fundamento Normativo Oficial:
                 </span>
                 
                 {selectedOption !== currentQuestion.respuesta_correcta_index && (
                   <button
                     onClick={() => solicitarExplicacionIA(currentQuestion, selectedOption!)}
                     disabled={loadingExplicacion}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+                    className="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 shadow-sm"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 animate-pulse" />
                     <span>{loadingExplicacion ? "Consultando IA..." : "¿Por qué me equivoqué? (IA)"}</span>
                   </button>
                 )}
               </div>
 
-              <p className="leading-relaxed text-slate-200 text-xs sm:text-sm">
+              <p className="leading-relaxed text-slate-700 dark:text-slate-200 text-xs sm:text-sm">
                 {currentQuestion.fundamento_juridico || "Conforme al Código y la doctrina aplicable al Plan de Estudios de la FCJyS UNLP."}
               </p>
 
               {explicacionIA && (
-                <div className="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1.5">
-                  <span className="font-bold flex items-center gap-1.5 text-amber-300">
-                    <Sparkles className="w-4 h-4 text-amber-400" /> Explicación Pedagógica del Tutor IA:
+                <div className="mt-3 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs space-y-1.5">
+                  <span className="font-bold flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
+                    <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Explicación Pedagógica del Tutor IA:
                   </span>
-                  <p className="leading-relaxed font-medium text-slate-200 text-xs sm:text-sm">{explicacionIA}</p>
+                  <p className="leading-relaxed font-medium text-slate-700 dark:text-slate-200 text-xs sm:text-sm">{explicacionIA}</p>
                 </div>
               )}
             </motion.div>
@@ -327,7 +327,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
       </div>
 
       {/* 6. BOTTOM BAR ANCLADA AL PIE DEL CELULAR (POWER-UPS DOCK) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#070D1B]/95 backdrop-blur-xl border-t border-white/10 px-4 py-2.5 pb-[max(0.65rem,env(safe-area-inset-bottom))] shadow-2xl">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#070D1B]/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 px-4 py-2.5 pb-[max(0.65rem,env(safe-area-inset-bottom))] shadow-2xl">
         <div className="max-w-md mx-auto flex items-center justify-around gap-3">
           
           {/* POWER-UP 1: NULIDAD (50/50) */}
@@ -339,13 +339,13 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
               (isAnswered || powerUps.nulidadCount <= 0 || powerUps.disabledOptionIndices.length > 0) && "opacity-40 pointer-events-none"
             )}
           >
-            <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-600/20 border border-amber-500/40 flex items-center justify-center text-amber-300 shadow-md group-hover:scale-105 transition-transform">
+            <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-600/20 border border-amber-500/40 flex items-center justify-center text-amber-600 dark:text-amber-300 shadow-sm group-hover:scale-105 transition-transform">
               <Scale className="w-6 h-6" />
               <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 rounded-full bg-amber-500 text-black text-[10px] font-black font-mono shadow">
                 {powerUps.nulidadCount}
               </span>
             </div>
-            <span className="text-[10px] font-black uppercase text-amber-300 tracking-wider">
+            <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-300 tracking-wider">
               Nulidad (50/50)
             </span>
           </button>
@@ -360,7 +360,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
             )}
           >
             <div className={cn(
-              "relative w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300 shadow-md group-hover:scale-105 transition-transform",
+              "relative w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-600 dark:text-indigo-300 shadow-sm group-hover:scale-105 transition-transform",
               powerUps.isApelacionActive && "ring-2 ring-indigo-400 animate-pulse"
             )}>
               <ShieldCheck className="w-6 h-6" />
@@ -368,7 +368,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
                 {powerUps.apelacionCount}
               </span>
             </div>
-            <span className="text-[10px] font-black uppercase text-indigo-300 tracking-wider">
+            <span className="text-[10px] font-black uppercase text-indigo-700 dark:text-indigo-300 tracking-wider">
               Apelación
             </span>
           </button>
@@ -382,13 +382,13 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
               (isAnswered || powerUps.prorrogaCount <= 0) && "opacity-40 pointer-events-none"
             )}
           >
-            <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300 shadow-md group-hover:scale-105 transition-transform">
+            <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-600 dark:text-emerald-300 shadow-sm group-hover:scale-105 transition-transform">
               <Clock className="w-6 h-6" />
               <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 rounded-full bg-emerald-500 text-black text-[10px] font-black font-mono shadow">
                 {powerUps.prorrogaCount}
               </span>
             </div>
-            <span className="text-[10px] font-black uppercase text-emerald-300 tracking-wider">
+            <span className="text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-300 tracking-wider">
               +10 Segundos
             </span>
           </button>

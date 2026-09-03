@@ -41,23 +41,23 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md md:max-w-lg bg-[#0A0E1A] text-white border border-white/15 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md md:max-w-lg bg-white dark:bg-[#0A0E1A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="space-y-1 text-left">
-          <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-black uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-mono text-xs font-black uppercase tracking-wider">
             <BookOpen className="w-4 h-4" />
             <span>Modo Entrenamiento</span>
           </div>
-          <DialogTitle className="text-xl sm:text-2xl font-black text-white tracking-tight">
+          <DialogTitle className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             Configurá tu Práctica
           </DialogTitle>
-          <DialogDescription className="text-xs text-slate-400">
+          <DialogDescription className="text-xs text-slate-600 dark:text-slate-400">
             Elegí qué materias querés repasar y la cantidad de preguntas. Modo entrenamiento libre sin riesgo de Puntos de Rango.
           </DialogDescription>
         </DialogHeader>
 
         {/* SECCIÓN 1: SELECCIÓN DE ALCANCE / AÑO */}
         <div className="space-y-2.5">
-          <label className="text-[11px] font-black uppercase text-slate-400 tracking-wider block">
+          <label className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider block">
             1. ¿Qué querés evaluar?
           </label>
           
@@ -72,7 +72,7 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
                 "px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
                 selectedYearFilter === 0 && selectedCategoria === "todas"
                   ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/30"
-                  : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                  : "bg-slate-100 dark:bg-white/[0.03] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white"
               )}
             >
               🎓 Toda la Carrera
@@ -91,7 +91,7 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
                   "px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer shrink-0 border",
                   selectedYearFilter === year
                     ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/30"
-                    : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                    : "bg-slate-100 dark:bg-white/[0.03] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white"
                 )}
               >
                 {year}º Año
@@ -102,7 +102,7 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
           {/* LISTA DE MATERIAS SI ELIGE UN AÑO */}
           {selectedYearFilter > 0 && (
             <div className="pt-2 space-y-1.5">
-              <span className="text-[10px] font-bold text-slate-400 block uppercase">
+              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block uppercase">
                 Materias de {selectedYearFilter}º Año:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
@@ -116,12 +116,12 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
                       className={cn(
                         "p-2.5 rounded-xl border text-left text-xs font-bold transition-all flex items-center justify-between gap-2 cursor-pointer",
                         isSelected
-                          ? "bg-blue-500/20 border-blue-400 text-white shadow-md ring-1 ring-blue-500/40"
-                          : "bg-white/[0.02] border-white/10 text-slate-300 hover:bg-white/[0.06]"
+                          ? "bg-blue-500/15 dark:bg-blue-500/20 border-blue-500 text-blue-900 dark:text-white shadow-sm ring-1 ring-blue-500/40"
+                          : "bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06]"
                       )}
                     >
                       <span className="truncate">{cat.nombre}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
+                      {isSelected && <Check className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />}
                     </button>
                   );
                 })}
@@ -131,12 +131,12 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
         </div>
 
         {/* SECCIÓN 2: CANTIDAD DE PREGUNTAS */}
-        <div className="space-y-2.5 pt-1 border-t border-white/10">
+        <div className="space-y-2.5 pt-1 border-t border-slate-200 dark:border-white/10">
           <div className="flex items-center justify-between">
-            <label className="text-[11px] font-black uppercase text-slate-400 tracking-wider">
+            <label className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">
               2. Cantidad de preguntas
             </label>
-            <span className="text-xs font-mono font-bold text-blue-400">
+            <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">
               {questionsCount} preguntas
             </span>
           </div>
@@ -150,8 +150,8 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
                 className={cn(
                   "py-2.5 rounded-xl border text-center transition-all cursor-pointer font-mono font-black text-sm",
                   questionsCount === cnt
-                    ? "bg-blue-500/20 border-blue-400 text-white shadow-lg ring-1 ring-blue-500/40"
-                    : "bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                    ? "bg-blue-500/15 dark:bg-blue-500/20 border-blue-500 text-blue-900 dark:text-white shadow-sm ring-1 ring-blue-500/40"
+                    : "bg-slate-100 dark:bg-white/[0.03] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/[0.08] hover:text-slate-900 dark:hover:text-white"
                 )}
               >
                 {cnt}
@@ -161,13 +161,13 @@ export const PracticeSetupModal: React.FC<PracticeSetupModalProps> = ({
         </div>
 
         {/* RESUMEN Y BOTÓN DE INICIO */}
-        <div className="pt-3 border-t border-white/10 space-y-3">
-          <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/10 flex items-center justify-between text-xs">
+        <div className="pt-3 border-t border-slate-200 dark:border-white/10 space-y-3">
+          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
             <div>
-              <span className="text-[10px] text-slate-400 block uppercase font-bold">Evaluación configurada:</span>
-              <span className="font-black text-white">{selectedCatName}</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Evaluación configurada:</span>
+              <span className="font-black text-slate-900 dark:text-white">{selectedCatName}</span>
             </div>
-            <span className="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-300 font-mono font-bold text-xs border border-blue-500/30">
+            <span className="px-2.5 py-1 rounded-lg bg-blue-500/15 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300 font-mono font-bold text-xs border border-blue-500/30">
               {questionsCount} preguntas
             </span>
           </div>
