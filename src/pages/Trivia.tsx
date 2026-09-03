@@ -1891,7 +1891,7 @@ export default function Trivia() {
 
   // PANTALLA PRINCIPAL
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#050B14] text-slate-900 dark:text-white py-6 md:py-10 px-3 sm:px-6 relative overflow-hidden transition-colors">
+    <div className="min-h-screen bg-[#050B14] text-white py-6 md:py-10 px-3 sm:px-6 relative overflow-hidden">
       {/* Background glow effects */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/3 left-10 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
