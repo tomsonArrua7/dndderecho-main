@@ -1921,6 +1921,15 @@ export default function Trivia() {
           onOpenParcialFlash={() => setIsParcialFlashModalOpen(true)}
           onOpenRangosModal={() => setShowRangosModal(true)}
           onOpenGuideModal={() => setShowGuideModal(true)}
+          onOpenMyProfile={() => {
+            handleInspectUser(user?.id, userName, profile?.avatar_url, {
+              puntos: userStats.puntosTotales,
+              racha: userStats.mejorRacha,
+              partidasJugadas: userStats.totalJugadas,
+              victoriasDuelo: userStats.victoriasDuelo,
+              derrotasDuelo: userStats.derrotasDuelo
+            });
+          }}
           onSelectTab={(tab) => setActiveTab(tab)}
           activeTab={activeTab}
         />

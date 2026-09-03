@@ -13,7 +13,8 @@ import {
   Play,
   Users,
   Target,
-  Lock
+  Lock,
+  Award
 } from "lucide-react";
 import { RangoJuridico } from "@/data/triviaData";
 import { cn } from "@/lib/utils";
@@ -52,6 +53,7 @@ export interface TriviaMobileDashboardProps {
   onOpenParcialFlash: () => void;
   onOpenRangosModal: () => void;
   onOpenGuideModal: () => void;
+  onOpenMyProfile?: () => void;
   onSelectTab: (tab: "jugar" | "duelos" | "ranking" | "historial") => void;
   activeTab: "jugar" | "duelos" | "ranking" | "historial";
 }
@@ -69,6 +71,7 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
   onOpenParcialFlash,
   onOpenRangosModal,
   onOpenGuideModal,
+  onOpenMyProfile,
   onSelectTab,
   activeTab
 }) => {
@@ -141,18 +144,35 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
 
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base sm:text-lg font-black text-white tracking-tight truncate">
+                  <h2 
+                    onClick={onOpenMyProfile}
+                    className="text-base sm:text-lg font-black text-white tracking-tight truncate cursor-pointer hover:text-amber-300 transition-colors"
+                    title="Tocar para ver mi perfil y medallas"
+                  >
                     {userName || "Estudiante DND"}
                   </h2>
                 </div>
-                <button
-                  type="button"
-                  onClick={onOpenRangosModal}
-                  className="text-xs text-amber-300 font-black hover:underline flex items-center gap-1 cursor-pointer pt-0.5"
-                >
-                  <span>Nivel {rangoActual.nivel || 1} • {rangoActual.nombre}</span>
-                  <ChevronRight className="w-3 h-3 text-amber-400/80" />
-                </button>
+                <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={onOpenRangosModal}
+                    className="text-xs text-amber-300 font-black hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Nivel {rangoActual.nivel || 1} • {rangoActual.nombre}</span>
+                    <ChevronRight className="w-3 h-3 text-amber-400/80" />
+                  </button>
+                  {onOpenMyProfile && (
+                    <button
+                      type="button"
+                      onClick={onOpenMyProfile}
+                      className="px-2 py-0.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-bold font-mono flex items-center gap-1 cursor-pointer transition-colors shadow-sm"
+                      title="Ver mi perfil, vitrina y logros"
+                    >
+                      <Award className="w-3 h-3 text-amber-400" />
+                      <span>Mi Medallero</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -212,23 +232,45 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
             </div>
           </div>
 
-          {/* Micro-stats chips */}
-          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-center">
-            <div className="p-2 rounded-2xl bg-white/[0.03] border border-white/5">
+          {/* Micro-stats chips (Tocar para abrir perfil) */}
+          <div 
+            onClick={onOpenMyProfile}
+            className={cn(
+              "grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-center",
+              onOpenMyProfile && "cursor-pointer group"
+            )}
+            title="Tocar para ver desglose completo en tu perfil"
+          >
+            <div className="p-2 rounded-2xl bg-white/[0.03] group-hover:bg-white/[0.07] border border-white/5 transition-colors">
               <span className="text-[9px] text-slate-400 uppercase font-black block">Partidas</span>
               <span className="text-xs font-black text-white font-mono">{userStats.totalJugadas}</span>
             </div>
-            <div className="p-2 rounded-2xl bg-white/[0.03] border border-white/5">
+            <div className="p-2 rounded-2xl bg-white/[0.03] group-hover:bg-white/[0.07] border border-white/5 transition-colors">
               <span className="text-[9px] text-slate-400 uppercase font-black block">Mejor Racha</span>
               <span className="text-xs font-black text-amber-400 font-mono flex items-center justify-center gap-1">
                 <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> x{userStats.mejorRacha}
               </span>
             </div>
-            <div className="p-2 rounded-2xl bg-white/[0.03] border border-white/5">
+            <div className="p-2 rounded-2xl bg-white/[0.03] group-hover:bg-white/[0.07] border border-white/5 transition-colors">
               <span className="text-[9px] text-slate-400 uppercase font-black block">Winrate 1v1</span>
               <span className="text-xs font-black text-emerald-400 font-mono">{winrate1v1}%</span>
             </div>
           </div>
+
+          {/* Botón directo de acceso a perfil, vitrina y logros */}
+          {onOpenMyProfile && (
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={onOpenMyProfile}
+                className="w-full py-2 px-3 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 active:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-black flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
+              >
+                <Award className="w-4 h-4 text-amber-400" />
+                <span>Ver Mi Perfil, Logros y Medallero</span>
+                <ChevronRight className="w-3.5 h-3.5 text-amber-400/80" />
+              </button>
+            </div>
+          )}
 
         </div>
       </div>
