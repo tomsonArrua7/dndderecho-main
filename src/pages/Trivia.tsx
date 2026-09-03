@@ -1204,6 +1204,13 @@ export default function Trivia() {
     }
   }, [userStats]);
 
+  // Scroll instantáneo a arriba al iniciar cualquier partida (examen o duelo)
+  useEffect(() => {
+    if (inGame) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
+  }, [inGame]);
+
   // Timer Effect
   useEffect(() => {
     let timer: NodeJS.Timeout;

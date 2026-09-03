@@ -92,8 +92,13 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
     ? "shadow-[0_0_15px_rgba(251,191,36,0.3)] border-amber-500/40" 
     : "shadow-[0_0_15px_rgba(52,211,153,0.2)] border-emerald-500/30";
 
+  // Asegurar siempre scroll arriba y centrado al renderizar cada pregunta
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [currentIndex]);
+
   return (
-    <div className="w-full min-h-screen bg-[#050B14] text-white flex flex-col items-center justify-start px-3 sm:px-4 pt-3 pb-28 relative overflow-x-hidden select-none">
+    <div className="w-full min-h-[100dvh] bg-[#050B14] text-white flex flex-col items-center justify-start sm:justify-center px-3 sm:px-4 py-4 pb-20 relative overflow-x-hidden select-none">
       
       {/* Background glow effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
