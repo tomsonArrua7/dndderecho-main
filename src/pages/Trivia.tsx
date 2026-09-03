@@ -1710,7 +1710,7 @@ export default function Trivia() {
           user_id: user.id,
           categoria_id: selectedCategoria,
           dificultad: "todas",
-          puntos: score, // Guarda el puntaje académico obtenido en la práctica
+          puntos: 0, // En modo práctica el impacto en puntos de rango es estrictamente 0
           aciertos: correctAnswersCount,
           total_preguntas: totalPreguntas,
           racha_maxima: maxStreak
@@ -1721,7 +1721,7 @@ export default function Trivia() {
           await supabase.from("trivia_estadisticas_usuario").upsert({
             user_id: user.id,
             partidas_jugadas: updatedStats.totalJugadas,
-            preguntas_acertadas: updatedStats.totalCorrectas,
+            total_aciertos: updatedStats.totalCorrectas,
             mejor_racha: updatedStats.mejorRacha,
             updated_at: new Date().toISOString()
           }, { onConflict: "user_id" });
@@ -1967,7 +1967,7 @@ export default function Trivia() {
                         <th className="pb-3 px-2">Fecha</th>
                         <th className="pb-3 px-2">Tipo</th>
                         <th className="pb-3 px-2 text-center">Preguntas</th>
-                        <th className="pb-3 px-2 text-center">Puntaje</th>
+                        <th className="pb-3 px-2 text-center">Aciertos</th>
                         <th className="pb-3 px-2 text-right">Resultado</th>
                       </tr>
                     </thead>
@@ -1987,11 +1987,11 @@ export default function Trivia() {
                               {act.total_preguntas || 10}
                             </td>
                             <td className="py-3 px-2 text-center font-black text-slate-900 dark:text-white font-mono text-sm">
-                              {act.puntos || 0} pts
+                              {act.aciertos ?? 0} / {act.total_preguntas || 10}
                             </td>
                             <td className="py-3 px-2 text-right">
                               <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase">
-                                Aprobado
+                                {(act.aciertos || 0) >= Math.ceil((act.total_preguntas || 10) / 2) ? "Aprobado" : "Regular"}
                               </span>
                             </td>
                           </tr>
@@ -2017,7 +2017,7 @@ export default function Trivia() {
                             {act.created_at ? new Date(act.created_at).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' }) : "Hoy"}
                           </span>
                           <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-black uppercase">
-                            Aprobado
+                            {(act.aciertos || 0) >= Math.ceil((act.total_preguntas || 10) / 2) ? "Aprobado" : "Regular"}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
@@ -2025,7 +2025,7 @@ export default function Trivia() {
                             <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                             <span>{act.categoria_id === "flash" ? "Modo Flash" : "Evaluación por Materia"}</span>
                           </div>
-                          <span className="font-mono font-black text-slate-900 dark:text-white text-sm">{act.puntos || 0} pts</span>
+                          <span className="font-mono font-black text-slate-900 dark:text-white text-sm">{act.aciertos ?? 0}/{act.total_preguntas || 10} aciertos</span>
                         </div>
                       </div>
                     ))
