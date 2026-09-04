@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Bell, Sparkles, CheckCircle2, AlertCircle, ArrowRight, X, Repeat2, Check, Swords } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,8 @@ export const NotificationCenter: React.FC = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // localStorage queda solo como cache de arranque para pintar algo antes de
+  // que responda la base. La fuente de verdad es trivia_notificaciones.
   const [duelNotifs, setDuelNotifs] = useState<any[]>(() => {
     try {
       return JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
@@ -37,20 +40,71 @@ export const NotificationCenter: React.FC = () => {
     }
   });
 
+  // Las notificaciones de duelo ahora las emite el servidor (trigger
+  // trg_notificar_duelo_finalizado) en el momento en que cierra la sala, para
+  // los dos jugadores. Se leen de la base, así llegan aunque el estudiante
+  // haya cerrado la pestaña, esté en otro dispositivo o haya limpiado el caché.
   useEffect(() => {
-    const handleUpdate = () => {
+    if (!user?.id) return;
+    let cancelado = false;
+
+    const mapearFila = (r: any) => ({
+      notifId: r.id,
+      id: r.data?.duelo_id || r.id,
+      title: r.titulo,
+      description: r.descripcion,
+      materiaNombre: r.data?.materia_nombre,
+      timestamp: r.created_at
+        ? new Date(r.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        : "Reciente",
+      seen: r.leida,
+      date: r.created_at ? new Date(r.created_at).getTime() : Date.now()
+    });
+
+    const cargar = async () => {
       try {
-        setDuelNotifs(JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]"));
+        const { data, error } = await supabase
+          .from("trivia_notificaciones")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        if (cancelado || error || !data) return;
+        const mapeadas = data.map(mapearFila);
+        setDuelNotifs(mapeadas);
+        try {
+          localStorage.setItem("dnd_duel_notifications", JSON.stringify(mapeadas));
+        } catch {}
       } catch {}
     };
 
-    window.addEventListener("dnd_duel_notification_event", handleUpdate);
-    window.addEventListener("storage", handleUpdate);
+    cargar();
+
+    // Entrega en vivo: sin polling y sin depender de eventos de la misma pestaña.
+    const canal = supabase
+      .channel(`notificaciones_trivia_${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "trivia_notificaciones",
+          filter: `user_id=eq.${user.id}`
+        },
+        () => cargar()
+      )
+      .subscribe();
+
+    // Red de respaldo por si el canal realtime no levanta.
+    const respaldo = setInterval(cargar, 30000);
+
     return () => {
-      window.removeEventListener("dnd_duel_notification_event", handleUpdate);
-      window.removeEventListener("storage", handleUpdate);
+      cancelado = true;
+      clearInterval(respaldo);
+      supabase.removeChannel(canal);
     };
-  }, []);
+  }, [user?.id]);
 
   if (!user) return null;
 
@@ -106,12 +160,23 @@ export const NotificationCenter: React.FC = () => {
     } else if (item.type === "duelo") {
       // Marcar duelo notif como vista
       const duelId = item.id.replace("duel-", "");
+      const notif = duelNotifs.find((d: any) => d.id === duelId);
+
+      const updated = duelNotifs.map((d: any) => d.id === duelId ? { ...d, seen: true } : d);
+      setDuelNotifs(updated);
       try {
-        const currentList = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
-        const updated = currentList.map((d: any) => d.id === duelId ? { ...d, seen: true } : d);
         localStorage.setItem("dnd_duel_notifications", JSON.stringify(updated));
-        setDuelNotifs(updated);
       } catch {}
+
+      // Marcarla leída en la base para que quede leída también en el celular.
+      if (notif?.notifId) {
+        supabase
+          .from("trivia_notificaciones")
+          .update({ leida: true })
+          .eq("id", notif.notifId)
+          .then(() => {})
+          .catch(() => {});
+      }
       if (item.actionPath) navigate(item.actionPath);
     } else if (item.actionPath) {
       navigate(item.actionPath);
@@ -123,6 +188,21 @@ export const NotificationCenter: React.FC = () => {
     const next = [...dismissedIds, id];
     setDismissedIds(next);
     localStorage.setItem("dnd_dismissed_notifications", JSON.stringify(next));
+
+    // Si es una notificación de duelo, el descarte también viaja a la base
+    // para que no reaparezca al abrir la app en otro dispositivo.
+    if (id.startsWith("duel-")) {
+      const duelId = id.replace("duel-", "");
+      const notif = duelNotifs.find((d: any) => d.id === duelId);
+      if (notif?.notifId) {
+        supabase
+          .from("trivia_notificaciones")
+          .update({ leida: true })
+          .eq("id", notif.notifId)
+          .then(() => {})
+          .catch(() => {});
+      }
+    }
   };
 
   return (

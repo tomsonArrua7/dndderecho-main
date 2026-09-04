@@ -157,6 +157,35 @@ function getLiveSeasonInfo() {
   }
 }
 
+/**
+ * El veredicto de un duelo lo dicta EXCLUSIVAMENTE el servidor: la función SQL
+ * fn_resolver_duelo escribe ganador_id de forma atómica bajo lock de fila, y un
+ * trigger la dispara en cuanto los dos jugadores figuran completos. El cliente
+ * ya no decide quién ganó ni cuánto MMR se mueve: solo traduce ese veredicto a
+ * un texto para el jugador.
+ */
+function interpretarResultadoDuelo(
+  ganadorId: string | null | undefined,
+  isPlayer1: boolean,
+  misPuntos: number,
+  puntosRival: number
+): { resultado: "victoria" | "derrota" | "empate"; puntos: number } {
+  // Fallback puramente visual para el instante en que el veredicto todavía no
+  // llegó. Nunca se persiste ni se usa para estimar puntos en la base.
+  const ganador =
+    ganadorId ??
+    (misPuntos > puntosRival
+      ? isPlayer1 ? "player1" : "player2"
+      : puntosRival > misPuntos
+        ? isPlayer1 ? "player2" : "player1"
+        : "empate");
+
+  if (ganador === "empate") return { resultado: "empate", puntos: 25 };
+
+  const gane = (ganador === "player1" && isPlayer1) || (ganador === "player2" && !isPlayer1);
+  return gane ? { resultado: "victoria", puntos: 50 } : { resultado: "derrota", puntos: -15 };
+}
+
 // Función helper para encontrar preguntas con coincidencia 100% precisa de la materia/tema buscado
 function findExactMatchingQuestions(userSubject: string, questions: TriviaQuestion[]): TriviaQuestion[] {
   if (!userSubject || !userSubject.trim()) return [];
@@ -983,19 +1012,15 @@ export default function Trivia() {
         const p2Aciertos = duel.player2Aciertos || 0;
         const oppName = isP1 ? (duel.player2Nombre || "Rival") : (duel.player1Nombre || "Rival");
 
-        let res: "victoria" | "derrota" | "empate" = "empate";
-        let ptsBonus = 25;
-
-        if (myScore > oppScore) {
-          res = "victoria";
-          ptsBonus = 50;
-        } else if (oppScore > myScore) {
-          res = "derrota";
-          ptsBonus = -15;
-        } else {
-          res = "empate";
-          ptsBonus = 25;
-        }
+        // El resultado sale de ganador_id, que escribió el servidor. Comparar
+        // puntajes acá volvía a abrir la puerta a que dos dispositivos mostraran
+        // veredictos distintos del mismo duelo.
+        const { resultado: res, puntos: ptsBonus } = interpretarResultadoDuelo(
+          duel.ganadorId,
+          !!isP1,
+          myScore,
+          oppScore
+        );
 
         markDuelAsSeen(duel.id);
         setActiveDuelRoom(duel);
@@ -1005,10 +1030,13 @@ export default function Trivia() {
           const currentNotifs = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
           const existingIndex = currentNotifs.findIndex((n: any) => n.id === duel.id);
           const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
+          const motivo = duel.porAbandono
+            ? `${oppName} abandonó el duelo`
+            : `Tu rival ${oppName} completó el duelo`;
           const newNotif = {
             id: duel.id,
             title: `⚔️ Duelo 1v1: ${duel.materiaNombre}`,
-            description: `Tu rival ${oppName} completó el duelo. Resultado: ${outcomeLabel}`,
+            description: `${motivo}. Resultado: ${outcomeLabel}`,
             materiaNombre: duel.materiaNombre,
             timestamp: duel.createdAt || "Reciente",
             seen: false,
@@ -1021,7 +1049,7 @@ export default function Trivia() {
           }
           localStorage.setItem("dnd_duel_notifications", JSON.stringify(currentNotifs.slice(0, 20)));
           window.dispatchEvent(new CustomEvent("dnd_duel_notification_event"));
-          toast.success(`⚔️ ¡${oppName} completó el duelo de ${duel.materiaNombre}! Resultado: ${outcomeLabel}`);
+          toast.success(`⚔️ ${motivo} (${duel.materiaNombre}). Resultado: ${outcomeLabel}`);
         } catch {}
 
         let duelQuestions = allQuestionsCombined.filter(q => duel.preguntasIds.includes(q.id));
@@ -1104,6 +1132,7 @@ export default function Trivia() {
             player2Puntos: d.player2_puntos || 0,
             player2Completed: d.player2_completed || false,
             ganadorId: d.ganador_id || undefined,
+            porAbandono: d.por_abandono || false,
             status: d.status || "esperando_rival",
             createdAt: d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Reciente"
           }));
@@ -1122,15 +1151,18 @@ export default function Trivia() {
               const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
               const oppScore = isP1 ? (duel.player2Puntos || 0) : (duel.player1Puntos || 0);
               const oppName = isP1 ? (duel.player2Nombre || "Rival") : (duel.player1Nombre || "Rival");
-              const res = myScore > oppScore ? "victoria" : oppScore > myScore ? "derrota" : "empate";
+              const { resultado: res } = interpretarResultadoDuelo(duel.ganadorId, !!isP1, myScore, oppScore);
               const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
+              const motivoInicial = duel.porAbandono
+                ? `${oppName} abandonó el duelo`
+                : `Tu rival ${oppName} completó el duelo`;
               try {
                 const currentNotifs = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
                 if (!currentNotifs.some((n: any) => n.id === duel.id)) {
                   const newNotif = {
                     id: duel.id,
                     title: `⚔️ Duelo 1v1: ${duel.materiaNombre}`,
-                    description: `Tu rival ${oppName} completó el duelo. Resultado: ${outcomeLabel}`,
+                    description: `${motivoInicial}. Resultado: ${outcomeLabel}`,
                     materiaNombre: duel.materiaNombre,
                     timestamp: duel.createdAt || "Reciente",
                     seen: false,
@@ -1741,68 +1773,58 @@ export default function Trivia() {
           ? { player1_aciertos: correctAnswersCount, player1_puntos: score, player1_completed: true }
           : { player2_aciertos: correctAnswersCount, player2_puntos: score, player2_completed: true };
 
-        // 1. Guardar primero el resultado de este jugador en Supabase
+        // 1. Registrar el resultado propio. Desde acá manda el servidor: el trigger
+        //    trg_resolver_duelo_auto cierra la sala y asigna el MMR de forma atómica
+        //    en cuanto la fila muestra a los dos jugadores completos. Ya no hay
+        //    ninguna decisión de resultado del lado del cliente.
         await supabase.from("trivia_duelos").update(updateData).eq("id", activeDuelRoom.id);
 
-        // 2. Traer el estado actualizado real de la sala desde Supabase
-        const { data: currentRoomData } = await supabase
-          .from("trivia_duelos")
-          .select("*")
-          .eq("id", activeDuelRoom.id)
-          .maybeSingle();
+        // 2. Reintento corto: si el rival ya había terminado, el veredicto del
+        //    servidor aparece en milisegundos. Si todavía no terminó, se muestra
+        //    la pantalla de espera y el resultado llega por realtime o por el
+        //    barrido de abandonos a los 5 minutos.
+        let room: any = null;
+        for (let intento = 0; intento < 3; intento += 1) {
+          const { data } = await supabase
+            .from("trivia_duelos")
+            .select("*")
+            .eq("id", activeDuelRoom.id)
+            .maybeSingle();
+          if (data) room = data;
+          if (room?.status === "finalizado") break;
+          if (intento < 2) await new Promise((r) => setTimeout(r, 400));
+        }
 
-        const room = currentRoomData || activeDuelRoom;
-        
-        const p1Score = isPlayer1 ? score : (room.player1_puntos || 0);
-        const p1Aciertos = isPlayer1 ? correctAnswersCount : (room.player1_aciertos || 0);
-        const p1Done = room.player1_completed || isPlayer1;
+        // Si la lectura falló por completo (sin red), se arma una vista mínima
+        // con lo propio para no dejar al jugador sin pantalla de cierre.
+        if (!room) {
+          room = {
+            player1_nombre: activeDuelRoom.player1Nombre,
+            player2_nombre: activeDuelRoom.player2Nombre,
+            player1_puntos: isPlayer1 ? score : activeDuelRoom.player1Puntos || 0,
+            player2_puntos: !isPlayer1 ? score : activeDuelRoom.player2Puntos || 0,
+            player1_aciertos: isPlayer1 ? correctAnswersCount : activeDuelRoom.player1Aciertos || 0,
+            player2_aciertos: !isPlayer1 ? correctAnswersCount : activeDuelRoom.player2Aciertos || 0,
+            status: "en_curso",
+            ganador_id: null
+          };
+        }
 
-        const p2Score = !isPlayer1 ? score : (room.player2_puntos || 0);
-        const p2Aciertos = !isPlayer1 ? correctAnswersCount : (room.player2_aciertos || 0);
-        const p2Done = room.player2_completed || !isPlayer1;
-        const p2Name = !isPlayer1 ? (room.player1_nombre || "Rival") : (room.player2_nombre || "Rival");
+        const p1Score = room.player1_puntos || 0;
+        const p1Aciertos = room.player1_aciertos || 0;
+        const p2Score = room.player2_puntos || 0;
+        const p2Aciertos = room.player2_aciertos || 0;
+        const rivalNombre = isPlayer1
+          ? (room.player2_nombre || "Rival")
+          : (room.player1_nombre || "Rival");
 
-        if (p1Done && p2Done) {
-          let rpcSuccess = false;
-          try {
-            const { error: rpcErr } = await supabase.rpc('fn_procesar_resultado_duelo', {
-              p_duelo_id: activeDuelRoom.id,
-              p_player1_puntos: p1Score,
-              p_player1_aciertos: p1Aciertos,
-              p_player2_puntos: p2Score,
-              p_player2_aciertos: p2Aciertos
-            });
-            if (!rpcErr) rpcSuccess = true;
-          } catch {
-            await supabase.from("trivia_duelos").update({
-              status: "finalizado",
-              ganador_id: p1Score > p2Score ? "player1" : (p2Score > p1Score ? "player2" : "empate")
-            }).eq("id", activeDuelRoom.id);
-          }
-
-          let res: "victoria" | "derrota" | "empate" = "empate";
-          let ptsBonus = 25;
-
-          const myScore = isPlayer1 ? p1Score : p2Score;
-          const oppScore = isPlayer1 ? p2Score : p1Score;
-
-          if (myScore > oppScore) {
-            res = "victoria";
-            ptsBonus = 50;
-          } else if (oppScore > myScore) {
-            res = "derrota";
-            ptsBonus = -15;
-          } else {
-            res = "empate";
-            ptsBonus = 25;
-          }
-
-          if (!rpcSuccess) {
-            if (res === "victoria") updatedStats.victoriasDuelo += 1;
-            else if (res === "derrota") updatedStats.derrotasDuelo += 1;
-            else updatedStats.empatesDuelo += 1;
-            updatedStats.puntosDuelista += ptsBonus;
-          }
+        if (room.status === "finalizado") {
+          const { resultado: res, puntos: ptsBonus } = interpretarResultadoDuelo(
+            room.ganador_id,
+            isPlayer1,
+            isPlayer1 ? p1Score : p2Score,
+            isPlayer1 ? p2Score : p1Score
+          );
 
           markDuelAsSeen(activeDuelRoom.id);
 
@@ -1817,7 +1839,7 @@ export default function Trivia() {
             maxStreak,
             isDuel1v1: true,
             duelDetails: {
-              rivalNombre: p2Name,
+              rivalNombre,
               p1Nombre: room.player1_nombre || "Jugador 1",
               p1Puntos: p1Score,
               p1Aciertos: p1Aciertos,
@@ -1826,11 +1848,17 @@ export default function Trivia() {
               p2Aciertos: p2Aciertos
             }
           });
+
+          // El MMR real ya quedó aplicado en la base por fn_resolver_duelo.
+          // Se relee en lugar de estimarlo localmente, que era la fuente de
+          // que el ranking y la tarjeta del jugador mostraran números distintos.
+          fetchUserStatsFromSupabase();
+          fetchRankingFromSupabase();
         } else {
           setDuelOutcomeModal({
             resultado: "esperando_rival",
             puntosGanados: 0,
-            rivalNombre: p2Name,
+            rivalNombre,
             p1Nombre: room.player1_nombre || "Jugador 1",
             p1Puntos: p1Score,
             p1Aciertos: p1Aciertos,

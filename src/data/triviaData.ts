@@ -58,6 +58,8 @@ export interface DueloTrivia {
   player2Completed?: boolean;
 
   ganadorId?: string | "empate";
+  /** true cuando la sala se cerró porque el rival abandonó y venció el plazo de 5 minutos. */
+  porAbandono?: boolean;
   status: "esperando_rival" | "en_curso" | "finalizado";
   createdAt: string;
 }
