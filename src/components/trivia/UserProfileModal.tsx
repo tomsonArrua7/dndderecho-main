@@ -118,9 +118,13 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div 
+      <div
         onClick={onClose}
-        className="fixed inset-0 z-50 bg-black/80 dark:bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 cursor-pointer overflow-hidden safe-area-inset"
+        className="fixed inset-0 z-[10050] bg-black/80 dark:bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 cursor-pointer overflow-hidden"
+        style={{
+          paddingTop: "max(0.75rem, env(safe-area-inset-top))",
+          paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+        }}
       >
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}

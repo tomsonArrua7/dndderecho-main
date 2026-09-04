@@ -478,6 +478,23 @@ export default function Trivia() {
     duelOutcomeModalRef.current = duelOutcomeModal;
   }, [duelOutcomeModal]);
 
+  // Bloquea el scroll del fondo en mobile mientras haya un modal de Trivia
+  // abierto, para que el gesto de scroll quede confinado al contenido interno
+  // del modal (evita que la página de atrás se mueva y "pierda" el modal).
+  const anyTriviaModalOpen = Boolean(
+    createdDueloModal || duelOutcomeModal || showReviewModal || showRangosModal
+  );
+  useEffect(() => {
+    if (anyTriviaModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [anyTriviaModalOpen]);
+
   // Filtros de juego Solo
   const [selectedDificultad, setSelectedDificultad] = useState<string>("todas");
   const [questionsCount, setQuestionsCount] = useState<number>(5);
@@ -3048,12 +3065,12 @@ export default function Trivia() {
         {/* MODAL SALA DE DUELO CREADA */}
         <AnimatePresence>
           {createdDueloModal && (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[10050] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-md w-full bg-white dark:bg-[#0D1527] border border-red-200 dark:border-red-500/40 rounded-3xl p-6 space-y-6 shadow-2xl relative text-center text-slate-900 dark:text-white"
+                className="max-w-md w-full bg-white dark:bg-[#0D1527] border border-red-200 dark:border-red-500/40 rounded-3xl p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xl relative text-center text-slate-900 dark:text-white"
               >
                 <div className="w-16 h-16 mx-auto rounded-2xl bg-red-500/10 dark:bg-red-500/20 border border-red-500/30 dark:border-red-500/40 flex items-center justify-center text-red-600 dark:text-red-400">
                   <Swords className="w-8 h-8" />
@@ -3107,12 +3124,12 @@ export default function Trivia() {
         {/* MODAL DE RESULTADO DE DUELO 1V1 */}
         <AnimatePresence>
           {duelOutcomeModal && (
-            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[10050] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-md w-full bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-white/20 rounded-3xl p-6 space-y-6 shadow-2xl relative text-center text-slate-900 dark:text-white"
+                className="max-w-md w-full bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-white/20 rounded-3xl p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xl relative text-center text-slate-900 dark:text-white"
               >
                 <div className={cn(
                   "w-16 h-16 mx-auto rounded-2xl flex items-center justify-center font-bold border shadow-xl",
@@ -3156,12 +3173,12 @@ export default function Trivia() {
         {/* MODAL DE REVISIÓN DE PREGUNTAS Y FUNDAMENTOS */}
         <AnimatePresence>
           {showReviewModal && (
-            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[10050] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-2xl w-full bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-white/20 rounded-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto shadow-2xl relative text-slate-900 dark:text-white"
+                className="max-w-2xl w-full bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-white/20 rounded-3xl p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[80dvh] sm:max-h-[85dvh] overflow-y-auto shadow-2xl relative text-slate-900 dark:text-white"
               >
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
                   <div className="flex items-center gap-2">
@@ -3233,12 +3250,12 @@ export default function Trivia() {
         {/* MODAL CON LA ESCALA DE LOS 12 RANGOS JURÍDICOS */}
         <AnimatePresence>
           {showRangosModal && (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[10050] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-2xl w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/20 rounded-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto shadow-2xl relative text-slate-900 dark:text-white"
+                className="max-w-2xl w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/20 rounded-3xl p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[80dvh] sm:max-h-[85dvh] overflow-y-auto shadow-2xl relative text-slate-900 dark:text-white"
               >
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
                   <div className="flex items-center gap-2">

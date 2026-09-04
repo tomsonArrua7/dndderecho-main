@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -26,16 +26,28 @@ export interface TriviaGuideModalProps {
 export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onClose }) => {
   const [activeGuideTab, setActiveGuideTab] = useState<'modos' | 'puntos' | 'rangos' | 'temporadas' | 'logros'>('modos');
 
+  // Bloquea el scroll de fondo en mobile mientras la guía está abierta.
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+      <div className="fixed inset-0 z-[10050] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="w-full max-w-2xl bg-white dark:bg-gradient-to-b dark:from-[#0D1527] dark:via-[#080E1A] dark:to-[#050B14] border border-slate-200 dark:border-white/15 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 relative overflow-hidden max-h-[92vh] flex flex-col text-slate-900 dark:text-white"
+          className="w-full max-w-2xl bg-white dark:bg-gradient-to-b dark:from-[#0D1527] dark:via-[#080E1A] dark:to-[#050B14] border border-slate-200 dark:border-white/15 rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 relative overflow-hidden max-h-[85dvh] sm:max-h-[90dvh] flex flex-col text-slate-900 dark:text-white"
         >
           {/* BOTÓN CERRAR */}
           <button
