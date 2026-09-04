@@ -77,7 +77,7 @@ BEGIN
     IF NEW.player1_id IS NOT NULL THEN
         INSERT INTO public.trivia_notificaciones (user_id, tipo, titulo, descripcion, data)
         VALUES (
-            NEW.player1_id,
+            NEW.player1_id::uuid,
             'duelo',
             '⚔️ Duelo 1v1: ' || COALESCE(NEW.materia_nombre, 'Trivia'),
             v_motivo_p1 || '. ' || CASE
@@ -104,7 +104,7 @@ BEGIN
     IF NEW.player2_id IS NOT NULL THEN
         INSERT INTO public.trivia_notificaciones (user_id, tipo, titulo, descripcion, data)
         VALUES (
-            NEW.player2_id,
+            NEW.player2_id::uuid,
             'duelo',
             '⚔️ Duelo 1v1: ' || COALESCE(NEW.materia_nombre, 'Trivia'),
             v_motivo_p2 || '. ' || CASE
@@ -160,8 +160,10 @@ $$;
 -- Para que ningún jugador de la beta se quede sin ver un resultado que se
 -- perdió mientras las notificaciones vivían solo en localStorage.
 
+-- El filtro de formato UUID evita que un id corrupto/de prueba aborte todo
+-- el backfill (player1_id/player2_id llegan a esta base como TEXT).
 INSERT INTO public.trivia_notificaciones (user_id, tipo, titulo, descripcion, data, leida, created_at)
-SELECT d.player1_id, 'duelo',
+SELECT d.player1_id::uuid, 'duelo',
        '⚔️ Duelo 1v1: ' || COALESCE(d.materia_nombre, 'Trivia'),
        COALESCE(d.player2_nombre, 'Rival') || ' completó el duelo. ' || CASE
             WHEN d.ganador_id = 'player1' THEN '¡Victoria! (+50 pts)'
@@ -174,11 +176,13 @@ SELECT d.player1_id, 'duelo',
        true,  -- se marcan leídas: son historial, no deben explotar el badge
        COALESCE(d.finalizado_at, d.created_at)
 FROM public.trivia_duelos d
-WHERE d.status = 'finalizado' AND d.player1_id IS NOT NULL
+WHERE d.status = 'finalizado'
+  AND d.player1_id IS NOT NULL
+  AND d.player1_id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.trivia_notificaciones (user_id, tipo, titulo, descripcion, data, leida, created_at)
-SELECT d.player2_id, 'duelo',
+SELECT d.player2_id::uuid, 'duelo',
        '⚔️ Duelo 1v1: ' || COALESCE(d.materia_nombre, 'Trivia'),
        COALESCE(d.player1_nombre, 'Rival') || ' completó el duelo. ' || CASE
             WHEN d.ganador_id = 'player2' THEN '¡Victoria! (+50 pts)'
@@ -191,7 +195,9 @@ SELECT d.player2_id, 'duelo',
        true,
        COALESCE(d.finalizado_at, d.created_at)
 FROM public.trivia_duelos d
-WHERE d.status = 'finalizado' AND d.player2_id IS NOT NULL
+WHERE d.status = 'finalizado'
+  AND d.player2_id IS NOT NULL
+  AND d.player2_id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 ON CONFLICT DO NOTHING;
 
 GRANT SELECT, UPDATE, DELETE ON public.trivia_notificaciones TO authenticated;

@@ -162,14 +162,14 @@ BEGIN
     WHERE id = p_duelo_id;
 
     PERFORM public.fn_aplicar_delta_mmr(
-        d.player1_id, v_delta_p1,
+        d.player1_id::uuid, v_delta_p1,
         CASE WHEN v_ganador = 'player1' THEN 'victoria'
              WHEN v_ganador = 'player2' THEN 'derrota'
              ELSE 'empate' END
     );
 
     PERFORM public.fn_aplicar_delta_mmr(
-        d.player2_id, v_delta_p2,
+        d.player2_id::uuid, v_delta_p2,
         CASE WHEN v_ganador = 'player2' THEN 'victoria'
              WHEN v_ganador = 'player1' THEN 'derrota'
              ELSE 'empate' END
@@ -483,7 +483,7 @@ BEGIN
 
         IF d.player1_id IS NOT NULL THEN
             INSERT INTO _mmr_calc (user_id, puntos, victorias, derrotas, empates)
-            VALUES (d.player1_id, GREATEST(0, d.d1),
+            VALUES (d.player1_id::uuid, GREATEST(0, d.d1),
                     (d.ganador_id = 'player1')::INT,
                     (d.ganador_id = 'player2')::INT,
                     (d.ganador_id = 'empate')::INT)
@@ -496,7 +496,7 @@ BEGIN
 
         IF d.player2_id IS NOT NULL THEN
             INSERT INTO _mmr_calc (user_id, puntos, victorias, derrotas, empates)
-            VALUES (d.player2_id, GREATEST(0, d.d2),
+            VALUES (d.player2_id::uuid, GREATEST(0, d.d2),
                     (d.ganador_id = 'player2')::INT,
                     (d.ganador_id = 'player1')::INT,
                     (d.ganador_id = 'empate')::INT)
