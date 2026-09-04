@@ -466,21 +466,21 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[10px] font-mono font-black uppercase">
-                  <Lock className="w-3 h-3 text-amber-400" />
-                  <span>En Calibración Técnica</span>
+                <div className="absolute bottom-2.5 left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/70 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[10px] font-mono font-black uppercase">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Powered by AI</span>
                 </div>
               </div>
 
               <div>
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400/80 font-mono block">
-                  🔧 Mantenimiento & Ajuste
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 font-mono block">
+                  🧠 Generado en Tiempo Real
                 </span>
                 <h3 className="text-xl font-black text-white tracking-tight pt-0.5">
                   Parcial Flash IA
                 </h3>
                 <p className="text-xs text-slate-300 pt-1.5 leading-relaxed">
-                  Estamos optimizando los modelos de inteligencia artificial para una mayor precisión en el temario. Próximamente disponible.
+                  Elegí una materia y nuestra IA armará un parcial de 5 preguntas basado en los programas oficiales de la facultad.
                 </p>
               </div>
             </div>
@@ -488,11 +488,11 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
             <div className="pt-5 relative z-10">
               <button
                 type="button"
-                disabled
-                className="w-full py-3.5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed opacity-80"
+                onClick={onOpenParcialFlash}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-600 via-orange-500 to-amber-500 hover:from-amber-500 hover:to-orange-400 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-600/40 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
               >
-                <Lock className="w-4 h-4 text-slate-400" />
-                <span>Módulo en Calibración</span>
+                <Sparkles className="w-4 h-4" />
+                <span>Generar Parcial AI</span>
               </button>
             </div>
           </motion.div>

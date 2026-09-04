@@ -76,8 +76,7 @@ jobs:
             mkdir -p /root/supabase/docker/volumes/functions/sync-instagram-feed 2>/dev/null || true
             cp -r supabase/functions/sync-instagram-feed/* /root/supabase/docker/volumes/functions/sync-instagram-feed/ 2>/dev/null || true
 
+            mkdir -p /root/supabase/docker/volumes/functions/asistente 2>/dev/null || true
+            cp -r supabase/functions/asistente/* /root/supabase/docker/volumes/functions/asistente/ 2>/dev/null || true
+
             echo "Deploy completado con éxito."
-
-
-
-

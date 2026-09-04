@@ -122,13 +122,35 @@ Por favor, explica en un tono pedagógico, directo y muy claro (EN MÁXIMO 2 ORA
     // =========================================================================
     if (accion === "generar_parcial_flash" || accion === "generar_preguntas_trivia") {
       const cantidadPreguntas = cantidad || 5;
+      
+      // === RAG: INYECCIÓN DE PROGRAMAS OFICIALES ===
+      let contextoTemario = "";
+      try {
+        const { data: fragmentos } = await supabase
+          .from("apuntes_fragmentos")
+          .select("contenido")
+          .eq("materia", materia || "")
+          .limit(5);
+
+        if (fragmentos && fragmentos.length > 0) {
+          contextoTemario = fragmentos.map(f => f.contenido).join("\n\n");
+        }
+      } catch (err: any) {
+        console.warn("No se pudo obtener el programa oficial para RAG:", err.message);
+      }
+
       const promptParcial = `Sos el evaluador académico oficial de la Facultad de Ciencias Jurídicas y Sociales (FCJyS) de la Universidad Nacional de La Plata (UNLP), en la ciudad de La Plata, Provincia de Buenos Aires, República Argentina.
 Generá EXACTAMENTE ${cantidadPreguntas} preguntas académicas de opción múltiple (Multiple Choice con 4 opciones) enfocadas EXCLUSIVAMENTE en la materia de Derecho: "${materia || 'Derecho General'}".
 
+CONTEXTO OFICIAL OBLIGATORIO (PROGRAMA DE LA MATERIA):
+"""
+${contextoTemario || 'No hay programa cargado. Limitá las preguntas a conceptos absolutamente generales y elementales de esta materia en el derecho argentino, sin inventar doctrinas específicas.'}
+"""
+
 ¡REGLAS CRÍTICAS OBLIGATORIAS!:
-1. Las preguntas DEBEN estar fundamentadas 100% en el ordenamiento jurídico argentino vigente (Código Civil y Comercial, Código Penal, CPCCBA, Ley de Procedimiento Administrativo PBA / Nacional, Ley de Contrato de Trabajo 20.744, Constitución Nacional y Provincial, y doctrina de las cátedras de la UNLP).
-2. Está terminantemente prohibido incluir preguntas de otras materias o jurisprudencia ajena a Argentina.
-3. Las opciones deben ser precisas, con 1 respuesta correcta y 3 distractores verosímiles pero erróneos.
+1. Las preguntas DEBEN estar fundamentadas 100% en el ordenamiento jurídico argentino vigente y en los temas listados en el CONTEXTO OFICIAL de arriba.
+2. Está terminantemente prohibido incluir preguntas de otras materias, temas no incluidos en el contexto, o jurisprudencia ajena a Argentina. ¡NO INVENTES TEMAS! Si la materia es Civil, no preguntes de Penal.
+3. Las opciones deben ser precisas, con 1 respuesta correcta y 3 distractores verosímiles pero absolutamente erróneos y libres de ambigüedad.
 4. Incluí el fundamento normativo exacto (ej: Art. 752 CCyCN, Art. 79 CP, Art. 14 bis CN, etc.).
 5. Responde ÚNICAMENTE en formato JSON plano (un arreglo JSON sin bloques markdown ni texto adicional).
 
