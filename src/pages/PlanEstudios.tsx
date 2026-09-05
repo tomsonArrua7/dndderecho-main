@@ -11,6 +11,7 @@ import {
   BLOQUES_ORIENTACION,
   ORIENTACION_REQUISITO,
   BloqueOrientacionId,
+  duracionPorHoras,
 } from "@/data/plan6Structure";
 import {
   MATERIAS_PLAN5,
@@ -415,11 +416,7 @@ const PlanEstudios = () => {
     const raw = planId === "plan6" ? MATERIAS_PLAN6 : MATERIAS_PLAN5;
     return raw.map(m => ({
       ...m,
-      duracion: (m.duracion ||
-                 (m.horas === 32 ? "bimestral" :
-                  m.horas === 64 ? "trimestral" :
-                  m.horas === 96 ? "cuatrimestral" :
-                  m.horas === 120 ? "semestral" : "cuatrimestral")) as any
+      duracion: duracionPorHoras(m.horas)
     }));
   }, [planId]);
   const currentTotal = useMemo(() => planId === "plan6" ? TOTAL_MATERIAS_PLAN6 : TOTAL_MATERIAS_PLAN5, [planId]);

@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { LISTA_ARCHIVOS_LINKS } from "@/data/links_todos";
 import { MAPA_LINKS_MATERIAS } from "@/data/links_carpetas";
+import { mejorMateria } from "@/lib/materiaMatch";
 
 interface Materia {
   id: string;
@@ -64,45 +65,24 @@ const Apuntes = () => {
   // 1. Obtener carpetas oficiales de la materia seleccionada
   const foldersMateria = useMemo(() => {
     if (!selectedMateria) return null;
-    const cleanMateria = selectedMateria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-    
-    console.log("foldersMateria matching start:", { selectedMateria, cleanMateria });
-
-    for (const [key, val] of Object.entries(MAPA_LINKS_MATERIAS)) {
-      const normKey = key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-      if (normKey === cleanMateria) {
-        console.log("foldersMateria exact match found key:", key);
-        return val;
-      }
+    const entradas = Object.entries(MAPA_LINKS_MATERIAS);
+    const match = mejorMateria(selectedMateria, entradas, ([key]) => key);
+    if (!match) {
+      console.warn("foldersMateria mismatch! No match for:", selectedMateria);
+      return null;
     }
-    for (const [key, val] of Object.entries(MAPA_LINKS_MATERIAS)) {
-      const normKey = key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-      if (normKey.includes(cleanMateria) || cleanMateria.includes(normKey)) {
-        console.log("foldersMateria partial match found key:", key);
-        return val;
-      }
-    }
-    console.warn("foldersMateria mismatch! No match for:", selectedMateria);
-    return null;
+    return match[1];
   }, [selectedMateria]);
 
   // 2. Obtener lista de archivos individuales específicos para la materia seleccionada
   const archivosMateria = useMemo(() => {
     if (!selectedMateria) return [];
-    const cleanMateria = selectedMateria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-    
-    let matched = LISTA_ARCHIVOS_LINKS.filter(a => {
-      const normKey = a.materia.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-      return normKey === cleanMateria;
-    });
-
-    if (matched.length === 0) {
-      matched = LISTA_ARCHIVOS_LINKS.filter(a => {
-        const normKey = a.materia.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
-        return normKey.includes(cleanMateria) || cleanMateria.includes(normKey);
-      });
-    }
-    return matched;
+    // Elegimos primero el nombre de materia más parecido y recién después
+    // filtramos los archivos: así "Derecho Privado II" no arrastra los de "Privado I".
+    const nombres = Array.from(new Set(LISTA_ARCHIVOS_LINKS.map(a => a.materia)));
+    const nombreMateria = mejorMateria(selectedMateria, nombres, n => n);
+    if (!nombreMateria) return [];
+    return LISTA_ARCHIVOS_LINKS.filter(a => a.materia === nombreMateria);
   }, [selectedMateria]);
 
   // 3. Filtrar archivos en caliente según el buscador del alumno

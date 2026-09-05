@@ -32,6 +32,23 @@ export interface Materia {
   requisitosEspeciales?: RequisitosEspeciales;
 }
 
+/**
+ * La duración de una materia se desprende de su carga horaria:
+ * 32 hs bimestral, 64 hs trimestral, 96 hs cuatrimestral, 120 y 144 hs semestral.
+ * (144 hs son las materias largas del Plan 5.) Se usa como fuente única para que
+ * el campo `duracion` no quede desfasado.
+ */
+export function duracionPorHoras(horas: number): Duracion {
+  switch (horas) {
+    case 32: return "bimestral";
+    case 64: return "trimestral";
+    case 96: return "cuatrimestral";
+    case 120:
+    case 144: return "semestral";
+    default: return "cuatrimestral";
+  }
+}
+
 export const MATERIAS_PLAN6: Materia[] = [
   // ══════════════════════════════════════════════════════════════════
   // PRIMER AÑO
@@ -40,7 +57,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10610",
     nombre: "Introducción al Estudio de las Ciencias Sociales",
     nombreCorto: "Intro Cs. Sociales",
-    anio: 1, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 1, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [],
   },
   {
@@ -68,7 +85,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10616",
     nombre: "Introducción al Pensamiento Científico",
     nombreCorto: "Intro Pensamiento Cient.",
-    anio: 1, duracion: "cuatrimestral", horas: 32, tipo: "regular",
+    anio: 1, duracion: "bimestral", horas: 32, tipo: "regular",
     requisitos: [{ id: "10610", tipo: "aprobada" }],
   },
   {
@@ -106,7 +123,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10123",
     nombre: "Derecho Privado II - Civil",
     nombreCorto: "D. Privado II (Civil)",
-    anio: 2, duracion: "cuatrimestral", horas: 120, tipo: "regular",
+    anio: 2, duracion: "semestral", horas: 120, tipo: "regular",
     requisitos: [
       { id: "10122", tipo: "aprobada" },
       { id: "10627", tipo: "aprobada" }
@@ -136,14 +153,14 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10626",
     nombre: "Derechos Humanos",
     nombreCorto: "Derechos Humanos",
-    anio: 2, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 2, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [{ id: "10125", tipo: "aprobada" }],
   },
   {
     id: "10627",
     nombre: "Teoría del Conflicto",
     nombreCorto: "Teoría del Conflicto",
-    anio: 2, duracion: "cuatrimestral", horas: 32, tipo: "regular",
+    anio: 2, duracion: "bimestral", horas: 32, tipo: "regular",
     requisitos: [
       { id: "10616", tipo: "aprobada" },
       { id: "10113", tipo: "aprobada" }
@@ -153,7 +170,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10617",
     nombre: "Taller de lecto-comprensión en Idioma I",
     nombreCorto: "Idioma I",
-    anio: 2, duracion: "cuatrimestral", horas: 32, tipo: "idioma",
+    anio: 2, duracion: "bimestral", horas: 32, tipo: "idioma",
     requisitos: [],
     requisitosEspeciales: { primerAnioCompleto: true }
   },
@@ -161,7 +178,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10618",
     nombre: "Taller de lecto-comprensión en Idioma II",
     nombreCorto: "Idioma II",
-    anio: 2, duracion: "cuatrimestral", horas: 32, tipo: "idioma",
+    anio: 2, duracion: "bimestral", horas: 32, tipo: "idioma",
     requisitos: [],
     requisitosEspeciales: { primerAnioCompleto: true }
   },
@@ -220,7 +237,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10136",
     nombre: "Derecho Público, Provincial y Municipal",
     nombreCorto: "D. Público Prov. y Mun.",
-    anio: 3, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 3, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [{ id: "10125", tipo: "aprobada" }],
   },
   {
@@ -262,7 +279,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10144",
     nombre: "Derecho Procesal II",
     nombreCorto: "D. Procesal II",
-    anio: 4, duracion: "cuatrimestral", horas: 120, tipo: "regular",
+    anio: 4, duracion: "semestral", horas: 120, tipo: "regular",
     requisitos: [
       { id: "10134", tipo: "aprobada" },
       { id: "10132", tipo: "aprobada" },
@@ -280,14 +297,14 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10649",
     nombre: "Mediación y Medios de Resolución de Conflictos",
     nombreCorto: "Mediación y Conflictos",
-    anio: 4, duracion: "cuatrimestral", horas: 32, tipo: "regular",
+    anio: 4, duracion: "bimestral", horas: 32, tipo: "regular",
     requisitos: [{ id: "10144", tipo: "aprobada" }],
   },
   {
     id: "10146",
     nombre: "Derecho Agrario",
     nombreCorto: "Derecho Agrario",
-    anio: 4, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 4, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [{ id: "10141", tipo: "aprobada" }],
   },
   {
@@ -301,7 +318,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10179",
     nombre: "Seminario",
     nombreCorto: "Seminario",
-    anio: 4, duracion: "cuatrimestral", horas: 32, tipo: "seminario",
+    anio: 4, duracion: "bimestral", horas: 32, tipo: "seminario",
     requisitos: [],
     requisitosEspeciales: { porcentajeCarrera: 50 }
   },
@@ -330,28 +347,28 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10152",
     nombre: "Derecho de la Navegación",
     nombreCorto: "Derecho Navegación",
-    anio: 5, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 5, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [{ id: "10142", tipo: "aprobada" }],
   },
   {
     id: "10650",
     nombre: "Derecho Colectivo del Trabajo y Seg. Social",
     nombreCorto: "D. Colectivo y Seg. Soc.",
-    anio: 5, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 5, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [{ id: "10640", tipo: "aprobada" }],
   },
   {
     id: "10154",
     nombre: "Derecho de Minería y Energía",
     nombreCorto: "D. Minería y Energía",
-    anio: 5, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 5, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [{ id: "10141", tipo: "aprobada" }],
   },
   {
     id: "10155",
     nombre: "Sociología Jurídica",
     nombreCorto: "Sociología Jurídica",
-    anio: 5, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 5, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [
       { id: "10653", tipo: "aprobada" },
       { id: "10147", tipo: "aprobada" }
@@ -371,7 +388,7 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10659",
     nombre: "Derecho de las Sucesiones",
     nombreCorto: "D. Sucesiones",
-    anio: 5, duracion: "cuatrimestral", horas: 64, tipo: "regular",
+    anio: 5, duracion: "trimestral", horas: 64, tipo: "regular",
     requisitos: [{ id: "10653", tipo: "aprobada" }],
   },
   {
@@ -410,14 +427,14 @@ export const MATERIAS_PLAN6: Materia[] = [
     id: "10137",
     nombre: "Adaptaciones Profesionales Penales",
     nombreCorto: "Adaptaciones Penales",
-    anio: 5, duracion: "cuatrimestral", horas: 120, tipo: "practica",
+    anio: 5, duracion: "semestral", horas: 120, tipo: "practica",
     requisitos: [{ id: "10134", tipo: "aprobada" }]
   },
   {
     id: "10148",
     nombre: "Adaptaciones Profesionales Civiles",
     nombreCorto: "Adaptaciones Civiles",
-    anio: 5, duracion: "cuatrimestral", horas: 120, tipo: "practica",
+    anio: 5, duracion: "semestral", horas: 120, tipo: "practica",
     requisitos: [{ id: "10144", tipo: "aprobada" }]
   }
 ];

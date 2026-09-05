@@ -70,7 +70,7 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10122",
     nombre: "Derecho Civil I",
     nombreCorto: "Derecho Civil I",
-    anio: 2, duracion: "cuatrimestral", horas: 144, tipo: "regular",
+    anio: 2, duracion: "semestral", horas: 144, tipo: "regular",
     requisitos: [
       { id: "10111", tipo: "aprobada" },
       { id: "10121", tipo: "aprobada" }
@@ -80,14 +80,14 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10123",
     nombre: "Derecho Civil II",
     nombreCorto: "Derecho Civil II",
-    anio: 2, duracion: "cuatrimestral", horas: 144, tipo: "regular",
+    anio: 2, duracion: "semestral", horas: 144, tipo: "regular",
     requisitos: [{ id: "10122", tipo: "aprobada" }],
   },
   {
     id: "10124",
     nombre: "Derecho Penal I",
     nombreCorto: "Derecho Penal I",
-    anio: 2, duracion: "cuatrimestral", horas: 144, tipo: "regular",
+    anio: 2, duracion: "semestral", horas: 144, tipo: "regular",
     requisitos: [{ id: "10122", tipo: "aprobada" }],
   },
   {
@@ -119,7 +119,7 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10134",
     nombre: "Derecho Procesal I",
     nombreCorto: "Derecho Procesal I",
-    anio: 3, duracion: "cuatrimestral", horas: 144, tipo: "regular",
+    anio: 3, duracion: "semestral", horas: 144, tipo: "regular",
     requisitos: [
       { id: "10135", tipo: "aprobada" },
       { id: "10136", tipo: "aprobada" }
@@ -129,7 +129,7 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10135",
     nombre: "Derecho Penal II",
     nombreCorto: "Derecho Penal II",
-    anio: 3, duracion: "cuatrimestral", horas: 144, tipo: "regular",
+    anio: 3, duracion: "semestral", horas: 144, tipo: "regular",
     requisitos: [{ id: "10124", tipo: "aprobada" }],
   },
   {
@@ -143,7 +143,7 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10137",
     nombre: "Adaptación profesional prácticas penales",
     nombreCorto: "Prácticas Penales",
-    anio: 3, duracion: "cuatrimestral", horas: 144, tipo: "practica",
+    anio: 3, duracion: "semestral", horas: 144, tipo: "practica",
     requisitos: [{ id: "10134", tipo: "aprobada" }],
   },
   {
@@ -188,7 +188,7 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10144",
     nombre: "Derecho Procesal II",
     nombreCorto: "Derecho Procesal II",
-    anio: 4, duracion: "cuatrimestral", horas: 144, tipo: "regular",
+    anio: 4, duracion: "semestral", horas: 144, tipo: "regular",
     requisitos: [{ id: "10134", tipo: "aprobada" }],
   },
   {
@@ -219,7 +219,7 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10148",
     nombre: "Adap. prof. de proc. civiles y comerciales",
     nombreCorto: "Prácticas Civ. y Com.",
-    anio: 4, duracion: "cuatrimestral", horas: 144, tipo: "practica",
+    anio: 4, duracion: "semestral", horas: 144, tipo: "practica",
     requisitos: [{ id: "10144", tipo: "aprobada" }],
   },
 
@@ -247,7 +247,7 @@ export const MATERIAS_PLAN5: MateriaPlan5[] = [
     id: "10153",
     nombre: "Derecho Civil V",
     nombreCorto: "Derecho Civil V",
-    anio: 5, duracion: "cuatrimestral", horas: 144, tipo: "regular",
+    anio: 5, duracion: "semestral", horas: 144, tipo: "regular",
     requisitos: [{ id: "10143", tipo: "aprobada" }],
   },
   {
