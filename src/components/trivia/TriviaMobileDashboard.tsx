@@ -302,7 +302,7 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
           )}
         >
           <Swords className="w-4 h-4" />
-          <span>Salas 1v1</span>
+          <span>Duelos 1v1</span>
         </button>
 
         <button
@@ -316,7 +316,7 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
           )}
         >
           <Trophy className="w-4 h-4" />
-          <span>Ranking & Podio</span>
+          <span>Ranking</span>
         </button>
 
         <button

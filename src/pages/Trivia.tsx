@@ -55,7 +55,6 @@ import {
   Zap,
   Plus,
   RefreshCw,
-  Calendar,
   Eye,
   Loader2
 } from "lucide-react";
@@ -360,9 +359,14 @@ export default function Trivia() {
   // Pestañas Principales: "jugar" | "duelos" | "ranking" | "historial"
   const [activeTab, setActiveTab] = useState<"jugar" | "duelos" | "ranking" | "historial">("jugar");
   const [isPracticeModalOpen, setIsPracticeModalOpen] = useState(false);
-  const [duelosSubTab, setDuelosSubTab] = useState<"disponibles" | "historial">("disponibles");
   const [showRangosModal, setShowRangosModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+
+  // Selector de materia de Duelos 1v1: arranca colapsado (la mayoría usa el default "Toda la Carrera")
+  const [dueloSelectorExpanded, setDueloSelectorExpanded] = useState(false);
+
+  // Filtro de tipo de actividad en la pestaña unificada "Mi Historial"
+  const [historialFiltro, setHistorialFiltro] = useState<"todos" | "duelos" | "practica">("todos");
 
   // Filtro de Año y Materia para Evaluación Individual (Totalmente independiente)
   const [selectedYearFilter, setSelectedYearFilter] = useState<number>(0);
@@ -1151,7 +1155,8 @@ export default function Trivia() {
             ganadorId: d.ganador_id || undefined,
             porAbandono: d.por_abandono || false,
             status: d.status || "esperando_rival",
-            createdAt: d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Reciente"
+            createdAt: d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Reciente",
+            createdAtRaw: d.created_at || undefined
           }));
 
         setDuelosList(mapped);
@@ -1936,7 +1941,7 @@ export default function Trivia() {
 
   // PANTALLA PRINCIPAL
   return (
-    <div className="min-h-screen bg-[#050B14] text-white py-6 md:py-10 px-3 sm:px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[#050B14] text-white py-6 md:py-10 px-3 sm:px-6 relative [overflow-x:clip]">
       {/* Background glow effects */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/3 left-10 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -1992,290 +1997,335 @@ export default function Trivia() {
           onStartGame={handleStartGame}
         />
 
-        {/* PESTAÑA: MI HISTORIAL Y CONSEJOS */}
-        {activeTab === "historial" && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
-              
-              {/* IZQUIERDA: TU ACTIVIDAD RECIENTE (lg:col-span-8) */}
-              <div className="lg:col-span-8 bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl text-slate-900 dark:text-white">
-                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
-                  <h3 className="font-black text-xs md:text-sm text-slate-900 dark:text-white uppercase tracking-wider">TU ACTIVIDAD RECIENTE</h3>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Últimas Evaluaciones</span>
-                </div>
+        {/* PESTAÑA: MI HISTORIAL (DUELOS 1V1 + PRÁCTICA, UNIFICADO) */}
+        {activeTab === "historial" && (() => {
+          const duelosFinalizados = duelosList.filter(d => {
+            const isFinished = d.status === "finalizado" || (d.player1Completed && d.player2Completed);
+            if (!isFinished) return false;
+            const isPlayer1 = (user?.id && d.player1Id === user.id) || d.player1Nombre === userName;
+            const isPlayer2 = (user?.id && d.player2Id === user.id) || (d.player2Nombre && d.player2Nombre === userName);
+            return isPlayer1 || isPlayer2;
+          });
 
-                {/* VISTA TABLA DESKTOP */}
-                <div className="hidden sm:block overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead>
-                      <tr className="text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase border-b border-slate-200 dark:border-white/10">
-                        <th className="pb-3 px-2">Fecha</th>
-                        <th className="pb-3 px-2">Tipo</th>
-                        <th className="pb-3 px-2 text-center">Preguntas</th>
-                        <th className="pb-3 px-2 text-center">Aciertos</th>
-                        <th className="pb-3 px-2 text-right">Resultado</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-medium">
-                      {recentActivityList.length > 0 ? (
-                        recentActivityList.slice(0, 5).map((act, idx) => (
-                          <tr key={act.id || idx} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
-                            <td className="py-3 px-2 text-slate-600 dark:text-slate-300 font-mono text-[11px]">
-                              {act.created_at ? new Date(act.created_at).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' }) : "Hoy"}
-                              <span className="text-slate-400 dark:text-slate-500 block text-[10px]">{act.created_at ? new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}</span>
-                            </td>
-                            <td className="py-3 px-2 font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                              <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-                              <span>{act.categoria_id === "flash" ? "Modo Flash" : "Evaluación por Materia"}</span>
-                            </td>
-                            <td className="py-3 px-2 text-center text-slate-600 dark:text-slate-300 font-mono">
-                              {act.total_preguntas || 10}
-                            </td>
-                            <td className="py-3 px-2 text-center font-black text-slate-900 dark:text-white font-mono text-sm">
-                              {act.aciertos ?? 0} / {act.total_preguntas || 10}
-                            </td>
-                            <td className="py-3 px-2 text-right">
-                              <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase">
-                                {(act.aciertos || 0) >= Math.ceil((act.total_preguntas || 10) / 2) ? "Aprobado" : "Regular"}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={5} className="py-6 text-center text-slate-500 dark:text-slate-400 text-xs">
-                            Aún no tenés evaluaciones registradas. ¡Iniciá tu primer desafío!
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+          type ActividadItem =
+            | { tipo: "duelo"; ts: number; duelo: DueloTrivia }
+            | { tipo: "practica"; ts: number; act: any };
 
-                {/* VISTA TARJETAS MOBILE */}
-                <div className="sm:hidden space-y-2.5">
-                  {recentActivityList.length > 0 ? (
-                    recentActivityList.slice(0, 3).map((act, idx) => (
-                      <div key={act.id || idx} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-500 dark:text-slate-400 font-mono text-[10px]">
-                            {act.created_at ? new Date(act.created_at).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' }) : "Hoy"}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[9px] font-black uppercase">
-                            {(act.aciertos || 0) >= Math.ceil((act.total_preguntas || 10) / 2) ? "Aprobado" : "Regular"}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900 dark:text-white">
-                            <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-                            <span>{act.categoria_id === "flash" ? "Modo Flash" : "Evaluación por Materia"}</span>
-                          </div>
-                          <span className="font-mono font-black text-slate-900 dark:text-white text-sm">{act.aciertos ?? 0}/{act.total_preguntas || 10} aciertos</span>
-                        </div>
+          const actividad: ActividadItem[] = [
+            ...duelosFinalizados.map(d => ({ tipo: "duelo" as const, ts: d.createdAtRaw ? new Date(d.createdAtRaw).getTime() : 0, duelo: d })),
+            ...recentActivityList.map(a => ({ tipo: "practica" as const, ts: a.created_at ? new Date(a.created_at).getTime() : 0, act: a })),
+          ].sort((a, b) => b.ts - a.ts);
+
+          const actividadFiltrada = actividad.filter(item => {
+            if (historialFiltro === "todos") return true;
+            return item.tipo === (historialFiltro === "duelos" ? "duelo" : "practica");
+          });
+
+          return (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
+
+                {/* IZQUIERDA: HISTORIAL UNIFICADO (lg:col-span-8) */}
+                <div className="lg:col-span-8 bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl text-slate-900 dark:text-white">
+                  <div className="space-y-1 border-b border-slate-200 dark:border-white/10 pb-3">
+                    <h3 className="font-black text-base text-slate-900 dark:text-white">Mi Historial</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Repasá tus duelos 1v1 y evaluaciones de práctica pasadas.</p>
+                  </div>
+
+                  {/* CHIPS DE FILTRO POR TIPO DE ACTIVIDAD */}
+                  <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-2xl w-fit">
+                    {[
+                      { id: "todos" as const, label: "Todos" },
+                      { id: "duelos" as const, label: "Duelos 1v1" },
+                      { id: "practica" as const, label: "Práctica" },
+                    ].map(f => (
+                      <button
+                        key={f.id}
+                        onClick={() => setHistorialFiltro(f.id)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer",
+                          historialFiltro === f.id
+                            ? "bg-red-600 text-white shadow-sm"
+                            : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                        )}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* LISTADO COMBINADO */}
+                  <div className="space-y-2.5">
+                    {actividadFiltrada.length === 0 ? (
+                      <div className="py-6 text-center text-slate-500 dark:text-slate-400 text-xs">
+                        Aún no tenés actividad registrada. ¡Iniciá un duelo 1v1 o una práctica para verla acá!
                       </div>
-                    ))
-                  ) : (
-                    <div className="py-4 text-center text-slate-500 dark:text-slate-400 text-xs">
-                      Aún no tenés evaluaciones registradas. ¡Iniciá tu primer desafío!
-                    </div>
-                  )}
-                </div>
-              </div>
+                    ) : (
+                      actividadFiltrada.slice(0, 12).map((item, idx) => {
+                        if (item.tipo === "duelo") {
+                          const duelo = item.duelo;
+                          const isPlayer1 = duelo.player1Id === user?.id || duelo.player1Nombre === userName;
+                          const p1Puntos = duelo.player1Puntos || 0;
+                          const p2Puntos = duelo.player2Puntos || 0;
+                          const myPuntos = isPlayer1 ? p1Puntos : p2Puntos;
+                          const oppPuntos = isPlayer1 ? p2Puntos : p1Puntos;
+                          const opponentName = !isPlayer1 ? duelo.player1Nombre : (duelo.player2Nombre || "Rival");
 
-              {/* DERECHA: CONSEJOS (lg:col-span-4) */}
-              <div className="lg:col-span-4 bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl flex flex-col justify-between text-slate-900 dark:text-white">
-                <div className="space-y-3">
-                  <h3 className="font-black text-xs md:text-sm text-slate-900 dark:text-white uppercase tracking-wider">CONSEJOS</h3>
-                  
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 space-y-2">
-                    <div className="w-9 h-9 rounded-xl bg-amber-500/15 dark:bg-amber-500/20 border border-amber-500/30 dark:border-amber-500/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                    </div>
-                    <h4 className="font-black text-xs sm:text-sm text-slate-900 dark:text-white pt-1">Leé las preguntas con atención</h4>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                      Tomate tu tiempo para entender bien cada consigna antes de responder. Podés consultar al Tutor IA al finalizar cada pregunta.
-                    </p>
+                          let badgeText = "🤝 Empate";
+                          let badgeStyle = "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30";
+                          if (myPuntos > oppPuntos) {
+                            badgeText = "🏆 Victoria";
+                            badgeStyle = "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30";
+                          } else if (oppPuntos > myPuntos) {
+                            badgeText = "💔 Derrota";
+                            badgeStyle = "bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/30";
+                          }
+
+                          return (
+                            <div
+                              key={`duelo_${duelo.id}_${idx}`}
+                              className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                            >
+                              <div className="space-y-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <Swords className="w-3.5 h-3.5 text-red-500 dark:text-red-400 shrink-0" />
+                                  <span className="text-xs font-bold text-slate-900 dark:text-white">Duelo 1v1 · {duelo.materiaNombre}</span>
+                                  <span className={cn("px-2 py-0.5 rounded-full text-[9px] font-black uppercase border", badgeStyle)}>
+                                    {badgeText}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                                  vs <span className="font-bold text-slate-700 dark:text-slate-300">{opponentName}</span> · {myPuntos} vs {oppPuntos} pts
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => handleJoinDuelo(duelo)}
+                                className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 border border-slate-200 dark:border-transparent"
+                              >
+                                <Eye className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+                                <span>Ver Marcador</span>
+                              </button>
+                            </div>
+                          );
+                        }
+
+                        const act = item.act;
+                        const aprobado = (act.aciertos || 0) >= Math.ceil((act.total_preguntas || 10) / 2);
+                        return (
+                          <div
+                            key={act.id || `act_${idx}`}
+                            className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-3"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
+                              <div className="min-w-0">
+                                <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
+                                  {act.categoria_id === "flash" ? "Modo Flash" : "Evaluación por Materia"}
+                                </span>
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                                  {act.created_at ? new Date(act.created_at).toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' }) : "Hoy"}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-xs font-mono font-black text-slate-900 dark:text-white">{act.aciertos ?? 0}/{act.total_preguntas || 10}</span>
+                              <span className={cn(
+                                "px-2 py-0.5 rounded-full text-[9px] font-black uppercase border",
+                                aprobado
+                                  ? "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/30"
+                                  : "bg-slate-200/60 dark:bg-white/10 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-white/10"
+                              )}>
+                                {aprobado ? "Aprobado" : "Regular"}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
+
+                {/* DERECHA: CONSEJOS (lg:col-span-4) */}
+                <div className="lg:col-span-4 bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/10 rounded-3xl p-5 md:p-6 space-y-4 shadow-xl flex flex-col justify-between text-slate-900 dark:text-white">
+                  <div className="space-y-3">
+                    <h3 className="font-black text-xs text-slate-900 dark:text-white uppercase tracking-wider">Consejo</h3>
+
+                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 space-y-2">
+                      <div className="w-9 h-9 rounded-xl bg-amber-500/15 dark:bg-amber-500/20 border border-amber-500/30 dark:border-amber-500/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                        <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                      </div>
+                      <h4 className="font-black text-xs sm:text-sm text-slate-900 dark:text-white pt-1">Leé las preguntas con atención</h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Tomate tu tiempo para entender bien cada consigna antes de responder. Podés consultar al Tutor IA al finalizar cada pregunta.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
               </div>
-
             </div>
-          </div>
-        )}
+          );
+        })()}
 
-        {/* PESTAÑA 2: DUELOS 1VS1 (SALAS DE DESAFÍO Y HISTORIAL) */}
+        {/* PESTAÑA 2: DUELOS 1VS1 (SOLO SALAS EN VIVO — EL HISTORIAL VIVE EN "MI HISTORIAL") */}
         {activeTab === "duelos" && (
-          <div className="bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/15 rounded-3xl p-4 sm:p-6 space-y-6 shadow-xl text-slate-900 dark:text-white">
+          <div className="bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/15 rounded-3xl p-4 sm:p-6 space-y-5 shadow-xl text-slate-900 dark:text-white">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
               <div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <Swords className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                  <span>Salas de Duelo 1vs1 Académico</span>
+                  <span>Duelos 1v1</span>
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400">Desafiá a colegas en salas directas con selector propio de materias.</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Desafiá a colegas en tiempo real: acá se crean y responden salas en vivo.</p>
               </div>
             </div>
 
-            {/* PASO 1: SELECTOR INDEPENDIENTE DE MATERIA PARA EL DUELO (DESPLEGABLE + FILTRO DE AÑO) */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-slate-950/80 dark:bg-slate-950/80 bg-slate-50 border border-white/10 dark:border-white/10 border-slate-200 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
-                  <GraduationCap className="w-4 h-4 text-amber-400" />
-                  Elegí la materia para desafiar en el Duelo:
-                </span>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
-                  {dueloSelectedCategoria === "todas" 
-                    ? "Toda la Carrera (Mix general)" 
-                    : (CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria)?.nombre || "Materia Seleccionada")}
-                </span>
-              </div>
-
-              {/* Filtro Rápido de Años */}
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block">
-                  Filtrar por año de la carrera:
-                </span>
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                  {[
-                    { anio: 0, label: "Toda la Carrera" },
-                    { anio: 1, label: "1º Año" },
-                    { anio: 2, label: "2º Año" },
-                    { anio: 3, label: "3º Año" },
-                    { anio: 4, label: "4º Año" },
-                    { anio: 5, label: "5º Año" },
-                  ].map((item) => (
-                    <button
-                      key={item.anio}
-                      onClick={() => {
-                        setDueloSelectedYearFilter(item.anio);
-                        if (item.anio === 0) setDueloSelectedCategoria("todas");
-                        else {
-                          const firstOfThatYear = CATEGORIAS_TRIVIA.find(c => c.anio === item.anio);
-                          if (firstOfThatYear) setDueloSelectedCategoria(firstOfThatYear.id);
-                        }
-                      }}
-                      className={cn(
-                        "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer shrink-0 border",
-                        dueloSelectedYearFilter === item.anio
-                          ? "bg-red-600 text-white border-red-500 shadow-md shadow-red-900/30"
-                          : "bg-white/5 dark:bg-white/5 bg-slate-200 text-slate-300 dark:text-slate-300 text-slate-700 border-white/10 dark:border-white/10 border-slate-300 hover:bg-white/10"
-                      )}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+            {/* SELECTOR DE MATERIA: COLAPSADO POR DEFECTO, SOLO SE EXPANDE SI SE QUIERE CAMBIAR EL DEFAULT */}
+            <div className="rounded-2xl bg-slate-950/80 dark:bg-slate-950/80 bg-slate-50 border border-white/10 dark:border-white/10 border-slate-200 shadow-md overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setDueloSelectorExpanded(v => !v)}
+                className="w-full p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer text-left"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-red-600/20 border border-red-500/40 text-amber-400 flex items-center justify-center shrink-0">
+                    <GraduationCap className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block">Materia del duelo</span>
+                    <span className="text-xs sm:text-sm font-black text-white dark:text-white text-slate-900 truncate block">
+                      {dueloSelectedCategoria === "todas"
+                        ? "Toda la Carrera (Mix general)"
+                        : (CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria)?.nombre || "Materia Seleccionada")}
+                    </span>
+                  </div>
                 </div>
-              </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="hidden sm:inline text-[10px] font-mono text-slate-400">5 preguntas · 20s por turno</span>
+                  <span className="text-[11px] font-bold text-amber-400 flex items-center gap-0.5">
+                    {dueloSelectorExpanded ? "Cerrar" : "Cambiar"}
+                    <ChevronRight className={cn("w-3.5 h-3.5 transition-transform", dueloSelectorExpanded && "rotate-90")} />
+                  </span>
+                </div>
+              </button>
 
-              {/* Menú Desplegable de Materia */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block flex items-center gap-1.5">
-                  <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Desplegable de Materias disponibles:</span>
-                </label>
-                <select
-                  value={dueloSelectedCategoria}
-                  onChange={(e) => setDueloSelectedCategoria(e.target.value)}
-                  className="w-full p-3.5 rounded-2xl bg-slate-900 dark:bg-slate-900 bg-white border-2 border-red-500/60 focus:border-red-500 text-white dark:text-white text-slate-900 text-xs sm:text-sm font-black focus:outline-none shadow-xl cursor-pointer transition-all"
-                >
-                  {filteredDueloCategorias.map(cat => (
-                    <option key={cat.id} value={cat.id} className="bg-slate-900 text-white py-2">
-                      {cat.nombre} {cat.id === "todas" ? "(Toda la Carrera)" : `(${getQuestionCountForCategory(cat.id)} preguntas)`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Tarjeta de Materia Seleccionada Actualmente */}
-              {(() => {
-                const currentCat = CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria) || CATEGORIAS_TRIVIA[0];
-                const Icon = ICON_MAP[currentCat.icono] || BookOpen;
-                const count = getQuestionCountForCategory(currentCat.id);
-
-                return (
-                  <div className="p-3.5 rounded-2xl bg-red-950/40 dark:bg-red-950/40 bg-red-50 border border-red-500/40 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 text-amber-400 flex items-center justify-center shrink-0">
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-black text-white dark:text-white text-slate-900 block">{currentCat.nombre}</span>
-                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-bold">
-                            {currentCat.anio === 0 ? "General" : `${currentCat.anio}º Año`}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-slate-400 dark:text-slate-400 text-slate-600 block">
-                          Banco de {count} preguntas exclusivas listas para el duelo
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="hidden sm:block text-right">
-                      <span className="text-[10px] font-mono font-black text-amber-400 uppercase block">5 Preguntas 1v1</span>
-                      <span className="text-[9px] text-slate-400">20s por turno</span>
+              {dueloSelectorExpanded && (
+                <div className="p-4 sm:p-5 pt-0 space-y-4">
+                  {/* Filtro Rápido de Años */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block">
+                      Filtrar por año de la carrera:
+                    </span>
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                      {[
+                        { anio: 0, label: "Toda la Carrera" },
+                        { anio: 1, label: "1º Año" },
+                        { anio: 2, label: "2º Año" },
+                        { anio: 3, label: "3º Año" },
+                        { anio: 4, label: "4º Año" },
+                        { anio: 5, label: "5º Año" },
+                      ].map((item) => (
+                        <button
+                          key={item.anio}
+                          onClick={() => {
+                            setDueloSelectedYearFilter(item.anio);
+                            if (item.anio === 0) setDueloSelectedCategoria("todas");
+                            else {
+                              const firstOfThatYear = CATEGORIAS_TRIVIA.find(c => c.anio === item.anio);
+                              if (firstOfThatYear) setDueloSelectedCategoria(firstOfThatYear.id);
+                            }
+                          }}
+                          className={cn(
+                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer shrink-0 border",
+                            dueloSelectedYearFilter === item.anio
+                              ? "bg-red-600 text-white border-red-500 shadow-md shadow-red-900/30"
+                              : "bg-white/5 dark:bg-white/5 bg-slate-200 text-slate-300 dark:text-slate-300 text-slate-700 border-white/10 dark:border-white/10 border-slate-300 hover:bg-white/10"
+                          )}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                );
-              })()}
 
-              {/* Botones de Acción para Crear la Sala con la Materia Seleccionada */}
-              <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-white/10 dark:border-white/10 border-slate-200">
-                <button
-                  onClick={() => handleCreateDuelo(true)}
-                  className="w-full sm:w-1/2 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Crear Sala Pública ({CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria)?.nombre || "Toda la Carrera"})</span>
-                </button>
-                <button
-                  onClick={() => handleCreateDuelo(false)}
-                  className="w-full sm:w-1/2 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 bg-slate-200 hover:bg-slate-300 text-white dark:text-white text-slate-800 font-black text-xs uppercase tracking-wider border border-white/10 dark:border-white/10 border-slate-300 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
-                >
-                  <Lock className="w-4 h-4 text-amber-400" />
-                  <span>Crear Sala Privada (Con Código)</span>
-                </button>
-              </div>
+                  {/* Menú Desplegable de Materia */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Desplegable de Materias disponibles:</span>
+                    </label>
+                    <select
+                      value={dueloSelectedCategoria}
+                      onChange={(e) => setDueloSelectedCategoria(e.target.value)}
+                      className="w-full p-3.5 rounded-2xl bg-slate-900 dark:bg-slate-900 bg-white border-2 border-red-500/60 focus:border-red-500 text-white dark:text-white text-slate-900 text-xs sm:text-sm font-black focus:outline-none shadow-xl cursor-pointer transition-all"
+                    >
+                      {filteredDueloCategorias.map(cat => (
+                        <option key={cat.id} value={cat.id} className="bg-slate-900 text-white py-2">
+                          {cat.nombre} {cat.id === "todas" ? "(Toda la Carrera)" : `(${getQuestionCountForCategory(cat.id)} preguntas)`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Tarjeta de Materia Seleccionada Actualmente */}
+                  {(() => {
+                    const currentCat = CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria) || CATEGORIAS_TRIVIA[0];
+                    const Icon = ICON_MAP[currentCat.icono] || BookOpen;
+                    const count = getQuestionCountForCategory(currentCat.id);
+
+                    return (
+                      <div className="p-3.5 rounded-2xl bg-red-950/40 dark:bg-red-950/40 bg-red-50 border border-red-500/40 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 text-amber-400 flex items-center justify-center shrink-0">
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-black text-white dark:text-white text-slate-900 block">{currentCat.nombre}</span>
+                              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-bold">
+                                {currentCat.anio === 0 ? "General" : `${currentCat.anio}º Año`}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-400 text-slate-600 block">
+                              Banco de {count} preguntas exclusivas listas para el duelo
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
 
-            {/* SUB-PESTAÑAS DE DUELOS: SALAS DISPONIBLES VS HISTORIAL DE DUELOS */}
-            <div className="flex items-center gap-2 p-1.5 bg-slate-950 dark:bg-slate-950 bg-slate-200 rounded-2xl border border-white/10 dark:border-white/10 border-slate-300">
+            {/* BOTONES DE ACCIÓN: SIEMPRE VISIBLES, CON O SIN SELECTOR EXPANDIDO */}
+            <div className="flex flex-col sm:flex-row items-center gap-2">
               <button
-                onClick={() => setDuelosSubTab("disponibles")}
-                className={cn(
-                  "w-1/2 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer",
-                  duelosSubTab === "disponibles"
-                    ? "bg-[#0A1C3D] text-white border border-red-500/40 shadow-lg"
-                    : "text-slate-400 hover:text-white dark:text-slate-400 dark:hover:text-white text-slate-600"
-                )}
+                onClick={() => handleCreateDuelo(true)}
+                className="w-full sm:w-1/2 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
               >
-                <Zap className="w-4 h-4 text-amber-400" />
-                <span>Salas Activas en Espera</span>
+                <Plus className="w-4 h-4" />
+                <span>Crear Sala Pública</span>
               </button>
               <button
-                onClick={() => setDuelosSubTab("historial")}
-                className={cn(
-                  "w-1/2 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer",
-                  duelosSubTab === "historial"
-                    ? "bg-[#0A1C3D] text-white border border-red-500/40 shadow-lg"
-                    : "text-slate-400 hover:text-white dark:text-slate-400 dark:hover:text-white text-slate-600"
-                )}
+                onClick={() => handleCreateDuelo(false)}
+                className="w-full sm:w-1/2 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-white/10 dark:hover:bg-white/20 bg-slate-200 hover:bg-slate-300 text-white dark:text-white text-slate-800 font-black text-xs uppercase tracking-wider border border-white/10 dark:border-white/10 border-slate-300 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
               >
-                <BookOpenCheck className="w-4 h-4 text-blue-400" />
-                <span>Historial de Duelos Jugados</span>
+                <Lock className="w-4 h-4 text-amber-400" />
+                <span>Crear Sala Privada (Con Código)</span>
               </button>
             </div>
 
-            {/* INGRESAR POR CÓDIGO */}
-            <div className="p-4 rounded-2xl bg-white/[0.02] dark:bg-white/[0.02] bg-slate-50 border border-white/10 dark:border-white/10 border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-xs font-bold text-slate-300 dark:text-slate-300 text-slate-700">¿Tenés un código de duelo de un colega?</span>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* INGRESAR POR CÓDIGO: FILA COMPACTA, ROL SECUNDARIO */}
+            <div className="flex items-center justify-between gap-3 px-1">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">¿Tenés un código de un colega?</span>
+              <div className="flex items-center gap-1.5">
                 <input
                   type="text"
                   placeholder="Ej: DND-829"
                   value={inputCodigoDuelo}
                   onChange={(e) => setInputCodigoDuelo(e.target.value.toUpperCase())}
-                  className="p-2.5 rounded-xl bg-slate-950 dark:bg-slate-950 bg-white border border-white/15 dark:border-white/15 border-slate-300 text-white dark:text-white text-slate-900 font-mono font-bold text-xs uppercase focus:outline-none focus:border-red-500 w-full sm:w-40"
+                  className="p-2 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/15 text-slate-900 dark:text-white font-mono font-bold text-xs uppercase focus:outline-none focus:border-red-500 w-28 sm:w-36"
                 />
                 <button
                   onClick={() => {
@@ -2286,15 +2336,15 @@ export default function Trivia() {
                       toast.error("Código de duelo no encontrado o sala expirada.");
                     }
                   }}
-                  className="px-4 py-2.5 rounded-xl bg-[#0A1C3D] hover:bg-[#0F2A5C] text-white font-black text-xs uppercase cursor-pointer shrink-0 shadow-md"
+                  className="px-3 py-2 rounded-lg bg-[#0A1C3D] hover:bg-[#0F2A5C] text-white font-black text-xs uppercase cursor-pointer shrink-0 shadow-sm"
                 >
                   Unirme
                 </button>
               </div>
             </div>
 
-            {/* VISTA 1: SALAS ACTIVAS DISPONIBLES (LOS DUELOS FINALIZADOS O CON 2 JUGADORES DESAPARECEN DE AQUÍ) */}
-            {duelosSubTab === "disponibles" && (() => {
+            {/* SALAS ACTIVAS DISPONIBLES (LOS DUELOS FINALIZADOS DESAPARECEN DE ACÁ Y PASAN A "MI HISTORIAL") */}
+            {(() => {
               const availableRooms = duelosList.filter(d => {
                 const isFinished = d.status === "finalizado" || (d.player1Completed && d.player2Completed);
                 if (isFinished) return false;
@@ -2421,84 +2471,17 @@ export default function Trivia() {
               );
             })()}
 
-            {/* VISTA 2: HISTORIAL DE DUELOS JUGADOS (COMPLETADOS) */}
-            {duelosSubTab === "historial" && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider">Historial de Duelos Finalizados:</h4>
-                  <button 
-                    onClick={fetchDuelosFromSupabase}
-                    className="flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    <RefreshCw className={cn("w-3 h-3", loadingDuelos && "animate-spin")} />
-                    <span>Actualizar</span>
-                  </button>
-                </div>
-
-                {duelosList.filter(d => d.status === "finalizado" || (d.player1Completed && d.player2Completed)).length === 0 ? (
-                  <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center space-y-2">
-                    <Trophy className="w-8 h-8 mx-auto text-amber-400 opacity-60" />
-                    <p className="text-xs text-slate-400">Aún no registrás duelos finalizados.</p>
-                    <p className="text-[11px] text-slate-500 font-bold">Completá desafíos en 1v1 para ver tus marcadores y revisiones de preguntas aquí.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2.5">
-                    {duelosList
-                      .filter(d => d.status === "finalizado" || (d.player1Completed && d.player2Completed))
-                      .map((duelo) => {
-                        const isPlayer1 = duelo.player1Id === user?.id || duelo.player1Nombre === userName;
-                        const p1Puntos = duelo.player1Puntos || 0;
-                        const p2Puntos = duelo.player2Puntos || 0;
-
-                        const myPuntos = isPlayer1 ? p1Puntos : p2Puntos;
-                        const oppPuntos = isPlayer1 ? p2Puntos : p1Puntos;
-                        const opponentName = !isPlayer1 ? duelo.player1Nombre : (duelo.player2Nombre || "Rival");
-
-                        let badgeText = "🤝 Empate";
-                        let badgeStyle = "bg-amber-500/20 text-amber-300 border-amber-500/30";
-
-                        if (myPuntos > oppPuntos) {
-                          badgeText = "🏆 Victoria";
-                          badgeStyle = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
-                        } else if (oppPuntos > myPuntos) {
-                          badgeText = "💔 Derrota";
-                          badgeStyle = "bg-red-500/20 text-red-300 border-red-500/30";
-                        }
-
-                        return (
-                          <div
-                            key={duelo.id}
-                            className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-                          >
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/10 text-slate-300 font-mono border border-white/10">
-                                  {duelo.id}
-                                </span>
-                                <span className="text-xs font-black text-white">{duelo.materiaNombre}</span>
-                                <span className={cn("px-2 py-0.5 rounded-full text-[9px] font-black uppercase border", badgeStyle)}>
-                                  {badgeText}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-slate-400">
-                                Enfrentamiento: <span className="text-blue-300 font-bold">{duelo.player1Nombre}</span> ({p1Puntos} PTS) vs <span className="text-red-300 font-bold">{opponentName}</span> ({p2Puntos} PTS)
-                              </p>
-                            </div>
-
-                            <button
-                              onClick={() => handleJoinDuelo(duelo)}
-                              className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-                            >
-                              <Eye className="w-4 h-4 text-blue-400" />
-                              <span>Ver Marcador y Respuestas</span>
-                            </button>
-                          </div>
-                        );
-                      })}
-                  </div>
-                )}
-              </div>
-            )}
+            {/* LINK AL HISTORIAL UNIFICADO (LOS DUELOS FINALIZADOS YA NO SE MUESTRAN ACÁ) */}
+            <button
+              onClick={() => {
+                setHistorialFiltro("duelos");
+                setActiveTab("historial");
+              }}
+              className="w-full text-center py-2 text-[11px] font-bold text-blue-500 dark:text-blue-400 hover:underline cursor-pointer flex items-center justify-center gap-1"
+            >
+              <span>Ver duelos finalizados en Mi Historial</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
 
@@ -2506,41 +2489,23 @@ export default function Trivia() {
         {activeTab === "ranking" && (
           <div className="space-y-6">
             
-            {/* BREADCRUMB Y HEADER DE RANKING */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/15 rounded-3xl p-5 md:p-6 shadow-xl relative overflow-hidden text-slate-900 dark:text-white">
-              <div className="space-y-1 relative z-10">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400 font-mono">
-                  <span>TRIVIA</span>
-                  <ChevronRight className="w-3 h-3 text-slate-400 dark:text-slate-500" />
-                  <span>RANKING</span>
-                </div>
-
-                <div className="flex items-center gap-3 pt-1">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600/20 to-amber-500/10 border border-red-500/40 flex items-center justify-center text-red-500 dark:text-red-400 shrink-0 shadow-lg">
-                    <Trophy className="w-6 h-6 text-amber-500 dark:text-amber-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">Ranking de la Facultad</h2>
-                    <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">Posiciones oficiales calculadas en tiempo real con la base de datos de estudiantes.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 self-stretch md:self-auto justify-between md:justify-end relative z-10 border-t md:border-t-0 border-slate-200 dark:border-white/10 pt-3 md:pt-0">
-                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/10 text-right min-w-[140px]">
-                  <span className="text-[9px] font-black uppercase text-slate-500 dark:text-slate-400 block">Tu posición actual</span>
-                  <span className="text-xl md:text-2xl font-black text-slate-900 dark:text-white font-mono leading-tight">
-                    {(() => {
+            {/* BARRA STICKY: SIEMPRE VISIBLE MIENTRAS SE SCROLLEA EL RANKING, PARA NO PERDER LA PROPIA POSICIÓN DE VISTA */}
+            <div className="sticky top-16 z-30">
+              <div className="flex items-center justify-between gap-3 bg-white/95 dark:bg-[#0D1527]/95 backdrop-blur-md border border-slate-200 dark:border-white/15 rounded-2xl px-4 py-2.5 shadow-lg">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" />
+                  <span className="text-xs font-black text-slate-900 dark:text-white whitespace-nowrap">
+                    Tu posición: {(() => {
                       const myUserId = user?.id;
                       const myName = userName?.trim().toLowerCase();
                       const myEmail = profile?.email?.toLowerCase();
-                      
-                      const found = leaderboardList.find(e => 
+
+                      const found = leaderboardList.find(e =>
                         (myUserId && e.id === myUserId) ||
                         (myName && e.nombre && e.nombre.trim().toLowerCase() === myName) ||
                         (myEmail && e.nombre && e.nombre.toLowerCase().includes(myEmail.split("@")[0]))
                       );
-                      
+
                       if (found) return `#${found.posicion}`;
                       if (userStats.puntosTotales > 0 && leaderboardList.length > 0) {
                         const betterPlayers = leaderboardList.filter(e => e.puntos > userStats.puntosTotales);
@@ -2549,156 +2514,140 @@ export default function Trivia() {
                       return "--";
                     })()}
                   </span>
-                  <span className="text-[10px] text-red-600 dark:text-red-400 font-mono font-bold block">{userStats.puntosTotales} pts</span>
+                  <span className="text-[11px] text-red-600 dark:text-red-400 font-mono font-bold truncate">· {userStats.puntosTotales} pts</span>
                 </div>
-
                 <button
-                  onClick={fetchRankingFromSupabase}
-                  className="p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 dark:bg-white/[0.04] dark:hover:bg-white/10 dark:border-white/15 dark:text-slate-300 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-sm flex items-center gap-1.5 shrink-0"
+                  onClick={() => {
+                    const myEl = document.getElementById("my-user-rank-row");
+                    if (myEl) myEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer shrink-0"
                 >
-                  <RefreshCw className={cn("w-4 h-4 text-blue-500 dark:text-blue-400", loadingRanking && "animate-spin")} />
-                  <span className="hidden sm:inline">Actualizar</span>
+                  Ir a mi fila
                 </button>
               </div>
             </div>
 
-            {/* BANNER DE INICIO OFICIAL DE TEMPORADA COMPETITIVA CON CONTADOR EN VIVO (JUEVES 13 DE AGOSTO 19:00 HS) */}
-            <div className="p-4 rounded-3xl bg-white dark:bg-gradient-to-r dark:from-[#2D0B12] dark:via-[#1A0B12] dark:to-[#0D1527] border border-slate-200 dark:border-red-500/40 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md dark:shadow-xl text-slate-900 dark:text-white">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-red-500/10 dark:bg-red-600/20 border border-red-500/30 dark:border-red-500/40 flex items-center justify-center text-red-500 dark:text-red-400 font-bold shrink-0 shadow-sm">
-                  <Calendar className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+            {/* HEADER DE RANKING (COMPACTO, SIN BANNER DUPLICADO DE TEMPORADA) */}
+            <div className="bg-white dark:bg-[#0D1527]/90 border border-slate-200 dark:border-white/15 rounded-3xl p-4 sm:p-5 shadow-xl relative overflow-hidden text-slate-900 dark:text-white">
+              <div className="flex items-center justify-between gap-3 relative z-10">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-600/20 to-amber-500/10 border border-red-500/40 flex items-center justify-center text-red-500 dark:text-red-400 shrink-0 shadow-md">
+                    <Trophy className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">Ranking de la Facultad</h2>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                      Tu posición pública · <span className="text-amber-600 dark:text-amber-400 font-bold">⏱️ {seasonInfo.countdownText}</span>
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-black text-xs sm:text-sm text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
-                    <span>{seasonInfo.bannerTitle}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-500/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-[9px] font-mono">
-                      {seasonInfo.badgeText}
-                    </span>
-                  </h4>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-300 pt-0.5">
-                    <span className="text-amber-600 dark:text-amber-400 font-mono font-bold mr-2">⏱️ {seasonInfo.countdownText}</span>
-                    Resets semanales en Duelos 1v1 y mensuales en Ranking General con entrega de Medallas de Podio.
-                  </p>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {user && (
+                    <button
+                      onClick={() => handleInspectUser(user.id, userName, profile?.avatar_url)}
+                      className="hidden sm:flex px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs items-center gap-1.5 cursor-pointer transition-all"
+                    >
+                      <Award className="w-3.5 h-3.5" />
+                      <span>Mi Medallero</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={fetchRankingFromSupabase}
+                    className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 dark:bg-white/[0.04] dark:hover:bg-white/10 dark:border-white/15 dark:text-slate-300 transition-all cursor-pointer shadow-sm"
+                  >
+                    <RefreshCw className={cn("w-4 h-4 text-blue-500 dark:text-blue-400", loadingRanking && "animate-spin")} />
+                  </button>
                 </div>
               </div>
-
-              {user && (
-                <button
-                  onClick={() => handleInspectUser(user.id, userName, profile?.avatar_url)}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg flex items-center gap-2 shrink-0 cursor-pointer"
-                >
-                  <Award className="w-4 h-4 fill-slate-950" />
-                  <span>Mi Medallero</span>
-                </button>
-              )}
             </div>
 
-            {/* TARJETAS HIGHLIGHT DE ESTADÍSTICAS EN TIEMPO REAL */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              
+            {/* TARJETAS HIGHLIGHT DE ESTADÍSTICAS: SIEMPRE EN 3 COLUMNAS, TAMBIÉN EN MOBILE */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+
               {/* TARJETA 1: MEJOR PUNTAJE (RED GLOW) */}
-              <div className="bg-white dark:bg-gradient-to-br dark:from-[#2D0B12] dark:via-[#1A0B12] dark:to-[#0D1527] border border-slate-200 dark:border-red-500/40 rounded-3xl p-5 shadow-lg dark:shadow-2xl relative overflow-hidden space-y-3 text-slate-900 dark:text-white">
-                <div className="absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-red-500 pointer-events-none">
+              <div className="bg-white dark:bg-gradient-to-br dark:from-[#2D0B12] dark:via-[#1A0B12] dark:to-[#0D1527] border border-slate-200 dark:border-red-500/40 rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 shadow-md sm:shadow-lg dark:shadow-2xl relative overflow-hidden space-y-1 sm:space-y-3 text-slate-900 dark:text-white">
+                <div className="hidden sm:block absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-red-500 pointer-events-none">
                   <Trophy className="w-28 h-28" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400 block">MEJOR PUNTAJE GENERAL</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400 block truncate">Mejor Puntaje</span>
                 <div>
-                  <h4 className="font-black text-base text-slate-900 dark:text-white truncate">
+                  <h4 className="hidden sm:block font-black text-base text-slate-900 dark:text-white truncate">
                     {leaderboardList.length > 0 ? leaderboardList[0].nombre : userName}
                   </h4>
-                  <span className="text-2xl md:text-3xl font-black text-red-600 dark:text-red-400 font-mono leading-none pt-1 block">
-                    {leaderboardList.length > 0 ? leaderboardList[0].puntos : userStats.puntosTotales} pts
-                  </span>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block pt-1 font-medium">
-                    {leaderboardList.length > 0 ? (leaderboardList[0].rangoNombre || calcularRango(leaderboardList[0].puntos).nombre) : rangoActual.nombre}
+                  <span className="text-sm sm:text-2xl md:text-3xl font-black text-red-600 dark:text-red-400 font-mono leading-none pt-1 block">
+                    {leaderboardList.length > 0 ? leaderboardList[0].puntos : userStats.puntosTotales} <span className="text-[9px] sm:text-xs font-sans">pts</span>
                   </span>
                 </div>
               </div>
 
               {/* TARJETA 2: RACHA MÁS ALTA (GOLD GLOW) */}
-              <div className="bg-white dark:bg-gradient-to-br dark:from-[#1A160B] dark:via-[#0D1527] dark:to-[#0D1527] border border-slate-200 dark:border-amber-500/40 rounded-3xl p-5 shadow-lg dark:shadow-2xl relative overflow-hidden space-y-3 text-slate-900 dark:text-white">
-                <div className="absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-amber-500 pointer-events-none">
+              <div className="bg-white dark:bg-gradient-to-br dark:from-[#1A160B] dark:via-[#0D1527] dark:to-[#0D1527] border border-slate-200 dark:border-amber-500/40 rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 shadow-md sm:shadow-lg dark:shadow-2xl relative overflow-hidden space-y-1 sm:space-y-3 text-slate-900 dark:text-white">
+                <div className="hidden sm:block absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-amber-500 pointer-events-none">
                   <Flame className="w-28 h-28" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 block">RACHA MÁS ALTA</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400 block truncate">Racha Más Alta</span>
                 <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl md:text-3xl font-black text-amber-600 dark:text-amber-400 font-mono leading-none">
-                      x{Math.max(...leaderboardList.map(e => e.racha || 0), userStats.mejorRacha || 0)}
-                    </span>
-                    <span className="text-xs text-slate-600 dark:text-slate-300 font-bold">aciertos consecutivos</span>
-                  </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block pt-1 font-medium">Récord registrado</span>
+                  <span className="text-sm sm:text-2xl md:text-3xl font-black text-amber-600 dark:text-amber-400 font-mono leading-none block">
+                    x{Math.max(...leaderboardList.map(e => e.racha || 0), userStats.mejorRacha || 0)}
+                  </span>
+                  <span className="hidden sm:block text-xs text-slate-600 dark:text-slate-300 font-bold pt-1">aciertos consecutivos</span>
                 </div>
               </div>
 
               {/* TARJETA 3: ESTUDIANTES CLASIFICADOS (BLUE GLOW) */}
-              <div className="bg-white dark:bg-gradient-to-br dark:from-[#0A1C3D]/60 dark:via-[#0D1527] dark:to-[#0D1527] border border-slate-200 dark:border-blue-500/40 rounded-3xl p-5 shadow-lg dark:shadow-2xl relative overflow-hidden space-y-3 text-slate-900 dark:text-white">
-                <div className="absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-blue-500 pointer-events-none">
+              <div className="bg-white dark:bg-gradient-to-br dark:from-[#0A1C3D]/60 dark:via-[#0D1527] dark:to-[#0D1527] border border-slate-200 dark:border-blue-500/40 rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 shadow-md sm:shadow-lg dark:shadow-2xl relative overflow-hidden space-y-1 sm:space-y-3 text-slate-900 dark:text-white">
+                <div className="hidden sm:block absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-blue-500 pointer-events-none">
                   <Users className="w-28 h-28" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 block">ESTUDIANTES CLASIFICADOS</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 block truncate">Clasificados</span>
                 <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white font-mono leading-none">
-                      {Math.max(leaderboardList.length, 1)}
-                    </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">estudiantes activos</span>
-                  </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block pt-1 font-medium">Ranking oficial actual</span>
+                  <span className="text-sm sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white font-mono leading-none block">
+                    {Math.max(leaderboardList.length, 1)}
+                  </span>
+                  <span className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium pt-1">estudiantes activos</span>
                 </div>
               </div>
 
             </div>
 
-            {/* BOTONES DE SUB-PESTAÑA (OFICIAL Y MEDALLERO) + IR A MI POSICIÓN */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-              <div className="flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-[#0D1527] border border-slate-200 dark:border-white/10 rounded-2xl w-full sm:w-auto">
-                <button
-                  onClick={() => setRankingSubTab("oficial")}
-                  className={cn(
-                    "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer text-center flex items-center justify-center gap-2",
-                    rankingSubTab === "oficial"
-                      ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
-                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                  )}
-                >
-                  <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                  <span>Ranking Oficial de la Facultad</span>
-                </button>
-                <button
-                  onClick={() => setRankingSubTab("medallas")}
-                  className={cn(
-                    "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer text-center flex items-center justify-center gap-2",
-                    rankingSubTab === "medallas"
-                      ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
-                      : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                  )}
-                >
-                  <Award className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                  <span>Medallero de Temporadas</span>
-                </button>
-              </div>
-
+            {/* BOTONES DE SUB-PESTAÑA: TABLA DE POSICIONES Y MEDALLERO */}
+            <div className="flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-[#0D1527] border border-slate-200 dark:border-white/10 rounded-2xl w-full sm:w-fit">
               <button
-                onClick={() => {
-                  const myEl = document.getElementById("my-user-rank-row");
-                  if (myEl) myEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }}
-                className="px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 dark:bg-white/[0.04] dark:hover:bg-white/10 dark:border-white/15 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 w-full sm:w-auto shadow-sm"
+                onClick={() => setRankingSubTab("oficial")}
+                className={cn(
+                  "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer text-center flex items-center justify-center gap-2",
+                  rankingSubTab === "oficial"
+                    ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                )}
               >
-                <span>🎯 Mi Posición</span>
+                <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                <span>Tabla de Posiciones</span>
+              </button>
+              <button
+                onClick={() => setRankingSubTab("medallas")}
+                className={cn(
+                  "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer text-center flex items-center justify-center gap-2",
+                  rankingSubTab === "medallas"
+                    ? "bg-red-600 text-white shadow-lg shadow-red-600/30"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                )}
+              >
+                <Award className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                <span>Medallero de Temporadas</span>
               </button>
             </div>
 
-            {/* CONTENIDO 1: RANKING OFICIAL UNIFICADO */}
+            {/* CONTENIDO 1: TABLA DE POSICIONES UNIFICADA */}
             {rankingSubTab === "oficial" && (
               <div className="space-y-6">
                 
                 {/* EXHIBICIÓN VISUAL DEL PODIO TOP 3 REAL (SI HAY AL MENOS 1 JUGADOR) */}
                 {leaderboardList.length > 0 && (
-                  <div className="p-6 rounded-3xl bg-slate-50 dark:bg-gradient-to-b dark:from-[#0D1527] dark:to-[#050B14] border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-2xl relative overflow-hidden pt-8 text-slate-900 dark:text-white">
-                    <div className="flex items-end justify-center gap-3 sm:gap-6 max-w-lg mx-auto min-h-[220px]">
+                  <div className="p-4 sm:p-6 rounded-3xl bg-slate-50 dark:bg-gradient-to-b dark:from-[#0D1527] dark:to-[#050B14] border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-2xl relative overflow-hidden pt-5 sm:pt-8 text-slate-900 dark:text-white">
+                    <div className="flex items-end justify-center gap-2 sm:gap-6 max-w-lg mx-auto min-h-[150px] sm:min-h-[220px]">
                       
                       {/* PUESTO 2 (PLATA) */}
                       {leaderboardList[1] && (
@@ -2728,7 +2677,7 @@ export default function Trivia() {
                             </div>
                             <span className="text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 block pt-0.5">{leaderboardList[1].puntos} pts</span>
                           </div>
-                          <div className="w-full h-24 bg-gradient-to-t from-slate-200 to-slate-100 dark:from-slate-800/80 dark:to-slate-700/60 rounded-t-2xl border-t-2 border-slate-400 flex items-center justify-center font-mono font-black text-slate-600 dark:text-slate-400 text-lg shadow-sm">
+                          <div className="w-full h-14 sm:h-24 bg-gradient-to-t from-slate-200 to-slate-100 dark:from-slate-800/80 dark:to-slate-700/60 rounded-t-2xl border-t-2 border-slate-400 flex items-center justify-center font-mono font-black text-slate-600 dark:text-slate-400 text-lg shadow-sm">
                             #2
                           </div>
                         </div>
@@ -2762,7 +2711,7 @@ export default function Trivia() {
                             </div>
                             <span className="text-xs font-mono font-black text-amber-600 dark:text-amber-400 block pt-0.5">{leaderboardList[0].puntos} pts</span>
                           </div>
-                          <div className="w-full h-32 bg-gradient-to-t from-amber-200 via-amber-100 to-amber-50 dark:from-amber-950/80 dark:via-amber-600/40 dark:to-amber-500/50 rounded-t-2xl border-t-2 border-amber-500 dark:border-amber-400 flex items-center justify-center font-mono font-black text-amber-800 dark:text-amber-300 text-2xl shadow-lg shadow-amber-500/20">
+                          <div className="w-full h-20 sm:h-32 bg-gradient-to-t from-amber-200 via-amber-100 to-amber-50 dark:from-amber-950/80 dark:via-amber-600/40 dark:to-amber-500/50 rounded-t-2xl border-t-2 border-amber-500 dark:border-amber-400 flex items-center justify-center font-mono font-black text-amber-800 dark:text-amber-300 text-2xl shadow-lg shadow-amber-500/20">
                             #1
                           </div>
                         </div>
@@ -2796,7 +2745,7 @@ export default function Trivia() {
                             </div>
                             <span className="text-[11px] font-mono font-bold text-amber-700 dark:text-amber-500 block pt-0.5">{leaderboardList[2].puntos} pts</span>
                           </div>
-                          <div className="w-full h-20 bg-gradient-to-t from-amber-100 to-amber-50 dark:from-amber-950/80 dark:to-amber-900/60 rounded-t-2xl border-t-2 border-amber-600 flex items-center justify-center font-mono font-black text-amber-800 dark:text-amber-600 text-lg shadow-sm">
+                          <div className="w-full h-12 sm:h-20 bg-gradient-to-t from-amber-100 to-amber-50 dark:from-amber-950/80 dark:to-amber-900/60 rounded-t-2xl border-t-2 border-amber-600 flex items-center justify-center font-mono font-black text-amber-800 dark:text-amber-600 text-lg shadow-sm">
                             #3
                           </div>
                         </div>

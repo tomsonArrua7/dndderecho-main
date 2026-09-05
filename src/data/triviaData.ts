@@ -62,6 +62,8 @@ export interface DueloTrivia {
   porAbandono?: boolean;
   status: "esperando_rival" | "en_curso" | "finalizado";
   createdAt: string;
+  /** ISO timestamp original (para ordenar junto a otras actividades), a diferencia de `createdAt` que ya viene formateado para mostrar. */
+  createdAtRaw?: string;
 }
 
 export interface RangoJuridico {
