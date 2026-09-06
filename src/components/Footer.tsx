@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { DndMark } from "@/components/DndMark";
 import { Mail } from "lucide-react";
+import { abrirFeedback } from "@/components/FeedbackHost";
 
 // ── Íconos de redes sociales (SVG inline) ────────────────────────────
 const IconInstagram = () => (
@@ -128,6 +129,15 @@ export const Footer = () => (
               </Link>
             </li>
           ))}
+          <li>
+            <button
+              onClick={abrirFeedback}
+              className="text-sm text-white/65 hover:text-white transition-colors flex items-center gap-2 group cursor-pointer"
+            >
+              <span className="h-px w-3 bg-white/20 group-hover:w-5 group-hover:bg-accent transition-all duration-200" />
+              Dejá tu opinión
+            </button>
+          </li>
         </ul>
       </div>
     </div>

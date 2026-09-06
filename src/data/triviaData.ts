@@ -9,6 +9,8 @@ export interface TriviaQuestion {
   respuesta_correcta_index: number;
   fundamento_juridico: string;
   puntos_base: number;
+  /** Documento de cátedra del que se extrajo, para saber dónde corregirla. */
+  origen?: string;
 }
 
 export interface CategoriaTrivia {

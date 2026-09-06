@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LoadingBar } from "./LoadingBar";
 import { useApp } from "@/context/AppContext";
 import { CommunityButton } from "./CommunityButton";
+import { FeedbackHost } from "./FeedbackHost";
 
 export const Layout = () => {
   const location = useLocation();
@@ -32,6 +33,7 @@ export const Layout = () => {
 
       {!isFocusMode && <Footer />}
       {!isFocusMode && !isTrivia && <CommunityButton />}
+      {!isFocusMode && <FeedbackHost />}
     </div>
   );
 };

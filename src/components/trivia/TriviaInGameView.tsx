@@ -14,7 +14,8 @@ import {
   AlertCircle,
   HelpCircle,
   Zap,
-  Lock
+  Lock,
+  Flag
 } from "lucide-react";
 import { TriviaQuestion } from "@/data/triviaData";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,8 @@ export interface TriviaInGameViewProps {
   onUseApelacion: () => void;
   onUseProrroga: () => void;
   isDuelMode?: boolean;
+  /** Abre el reporte de la pregunta actual. */
+  onReportarPregunta?: () => void;
 }
 
 export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
@@ -69,7 +72,8 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
   onUseNulidad,
   onUseApelacion,
   onUseProrroga,
-  isDuelMode = false
+  isDuelMode = false,
+  onReportarPregunta
 }) => {
   // Cálculo SVG del Temporizador Circular
   const radius = 28;
@@ -305,6 +309,17 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
                   </span>
                   <p className="leading-relaxed font-medium text-slate-700 dark:text-slate-200 text-xs sm:text-sm">{explicacionIA}</p>
                 </div>
+              )}
+
+              {/* El momento en que se detecta un error es justo después de responder. */}
+              {onReportarPregunta && (
+                <button
+                  onClick={onReportarPregunta}
+                  className="text-[11px] text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer pt-1"
+                >
+                  <Flag className="w-3 h-3" />
+                  <span>¿Hay algo mal en esta pregunta? Reportala</span>
+                </button>
               )}
             </motion.div>
           )}

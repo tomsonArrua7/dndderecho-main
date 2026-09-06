@@ -451,7 +451,10 @@ for (const [rel, materia] of Object.entries(DOCUMENTOS)) {
     opciones: p.opciones,
     respuesta_correcta_index: p.respuesta_correcta_index,
     fundamento_juridico: p.fundamento_juridico || `Contenido de ${p.materia} conforme al programa oficial de la cátedra (FCJyS UNLP).`,
-    dificultad: "media"
+    dificultad: "media",
+    // Documento del que salió: cuando alguien reporta una pregunta, el panel
+    // necesita decir dónde hay que corregirla.
+    origen: rel
   }));
 
   const nombre = rel.replace(/[\/\\]/g, "__").replace(/\.(docx|pdf)$/i, "") + ".json";

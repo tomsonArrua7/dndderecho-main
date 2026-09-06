@@ -8,10 +8,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import logoDndNuevoFondoBlanco from "@/assets/logo-dnd-nuevo-fondo-blanco.png";
 
-import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users, Trophy, Sparkles, BookmarkCheck } from "lucide-react";
+import { Home, Newspaper, BookOpen, Repeat2, LayoutDashboard, GraduationCap, CalendarDays, Settings, User, Bot, Users, Trophy, Sparkles, BookmarkCheck, MessageSquareHeart } from "lucide-react";
 
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { CompleteProfileModal } from "@/components/CompleteProfileModal";
+import { abrirFeedback } from "@/components/FeedbackHost";
 
 const publicLinks = [
   { to: "/noticias",        label: "Noticias",        icon: Newspaper },
@@ -246,6 +247,12 @@ export const Navbar = () => {
                             <l.icon size={16} strokeWidth={2}/> {l.label}
                           </Link>
                         ))}
+                        <button
+                          onClick={() => { setDropdownOpen(false); abrirFeedback(); }}
+                          className="w-full text-left px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300 cursor-pointer"
+                        >
+                          <MessageSquareHeart size={16} strokeWidth={2}/> Dejá tu opinión
+                        </button>
                         <div className="h-px bg-white/5 my-1" />
 
                         {(profile?.role === 'admin' || profile?.role === 'escritor') && (

@@ -17,6 +17,15 @@ import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CATEGORIAS_TRIVIA, cargarBancoPreguntas, TriviaQuestion } from "@/data/triviaData";
+import { HERRAMIENTAS } from "@/components/FeedbackModal";
+
+/** Etiquetas legibles de los motivos de reporte. */
+const MOTIVOS_REPORTE: Record<string, string> = {
+  respuesta_incorrecta: "Respuesta incorrecta",
+  redaccion: "Mal redactada",
+  desactualizada: "Desactualizada",
+  otro: "Otro"
+};
 
 export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
@@ -215,6 +224,69 @@ export default function AdminPanel() {
   const [triviaYearFilter, setTriviaYearFilter] = useState<number>(0);
   const [triviaCategoryFilter, setTriviaCategoryFilter] = useState<string>("todas");
   const [triviaViewMode, setTriviaViewMode] = useState<"banco" | "moderacion">("banco");
+
+  // ---- Feedback de la comunidad y reportes de preguntas ----
+  const [reportes, setReportes] = useState<any[]>([]);
+  const [feedback, setFeedback] = useState<any[]>([]);
+  const [ocultas, setOcultas] = useState<Set<string>>(new Set());
+
+  const cargarFeedback = async () => {
+    const [rep, fb, oc] = await Promise.all([
+      supabase.from("trivia_reportes_pregunta").select("*").eq("resuelto", false).order("created_at", { ascending: false }),
+      supabase.from("feedback_general").select("*").order("created_at", { ascending: false }).limit(200),
+      supabase.from("trivia_preguntas_ocultas").select("pregunta_id")
+    ]);
+    if (rep.data) setReportes(rep.data);
+    if (fb.data) setFeedback(fb.data);
+    if (oc.data) setOcultas(new Set(oc.data.map((f: any) => f.pregunta_id)));
+  };
+
+  useEffect(() => { cargarFeedback(); }, []);
+
+  /** Un renglón por pregunta, con todos sus reportes agrupados. */
+  const reportesAgrupados = useMemo(() => {
+    const mapa = new Map<string, any>();
+    for (const r of reportes) {
+      if (!mapa.has(r.pregunta_id)) {
+        mapa.set(r.pregunta_id, {
+          pregunta_id: r.pregunta_id,
+          pregunta_texto: r.pregunta_texto,
+          materia: r.materia,
+          origen: r.origen,
+          reportes: []
+        });
+      }
+      mapa.get(r.pregunta_id).reportes.push(r);
+    }
+    return [...mapa.values()].sort((a, b) => b.reportes.length - a.reportes.length);
+  }, [reportes]);
+
+  const promediosFeedback = useMemo(() =>
+    HERRAMIENTAS.map(h => {
+      const votos = feedback.map(f => f.puntajes?.[h.id]).filter((v: number) => typeof v === "number" && v > 0);
+      return {
+        id: h.id,
+        label: h.label,
+        votos: votos.length,
+        promedio: votos.length ? votos.reduce((a: number, b: number) => a + b, 0) / votos.length : 0
+      };
+    }), [feedback]);
+
+  const alternarOculta = async (preguntaId: string, ocultar: boolean) => {
+    if (ocultar) {
+      await supabase.from("trivia_preguntas_ocultas").insert({ pregunta_id: preguntaId, motivo: "Retirada manualmente desde el panel." });
+    } else {
+      await supabase.from("trivia_preguntas_ocultas").delete().eq("pregunta_id", preguntaId);
+    }
+    toast.success(ocultar ? "Pregunta fuera de circulación." : "Pregunta habilitada de nuevo.");
+    cargarFeedback();
+  };
+
+  const marcarReportesResueltos = async (preguntaId: string) => {
+    await supabase.from("trivia_reportes_pregunta").update({ resuelto: true }).eq("pregunta_id", preguntaId);
+    toast.success("Reportes marcados como resueltos.");
+    cargarFeedback();
+  };
 
   // El banco pesa ~3 MB: se carga aparte del bundle inicial, sólo al entrar acá.
   const [bancoTrivia, setBancoTrivia] = useState<TriviaQuestion[]>([]);
@@ -1195,6 +1267,9 @@ export default function AdminPanel() {
           <TabsTrigger value="usuarios" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Usuarios ({totalUsersCount || profiles.length})</TabsTrigger>
           <TabsTrigger value="asistente" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Asistente IA ({correcciones.length})</TabsTrigger>
           <TabsTrigger value="trivia" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">Trivia ({allTriviaQuestionsConsolidated.length})</TabsTrigger>
+          <TabsTrigger value="feedback" className="rounded-xl px-4 sm:px-6 py-2 text-xs font-bold shrink-0">
+            Feedback{reportesAgrupados.length > 0 ? ` (${reportesAgrupados.length})` : ""}
+          </TabsTrigger>
         </TabsList>
 
         {/* --- TAB: GENERAL --- */}
@@ -2533,6 +2608,120 @@ export default function AdminPanel() {
             </div>
           )}
         </TabsContent>
+        {/* --- TAB: FEEDBACK Y REPORTES --- */}
+        <TabsContent value="feedback" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+          {/* PREGUNTAS REPORTADAS */}
+          <section className="p-5 sm:p-6 bg-card border rounded-2xl shadow-sm space-y-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <h3 className="font-black text-sm uppercase tracking-wider">Preguntas reportadas</h3>
+                <p className="text-xs text-muted-foreground">
+                  Al tercer reporte de personas distintas, la pregunta sale de circulación sola. El alumno no ve ningún aviso.
+                </p>
+              </div>
+              <Button onClick={cargarFeedback} variant="outline" size="sm" className="text-xs rounded-xl">
+                Actualizar
+              </Button>
+            </div>
+
+            {reportesAgrupados.length === 0 ? (
+              <p className="text-xs text-muted-foreground py-6 text-center">Todavía no hay preguntas reportadas.</p>
+            ) : (
+              <div className="space-y-3">
+                {reportesAgrupados.map(g => (
+                  <div key={g.pregunta_id} className="p-4 rounded-2xl border bg-background/50 space-y-2">
+                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-300 border border-red-500/30 text-[10px] font-black uppercase font-mono">
+                            {g.reportes.length} {g.reportes.length === 1 ? "reporte" : "reportes"}
+                          </span>
+                          <span className="text-xs font-bold">{g.materia || "Materia desconocida"}</span>
+                          {ocultas.has(g.pregunta_id) && (
+                            <span className="px-2 py-0.5 rounded-full bg-slate-500/20 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase">
+                              Fuera de circulación
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-foreground/90">{g.pregunta_texto || g.pregunta_id}</p>
+                        <p className="text-[11px] text-muted-foreground font-mono">
+                          id: {g.pregunta_id}
+                          {g.origen && <> · corregir en <span className="text-amber-600 dark:text-amber-400">{g.origen}</span></>}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs rounded-xl"
+                          onClick={() => alternarOculta(g.pregunta_id, !ocultas.has(g.pregunta_id))}
+                        >
+                          {ocultas.has(g.pregunta_id) ? "Volver a habilitar" : "Sacar de circulación"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="text-xs rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white"
+                          onClick={() => marcarReportesResueltos(g.pregunta_id)}
+                        >
+                          Ya la corregí
+                        </Button>
+                      </div>
+                    </div>
+
+                    <ul className="space-y-1 pt-1 border-t border-border/60">
+                      {g.reportes.map(r => (
+                        <li key={r.id} className="text-[11px] text-muted-foreground">
+                          <span className="font-bold text-foreground/80">{MOTIVOS_REPORTE[r.motivo] || r.motivo}</span>
+                          {r.comentario && <>: {r.comentario}</>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* ENCUESTA GENERAL */}
+          <section className="p-5 sm:p-6 bg-card border rounded-2xl shadow-sm space-y-4">
+            <div>
+              <h3 className="font-black text-sm uppercase tracking-wider">Opinión de la comunidad</h3>
+              <p className="text-xs text-muted-foreground">{feedback.length} respuestas recibidas.</p>
+            </div>
+
+            {feedback.length === 0 ? (
+              <p className="text-xs text-muted-foreground py-6 text-center">Todavía no hay respuestas.</p>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {promediosFeedback.map(p => (
+                    <div key={p.id} className="p-3 rounded-2xl border bg-background/50 text-center space-y-1">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground block truncate">{p.label}</span>
+                      <span className="text-lg font-black text-amber-500 font-mono">
+                        {p.promedio ? p.promedio.toFixed(1) : "—"}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground block">{p.votos} votos</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  {feedback.filter(f => f.comentario).slice(0, 30).map(f => (
+                    <div key={f.id} className="p-3 rounded-xl border bg-background/50">
+                      <p className="text-xs text-foreground/90">{f.comentario}</p>
+                      <span className="text-[10px] text-muted-foreground font-mono">
+                        {new Date(f.created_at).toLocaleDateString("es-AR")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </section>
+        </TabsContent>
+
       </Tabs>
 
       {/* MODAL DETALLE DE CORRECCIÓN COMPLETO */}

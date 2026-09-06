@@ -10,6 +10,7 @@ import { PracticeSetupModal } from "@/components/trivia/PracticeSetupModal";
 import { TriviaInGameView, PowerUpsState } from "@/components/trivia/TriviaInGameView";
 import { TriviaPostMatchModal } from "@/components/trivia/TriviaPostMatchModal";
 import { RuletaRamasModal } from "@/components/trivia/RuletaRamasModal";
+import { ReportarPreguntaModal } from "@/components/trivia/ReportarPreguntaModal";
 import { toast } from "sonner";
 import { 
   Trophy, 
@@ -595,6 +596,25 @@ export default function Trivia() {
     return () => { vigente = false; };
   }, []);
 
+  // Pregunta que el jugador está reportando, si hay alguna.
+  const [preguntaReportada, setPreguntaReportada] = useState<TriviaQuestion | null>(null);
+
+  // Preguntas retiradas de circulación (reportadas de más o dadas de baja a
+  // mano). Se excluyen del pool sin avisar nada al jugador.
+  const [preguntasOcultas, setPreguntasOcultas] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    let vigente = true;
+    supabase
+      .from("trivia_preguntas_ocultas")
+      .select("pregunta_id")
+      .then(({ data, error }) => {
+        if (!vigente || error || !data) return;
+        setPreguntasOcultas(new Set(data.map((f: { pregunta_id: string }) => f.pregunta_id)));
+      });
+    return () => { vigente = false; };
+  }, []);
+
   // El banco pesa ~3 MB y se carga aparte del bundle inicial.
   const [banco, setBanco] = useState<TriviaQuestion[]>([]);
   const bancoListo = banco.length > 0;
@@ -666,6 +686,7 @@ export default function Trivia() {
 
     for (const q of [...banco, ...preguntasIA]) {
       if (!q || !q.pregunta) continue;
+      if (preguntasOcultas.has(q.id)) continue;
       const normText = q.pregunta.trim().toLowerCase();
       if (!seenIds.has(q.id) && !seenTexts.has(normText)) {
         seenIds.add(q.id);
@@ -674,7 +695,7 @@ export default function Trivia() {
       }
     }
     return result;
-  }, [banco, preguntasIA]);
+  }, [banco, preguntasIA, preguntasOcultas]);
 
   const solicitarExplicacionIA = async (q: TriviaQuestion, opcionIndex: number) => {
     try {
@@ -1923,12 +1944,24 @@ export default function Trivia() {
     return getQuestionsForCategory(catId, cat ? cat.nombre : "", allQuestionsCombined).length;
   };
 
+  // El reporte de preguntas se usa tanto jugando como desde el menú, así que se
+  // arma una sola vez y se monta en las dos ramas.
+  const modalReporte = (
+    <ReportarPreguntaModal
+      isOpen={!!preguntaReportada}
+      pregunta={preguntaReportada}
+      userId={user?.id}
+      onClose={() => setPreguntaReportada(null)}
+    />
+  );
+
   // Renderizar Pregunta Activa (con componente mobile-first TriviaInGameView)
   if (inGame && questionsPool.length > 0 && !gameOver) {
     const currentQ = questionsPool[currentIndex];
     const isLastQuestion = currentIndex + 1 === questionsPool.length;
 
     return (
+      <>
       <TriviaInGameView
         currentQuestion={currentQ}
         currentIndex={currentIndex}
@@ -1949,7 +1982,10 @@ export default function Trivia() {
         onUseApelacion={handleUseApelacion}
         onUseProrroga={handleUseProrroga}
         isDuelMode={!!activeDuelRoom}
+        onReportarPregunta={() => setPreguntaReportada(currentQ)}
       />
+      {modalReporte}
+      </>
     );
   }
 
@@ -3249,6 +3285,8 @@ export default function Trivia() {
           onClose={() => setShowGuideModal(false)}
           numeroTemporada={numeroTemporada}
         />
+
+        {modalReporte}
 
         {/* MODAL DE RESULTADOS POST-PARTIDA CON ANIMACIÓN DE ELO Y TEXTO FLOTANTE DE MMR */}
         {postMatchModal && (

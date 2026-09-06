@@ -160,7 +160,9 @@ for (const item of crudas) {
     fundamento_juridico: limpiarTexto(q.fundamento_juridico),
     dificultad: normalizarDificultad(q.dificultad),
     materiaCruda: q.materia,
-    origen: item.origen
+    // El documento de cátedra del que salió, si el extractor lo anotó; si no,
+    // el archivo JSON leído.
+    origen: q.origen || item.origen
   };
 
   if (!clave || ficha.opciones.length !== 4 ||
@@ -200,7 +202,8 @@ for (const { ficha } of porTexto.values()) {
     opciones: ficha.opciones,
     respuesta_correcta_index: ficha.respuesta_correcta_index,
     fundamento_juridico: ficha.fundamento_juridico,
-    puntos_base: 100
+    puntos_base: 100,
+    origen: ficha.origen
   });
 }
 
