@@ -18,10 +18,19 @@ const publicLinks = [
   { to: "/apuntes",         label: "Biblioteca",      icon: BookOpen },
   { to: "/asistente",       label: "Asistente DND",   icon: Bot },
   { to: "/permutero",       label: "Permutero",       icon: Repeat2 },
-  { to: "/servicios",          label: "Info Útil",        icon: ShieldCheck },
-  { to: "/notas-formularios",   label: "Notas y Formularios", icon: FileText },
-  { to: "/recomendaciones",     label: "Recomendaciones",  icon: BookmarkCheck },
+  { to: "/trivia",          label: "Trivia",          icon: Trophy },
   { to: "/quienes-somos",   label: "Quiénes Somos",   icon: Users },
+];
+
+/**
+ * Secciones que salieron de la barra principal para hacerle lugar a la Trivia.
+ * Siguen siendo públicas: se llega desde el desplegable de Mi Perfil y desde el
+ * pie de página.
+ */
+const enlacesSecundarios = [
+  { to: "/servicios",         label: "Info Útil",           icon: ShieldCheck },
+  { to: "/notas-formularios", label: "Notas y Formularios", icon: FileText },
+  { to: "/recomendaciones",   label: "Recomendaciones",     icon: BookmarkCheck },
 ];
 
 export const Navbar = () => {
@@ -230,20 +239,24 @@ export const Navbar = () => {
                         <Link to="/calendario" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
                           <CalendarDays size={16} strokeWidth={2}/> Calendario
                         </Link>
+
+                        <div className="h-px bg-white/5 my-1" />
+                        {enlacesSecundarios.map((l) => (
+                          <Link key={l.to} to={l.to} onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
+                            <l.icon size={16} strokeWidth={2}/> {l.label}
+                          </Link>
+                        ))}
+                        <div className="h-px bg-white/5 my-1" />
+
                         {(profile?.role === 'admin' || profile?.role === 'escritor') && (
                           <Link to="/panel-escritor" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
                             <Newspaper size={16} strokeWidth={2}/> Panel Redacción
                           </Link>
                         )}
                         {(profile?.role === 'admin' || profile?.role === 'betatester') && (
-                          <>
-                            <Link to="/trivia" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-amber-400 hover:bg-amber-500/10 flex items-center gap-3 transition-all duration-300">
-                              <Trophy size={16} strokeWidth={2}/> Trivia Jurídica (Beta)
-                            </Link>
-                            <Link to="/hace-tu-historia" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 flex items-center gap-3 transition-all duration-300">
-                              <Sparkles size={16} strokeWidth={2}/> Hacé Tu Historia (Beta)
-                            </Link>
-                          </>
+                          <Link to="/hace-tu-historia" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 flex items-center gap-3 transition-all duration-300">
+                            <Sparkles size={16} strokeWidth={2}/> Hacé Tu Historia (Beta)
+                          </Link>
                         )}
                         {profile?.role === 'admin' && (
                           <Link to="/admin" onClick={() => setDropdownOpen(false)} className="px-4 py-3 text-xs font-bold text-white/60 hover:bg-accent/10 hover:text-accent flex items-center gap-3 transition-all duration-300">
@@ -382,6 +395,7 @@ export const Navbar = () => {
                       { to: "/mi-espacio", label: "Mi Perfil", icon: LayoutDashboard },
                       { to: "/plan", label: "Plan Estudios", icon: GraduationCap },
                       { to: "/calendario", label: "Calendario", icon: CalendarDays },
+                      ...enlacesSecundarios,
                     ].map((l, i) => (
                       <NavLink
                         key={l.to}
@@ -434,14 +448,6 @@ export const Navbar = () => {
                     {(profile?.role === 'admin' || profile?.role === 'betatester') && (
                       <div className="pt-4 space-y-2 border-t border-white/5">
                         <div className="text-[10px] font-black text-amber-400/60 uppercase tracking-[0.3em] mb-2 pl-2">Juegos (Beta)</div>
-                        <NavLink
-                          to="/trivia"
-                          onClick={() => setOpen(false)}
-                          className="flex items-center gap-4 px-4 py-3 rounded-2xl text-amber-400 font-bold text-xs bg-amber-500/10 border border-amber-500/20"
-                        >
-                          <Trophy className="h-4 w-4" strokeWidth={2} />
-                          <span className="uppercase tracking-wider">Trivia Jurídica (Beta)</span>
-                        </NavLink>
                         <NavLink
                           to="/hace-tu-historia"
                           onClick={() => setOpen(false)}

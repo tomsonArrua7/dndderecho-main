@@ -48,6 +48,9 @@ const NAV_LINKS = [
   { href: "/noticias",        label: "Noticias" },
   { href: "/apuntes",         label: "Biblioteca" },
   { href: "/permutero",       label: "Permutero" },
+  { href: "/trivia",          label: "Trivia" },
+  { href: "/servicios",       label: "Info Útil" },
+  { href: "/notas-formularios", label: "Notas y Formularios" },
   { href: "/recomendaciones", label: "Recomendaciones" },
   { href: "/quienes-somos",  label: "¿Quiénes Somos?" },
 ];

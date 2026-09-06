@@ -47,7 +47,7 @@ import PanelEscritor   from "./pages/PanelEscritor";
 import AsistenteDND   from "./pages/AsistenteDND";
 import Ingresantes   from "./pages/Ingresantes";
 import QuienesSomos   from "./pages/QuienesSomos";
-import Trivia         from "./pages/Trivia";
+import { TriviaGate } from "@/components/TriviaGate";
 import Juegos         from "./pages/Juegos";
 import HaceTuHistoria from "./pages/HaceTuHistoria";
 
@@ -229,7 +229,7 @@ const AppContent = () => {
         <Route path="/asistente"       element={<AsistenteDND />} />
         <Route path="/ingresantes"     element={<Ingresantes />} />
         <Route path="/quienes-somos"   element={<QuienesSomos />} />
-        <Route path="/trivia"          element={<BetaRoute><Trivia /></BetaRoute>} />
+        <Route path="/trivia"          element={<TriviaGate />} />
         <Route path="/hace-tu-historia" element={<BetaRoute><HaceTuHistoria /></BetaRoute>} />
         <Route path="/juegos"           element={<BetaRoute><Juegos /></BetaRoute>} />
 

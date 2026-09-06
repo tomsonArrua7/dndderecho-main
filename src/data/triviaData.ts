@@ -502,6 +502,15 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [];
 // Son ~3 MB, así que se carga con import() dinámico y queda fuera del bundle
 // inicial: sólo lo descarga quien entra a la Trivia o al panel de admin.
 // =========================================================================
+/**
+ * Arranque de la Temporada 1 y, por lo tanto, momento en que la Trivia se abre
+ * al público. Antes de esta fecha /trivia muestra la cuenta regresiva.
+ *
+ * Debe coincidir con el valor por defecto de fn_inicio_temporada_vigente() en
+ * la base (migración 20260906180000).
+ */
+export const INICIO_TEMPORADA_1 = new Date("2026-09-06T19:00:00-03:00").getTime();
+
 let bancoEnMemoria: TriviaQuestion[] | null = null;
 let cargaEnCurso: Promise<TriviaQuestion[]> | null = null;
 

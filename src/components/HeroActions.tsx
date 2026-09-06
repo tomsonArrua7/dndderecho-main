@@ -1,12 +1,32 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Repeat2, ShieldCheck, Sparkles, Bot } from "lucide-react";
+import { ArrowRight, BookOpen, Repeat2, ShieldCheck, Sparkles, Bot, Trophy } from "lucide-react";
 import { DndMark } from "@/components/DndMark";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { INICIO_TEMPORADA_1 } from "@/data/triviaData";
+
+/** Cuenta atrás corta para el botón de la Trivia; null una vez abierta. */
+function faltanteParaApertura(): string | null {
+  const restante = INICIO_TEMPORADA_1 - Date.now();
+  if (restante <= 0) return null;
+  const dias = Math.floor(restante / 86400000);
+  const horas = Math.floor((restante / 3600000) % 24);
+  const minutos = Math.floor((restante / 60000) % 60);
+  if (dias > 0) return `${dias}d ${horas}h`;
+  if (horas > 0) return `${horas}h ${minutos}m`;
+  return `${minutos}m ${Math.floor((restante / 1000) % 60)}s`;
+}
 
 export const HeroActions = () => {
   const [realizadasCount, setRealizadasCount] = useState(0);
+  const [faltaParaApertura, setFaltaParaApertura] = useState<string | null>(() => faltanteParaApertura());
+
+  useEffect(() => {
+    if (faltaParaApertura === null) return;
+    const timer = setInterval(() => setFaltaParaApertura(faltanteParaApertura()), 1000);
+    return () => clearInterval(timer);
+  }, [faltaParaApertura]);
 
   useEffect(() => {
     supabase.rpc("get_completed_permutas_count" as any).then(({ data, error }) => {
@@ -23,7 +43,36 @@ export const HeroActions = () => {
   return (
     <section className="container relative z-20 -mt-12 md:-mt-24 pb-16">
       <div className="grid md:grid-cols-2 gap-6">
-        
+
+        {/* Tarjeta D: Trivia (arriba de todo — la del Asistente no tiene order, así que gana con order-first) */}
+        <div className="order-first md:col-span-2 relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#2A1505] via-[#1A0B12] to-[#04060E] p-8 md:p-12 shadow-2xl border border-amber-500/25 group transition-all duration-300 hover:scale-[1.02] hover:shadow-amber-500/20 text-white">
+          <div className="absolute -top-24 -left-24 w-64 h-64 bg-amber-500/20 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-red-600/15 blur-[80px] rounded-full pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-4 max-w-2xl text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-200 font-black text-[10px] uppercase tracking-[0.2em] border border-amber-500/40 backdrop-blur-md">
+                <Sparkles className="h-3.5 w-3.5 text-amber-300" /> <span style={{ color: '#FDE68A' }}>¡Actualización nueva!</span>
+              </div>
+              <h3 className="font-display text-3xl md:text-4xl font-black !text-white leading-tight tracking-tight" style={{ color: '#FFFFFF' }}>
+                Trivia Jurídica: duelos 1v1
+              </h3>
+              <p className="!text-white/80 text-base leading-relaxed font-medium" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
+                Desafiá a otros estudiantes de la facultad, escalá los 12 rangos jurídicos y competí
+                por el podio de la temporada.
+                {faltaParaApertura !== null && <> Abre hoy a las 19:00.</>}
+              </p>
+            </div>
+
+            <Button asChild size="lg" className="bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-[0_10px_20px_rgba(245,158,11,0.35)] transition-all duration-300 rounded-full px-8 shrink-0 border border-amber-400/40 font-black">
+              <Link to="/trivia" className="flex items-center gap-2">
+                {faltaParaApertura !== null ? `Arranca en ${faltaParaApertura}` : "Jugar la Trivia"}
+                <Trophy className="h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+
         {/* Tarjeta B: Ingresantes (Prioridad Móvil - order 1) */}
         <div className="order-1 md:order-2 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0E162B] via-[#080B17] to-[#04060E] p-8 md:p-12 shadow-2xl border border-white/10 group transition-all duration-300 hover:scale-105 hover:shadow-red-500/20 text-white">
           {/* Glow sutil */}

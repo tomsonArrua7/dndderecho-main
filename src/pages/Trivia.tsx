@@ -60,6 +60,7 @@ import {
 } from "lucide-react";
 import { 
   cargarBancoPreguntas,
+  INICIO_TEMPORADA_1,
   CATEGORIAS_TRIVIA,
   MOCK_LEADERBOARD,
   RANGOS_JURIDICOS,
@@ -106,11 +107,7 @@ const ICON_MAP: Record<string, any> = {
   Zap
 };
 
-/**
- * Arranque de la Temporada 1. Debe coincidir con el valor por defecto de
- * fn_inicio_temporada_vigente() en la base (migración 20260906180000).
- */
-const SEASON_START_TIMESTAMP = new Date("2026-09-06T19:00:00-03:00").getTime();
+const SEASON_START_TIMESTAMP = INICIO_TEMPORADA_1;
 
 /** Vida de una sala pública sin rival. Igual al plazo del barrido en la base. */
 const EXPIRACION_SALA_MS = 30 * 60 * 1000;
