@@ -11,6 +11,7 @@ import {
   getRamaDeMateria
 } from "@/data/ramasTrivia";
 import { BANCO_PREGUNTAS } from "@/data/bancoPreguntas.generated";
+import { cargarBancoPreguntas } from "@/data/triviaData";
 
 const SEMANA = 7 * 24 * 60 * 60 * 1000;
 const enSemana = (n: number) => ANCLA_CICLO_RAMAS + n * SEMANA + 60_000;
@@ -103,5 +104,14 @@ describe("cobertura del banco importado", () => {
     for (const rama of RAMAS_JURIDICAS) {
       expect(getPoolDeRama(rama.id, BANCO_PREGUNTAS).length).toBeGreaterThanOrEqual(50);
     }
+  });
+});
+
+describe("carga diferida del banco", () => {
+  it("devuelve el banco completo y reutiliza la misma instancia", async () => {
+    const primera = await cargarBancoPreguntas();
+    const segunda = await cargarBancoPreguntas();
+    expect(primera.length).toBe(BANCO_PREGUNTAS.length);
+    expect(segunda).toBe(primera);
   });
 });

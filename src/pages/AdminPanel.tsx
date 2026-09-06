@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { CATEGORIAS_TRIVIA, TRIVIA_QUESTIONS, TriviaQuestion } from "@/data/triviaData";
+import { CATEGORIAS_TRIVIA, cargarBancoPreguntas, TriviaQuestion } from "@/data/triviaData";
 
 export default function AdminPanel() {
   const { user, profile: myProfile, loading: authLoading } = useAuth();
@@ -216,12 +216,22 @@ export default function AdminPanel() {
   const [triviaCategoryFilter, setTriviaCategoryFilter] = useState<string>("todas");
   const [triviaViewMode, setTriviaViewMode] = useState<"banco" | "moderacion">("banco");
 
+  // El banco pesa ~3 MB: se carga aparte del bundle inicial, sólo al entrar acá.
+  const [bancoTrivia, setBancoTrivia] = useState<TriviaQuestion[]>([]);
+  useEffect(() => {
+    let vigente = true;
+    cargarBancoPreguntas()
+      .then(preguntas => { if (vigente) setBancoTrivia(preguntas); })
+      .catch(err => console.error("No se pudo cargar el banco de preguntas:", err));
+    return () => { vigente = false; };
+  }, []);
+
   // Banco Consolidado Completo (100% de la Trivia: Base Local + Supabase DB)
   const allTriviaQuestionsConsolidated = useMemo(() => {
     const map = new Map<string, any>();
-    
+
     // 1. Preguntas base del sistema
-    TRIVIA_QUESTIONS.forEach(q => {
+    bancoTrivia.forEach(q => {
       if (q && q.id) {
         const cat = CATEGORIAS_TRIVIA.find(c => c.id === q.id_categoria);
         map.set(q.id, {
@@ -254,7 +264,7 @@ export default function AdminPanel() {
     });
 
     return Array.from(map.values());
-  }, [preguntasTriviaIA]);
+  }, [bancoTrivia, preguntasTriviaIA]);
 
   // Preguntas filtradas para visualización en vivo en el panel
   const filteredTriviaQuestions = useMemo(() => {

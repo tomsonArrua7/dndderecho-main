@@ -59,8 +59,8 @@ import {
   Loader2
 } from "lucide-react";
 import { 
-  TRIVIA_QUESTIONS, 
-  CATEGORIAS_TRIVIA, 
+  cargarBancoPreguntas,
+  CATEGORIAS_TRIVIA,
   MOCK_LEADERBOARD,
   RANGOS_JURIDICOS,
   calcularRango,
@@ -564,6 +564,30 @@ export default function Trivia() {
   // pool en memoria; el banco oficial sigue siendo el generado del repositorio.
   const [preguntasIA, setPreguntasIA] = useState<TriviaQuestion[]>([]);
 
+  // El banco pesa ~3 MB y se carga aparte del bundle inicial.
+  const [banco, setBanco] = useState<TriviaQuestion[]>([]);
+  const bancoListo = banco.length > 0;
+
+  useEffect(() => {
+    let vigente = true;
+    cargarBancoPreguntas()
+      .then(preguntas => { if (vigente) setBanco(preguntas); })
+      .catch(err => {
+        console.error("No se pudo cargar el banco de preguntas:", err);
+        toast.error("No se pudo cargar el banco de preguntas. Recargá la página.");
+      });
+    return () => { vigente = false; };
+  }, []);
+
+  /** Evita arrancar una partida mientras el banco todavía está bajando. */
+  const bancoDisponible = () => {
+    if (!bancoListo) {
+      toast.info("Cargando el banco de preguntas, esperá un segundo...");
+      return false;
+    }
+    return true;
+  };
+
   // Estado y auto-apertura del Tutorial / Guía de juego en la primera visita
   const [showGuideModal, setShowGuideModal] = useState(false);
 
@@ -596,7 +620,7 @@ export default function Trivia() {
     const seenTexts = new Set<string>();
     const result: TriviaQuestion[] = [];
 
-    for (const q of [...TRIVIA_QUESTIONS, ...preguntasIA]) {
+    for (const q of [...banco, ...preguntasIA]) {
       if (!q || !q.pregunta) continue;
       const normText = q.pregunta.trim().toLowerCase();
       if (!seenIds.has(q.id) && !seenTexts.has(normText)) {
@@ -606,7 +630,7 @@ export default function Trivia() {
       }
     }
     return result;
-  }, [preguntasIA]);
+  }, [banco, preguntasIA]);
 
   const solicitarExplicacionIA = async (q: TriviaQuestion, opcionIndex: number) => {
     try {
@@ -647,6 +671,7 @@ export default function Trivia() {
   };
 
   const generarParcialFlashIA = async () => {
+    if (!bancoDisponible()) return;
     try {
       setLoadingParcialFlash(true);
       const materiaLimpia = materiaParcialFlash.trim();
@@ -1351,6 +1376,7 @@ export default function Trivia() {
 
   // Iniciar Trivia Solo (con desorden de opciones aleatorio y CERO duplicados)
   const handleStartGame = () => {
+    if (!bancoDisponible()) return;
     setActiveDuelRoom(null);
     setExplicacionIA(null);
     puntosTotalesAntesRef.current = userStats.puntosTotales;
@@ -1391,6 +1417,7 @@ export default function Trivia() {
 
   // Iniciar Modo Flash (5 preguntas ultra-rápidas con 10s por pregunta y CERO duplicados)
   const handleStartFlashGame = () => {
+    if (!bancoDisponible()) return;
     setActiveDuelRoom(null);
     setExplicacionIA(null);
     puntosTotalesAntesRef.current = userStats.puntosTotales;
@@ -1419,6 +1446,7 @@ export default function Trivia() {
 
   // Crear Duelo 1vs1 en Supabase (con selector propio de materia y CERO preguntas repetidas)
   const handleCreateDuelo = async (esPublico: boolean, overrideCatId?: string) => {
+    if (!bancoDisponible()) return;
     const randomCode = `DND-${Math.floor(100 + Math.random() * 900)}`;
 
     // El sorteo se resuelve acá, al crear la sala, y queda grabado: el rival que
@@ -1476,6 +1504,7 @@ export default function Trivia() {
 
   // Unirse a un Duelo 1vs1 (por código o lista)
   const handleJoinDuelo = async (duelo: DueloTrivia) => {
+    if (!bancoDisponible()) return;
     const isPlayer1 = (user?.id && duelo.player1Id === user.id) || duelo.player1Nombre === userName;
     const isPlayer2 = (user?.id && duelo.player2Id === user.id) || (duelo.player2Nombre && duelo.player2Nombre === userName);
 

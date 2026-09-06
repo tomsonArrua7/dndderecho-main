@@ -1,4 +1,3 @@
-import { BANCO_PREGUNTAS } from "./bancoPreguntas.generated";
 
 export interface TriviaQuestion {
   id: string;
@@ -499,6 +498,21 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [];
 //
 // Se genera con scripts/extraerBanco.mjs + scripts/importarBanco.mjs, que
 // parsean los documentos originales de cátedra. No se edita a mano.
+//
+// Son ~3 MB, así que se carga con import() dinámico y queda fuera del bundle
+// inicial: sólo lo descarga quien entra a la Trivia o al panel de admin.
 // =========================================================================
-export const TRIVIA_QUESTIONS: TriviaQuestion[] = BANCO_PREGUNTAS;
+let bancoEnMemoria: TriviaQuestion[] | null = null;
+let cargaEnCurso: Promise<TriviaQuestion[]> | null = null;
+
+export async function cargarBancoPreguntas(): Promise<TriviaQuestion[]> {
+  if (bancoEnMemoria) return bancoEnMemoria;
+  if (!cargaEnCurso) {
+    cargaEnCurso = import("./bancoPreguntas.generated").then(m => {
+      bancoEnMemoria = m.BANCO_PREGUNTAS;
+      return bancoEnMemoria;
+    });
+  }
+  return cargaEnCurso;
+}
 
