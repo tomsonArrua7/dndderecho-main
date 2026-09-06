@@ -2652,7 +2652,7 @@ export default function Trivia() {
               </div>
 
               {/* TARJETA 3: ESTUDIANTES CLASIFICADOS (BLUE GLOW) */}
-              <div className="bg-white dark:bg-gradient-to-br dark:from-[#0A1C3D]/60 dark:via-[#0D1527] dark:to-[#0D1527] border border-slate-200 dark:border-blue-500/40 rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 shadow-md sm:shadow-lg dark:shadow-2xl relative overflow-hidden space-y-1 sm:space-y-3 text-slate-900 dark:text-white">
+              <div className="bg-white dark:bg-gradient-to-br dark:from-[#0A1C3D] dark:via-[#0D1527] dark:to-[#0D1527] border border-slate-200 dark:border-blue-500/40 rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 shadow-md sm:shadow-lg dark:shadow-2xl relative overflow-hidden space-y-1 sm:space-y-3 text-slate-900 dark:text-white">
                 <div className="hidden sm:block absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-blue-500 pointer-events-none">
                   <Users className="w-28 h-28" />
                 </div>

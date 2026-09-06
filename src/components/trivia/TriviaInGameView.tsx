@@ -191,22 +191,26 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
           key={`q_${currentQuestion.id}`}
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full rounded-3xl bg-white dark:bg-gradient-to-b dark:from-[#0F1A30]/95 dark:via-[#0A1325]/95 dark:to-[#060D1B]/98 border border-slate-200 dark:border-white/15 p-5 sm:p-6 shadow-xl dark:shadow-2xl backdrop-blur-xl relative overflow-hidden space-y-4 text-slate-900 dark:text-white"
+          /* Azul sólido en los dos modos. Antes era `bg-white` con un degradé
+             oscuro encima: como el degradé es translúcido y su último punto
+             quedaba en alpha 0, el blanco se filtraba de abajo y el enunciado
+             en blanco se volvía ilegible en la mitad inferior. */
+          className="w-full rounded-3xl bg-[#0A1C3D] border border-white/15 p-5 sm:p-6 shadow-xl relative overflow-hidden space-y-4 text-white"
         >
           <div className="space-y-1">
-            <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+            <div className="flex items-center justify-between text-[10px] font-bold text-white/60 uppercase tracking-widest">
               <span>Pregunta de Evaluación</span>
               <span className={cn(
-                "px-2 py-0.5 rounded text-[10px] font-black uppercase",
-                currentQuestion.dificultad === "dificil" ? "bg-rose-500/15 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30" :
-                currentQuestion.dificultad === "media" ? "bg-amber-500/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30" :
-                "bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30"
+                "px-2 py-0.5 rounded text-[10px] font-black uppercase border",
+                currentQuestion.dificultad === "dificil" ? "bg-rose-500/20 text-rose-300 border-rose-500/30" :
+                currentQuestion.dificultad === "media" ? "bg-amber-500/20 text-amber-300 border-amber-500/30" :
+                "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
               )}>
                 {currentQuestion.dificultad || "media"}
               </span>
             </div>
 
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-relaxed pt-1">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-relaxed pt-1">
               {currentQuestion.pregunta}
             </h3>
           </div>
