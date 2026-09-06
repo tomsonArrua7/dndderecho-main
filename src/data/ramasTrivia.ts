@@ -124,6 +124,25 @@ function tomarAlAzar<T>(arr: T[], n: number): T[] {
 }
 
 /**
+ * Toma n preguntas priorizando las que el jugador todavía no vio; sólo completa
+ * con repetidas si se le acabaron las nuevas de esa rama.
+ */
+function tomarPriorizandoNuevas(
+  pool: TriviaQuestion[],
+  n: number,
+  vistas?: Set<string>
+): TriviaQuestion[] {
+  if (!vistas || vistas.size === 0) return tomarAlAzar(pool, n);
+
+  const nuevas = pool.filter(q => !vistas.has(q.id));
+  const elegidas = tomarAlAzar(nuevas, n);
+  if (elegidas.length < n) {
+    elegidas.push(...tomarAlAzar(pool.filter(q => vistas.has(q.id)), n - elegidas.length));
+  }
+  return elegidas;
+}
+
+/**
  * Arma las preguntas de un duelo: 3 de la rama fija de la temporada y 2 de la
  * sorteada. Si alguna rama no llega a su cupo, la otra completa; si aun así
  * falta, se completa con el pool general para no dejar la sala sin preguntas.
@@ -132,16 +151,17 @@ export function seleccionarPreguntasDuelo(
   ramaFija: RamaId,
   ramaAzar: RamaId,
   pool: TriviaQuestion[],
-  total: number = 5
+  total: number = 5,
+  vistas?: Set<string>
 ): TriviaQuestion[] {
   const cupoFija = Math.ceil(total * 0.6);
-  const deFija = tomarAlAzar(getPoolDeRama(ramaFija, pool), cupoFija);
-  const deAzar = tomarAlAzar(getPoolDeRama(ramaAzar, pool), total - deFija.length);
+  const deFija = tomarPriorizandoNuevas(getPoolDeRama(ramaFija, pool), cupoFija, vistas);
+  const deAzar = tomarPriorizandoNuevas(getPoolDeRama(ramaAzar, pool), total - deFija.length, vistas);
 
   const elegidas = [...deFija, ...deAzar];
   if (elegidas.length < total) {
     const yaElegidas = new Set(elegidas.map(q => q.id));
-    elegidas.push(...tomarAlAzar(pool.filter(q => !yaElegidas.has(q.id)), total - elegidas.length));
+    elegidas.push(...tomarPriorizandoNuevas(pool.filter(q => !yaElegidas.has(q.id)), total - elegidas.length, vistas));
   }
   return tomarAlAzar(elegidas, elegidas.length);
 }

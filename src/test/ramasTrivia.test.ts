@@ -68,6 +68,26 @@ describe("selección de preguntas del duelo", () => {
     }
   });
 
+  it("no repite preguntas que el jugador ya vio mientras queden nuevas", () => {
+    const poolPenal = getPoolDeRama("penal", BANCO_PREGUNTAS);
+    // Todas las de Penal menos cinco quedan marcadas como ya vistas.
+    const vistas = new Set(poolPenal.slice(5).map(q => q.id));
+
+    for (let i = 0; i < 20; i++) {
+      const elegidas = seleccionarPreguntasDuelo("penal", "privado", BANCO_PREGUNTAS, 5, vistas);
+      const dePenal = elegidas.filter(q => getRamaDeMateria(q.id_categoria)?.id === "penal");
+      for (const q of dePenal) expect(vistas.has(q.id)).toBe(false);
+    }
+  });
+
+  it("cae en repetidas sólo cuando se agotaron las nuevas de la rama", () => {
+    const todasVistas = new Set(BANCO_PREGUNTAS.map(q => q.id));
+    const elegidas = seleccionarPreguntasDuelo("penal", "privado", BANCO_PREGUNTAS, 5, todasVistas);
+    // Sin preguntas nuevas disponibles igual tiene que armar el duelo completo.
+    expect(elegidas).toHaveLength(5);
+    expect(new Set(elegidas.map(q => q.id)).size).toBe(5);
+  });
+
   it("da mayoría a la rama fija de la semana", () => {
     const elegidas = seleccionarPreguntasDuelo("privado", "penal", BANCO_PREGUNTAS, 5);
     const deFija = elegidas.filter(q => getRamaDeMateria(q.id_categoria)?.id === "privado").length;

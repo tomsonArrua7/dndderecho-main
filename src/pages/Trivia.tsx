@@ -301,10 +301,37 @@ function getQuestionsForCategory(
 }
 
 // Función que garantiza CERO preguntas repetidas por ID y por texto en cualquier modo de juego
+/**
+ * Mezcla uniforme (Fisher-Yates). `sort(() => 0.5 - Math.random())` parece
+ * equivalente pero no lo es: el comparador es inconsistente y el resultado
+ * queda sesgado, así que algunas preguntas salían sistemáticamente más que otras.
+ */
+function mezclar<T>(arr: T[]): T[] {
+  const copia = [...arr];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+/**
+ * Ordena el pool poniendo primero lo que el jugador todavía no vio. Sólo cuando
+ * agota lo nuevo empieza a repetir, y dentro de cada grupo el orden es al azar.
+ */
+function priorizarNoVistas(pool: TriviaQuestion[], vistas?: Set<string>): TriviaQuestion[] {
+  if (!vistas || vistas.size === 0) return mezclar(pool);
+  const nuevas: TriviaQuestion[] = [];
+  const repetidas: TriviaQuestion[] = [];
+  for (const q of pool) (vistas.has(q.id) ? repetidas : nuevas).push(q);
+  return [...mezclar(nuevas), ...mezclar(repetidas)];
+}
+
 function getStrictUniqueQuestions(
   primaryPool: TriviaQuestion[],
   count: number,
-  fallbackPool: TriviaQuestion[] = []
+  fallbackPool: TriviaQuestion[] = [],
+  vistas?: Set<string>
 ): TriviaQuestion[] {
   const seenIds = new Set<string>();
   const seenTexts = new Set<string>();
@@ -322,14 +349,14 @@ function getStrictUniqueQuestions(
     return false;
   };
 
-  const shuffledPrimary = [...primaryPool].sort(() => 0.5 - Math.random());
+  const shuffledPrimary = priorizarNoVistas(primaryPool, vistas);
   for (const q of shuffledPrimary) {
     if (uniqueList.length >= count) break;
     addQuestion(q);
   }
 
   if (uniqueList.length < count && fallbackPool.length > 0) {
-    const shuffledFallback = [...fallbackPool].sort(() => 0.5 - Math.random());
+    const shuffledFallback = priorizarNoVistas(fallbackPool, vistas);
     for (const q of shuffledFallback) {
       if (uniqueList.length >= count) break;
       addQuestion(q);
@@ -599,6 +626,45 @@ export default function Trivia() {
   // Pregunta que el jugador está reportando, si hay alguna.
   const [preguntaReportada, setPreguntaReportada] = useState<TriviaQuestion | null>(null);
 
+  // Preguntas que este usuario ya vio en partidas anteriores. La selección las
+  // deja para el final, así recorre el banco antes de empezar a repetir.
+  const [preguntasVistas, setPreguntasVistas] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!user) return;
+    let vigente = true;
+    supabase
+      .from("trivia_preguntas_vistas")
+      .select("pregunta_id")
+      .eq("user_id", user.id)
+      .then(({ data, error }) => {
+        if (!vigente || error || !data) return;
+        setPreguntasVistas(new Set(data.map((f: { pregunta_id: string }) => f.pregunta_id)));
+      });
+    return () => { vigente = false; };
+  }, [user]);
+
+  /**
+   * Marca como vistas las preguntas que se acaban de servir. Se registra al
+   * momento de repartirlas y no al terminar: si abandona la partida igual las vio.
+   */
+  const registrarVistas = (preguntas: TriviaQuestion[]) => {
+    if (!user || preguntas.length === 0) return;
+    const ids = preguntas.map(q => q.id);
+    setPreguntasVistas(prev => new Set([...prev, ...ids]));
+    supabase
+      .from("trivia_preguntas_vistas")
+      .upsert(ids.map(id => ({ user_id: user.id, pregunta_id: id })), { onConflict: "user_id,pregunta_id" })
+      .then(({ error }) => { if (error) console.warn("No se pudieron registrar las preguntas vistas:", error); });
+  };
+
+  /** getStrictUniqueQuestions con la memoria de este usuario ya aplicada. */
+  const elegirPreguntas = (
+    pool: TriviaQuestion[],
+    cantidad: number,
+    fallback: TriviaQuestion[] = []
+  ) => getStrictUniqueQuestions(pool, cantidad, fallback, preguntasVistas);
+
   // Preguntas retiradas de circulación (reportadas de más o dadas de baja a
   // mano). Se excluyen del pool sin avisar nada al jugador.
   const [preguntasOcultas, setPreguntasOcultas] = useState<Set<string>>(new Set());
@@ -751,9 +817,11 @@ export default function Trivia() {
 
       // Si ya tenemos 5 o más preguntas exactas en nuestro banco masivo para esa materia, responder AL INSTANTE
       if (matchingExisting.length >= 5) {
-        const selected = [...matchingExisting].sort(() => 0.5 - Math.random()).slice(0, 5);
+        const selected = mezclar(matchingExisting).slice(0, 5);
         const pool = prepareQuestionPool(selected);
         setQuestionsPool(pool);
+      registrarVistas(pool);
+        registrarVistas(pool);
         setCurrentIndex(0);
         setScore(0);
         setStreak(0);
@@ -769,7 +837,7 @@ export default function Trivia() {
       }
 
       // Si tenemos entre 1 y 4 preguntas de la materia, usarlas todas e invocar la IA para completar las que faltan
-      const selectedExisting = [...matchingExisting].sort(() => 0.5 - Math.random());
+      const selectedExisting = mezclar(matchingExisting);
       const neededNewCount = 5 - selectedExisting.length;
 
       // 2. Invocar la IA para generar las preguntas faltantes de la materia
@@ -836,7 +904,7 @@ export default function Trivia() {
       }
 
       // 3. Mezclar preguntas existentes de la materia + preguntas de la IA de la materia garantizando unicidad estricta
-      const strictlyUnique = getStrictUniqueQuestions([...selectedExisting, ...newAiQuestions], 5, allQuestionsCombined);
+      const strictlyUnique = elegirPreguntas([...selectedExisting, ...newAiQuestions], 5, allQuestionsCombined);
 
       if (strictlyUnique.length === 0) {
         toast.error(`No se pudieron generar preguntas específicas para "${materiaLimpia}". Intenta nuevamente.`);
@@ -845,6 +913,7 @@ export default function Trivia() {
 
       const pool = prepareQuestionPool(strictlyUnique);
       setQuestionsPool(pool);
+      registrarVistas(pool);
       setCurrentIndex(0);
       setScore(0);
       setStreak(0);
@@ -1128,11 +1197,13 @@ export default function Trivia() {
         let duelQuestions = allQuestionsCombined.filter(q => duel.preguntasIds.includes(q.id));
         if (duelQuestions.length < 5) {
           const fallbackPool = getQuestionsForCategory(duel.materiaId, duel.materiaNombre, allQuestionsCombined);
-          duelQuestions = getStrictUniqueQuestions(duelQuestions, 5, fallbackPool.length > 0 ? fallbackPool : allQuestionsCombined);
+          duelQuestions = elegirPreguntas(duelQuestions, 5, fallbackPool.length > 0 ? fallbackPool : allQuestionsCombined);
         } else {
-          duelQuestions = getStrictUniqueQuestions(duelQuestions, 5, allQuestionsCombined);
+          duelQuestions = elegirPreguntas(duelQuestions, 5, allQuestionsCombined);
         }
         setQuestionsPool(prepareQuestionPool(duelQuestions));
+      registrarVistas(duelQuestions);
+        registrarVistas(duelQuestions);
 
         setDuelOutcomeModal({
           resultado: res,
@@ -1359,7 +1430,7 @@ export default function Trivia() {
     const wrongIndices = currentQ.opciones
       .map((_, idx) => idx)
       .filter(idx => idx !== currentQ.respuesta_correcta_index);
-    const shuffledWrong = [...wrongIndices].sort(() => 0.5 - Math.random()).slice(0, 2);
+    const shuffledWrong = mezclar(wrongIndices).slice(0, 2);
     setPowerUps(prev => ({
       ...prev,
       nulidadCount: Math.max(0, prev.nulidadCount - 1),
@@ -1413,10 +1484,11 @@ export default function Trivia() {
         : findExactMatchingQuestions(catNombre, allQuestionsCombined);
     }
 
-    const finalPool = getStrictUniqueQuestions(pool, questionsCount, allQuestionsCombined);
+    const finalPool = elegirPreguntas(pool, questionsCount, allQuestionsCombined);
 
     // Mezclar las 4 opciones de cada pregunta aleatoriamente
     setQuestionsPool(prepareQuestionPool(finalPool));
+    registrarVistas(finalPool);
     setCurrentIndex(0);
     setScore(0);
     setStreak(0);
@@ -1443,9 +1515,10 @@ export default function Trivia() {
       disabledOptionIndices: []
     });
 
-    const finalPool = getStrictUniqueQuestions(allQuestionsCombined, 5);
+    const finalPool = elegirPreguntas(allQuestionsCombined, 5);
 
     setQuestionsPool(prepareQuestionPool(finalPool));
+    registrarVistas(finalPool);
     setCurrentIndex(0);
     setScore(0);
     setStreak(0);
@@ -1468,7 +1541,7 @@ export default function Trivia() {
     const [ramaFija, ramaAzar] = sortearRamasDuelo(numeroTemporada!);
     const nombreRamas = `${getRamaById(ramaFija).nombre} + ${getRamaById(ramaAzar).nombre}`;
 
-    const finalPool = seleccionarPreguntasDuelo(ramaFija, ramaAzar, allQuestionsCombined, 5);
+    const finalPool = seleccionarPreguntasDuelo(ramaFija, ramaAzar, allQuestionsCombined, 5, preguntasVistas);
     const selectedQIds = finalPool.map(q => q.id);
 
     const dbRow = {
@@ -1545,9 +1618,9 @@ export default function Trivia() {
     let duelQuestions = allQuestionsCombined.filter(q => duelo.preguntasIds.includes(q.id));
     if (duelQuestions.length < 5) {
       const fallbackPool = getQuestionsForCategory(duelo.materiaId, duelo.materiaNombre, allQuestionsCombined);
-      duelQuestions = getStrictUniqueQuestions(duelQuestions, 5, fallbackPool.length > 0 ? fallbackPool : allQuestionsCombined);
+      duelQuestions = elegirPreguntas(duelQuestions, 5, fallbackPool.length > 0 ? fallbackPool : allQuestionsCombined);
     } else {
-      duelQuestions = getStrictUniqueQuestions(duelQuestions, 5, allQuestionsCombined);
+      duelQuestions = elegirPreguntas(duelQuestions, 5, allQuestionsCombined);
     }
     setQuestionsPool(prepareQuestionPool(duelQuestions));
 
