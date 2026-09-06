@@ -1,11 +1,107 @@
 // ARCHIVO GENERADO POR scripts/importarBanco.mjs — NO EDITAR A MANO.
 // Para regenerarlo: node scripts/importarBanco.mjs [carpetas...]
-// Generado: 2026-09-06T14:35:12.812Z
-// Preguntas: 3210
+// Generado: 2026-09-06T15:18:38.106Z
+// Preguntas: 3428
 
 import type { TriviaQuestion } from "./triviaData";
 
 export const BANCO_PREGUNTAS: TriviaQuestion[] = [
+  {
+    "id": "10111-006122df",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo define Carlos Cossio la \"verdad jurídica objetiva\" alcanzada en la resolución de disputas por el juez?",
+    "opciones": [
+      "Como una correspondencia matemática perfecta entre los hechos físicos causales y las leyes de la naturaleza.",
+      "Como un derivado lógico formal de la norma hipotética fundamental presupuesta de forma dogmática.",
+      "Como una profecía empírica asertiva basada en el punto de vista externo de los sociólogos.",
+      "Como una construcción axiológicamente compartida en el proceso, alcanzada al comprender y valorar la conducta libre de los sujetos."
+    ],
+    "respuesta_correcta_index": 3,
+    "fundamento_juridico": "Para la Egología, la verdad judicial no es descriptiva ciega. Es una verdad comprensiva y axiológica: el juez constata hechos pero comprende y valora conductas en su interferencia intersubjetiva, determinando qué conducta es lícita u obligada en un sentido compartido de justicia.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-01d5a78e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Al clasificar los derechos fundamentales, Luigi Ferrajoli traza una distinción con los \"derechos patrimoniales\". ¿Cuál es este criterio?",
+    "opciones": [
+      "Los fundamentales son disponibles por su titular; los patrimoniales son inalienables de forma constitucional.",
+      "Los fundamentales son de carácter universal e indisponibles (inviolables); los patrimoniales son singulares, negociables y disponibles.",
+      "Los fundamentales se restringen a las garantías penales; los patrimoniales regulan el derecho internacional.",
+      "Los fundamentales son ficciones de la dogmática; los patrimoniales son entes de la naturaleza."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Para Ferrajoli (garantismo), los derechos fundamentales (ej. la libertad, la salud) pertenecen distributivamente a todos y no se pueden vender, renunciar ni limitar. Los patrimoniales (ej. la propiedad de una casa) son transables, singulares e ingresan al tráfico civil.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-02ccaa93",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Al caracterizar al ordenamiento jurídico como un sistema, ¿cuándo se afirma que el mismo cumple con la propiedad lógica de \"completitud\"?",
+    "opciones": [
+      "Cuando toda norma que lo compone ha sido dictada por un órgano con competencia constitucional formal.",
+      "Cuando no presenta contradicciones entre las consecuencias lógicas de sus diferentes normas vigentes.",
+      "Cuando no contiene \"lagunas normativas\", es decir, provee una solución deóntica para cualquier caso del universo.",
+      "Cuando la validez material de todas sus normas deriva de la regla de reconocimiento fáctica de Hart."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "La completitud (o plenitud) del ordenamiento significa la ausencia de lagunas lógicas: el sistema tiene soluciones normativas (obligación, prohibición o permisión) para cada caso concebible en su universo de discurso.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-08d6426a",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo se diferencia una \"ley en sentido formal\" de una \"ley en sentido material\"?",
+    "opciones": [
+      "La formal posee validez jerárquica constitucional; la material carece de toda eficacia coactiva estatal.",
+      "La formal es la norma general dictada por cualquier funcionario; la material es el código penal del Estado.",
+      "La formal es el acto sancionado por el órgano legislativo según el procedimiento establecido; la material es toda norma de carácter general y abstracto sin importar su origen.",
+      "La formal se dirige a los ciudadanos; la material regula de forma exclusiva a los tribunales penales."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Una ley en sentido formal es el producto del procedimiento legislativo del Congreso, aun si regula un caso particular (ej. otorgar una pensión). Una ley en sentido material es cualquier disposición de contenido general y abstracto, sea una ordenanza municipal o un decreto reglamentario.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-0dcb6f6a",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Por qué, según Manuel Atienza y otros teóricos de la argumentación, el silogismo deductivo es insuficiente para resolver de forma completa \"casos difíciles\"?",
+    "opciones": [
+      "Porque en los casos difíciles el verdadero problema radica en establecer y justificar las premisas, tarea que la lógica formal no puede realizar.",
+      "Porque la lógica deductiva carece de valor formal para estructurar el consecuente de la sentencia.",
+      "Porque el formalismo de la exégesis obliga a los jueces a prescindir de la analogía en materia civil.",
+      "Porque las antinomias lógicas total-parcial anulan de forma definitiva la validez de la Constitución."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "El silogismo opera mecánicamente una vez que se han aceptado la premisa mayor (norma) y la menor (hechos). Pero en casos difíciles (problemas de relevancia, interpretación, prueba o calificación), la labor crucial del juez es justificar por qué elige esas premisas, requiriendo argumentación externa.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-0de57688",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la consecuencia directa de una mala formulación sintáctica en el texto de una ley penal (ambigüedad sintáctica)?",
+    "opciones": [
+      "La anulación inmediata de la validez formal del ordenamiento coactivo por el Parlamento.",
+      "La pérdida definitiva de la eficacia global de la regla de reconocimiento de Hart.",
+      "Una indeterminación lógica de la norma contenida en el texto, abriendo múltiples posibilidades de interpretación.",
+      "La derivación deductiva necesaria de la ley natural a partir del plan eterno del universo"
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "La ambigüedad sintáctica (o equivocidad por nexos gramaticales, ej: dudas sobre a qué califica una cláusula disyuntiva) impide saber cuál es la solución deóntica exacta del sistema ante un caso, otorgando un amplio margen de discrecionalidad al juez",
+    "puntos_base": 100
+  },
   {
     "id": "10111-0f4973e0",
     "id_categoria": "10111",
@@ -20,6 +116,246 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Cossio divide los objetos culturales en egológicos (la conducta misma en su fluir libre) y mundanales (productos o huellas de la conducta, como un libro o una ley). El objeto egológico es la conducta en interferencia intersubjetiva.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-110901e0",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué es la \"textura abierta\" del lenguaje jurídico según la conceptualización formulada originalmente por Waismann y Hart?",
+    "opciones": [
+      "Un defecto sintáctico que se origina de forma exclusiva por una mala redacción gramatical del legislador.",
+      "La vaguedad potencial que padece de forma latente toda palabra de un idioma ante situaciones e hipótesis imprevistas.",
+      "El carácter democrático y participativo de los debates del Parlamento para dictar leyes ordinarias.",
+      "La libre interpretación de la ley natural que los jueces desarrollan de forma discrecional."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La textura abierta significa que un concepto preciso hoy puede volverse impreciso mañana ante hechos nuevos o imprevisibles de la realidad. Toda norma posee de forma latente este defecto semántico, pues el lenguaje humano es incapaz de anticipar todas las variantes fácticas del futuro",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-11653b99",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué pautas de interpretación consagra el artículo 2 del Código Civil y Comercial de la Nación argentina?",
+    "opciones": [
+      "Limita al intérprete a atenerse de forma exclusiva al sentido literal gramatical de las palabras de la ley escrita.",
+      "Exige interpretar la ley conforme a sus palabras, finalidades, leyes análogas, tratados de derechos humanos, principios y valores.",
+      "Prescribe recurrir a la analogía en materia de tipos penales prohibitivos de motivación directa.",
+      "Sostiene que el stare decisis del common law posee supremacía jerárquica sobre los códigos nacionales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El artículo 2 promueve una interpretación integral y sistémica, abandonando el exégetismo estricto. Obliga a considerar las palabras en su contexto de finalidad, adecuación de los tratados internacionales de derechos humanos, principios generales y valores jurídicos",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-126ff9b6",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el postulado definitorio de la denominada \"Teoría de la Ficción\" de Savigny respecto de las personas jurídicas colectivas?",
+    "opciones": [
+      "Que constituyen entes reales dotados de voluntad psicológica e independientes de los seres físicos.",
+      "Que son construcciones lógicas que carecen de relevancia para la dogmática de los contratos civiles.",
+      "Que son seres ficticios creados artificialmente por la ley con el fin exclusivo de facilitar la administración de sus bienes.",
+      "Que equivalen de manera perfecta a un haz de normas que imponen castigos coactivos indirectos."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "La teoría de la ficción (Savigny) asume que, por naturaleza, solo el hombre es sujeto de derecho. Como las asociaciones necesitan actuar en el tráfico civil, la ley \"finge\" de forma artificial que poseen personalidad jurídica.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-13562dd4",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué error lógico-metodológico le atribuye Carlos Nino a la escuela del historicismo jurídico representada por Savigny?",
+    "opciones": [
+      "Confundir las normas primarias kelsenianas con las directivas técnicas de la lógica de Von Wright.",
+      "Incurrir en la falacia de pretender derivar enunciados normativos del \"deber ser\" a partir de hechos del \"ser\" de la historia social.",
+      "Sostener que la validez formal del ordenamiento depende de un presupuesto gnoseológico de naturaleza teológica.",
+      "Considerar a las sentencias judiciales como fragmentos de normas lógicas desprovistas de carga emotiva."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El historicismo jurídico sitúa al derecho como emanación espontánea de la historia del pueblo (Volksgeist). Nino critica que esta escuela intenta justificar normas de obediencia obligatoria basándose de forma exclusiva en descripciones históricas o fácticas de conductas pasadas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-159ee6bb",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el núcleo de la crítica ontológica que Carlos Cossio y la Teoría Egológica dirigen a la Teoría Pura de Hans Kelsen?",
+    "opciones": [
+      "Que Kelsen reduce el derecho a la descripción sociológica del comportamiento de los jueces de tradición anglosajona.",
+      "Que la norma hipotética fundamental presupuesta carece de vinculación formal con el derecho internacional.",
+      "Que el objeto de estudio del derecho no son las normas (conceptos lógicos), sino la conducta humana en su interferencia intersubjetiva.",
+      "Que el normativismo kelseniano confunde los juicios de \"deber ser\" con los mandatos teológicos escolásticos."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Para la Egología, las normas no constituyen el objeto de la Ciencia del Derecho (estas son solo la representación conceptual de aquel). El verdadero objeto es la conducta humana en su interferencia intersubjetiva, siendo el derecho una ciencia de \"conductas\".",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-17c949d2",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con la caracterización de Norberto Bobbio, ¿en qué consiste el \"positivismo metodológico o conceptual\"?",
+    "opciones": [
+      "En la pretensión de que toda ley dictada de forma estatal es moralmente justa y obliga a su obediencia incondicionada.",
+      "En una aproximación neutral que define el concepto de derecho por propiedades descriptivas e independientes de la moral.",
+      "En la tesis formalista de que el orden jurídico es un sistema necesariamente completo y libre de contradicciones lógicas.",
+      "En una metodología que identifica al derecho únicamente con las profecías del comportamiento de los magistrados."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El positivismo metodológico no exige un compromiso moral de obedecer la ley. Es una postura conceptual que define al derecho por rasgos empíricos observables, permitiendo al jurista clasificar una norma como \"derecho vigente\" pero juzgarla moralmente como injusta.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-19ff55c0",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Las reglas técnicas o directivas indican un medio para un fin. Según Von Wright, ¿con qué tipo de enunciados se vinculan de manera lógica?",
+    "opciones": [
+      "Con proposiciones normativas formuladas de forma asertiva por los científicos del derecho civil.",
+      "Con proposiciones anancásticas descriptivas de nexos causales necesarios, las cuales sí son verdaderas o falsas.",
+      "Con fragmentos de normas primarias complejas que culminan en una sanción coactiva del Estado.",
+      "Con imperativos hipotéticos de la razón práctica que prescriben deberes morales de carácter universal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Una regla técnica (ej. \"si quiere enfriar el ambiente, encienda el aire\") no es verdadera ni falsa, pero presupone lógicamente una proposición descriptiva anankástica (\"encender el aire es condición necesaria para enfriar el ambiente\"), cuya verdad fáctica condiciona la eficacia de la regla",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-1ed621bd",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la estructura lógica de la Teoría Pura de Kelsen, ¿cómo se define formalmente a una \"norma primaria\"?",
+    "opciones": [
+      "Como un enunciado de carácter permisivo que confiere de forma directa potestades privadas a los particulares.",
+      "Como una pauta de conducta tradicional surgida espontáneamente del espíritu de cada pueblo históricamente.",
+      "Como un juicio de deber ser que imputa de forma hipotética un acto coactivo (sanción) ante un presupuesto de hecho (delito).",
+      "Como una práctica social convergente aceptada activamente por los jueces bajo el punto de vista interno de Hart."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Las auténticas normas jurídicas para Kelsen son las primarias, cuya estructura es el consecuente de una sanción coactiva asociada de forma lógica a un antecedente ilícito (\"si comete delito, debe aplicarse la sanción\").",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-21074209",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿A qué denomina Hermann Kantorowicz \"realismo verbal\" y cuál es su principal inconveniente en la jurisprudencia?",
+    "opciones": [
+      "A la creencia de que el derecho consiste únicamente en enunciados asertivos formulados de forma oral por los jueces.",
+      "A la presuposición falaz de que existe un nexo metafísico entre los nombres de las cosas y los objetos, buscando una esencia inmutable del derecho.",
+      "A la asimilación del lenguaje descriptivo de la ciencia con el lenguaje prescriptivo utilizado por el legislador del Estado.",
+      "Al escepticismo extremo que reduce el derecho a meras predicciones fácticas de las futuras sentencias penales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El realismo verbal o esencialismo platónico asume que las palabras tienen un significado \"verdadero\" y único derivado de su esencia. La filosofía analítica contemporánea critica esto, defendiendo una visión convencionalista",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-2211deac",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo concibe Hans Kelsen el proceso de interpretación de las normas en su Teoría Pura del Derecho?",
+    "opciones": [
+      "Como un acto puramente deductivo y científico libre de intervenciones de la voluntad del magistrado.",
+      "Como la captación intuitiva de los valores eternos de la teología racionalista de Santo Tomás.",
+      "Como un proceso analítico que elimina de forma absoluta la textura abierta del lenguaje ordinario.",
+      "Como la determinación de un marco de opciones donde la elección de la solución es un acto de voluntad discrecional del juez."
+    ],
+    "respuesta_correcta_index": 3,
+    "fundamento_juridico": "Kelsen rechaza que haya una única solución correcta. La norma superior es un marco de posibilidades (un \"marco de opciones\"). Elegir una solución dentro de ese marco es un acto de voluntad y de política jurídica del juez, no un mero acto de conocimiento de la ciencia",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-224604d5",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el emotivismo ético de Charles Stevenson, ¿cuál es la función primordial que desempeñan los juicios de valor en el discurso social?",
+    "opciones": [
+      "Informar racionalmente al oyente sobre hechos científicos que maximizan el placer general de la sociedad.",
+      "Expresar actitudes personales de aprobación o desaprobación e inducirlas en el destinatario de la comunicación.",
+      "Definir formalmente los requisitos exigibles para declarar la vigencia temporal de las normas primarias del Estado.",
+      "Formular máximas de conducta incondicionadas basadas en los imperativos categóricos de la razón."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Stevenson sostiene que los enunciados morales carecen de significado cognoscitivo central. Su función no es describir la realidad, sino contagiar y provocar de forma persuasiva actitudes emocionales afines en el interlocutor.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-23f0c14d",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la ética normativa, ¿cuál es la diferencia definitoria entre las posiciones teleológicas y las deontológicas?",
+    "opciones": [
+      "Las teleológicas se fundan en la intención subjetiva del agente; las deontológicas evalúan únicamente los resultados fácticos.",
+      "Las teleológicas priorizan lo bueno sobre lo correcto (valoración por consecuencias); las deontológicas priorizan lo correcto sobre lo bueno (valoración por el deber intrínseco).",
+      "Las teleológicas estudian la validez del derecho internacional; las deontológicas se restringen a los códigos de fondo.",
+      "Las teleológicas reducen las normas de potestad a fragmentos; las deontológicas diferencian normas de principios."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El utilitarismo es una teoría teleológica clásica (la corrección del acto depende de maximizar el bienestar o felicidad general). El kantismo es una teoría deontológica (el deber es absoluto y se impone con independencia de que las consecuencias resulten o no ventajosas).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-25a223ef",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la metaética de R.M. Hare, ¿qué rasgo formal define la racionalidad de los juicios morales como \"prescripciones universalizables\"?",
+    "opciones": [
+      "El emisor de un juicio moral debe estar dispuesto a aplicar la misma pauta aun si él estuviera en la situación del afectado por la medida.",
+      "Las normas del derecho nacional deben ajustarse a los tratados de derechos humanos del derecho internacional.",
+      "Los valores se captan por vía de una iluminación racional a priori de carácter infalible.",
+      "Las directivas de conducta lícita del derecho positivo deben carecer de ambigüedad sintáctica."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Hare une el imperativo kantiano con el análisis lingüístico: la universalizabilidad moral exige consistencia. Si se prescribe que se debe hacer X a un deudor, se debe aceptar recibir idéntico trato si se asume el rol del deudor (reversibilidad).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-26950fa5",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la teoría general del derecho, ¿cuál es el criterio de solución que rige ante una antinomia resuelta por el principio de \"lex specialis\"?",
+    "opciones": [
+      "La norma de jerarquía superior desplaza a la norma de rango inferior formalmente.",
+      "La norma dictada de forma posterior deroga a la norma anterior en el orden temporal.",
+      "La norma que regula de forma específica una materia prevalece sobre la norma de carácter más general.",
+      "La decisión judicial de equidad anula de forma absoluta la obligatoriedad del código legislado."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "El principio de especialidad (*lex specialis derogat legi generali*) determina que, ante colisiones, la norma que contempla con mayor especificidad las características del caso desplaza a la de alcance general.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-2723454e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Al estudiar la dinámica del ordenamiento jurídico, ¿cómo se delimita conceptualmente la \"validez formal\" de una norma?",
+    "opciones": [
+      "En su correspondencia valorativa con los principios eternos de justicia del derecho natural escolástico.",
+      "En haber sido creada por el órgano competente y de acuerdo con el procedimiento autorizado por una norma superior del sistema.",
+      "En la regularidad empírica observada por los ciudadanos en el cumplimiento espontáneo de sus hábitos lícitos.",
+      "En la justificación argumentativa de su contenido mediante la ponderación de principios procesales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La validez formal (o pertenencia de normas derivadas) es un criterio genético: se cumple si la norma ha sido dictada siguiendo los procedimientos y límites que una norma válida de jerarquía superior establece.",
     "puntos_base": 100
   },
   {
@@ -39,6 +375,54 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10111-298d8081",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué objeción conceptual severa enfrenta la corriente de la metaética descriptivista conocida como \"naturalismo subjetivista\"?",
+    "opciones": [
+      "Incurrir en un círculo vicioso al presupone que los sentimientos morales derivan de la ley positiva del Estado.",
+      "Impedir la existencia de desacuerdos éticos reales, ya que dos juicios morales opuestos se reducen a descripciones de mentes que pueden ser verdaderas a la vez.",
+      "Concebir de forma indebida el bien intrínseco como una propiedad simple no natural captable solo por intuición.",
+      "No poder explicar la validez de los imperativos categóricos kantianos desprovistos de deseos individuales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Si \"X es bueno\" equivale a \"A aprueba X\" y \"X es malo\" equivale a \"B desaprueba X\", ambos están enunciando verdades autobiográficas de sus propios estados mentales, por lo que no se contradicen lógicamente ni pueden debatir sobre el valor del hecho.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-2c5913b9",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el iusnaturalismo teológico de Santo Tomás de Aquino, ¿cuál es la relación de la ley humana positiva con la ley natural?",
+    "opciones": [
+      "La ley humana positiva es un conjunto de mandatos que anula por completo el alcance del derecho natural.",
+      "La ley humana positiva deriva de la ley natural (sea por vía de conclusión o determinación), debiendo ajustarse a ella para tener validez moral.",
+      "Ambas leyes son esferas deónticas autónomas que se intersectan únicamente en el common law.",
+      "La ley humana positiva otorga vigencia formal a la ley natural, la cual carece por completo de contenido racional previo."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Para Santo Tomás, la ley humana positiva se deriva lógicamente o determina formalmente a partir de los principios de la ley natural. Si una norma positiva contradice el derecho natural, no es una verdadera ley sino una corrupción de ella.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-2e76a8c2",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la ontología de la acción de Von Wright, ¿cuál es la distinción técnica precisa entre el \"resultado\" y la \"consecuencia\" de un acto?",
+    "opciones": [
+      "El resultado es la voluntad psicológica del agente; la consecuencia es el castigo previsto por la ley.",
+      "El resultado es el cambio lógicamente ligado a la acción; la consecuencia es un efecto causal posterior derivado de aquel cambio.",
+      "El resultado es de carácter moral; la consecuencia es una alteración inevitable de la naturaleza.",
+      "El resultado se asimila a las normas penales; la consecuencia se limita a la nulidad civil de potestades."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El resultado de la acción es el cambio físico que está intrínseca y lógicamente ligado al acto, definiéndolo (ej. que la puerta se cierre define el acto de cerrar la puerta). Las consecuencias son cambios ulteriores provocados de forma causal (ej. que se genere silencio en la habitación).",
+    "puntos_base": 100
+  },
+  {
     "id": "10111-2ea9cdcb",
     "id_categoria": "10111",
     "categoria_nombre": "Introducción al Derecho",
@@ -52,6 +436,134 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "La Ciencia del Derecho toma un sistema positivo determinado como vigente y describe sus enunciados de manera descriptiva; en cambio, la Filosofía del Derecho problematiza de manera crítica los supuestos ontológicos, gnoseológicos y axiológicos del saber jurídico.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-2f1b1720",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En el análisis de las prescripciones, ¿qué define a la \"ocasión de aplicación\" como \"conjuntivamente general\"?",
+    "opciones": [
+      "Aquella que restringe la obligatoriedad de la norma a un único momento espacio-temporal determinado de forma particular.",
+      "Aquella que prescribe la realización de la acción en todas las oportunidades y lugares posibles de forma continuada.",
+      "Aquella que confiere atribución al Parlamento nacional para modificar el código de fondo constitucional.",
+      "Aquella que unifica las costumbres tradicionales de los pueblos a las directivas normativas del Estado."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Una ocasión es conjuntivamente general si la norma exige que la prohibición u obligación sea cumplida de manera permanente ante toda oportunidad posible (ej. \"prohibido mentir en cualquier momento y lugar\").",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-394b5c8c",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Por qué, según Ronald Dworkin, los \"principios\" jurídicos no pueden ser identificados mediante la regla de reconocimiento de Hart?",
+    "opciones": [
+      "Porque los principios se identifican por su contenido de justicia o razonabilidad, y no por su origen o pedigrí formal.",
+      "Porque los principios son de aplicación rígida bajo la modalidad lógica de \"todo o nada\".",
+      "Porque los principios se restringen de forma exclusiva a las normas constitucionales de cambio.",
+      "Porque los principios carecen de operadores deónticos que obliguen a los magistrados del Estado"
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Dworkin critica que la regla de reconocimiento de Hart solo identifica normas por su \"pedigrí\" (su procedencia en una fuente autorizada). Los principios (ej. \"nadie puede beneficiarse de su propio delito\") se aplican por la razonabilidad intrínseca de su contenido, sin requerir un acto formal de sanción legislativa.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-3e82576d",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la teoría del lenguaje, ¿cuál es la diferencia semántica entre la \"designación\" (o intensión) y la \"denotación\" (o extensión) de un término?",
+    "opciones": [
+      "La designación se formula de manera oral; la denotación exige el soporte de un texto escrito legislado.",
+      "La designación se restringe al common law; la denotación regula de forma exclusiva los códigos civiles.",
+      "La designación es la suma de propiedades necesarias para aplicar la palabra; la denotación es el conjunto de cosas de la realidad que poseen tales propiedades.",
+      "Son conceptos idénticos que carecen de toda utilidad deóntica en las proposiciones normativas."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "La intensión/designación es el conjunto de notas conceptuales definitorias de un concepto (ej. para \"triángulo\": tres lados, polígono). La extensión/denotación es la clase de objetos reales a los que se aplica el término (ej. todos los triángulos existentes).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-41a9597e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el criterio que propone Alf Ross en su realismo escandinavo moderado para establecer la vigencia de una norma jurídica?",
+    "opciones": [
+      "Su derivación formal y su procedimiento ajustado a la Constitución del legislador parlamentario.",
+      "La regularidad empírica observada por los ciudadanos en la repetición espontánea de sus usos de cortesía.",
+      "Su correspondencia con los valores del plexo axiológico establecidos de manera intuitiva por los juristas.",
+      "La alta probabilidad de que la directiva sea utilizada por los jueces como fundamento de sus decisiones judiciales futuras."
+    ],
+    "respuesta_correcta_index": 3,
+    "fundamento_juridico": "Ross define la vigencia de una norma por su dimensión fáctica: está vigente si sirve como directiva en el proceso racional de fundamentación de los fallos de los magistrados en un determinado país.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-4211c042",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo disuelve Hans Kelsen el dualismo metodológico tradicional entre \"Derecho Objetivo\" y \"Derecho Subjetivo\"?",
+    "opciones": [
+      "Afirmando que el derecho subjetivo es anterior y superior a la existencia misma del derecho objetivo estatal.",
+      "Reduciendo el derecho subjetivo al derecho objetivo, al concebirlo como una manifestación de la propia norma jurídica que se pone a disposición del sujeto.",
+      "Eliminando de forma absoluta el deber jurídico del análisis de la ciencia dogmática de las obligaciones.",
+      "Identificando al derecho objetivo con las costumbres locales y al derecho subjetivo con la moral íntima."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Kelsen rechaza la idea de que los derechos subjetivos existen antes de la ley positiva. El derecho subjetivo es solo la norma jurídica misma (derecho objetivo) considerada en relación con el sujeto a cuya voluntad se confiere la potestad de reclamar la sanción o participar en la creación de normas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-428f5760",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En el \"plexo axiológico\" formulado por Carlos Cossio, ¿cuál es el rasgo definitorio de los valores jurídicos frente a los morales?",
+    "opciones": [
+      "Son absolutos e independientes del sustrato material de la conducta humana.",
+      "Carecen de polaridad y se organizan bajo un criterio de estricta utilidad agregativa.",
+      "Son valores de coexistencia que se realizan necesariamente en la interferencia de la alteridad.",
+      "Se identifican exclusivamente por su pedigrí formal a través de la regla de reconocimiento."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Para Cossio, los valores jurídicos (seguridad, orden, paz, poder, solidaridad, cooperación, justicia) regulan la coexistencia social. Al ser el derecho conducta social, exige alteridad y relación intersubjetiva.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-451d371c",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la definición técnica que Kelsen otorga al concepto de \"derecho subjetivo\" en su acepción de \"acción procesal\" (o sentido técnico)?",
+    "opciones": [
+      "El mero correlato pasivo de un deber de no dañar al otro de carácter universal.",
+      "La facultad del particular de provocar un acto coactivo mediante una demanda judicial, participando así en la creación de derecho.",
+      "La inmunidad constitucional que el legislador racional otorga a la propiedad privada.",
+      "Un estado psicológico de tranquilidad amparado por las leyes de la policía administrativa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Para Kelsen, el derecho subjetivo en sentido técnico es la potestad de interponer una demanda o querella para impulsar el órgano jurisdiccional a aplicar la sanción. Con este acto procesal, el particular genera una norma individual, interviniendo en la creación jurídica.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-47a02650",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En el análisis de las prescripciones por su contenido, ¿cómo distingue Von Wright entre \"acción\" y \"actividad\"?",
+    "opciones": [
+      "La acción es de carácter involuntario; la actividad es una conducta penalmente típica.",
+      "La acción está relacionada con un cambio puntual (suceso); la actividad consiste en mantener un proceso continuo en el tiempo.",
+      "La acción es un suceso meramente natural; la actividad es la interpretación subjetiva del juez.",
+      "La acción busca maximizar el placer; la actividad se limita a la moral íntima del sujeto."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La acción humana provoca de forma intencional un cambio o suceso en el mundo (ej. encender un foco). La actividad, en cambio, implica un comportamiento continuo o recurrente, asociado lógicamente a procesos (ej. fumar, vigilar).",
     "puntos_base": 100
   },
   {
@@ -71,6 +583,966 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10111-4f373f48",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la axiología filosófica clásica de Risieri Frondizi, ¿cuáles son los dos rasgos estructurales que caracterizan a los valores?",
+    "opciones": [
+      "Coactividad estatal e institucionalización jerárquica.",
+      "Polaridad (pares opuestos) y jerarquía (ordenación de rango).",
+      "Ambigüedad semántica y vaguedad potencial deóntica.",
+      "Universalización formal y reversibilidad procedimental."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Frondizi destaca que los valores no son cosas físicas; son cualidades de los bienes. Tienen polaridad (frente a lo valioso está el desvalor) y jerarquía (orden de importancia que los diferencia).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-5093c838",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué movimiento contemporáneo busca remediar las patologías del lenguaje judicial (ej. oscurantismo, arcaísmo excesivo, frases redundantes)?",
+    "opciones": [
+      "El formalismo de la jurisprudencia de conceptos de la exégesis alemana.",
+      "El movimiento de \"lenguaje claro\" o \"lenguaje llano\" en el derecho, para asegurar la accesibilidad y comprensión.",
+      "La asimilación de las normas ideales a las reglas determinativas de Von Wright.",
+      "El escepticismo extremo que rechaza la existencia misma de la legislación escrita."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El movimiento por el \"lenguaje claro\" promueve la simplificación y depuración del lenguaje técnico y judicial oscuro, permitiendo que los ciudadanos comprendan con certeza el contenido y las consecuencias de las normas que los rigen.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-5281973d",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la relación que Hans Kelsen traza en su Teoría Pura entre la \"validez\" de una norma y la \"eficacia\" del ordenamiento?",
+    "opciones": [
+      "La eficacia fáctica es idéntica a la validez formal de cada directiva considerada de manera aislada.",
+      "La eficacia global del ordenamiento es una condición de validez del sistema, pero no constituye su fundamento de validez.",
+      "La validez formal es completamente independiente de que el ordenamiento cuente o no con efectividad coactiva real.",
+      "La eficacia de la norma deriva de forma exclusiva de la validez de los imperativos categóricos kantianos."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Para Kelsen, un orden coactivo que carece por completo de eficacia no es válido. La eficacia global es un presupuesto de validez (condición *sine qua non*), pero el fundamento de validez de una norma es siempre otra norma de jerarquía superior.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-55e2df01",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Para demostrar la falacia naturalista, Moore recurre al \"argumento de la pregunta abierta\". ¿Cuál es su núcleo lógico?",
+    "opciones": [
+      "Ante cualquier definición empírica de \"bueno\" siempre cabe preguntarse significativamente si esa propiedad fáctica es realmente \"buena\".",
+      "Los jueces nunca pueden justificar racionalmente una sentencia de primera instancia si existen lagunas en la ley penal.",
+      "El legislador no puede redefinir el concepto de acción sin alterar de forma radical la imputación finalista.",
+      "Toda norma coactiva que carece de sanción penal en su consecuente constituye una directiva de carácter técnico."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Si \"bueno\" y \"lo placentero\" fuesen sinónimos, preguntar \"¿es bueno lo placentero?\" equivaldría a \"¿es placentero lo placentero?\". Como la pregunta conserva sentido y no es una tautología vacía, Moore demuestra que no denotan lo mismo.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-5aebe029",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con la Teoría de la Argumentación Jurídica de Robert Alexy, ¿qué implica su tesis del \"caso especial\" (*Sonderfall Thesis*)?",
+    "opciones": [
+      "Que las sentencias de los jueces constitucionales constituyen una laguna axiológica insoslayable.",
+      "Que el razonamiento civil de primera instancia prescinde de la lógica deductiva formal del silogismo.",
+      "Que las normas de potestad son asimilables de manera deóntica a fragmentos de las normas prohibitivas.",
+      "Que el discurso jurídico es un caso especial del discurso práctico general, estando sujeto a reglas de racionalidad y a la pretensión de corrección."
+    ],
+    "respuesta_correcta_index": 3,
+    "fundamento_juridico": "La *Sonderfall Thesis* de Alexy postula que el debate jurídico es una forma específica de debate moral. El jurista y el juez debaten sobre lo correcto, pero bajo restricciones específicas: el respeto a la ley positiva vigente, a los precedentes jurisprudenciales y a las pautas procesales.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-5e56a9a9",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo caracteriza Hans Kelsen el concepto de \"persona\" (tanto física como jurídica) para superar las visiones metafísicas tradicionales?",
+    "opciones": [
+      "Como una entidad biológica y psíquica que la ciencia dogmática debe proteger.",
+      "Como un centro de imputación de un conjunto de normas jurídicas (un haz de derechos y obligaciones).",
+      "Como una ficción que el derecho nacional debe abolir para asegurar la igualdad real.",
+      "Como el correlato moral de los imperativos categóricos de la teología."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Kelsen disuelve el dualismo persona física/jurídica. Ambas son, para la Teoría Pura, construcciones conceptuales de la ciencia jurídica: un punto central de convergencia donde se imputan de forma unificada derechos y deberes contenidos en las normas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-624c6047",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué explicación provee Hans Kelsen ante la presencia de extensas leyes constitucionales o de procedimiento civil que no prevén sanciones directas?",
+    "opciones": [
+      "Admite que su teoría de la sanción es incompleta y adopta el modelo de unión de reglas de Hart de forma definitiva.",
+      "Sostiene que tales enunciados no son normas autónomas, sino \"fragmentos de normas\", es decir, el antecedente de normas primarias.",
+      "Las clasifica como endonormas independientes dirigidas de forma exclusiva a regular el comportamiento lícito de coexistencia.",
+      "Afirma que su inobservancia genera una sanción moral indirecta de nulidad procesal de carácter eudemonista."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Para Kelsen, todo el derecho se reduce a normas con sanción. Las pautas constitucionales o de procedimiento civil son \"fragmentos de normas\" que determinan de manera detallada las condiciones complejas bajo las cuales el funcionario debe constatar el antecedente para aplicar la sanción.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-6489c4bb",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el análisis de Alf Ross sobre las contradicciones entre normas (antinomias), ¿cuándo se configura una inconsistencia \"total-parcial\"?",
+    "opciones": [
+      "Cuando las dos normas regulan de forma idéntica los mismos hechos espaciotemporales.",
+      "Cuando una de las normas no puede ser aplicada bajo ninguna circunstancia sin entrar en colisión con otra norma que tiene un ámbito de aplicación más amplio.",
+      "Cuando las dos normas presentan una superposición marginal de sus respectivos ámbitos de validez temporal.",
+      "Cuando ambas directivas conllevan sanciones penales de motivación directa de carácter eudemonista."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "En la antinomia \"total-parcial\" (o de especialidad), el ámbito de aplicación de la norma especial está totalmente incluido en el de la norma general. No se puede aplicar la especial sin violar la general, pero la general tiene ámbitos adicionales donde se aplica sin conflicto.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-673831a8",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo se deriva lógicamente una \"norma secundaria\" a partir de una \"norma primaria\" en el esquema de Kelsen?",
+    "opciones": [
+      "Invirtiendo el consecuente de la norma primaria para consagrar la acción coactiva como un derecho moral subjetivo del reo.",
+      "Extrayendo la conducta opuesta a la que figura como condición de aplicación de la sanción en la norma primaria.",
+      "Sustituyendo la sanción penal por una consecuencia civil de nulidad o ejecución forzosa de bienes del deudor.",
+      "Deduciendo de manera analítica que todo lo que no está expresamente prohibido por la sanción se halla permitido."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La norma secundaria es un mero recurso explicativo. Si la norma primaria dice: \"si alguien roba, debe ser sancionado\", la secundaria prescribe la conducta debida: \"se debe no robar\" (la conducta opuesta al ilícito que condiciona el castigo).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-6b0edca6",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En los fundamentos de la interpretación, ¿cómo se definen las concepciones interpretativas de carácter \"intelectualista\"?",
+    "opciones": [
+      "Aquellas que postulan que la interpretación es un acto de conocimiento, donde el juez descubre de forma objetiva el sentido preexistente en la ley.",
+      "Aquellas que consideran que la interpretación es un acto de voluntad libre y creador de sentido discrecional por el juez.",
+      "Aquellas que asimilan las sentencias a profecías fácticas basadas en pautas de naturaleza biológica.",
+      "Aquellas que niegan toda validez a las normas generales para centrarse de forma exclusiva en el common law."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Las concepciones intelectualistas (ej. exégesis, dogmática formal) reducen la labor judicial a la lógica y la descripción. El juez no elige ni valora; capta o descubre con su intelecto el verdadero sentido inmanente que el legislador grabó en la ley.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-6c2e32b2",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Por qué la \"carga emotiva\" de la palabra \"derecho\" representa un obstáculo para formular una definición conceptual neutral?",
+    "opciones": [
+      "Porque la gente tiende a deformar la descripción fáctica del término para incluir o excluir sistemas según su aprobación moral.",
+      "Porque anula el carácter coactivo de las normas sancionadoras formuladas por las autoridades de un Estado.",
+      "Porque obliga a los científicos del derecho a emplear únicamente el cálculo lógico-deóntico de la física.",
+      "Porque reduce el ordenamiento jurídico a pautas consuetudinarias de cortesía social sin sanción estatal."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Al tener \"derecho\" un significado emotivo altamente favorable, funciona como un rótulo de prestigio o valor moral. Los sujetos extienden o restringen su uso para dar o negar este rótulo a sistemas normativos (como el régimen nazi) según sus preferencias éticas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-70e391d3",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué caracteriza al método de interpretación de la \"Jurisprudencia de Conceptos\" (Puchta, Windscheid)?",
+    "opciones": [
+      "La consideración de los valores de coexistencia social como el único criterio relevante para dictar sentencias.",
+      "El escepticismo absoluto que reduce el derecho a predicciones fácticas del comportamiento policial.",
+      "El uso del voluntarismo amorfo de la Escuela de Derecho Libre para resolver de forma discrecional lagunas penales.",
+      "La construcción de un sistema conceptual rígido y piramidal del cual se deducen soluciones jurídicas abstractas con precisión geométrica."
+    ],
+    "respuesta_correcta_index": 3,
+    "fundamento_juridico": "La Jurisprudencia de Conceptos aplica el formalismo lógico a los conceptos del derecho. Trata al derecho como un sistema matemático autosuficiente: mediante la \"construcción\" lógica, el jurista extrae consecuencias abstractas sin necesidad de recurrir a valoraciones extrajurídicas",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-71bd66de",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Hans Kelsen distingue dos técnicas de motivación social de la conducta. ¿A cuál de ellas pertenece el derecho y en qué se fundamenta?",
+    "opciones": [
+      "A la motivación directa, indicando de forma explícita la conducta querida para apelar a la conciencia ética de los ciudadanos.",
+      "A la motivación directa, recurriendo a sanciones de orden metafísico y espiritual en el más allá.",
+      "A la motivación indirecta, pues prescribe una sanción ante la conducta indeseada para disuadir por temor al castigo coactivo.",
+      "A la motivación técnica, detallando las pautas instrumentales para celebrar testamentos válidos."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "El derecho es una técnica de motivación indirecta: no prescribe directamente no matar, sino que establece que si se mata se aplicará prisión, esperando que el sujeto se motive a omitir el delito para eludir la sanción coactiva.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-737b99ec",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Por qué la \"carga emotiva\" de ciertas palabras de la ley representa un problema para la interpretación judicial de las normas?",
+    "opciones": [
+      "Porque impide que los jueces de primera instancia adopten de forma mecánica el principio de stare decisis.",
+      "Porque arrastra el significado del término hacia la aprobación o reproche, dificultando una descripción y delimitación neutral de los hechos.",
+      "Porque anula el carácter coactivo de las directivas del derecho internacional público.",
+      "Porque asimila de forma errónea las reglas de cambio con las normas de adjudicación coactiva."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Términos con alta carga emotiva (ej. \"honesto\", \"buena fe\", \"daño tolerable\") incorporan valoraciones sentimentales y axiológicas subjetivas al texto legal, obstaculizando la aplicación de criterios objetivos por parte del intérprete.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-74045de7",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la regla fundamental de la doctrina del precedente que rige en los sistemas del Common Law?",
+    "opciones": [
+      "El principio de stare decisis, que obliga a los jueces a resolver los casos actuales siguiendo las pautas de sentencias anteriores.",
+      "La analogía obligatoria entre los códigos de fondo y los tratados de derechos humanos.",
+      "El voluntarismo discrecional que faculta a los tribunales de alzada a anular las leyes del Congreso.",
+      "El formalismo conceptual de la escuela de la exégesis de carácter romano-germánico."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "El *stare decisis* (atenerse a lo decidido) es el puntal del common law. Exige que los tribunales inferiores observen y apliquen los principios establecidos por los tribunales superiores ante casos fácticos análogos.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-79f09e21",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo resuelve la Teoría Pura de Kelsen el dualismo tradicional entre \"Derecho\" y \"Estado\"?",
+    "opciones": [
+      "Sosteniendo que el Estado es un poder político e histórico preexistente que otorga validez moral a la ley.",
+      "Afirmando que el Estado es el ordenamiento jurídico mismo considerado de forma personificada, siendo ambos términos idénticos.",
+      "Definiendo al Estado como un hecho sociológico de coacción desprovisto de toda estructura normativa.",
+      "Delegando la existencia del Estado en la efectividad internacional de la regla de reconocimiento."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Kelsen unifica ambos conceptos. El Estado es la personificación del ordenamiento jurídico nacional (sistema coactivo eficaz). Toda actividad estatal es un acto de creación o aplicación de normas, por lo que no hay Estado sin derecho",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-7a2c048f",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la polémica Soler-Carrió sobre el lenguaje legal, ¿qué postulado define la posición de Genaro Carrió frente al formalismo?",
+    "opciones": [
+      "Sostiene que las expresiones legales gozan de precisión geométrica inmutable libre de vaguedad en la zona de penumbra.",
+      "Afirma que, al expresarse en lenguaje natural, el derecho hereda su vaguedad marginal y textura abierta de forma inevitable.",
+      "Propone resolver las dudas semánticas mediante la búsqueda etimológica de la intención del legislador histórico.",
+      "Niega que la analogía sea una herramienta legítima para integrar el contenido incompleto de los códigos civiles."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Carrió demuestra que las leyes se enuncian en lenguaje ordinario. Esto implica que, junto a una zona de claridad, siempre existe una zona de penumbra o vaguedad potencial (textura abierta) que impide la aplicación mecánica o silogística del derecho.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-7a5b88f4",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el método que Robert Alexy y los neoconstitucionalistas proponen para solucionar la colisión entre \"principios\" que entran en contradicción?",
+    "opciones": [
+      "La ponderación de principios, sopesando su peso e importancia relativa según las circunstancias concretas del caso.",
+      "El silogismo deductivo clásico, aplicando la nulidad absoluta de uno de los principios enfrentados.",
+      "El criterio de lex superior, determinando de forma cronológica cuál fue el principio promulgado con anterioridad.",
+      "El escepticismo axiológico absoluto, descartando el carácter jurídico de las garantías constitucionales."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Las reglas entran en antinomia y se resuelven por validez (una desplaza a otra). Los principios entran en colisión y se resuelven por \"ponderación\": se sopesa la importancia de cada principio frente al otro en el caso fáctico, restringiendo uno levemente sin anular su validez sistémica.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-7c1f4b5e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿A qué defecto lingüístico se denomina \"vaguedad de un concepto\"?",
+    "opciones": [
+      "A la presencia de múltiples significados diferentes asociados a un único término de forma accidental.",
+      "A la imprecisión de los límites de aplicación de la palabra, existiendo zonas de penumbra donde se duda si aplicarla o no.",
+      "Al desajuste lógico entre las premisas normativas y la conclusión fáctica de la sentencia del juez.",
+      "A la carga emotiva desfavorable que impide su uso neutral en los textos legislados de fondo."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La vaguedad (imprecisión) es un problema de alcance conceptual: a diferencia de la ambigüedad (que es tener varios significados), en la vaguedad hay dudas sobre si un objeto real pertenece o no al campo de aplicación del término (ej. definir a partir de qué grado de temperatura algo está \"frío\")",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-80e14ddd",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con la \"condición de aplicación\", ¿cuándo se califica a una norma de \"categórica\"?",
+    "opciones": [
+      "Cuando sus condiciones de aplicación se infieren por completo de su propio contenido deóntico.",
+      "Cuando prescribe conductas de obediencia absoluta bajo el presupuesto de la ley eterna escolástica.",
+      "Cuando prevé circunstancias de aplicación adicionales que deben detallarse de forma escrita en su antecedente.",
+      "Cuando asocia un acto antijurídico a una sanción de nulidad civil del testamento procesal."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Una norma es categórica si no requiere condiciones ajenas al acto que regula para poder ser ejecutada. Ej: \"Cierra la ventana\" presupone únicamente que la ventana esté abierta, condición que se infiere de la propia acción.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-81037b4e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué giro metodológico introduce el iusnaturalismo racionalista de los siglos XVII y XVIII frente al paradigma teológico previo?",
+    "opciones": [
+      "Desplaza el origen del derecho natural desde la voluntad divina hacia la propia estructura de la razón humana, creando sistemas axiomáticos.",
+      "Niega la existencia de principios eternos de justicia para centrarse de forma exclusiva en las costumbres del Volksgeist.",
+      "Fundamenta las normas obligatorias en la probabilidad de que los jueces apliquen sanciones en el espacio temporal del Estado.",
+      "Equipara el deber de obediencia a las leyes con un estado psicológico de temor originado en un castigo místico."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "El racionalismo ilustrado independiza el derecho natural de la teología. Los juristas intentaron diseñar sistemas lógicos deductivos basados en verdades autoevidentes para la razón humana, lo que influyó profundamente en el posterior movimiento de codificación.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-81eb0080",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con la clasificación general de las normas formulada por G.H. Von Wright, ¿qué define a las reglas \"definitorias o determinativas\"?",
+    "opciones": [
+      "Son prescripciones que imponen castigos coactivos ante la realización de un comportamiento indeseable.",
+      "Son directivas que indican los medios indispensables que el destinatario debe adoptar para alcanzar un fin pragmático.",
+      "Son reglas que determinan o definen una actividad humana, tales como las reglas de los juegos o del cálculo lógico.",
+      "Son modelos ideales que indican las virtudes deónticas óptimas asociadas a un determinado rol social."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Las reglas determinativas definen una práctica (ajedrez, gramática). No ordenan conductas en sentido estricto, sino que trazan el marco de posibilidad de la actividad; si no se observan, no se realiza correctamente la acción.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-82575a20",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo define la metodología jurídica de Alchourrón y Bulygin la diferencia entre una \"laguna normativa\" y una \"laguna axiológica\"?",
+    "opciones": [
+      "La normativa es la ausencia de solución deóntica en el sistema; la axiológica es la presencia de una solución que el jurista considera sumamente injusta o inadecuada.",
+      "La normativa deriva de la vaguedad sintáctica; la axiológica se origina de forma exclusiva en la textura abierta del common law.",
+      "La normativa afecta a los códigos de fondo civiles; la axiológica se restringe a las contradicciones de la Constitución nacional.",
+      "La normativa es de carácter lógico; la axiológica es una inconsistencia total-parcial entre normas generales."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "La laguna normativa es un defecto lógico del sistema (ninguna norma asocia solución al caso). La axiológica se configura cuando sí hay solución, pero el intérprete valora que el legislador omitió considerar una propiedad relevante que de haberla tenido en cuenta hubiera dictado una solución distinta y más justa.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-84891b5e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el papel e importancia de la \"doctrina de los autores\" en los sistemas continental-europeos?",
+    "opciones": [
+      "Es una fuente formal obligatoria que los jueces deben aplicar de forma mecánica en sus sentencias penales.",
+      "Es una fuente material que orienta, influye y sistematiza las interpretaciones lógicas que jueces y legisladores adoptan.",
+      "Es una hipótesis de trabajo que carece por completo de influencia en las reformas de la ley.",
+      "Es un conjunto de profecías asertivas sobre el comportamiento biológico de los funcionarios del Estado."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La doctrina científica no tiene fuerza vinculante obligatoria (no es fuente formal). Sin embargo, es una fuente material de gran prestigio: sus análisis, clasificaciones e interpretaciones guían los fallos de los magistrados y orientan al legislador en la reforma de las leyes.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-87e49c84",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo se caracteriza el método \"empírico-dialéctico\" propuesto por la Teoría Egológica para conocer el derecho?",
+    "opciones": [
+      "Es un razonamiento deductivo lineal que desciende de la norma hipotética fundamental hasta la sanción particular del reo.",
+      "Es un método de comprensión que transita circularmente entre el sustrato material de la conducta y su sentido axiológico, integrándolos.",
+      "Es un proceso inductivo experimental que explica causalmente las reacciones biológicas de los ciudadanos ante la pena.",
+      "Es un análisis lexicográfico de los términos de la ley dirigido a eliminar de forma exclusiva la ambigüedad sintáctica."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El método empírico-dialéctico no es puramente deductivo ni puramente fáctico; implica un movimiento circular del espíritu entre el hecho de la conducta (sustrato) y su sentido valioso, alcanzando la \"comprensión\" del objeto egológico.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-8ad51ec6",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué elemento define a una práctica social como \"costumbre jurídica\", distinguiéndola de un mero hábito o uso social?",
+    "opciones": [
+      "Que sea realizada de forma continuada por el conjunto de los funcionarios policiales del Estado soberano.",
+      "La convicción de su obligatoriedad jurídica (*opinio iuris*), asumiendo que su desvío puede aparejar reproche formal.",
+      "Que se encuentre plasmada por escrito en el Diario Oficial de la provincia en la que rige de hecho.",
+      "Que derive de manera directa de la norma fundamental presupuesta por la dogmática penal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El mero hábito social (ej. saludar de cierta forma) se realiza por costumbre o cortesía. La costumbre jurídica exige, además de la repetición constante de la conducta (elemento objetivo), la convicción subjetiva de que se trata de un comportamiento exigible por el derecho (*opinio iuris*).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-8b49c617",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En el análisis de los conceptos jurídicos de Wesley Hohfeld, ¿cuál es el correlativo lógico de una \"potestad\" (o poder)?",
+    "opciones": [
+      "El deber de realizar una conducta lícita en la endonorma.",
+      "La sujeción del otro sujeto a sufrir un cambio en su situación jurídica.",
+      "La inmunidad frente a las decisiones discrecionales del Parlamento.",
+      "El no-derecho a interponer acciones procesales penales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Hohfeld define la potestad como la capacidad de alterar relaciones jurídicas. Su correlativo lógico es la \"sujeción\" del otro sujeto, quien verá modificados sus derechos o deberes por el ejercicio de esa facultad.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-8b6eef90",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la diferencia funcional que Kelsen traza entre la \"norma jurídica\" y la \"proposición jurídica\"?",
+    "opciones": [
+      "La norma describe la realidad social del common law; la proposición prescribe pautas axiológicas de la moral íntima.",
+      "De la norma se predica verdad o falsedad; de la proposición solo se puede evaluar su justicia intrínseca o formal.",
+      "La norma es un acto de voluntad imperativo del legislador; la proposición es un enunciado descriptivo de la ciencia que informa sobre normas.",
+      "La norma se dirige a los ciudadanos ordinarios; la proposición regula de forma exclusiva a los tribunales penales."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "La norma es dictada por el legislador y prescribe conductas (deber ser imperativo). La proposición es formulada por los científicos del derecho al describir de forma neutral el contenido de las leyes; esta última sí posee valor de verdad o falsedad.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-8cfae53c",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En el plano iusfilosófico contemporáneo, ¿qué postulado caracteriza a la corriente de la \"naturaleza de las cosas\" (Welzel, Radbruch)?",
+    "opciones": [
+      "Que la validez formal de las normas legisladas depende exclusivamente del monopolio fáctico de la fuerza.",
+      "Que el legislador positivo se encuentra limitado por estructuras lógico-objetivas e insoslayables de la realidad.",
+      "Que el derecho subjetivo es una ficción creada por la voluntad arbitraria del soberano parlamentario.",
+      "Que es imposible formular desacuerdos morales racionales debido al relativismo y escepticismo ético general."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Esta postura sostiene que existen datos ontológicos (como el concepto finalista de acción en materia penal) que limitan la potestad creadora del legislador, impidiéndole dictar leyes coherentes que desvirtúen estas realidades lógicas preexistentes.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-8f543d99",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la teoría clásica aristotélica retomada por los teóricos de la argumentación, ¿cómo se diferencia la Lógica Formal de la Lógica Dialéctica?",
+    "opciones": [
+      "La formal estudia el silogismo demostrativo orientado a la verdad analítica; la dialéctica analiza el razonamiento persuasivo sobre premisas opinables o verosímiles.",
+      "La formal se expresa de manera oral; la dialéctica exige el uso formalizado del lenguaje de las proposiciones normativas.",
+      "La formal regula de forma exclusiva los códigos civiles; la dialéctica rige de forma soberana el derecho penal.",
+      "Son metodologías idénticas que carecen por completo de utilidad deóntica en las decisiones de los jueces."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "La lógica formal (analítica) analiza la corrección de inferencias válidas e inmutables (ej. matemáticas). La lógica dialéctica (retórica) rige el debate y la argumentación persuasiva en terrenos donde las premisas son opinables o dudosas, siendo el campo propio del razonamiento forense y judicial",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-936f2fc3",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el postulado definitorio de la \"Tópica Jurídica\" formulada por Theodor Viehweg en 1953?",
+    "opciones": [
+      "Diseñar un código unificado de reglas de cambio que supriman de forma absoluta la textura abierta del common law.",
+      "Presuponer la existencia de una norma hipotética fundamental como una hipótesis de trabajo gnoseológica.",
+      "Sostener que el derecho no es un sistema formalizado abstracto, sino una técnica de pensamiento orientada a resolver problemas prácticos mediante argumentos o topoi.",
+      "Reducir la argumentación del magistrado al silogismo deductivo analítico de la escuela de la exégesis."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Viehweg propone rescatar la tópica aristotélica frente al formalismo axiomático. El razonamiento jurídico no es sistemático; es \"un pensamiento sobre problemas\" (casos concretos) que requiere buscar y debatir argumentos razonables (lugares comunes o *topoi*) para alcanzar la solución más justa.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-9595133e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la teoría general de las fuentes del derecho, ¿cuál es la distinción conceptual entre \"fuentes formales\" y \"fuentes materiales\"?",
+    "opciones": [
+      "Las formales se expresan en lenguaje escrito; las materiales son normas consuetudinarias de cortesía oral.",
+      "Las formales son métodos de creación de normas obligatorias (ej. ley, sentencias); las materiales son factores sociales, históricos o éticos que influyen en su contenido.",
+      "Las formales regulan el derecho civil; las materiales se restringen al derecho internacional y constitucional.",
+      "Las formales se derivan de la regla de reconocimiento; las materiales surgen de la norma fundamental."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Las fuentes formales tienen fuerza obligatoria e imponen criterios para resolver casos. Las fuentes materiales carecen de fuerza vinculante directa, pero proporcionan los contenidos valorativos, políticos o históricos que el legislador o juez plasman en las normas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-993d5df0",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En el análisis de las prescripciones de Von Wright, ¿qué elementos integran el denominado \"núcleo normativo\"?",
+    "opciones": [
+      "La autoridad de la norma, el sujeto obligado y el castigo coactivo asociado.",
+      "El carácter deóntico, el contenido regulado y la condición de aplicación.",
+      "La ocasión espaciotemporal, la promulgación gramatical y la voluntad del emisor.",
+      "El resultado de la acción, la consecuencia fáctica y la imputabilidad mental."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El \"núcleo normativo\" es la estructura lógica que las prescripciones comparten con otros tipos de normas reguladoras. Se compone del carácter (deóntico), el contenido (la acción prescrita) y la condición de aplicación.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-a0a00e1a",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la polémica sobre el lenguaje del derecho, ¿qué analogía sostiene Sebastián Soler para defender la precisión de los conceptos jurídicos?",
+    "opciones": [
+      "La analogía con las proposiciones sintéticas de las ciencias de la naturaleza física.",
+      "La analogía con las profecías descriptivas de las sentencias del realismo norteamericano.",
+      "La analogía con los conceptos matemáticos de la geometría, donde los términos se integran de forma precisa por hipótesis.",
+      "La analogía con la iluminación intuitiva de la teología racionalista escolástica."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Soler sostiene un formalismo técnico: equipara los conceptos jurídicos (ej. compraventa) con figuras geométricas (ej. triángulo). Tienen elementos necesarios y suficientes puestos por hipótesis, de modo que si falta uno, la figura o concepto simplemente se transforma en otra cosa.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-a5506882",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el estatus epistemológico de la \"norma fundamental\" (o básica) propuesta por Kelsen en la Teoría Pura?",
+    "opciones": [
+      "Es una norma de derecho positivo dictada formalmente por el primer legislador constituyente originario.",
+      "Es un presupuesto lógico-trascendental, una hipótesis de trabajo que la ciencia jurídica asume para interpretar hechos de fuerza como normas válidas.",
+      "Es una pauta moral crítica eterna revelada a la conciencia de los magistrados a través de la sindéresis tomista.",
+      "Es una práctica social fáctica observable que los tribunales penales aplican de forma distributiva."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La norma fundamental kelseniana no es positiva (no la dictó nadie). Es un presupuesto gnoseológico que los juristas necesitan presuponer implícitamente para poder describir un orden coactivo eficaz como un sistema de normas obligatorias del \"deber ser\".",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-a917bd3c",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En el campo de la filosofía moral, ¿cuál es el objeto específico de estudio del análisis metaético?",
+    "opciones": [
+      "Formular juicios valorativos concretos indicando qué conductas de la vida diaria son buenas o malas.",
+      "Describir sociológicamente las pautas y hábitos morales de diferentes comunidades históricas.",
+      "Analizar el significado de los términos éticos y el estatus lógico y cognoscitivo de los juicios de valor.",
+      "Reglamentar la aplicación judicial de las penas y las reparaciones civiles bajo el principio de clausura."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "La metaética o ética analítica no prescribe qué es lo bueno; analiza el lenguaje moral, investigando si conceptos como \"justo\" o \"malo\" tienen carga descriptiva y si es posible justificarlos de forma racional.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-a97c621f",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "H.L.A. Hart critica la reducción kelseniana de todas las normas a un único tipo sancionador. ¿Cuál es su principal objeción teórica?",
+    "opciones": [
+      "Que confunde sistemáticamente los juicios de ser descriptivos con las directivas divinas de la escolástica tomista.",
+      "Que reduce la complejidad del derecho al punto de vista del \"hombre malo\", ignorando la función del derecho como guía de conducta.",
+      "Que carece de herramientas metodológicas para justificar la obligatoriedad moral de la Constitución del Estado.",
+      "Que asimila indebidamente las normas primarias a fragmentos de las reglas determinativas de los juegos."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Hart objeta que el monismo de Kelsen (reducir el derecho a normas que imponen castigos dirigidas a funcionarios) ignora que los ciudadanos (el \"hombre bueno\") usan las reglas normativas como guías compartidas para organizar su vida y fundar racionalmente la crítica ante los desvíos",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-aa31a7c4",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la \"Nueva Retórica\" de Chaim Perelman y Lucie Olbrechts-Tyteca, ¿cuál es el papel central asignado a la noción de \"auditorio\"?",
+    "opciones": [
+      "Constituye el grupo de funcionarios policiales encargados de aplicar de forma coactiva las directivas normativas.",
+      "Es el conjunto de personas sobre las que el orador busca influir y persuadir mediante su discurso y argumentación.",
+      "Representa el cuerpo de legisladores que ostentan competencia constitucional para crear derecho de cambio.",
+      "Es una ficción conceptual desprovista de utilidad lógica para las proposiciones de la dogmática."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Perelman destaca que la argumentación razonable no opera en el vacío. Su valor y eficacia se miden por la capacidad del discurso de lograr la adhesión y el consenso del \"auditorio\" (sea el auditorio particular del tribunal o el auditorio universal de la razón).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-ab77c581",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Para superar la reducción kelseniana, Hart concibe el derecho como una unión de reglas. ¿Cómo se diferencian las reglas primarias de las secundarias?",
+    "opciones": [
+      "Las primarias confieren facilidades procesales a los tribunales; las secundarias imponen castigos a la población general.",
+      "Las primarias imponen obligaciones directas de conducta; las secundarias versan sobre las primarias (reconocimiento, cambio, adjudicación).",
+      "Las primarias constituyen presupuestos lógicos de carácter moral; las secundarias son normas coactivas positivas.",
+      "Las primarias regulan el derecho internacional; las secundarias se limitan a regular el derecho nacional."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Las reglas primarias imponen deberes (hacer u omitir). Las secundarias son reglas sobre reglas: determinan cómo se identifican de forma cierta (reconocimiento), cómo se modifican de forma dinámica (cambio) y quién resuelve disputas sobre su aplicación (adjudicación)",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-ac2a75b5",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿En qué se diferencia la \"regla de reconocimiento\" de Hart de la \"norma fundamental\" kelseniana?",
+    "opciones": [
+      "La regla de reconocimiento es una norma hipotética y abstracta que carece de variaciones temporales.",
+      "La regla de reconocimiento no es un presupuesto abstracto sino una norma positiva, una práctica social fáctica de los jueces.",
+      "De la regla de reconocimiento es posible predicar de forma unívoca validez o invalidez formal.",
+      "La regla de reconocimiento deriva su fuerza de la eficacia del derecho internacional público."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "A diferencia de la hipótesis kelseniana, la regla de reconocimiento de Hart es fáctica y empírica: consiste en la práctica observable (hecho social) de que los tribunales y funcionarios de un país aceptan de forma convergente ciertos criterios para identificar las leyes válidas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-ac56868d",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En su obra \"Por una Constitución de la Tierra\", ¿cuál es la tesis central que postula Luigi Ferrajoli sobre el neoconstitucionalismo global?",
+    "opciones": [
+      "Que se debe disolver el derecho internacional para priorizar la soberanía de los Estados de derecho tradicionales.",
+      "Que ante problemas globales (guerra, cambio climático) se requiere un constitucionalismo mundial que tutele de forma efectiva los derechos humanos.",
+      "Que la regla de reconocimiento de cada orden nacional debe prevalecer sobre la jerarquía de los tratados.",
+      "Que la nulidad de las potestades estatales debe ser asimilada a una sanción penal de motivación indirecta."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Ferrajoli propone extender el garantismo constitucional a la esfera global, construyendo instituciones planetarias que limiten de forma eficaz el poder de los mercados y los Estados para resguardar la supervivencia del género humano.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-ad46f289",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué argumento central presentaba Friedrich Karl von Savigny en la polémica del siglo XIX contra la codificación rápida del derecho alemán?",
+    "opciones": [
+      "Que los códigos escritos presentaban contradicciones insoslayables imposibles de dirimir lógicamente.",
+      "Que el derecho es un fenómeno histórico vivo y mudable que emana del espíritu del pueblo, y encasillarlo en un código rígido frena su evolución natural.",
+      "Que el derecho penal y el civil debían unificarse bajo la norma hipotética fundamental presupuesta.",
+      "Que la codificación era ineficaz debido a que la textura abierta del lenguaje natural impedía la aplicación."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Savigny, líder de la Escuela Histórica, se opuso a Anton Thibaut defendiendo que el derecho brota del *Volksgeist* de forma espontánea. Codificar el derecho en leyes rígidas detiene su evolución natural, petrificando artificialmente el derecho del pasado.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-ad7cdc8e",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la lectura de una sentencia judicial de tradición anglosajona, ¿cómo se diferencia la \"ratio decidendi\" del \"obiter dictum\"?",
+    "opciones": [
+      "La ratio decidendi es de carácter escrito; el obiter dictum se formula de manera oral en la audiencia.",
+      "La ratio decidendi constituye el fundamento deóntico indispensable de la decisión; el obiter dictum son consideraciones marginales o accesorias.",
+      "La ratio decidendi se dirige a los abogados; el obiter dictum regula de forma exclusiva a las partes.",
+      "La ratio decidendi es una laguna axiológica; el obiter dictum es una antinomia parcial-parcial."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La *ratio decidendi* es la regla de derecho que el juez formula como fundamento necesario para resolver el litigio; es la parte vinculante que opera como precedente. El *obiter dictum* es lo dicho al pasar, argumentos ilustrativos sin fuerza obligatoria.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-b12896dc",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Desde la perspectiva convencionalista de la filosofía analítica, ¿cómo se definen las propiedades \"esenciales\" de un concepto?",
+    "opciones": [
+      "Se captan a través de una iluminación intelectual a priori de carácter místico e infalible.",
+      "Son pautas biológicas que los científicos de la naturaleza comprueban empíricamente.",
+      "Se establecen de manera pragmática y voluntaria por convención social como condiciones de uso de un término.",
+      "Se extraen del análisis filológico o etimológico de la raíz lingüística de la palabra en la antigüedad."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Para el convencionalismo, las palabras no reflejan esencias ocultas. Una propiedad es considerada \"esencial\" solo porque los seres humanos deciden hacer de ella una condición necesaria para aplicar convencionalmente un concepto lingüístico.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-b3d2b52a",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la Teoría Egológica de Cossio, ¿cuál es el objeto que el juez interpreta en última instancia al dictar su sentencia judicial?",
+    "opciones": [
+      "El texto literal de las directivas legisladas consideradas de forma aislada conceptualmente.",
+      "La norma fundamental presupuesta como una hipótesis de trabajo de la dogmática penal.",
+      "La propia conducta humana en su interferencia intersubjetiva, interpretándola a través de las normas de la ley escritas.",
+      "El estado psicológico de temor de los ciudadanos ante la amenaza coactiva de Kelsen."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Para Cossio, el juez no interpreta normas abstractas; interpreta la conducta humana real que es sometida a juzgamiento en el expediente. Las normas positivas actúan como el esquema conceptual a través del cual se valora y comprende el sentido de esa conducta egológica.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-b624180f",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la teoría de Robert Alexy, los principios se definen como \"mandatos de optimización\". ¿Qué significa este concepto?",
+    "opciones": [
+      "Que exigen que algo sea realizado en la mayor medida posible, de acuerdo con las posibilidades fácticas y jurídicas reales",
+      "Que imponen castigos coactivos indirectos de la forma más rápida posible para asegurar la seguridad jurídica.",
+      "Que se aplican rígidamente de forma idéntica a las reglas de los juegos de Von Wright.",
+      "Que conceden de forma automática libertades de estipulación a los ciudadanos particulares."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Como mandatos de optimización, los principios no ordenan conductas concretas cerradas; exigen realizar un valor o derecho en el mayor grado posible, teniendo en cuenta tanto las posibilidades de la realidad (fácticas) como los principios opuestos vigentes (jurídicas).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-b680b834",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la tesis central del \"positivismo ideológico\" (que Alf Ross denomina \"seudopositivismo\")?",
+    "opciones": [
+      "Que las normas jurídicas son válidas de forma exclusiva cuando derivan de la regla de reconocimiento social fáctica.",
+      "Que el derecho positivo es intrínsecamente justo y obligatorio por el mero hecho de ser positivo, debiendo ser obedecido.",
+      "Que el jurista debe mantener una estricta neutralidad axiológica en la descripción de las fuentes materiales.",
+      "Que la ciencia dogmática es un conjunto de deducciones racionales desprovisto de toda coacción estatal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El positivismo ideológico es una postura ética o valorativa: asume que la existencia misma de la ley positiva asegura la paz y el orden, por lo que el ciudadano y el juez tienen el deber moral de obedecerla con independencia del contenido axiológico.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-b83ee29b",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "La relación entre el derecho nacional y el internacional se explica mediante teorías monistas y pluralistas. ¿Qué afirma el \"monismo con primacía del derecho internacional\"?",
+    "opciones": [
+      "Que son sistemas normativos autónomos que carecen de toda derivación o contacto deóntico formal.",
+      "Que el derecho internacional y los derechos nacionales integran un único sistema jerárquico, derivando la validez del derecho nacional de las normas internacionales.",
+      "Que el derecho internacional es solo una moral positiva desprovista de toda coactividad real sobre los Estados soberanos.",
+      "Que la norma hipotética fundamental de cada país se fundamenta de forma exclusiva en sus costumbres."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El monismo con primacía internacional (Kelsen) concibe un orden deóntico unificado donde los derechos nacionales se subordinan jerárquicamente a las normas de rango internacional, fundamentando estas últimas la validez del legislador constituyente originario de cada país.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-b990dcd0",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Qué postulado interpretativo promueve la denominada \"Escuela del Derecho Libre\" (Kantorowicz, Ehrlich)?",
+    "opciones": [
+      "El voluntarismo amorfo, otorgando al juez la potestad de prescindir de la ley positiva si su aplicación fáctica conduce a una solución injusta.",
+      "La sujeción ciega y silogística del magistrado al texto literal del Código Civil del Estado.",
+      "La asimilación de la validez formal del ordenamiento con un presupuesto lógico-trascendental abstracto.",
+      "El análisis filológico exclusivo de las palabras en base a la libertad de estipulación del common law."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "El Derecho Libre reacciona contra el formalismo estatal. Sostiene que la ley escrita es incompleta y estrecha; el juez no debe ser un autómata sumiso y debe crear derecho libremente buscando la justicia material de los casos concretos.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-bbebe4b5",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cómo sintetiza el juez Oliver W. Holmes la concepción predictiva del \"derecho\" del realismo jurídico norteamericano en \"La Senda del Derecho\"?",
+    "opciones": [
+      "El derecho consiste en las profecías acerca de lo que los tribunales harán en concreto, asumiendo la perspectiva del hombre malo.",
+      "El derecho es el conjunto de principios morales inmutables que limitan racionalmente el albedrío del legislador.",
+      "El derecho es la unión del principio de efectividad internacional con el monopolio interno de la coacción estatal.",
+      "El derecho es el derivado lógico directo de las costumbres tradicionales de la clase de sujetos dominantes."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Holmes afirma que para conocer el derecho real se debe mirar desde la perspectiva de quien quiere evitar las consecuencias gravosas (el \"hombre malo\" interesado en evitar multas o prisión) y no desde axiomas morales especulativos",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-beca2b5b",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿A qué se denomina costumbre jurídica \"praeter legem\"?",
+    "opciones": [
+      "Aquella que contradice de manera abierta el contenido escrito de la ley del Parlamento.",
+      "Aquella que regula de forma supletoria materias no contempladas por la legislación escrita, integrando vacíos.",
+      "Aquella cuya validez formal deriva exclusivamente del procedimiento de cambio de la Constitución.",
+      "Aquella que asimila las pautas del common law a fragmentos de las normas secundarias kelsenianas."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La costumbre *praeter legem* (o fuera de la ley) opera en ausencia de ley. Llena las lagunas legislativas, regulando materias imprevistas por el legislador y sirviendo de fuente de integración jurídica.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-befc9e86",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿En qué consiste la \"falacia naturalista\" imputada por G.E. Moore a las corrientes descriptivistas éticas de tipo naturalista?",
+    "opciones": [
+      "En la pretensión de definir conceptos éticos valorativos identificándolos con propiedades empíricas o hechos naturales.",
+      "En derivar de manera inductiva la validez del derecho internacional a partir de las costumbres locales del common law.",
+      "En confundir las reglas de cambio con las normas de adjudicación coactiva de los jueces de tradición anglosajona.",
+      "En asimilar los juicios analíticos a priori de las matemáticas con las proposiciones sintéticas de la física."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Moore sostiene que los naturalistas cometen una falacia de definición al equiparar propiedades no naturales (lo \"bueno\") con propiedades naturales observables (como \"lo placentero\" o \"lo deseado\"), reduciendo la moral al ser fáctico.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-c28f1162",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Por su \"sujeto normativo\", ¿cuándo se define a una norma como \"general disyuntiva\" o distributiva?",
+    "opciones": [
+      "Cuando se dirige de manera exclusiva a una persona identificada de forma individual con su nombre propio.",
+      "Cuando obliga a una clase de sujetos tomados en su conjunto, como un cuerpo colectivo único e indivisible.",
+      "Cuando se dirige a todos los miembros de una clase de forma distributiva, aplicándose a cualquiera de ellos de manera individual.",
+      "Cuando faculta procesalmente a los particulares para crear nuevas obligaciones mediante contratos escritos."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Las normas distributivamente generales se dirigen a un universo infinito o finito de sujetos individuales, obligando o permitiendo la conducta a cualquiera de ellos que integre la clase (ej. \"los propietarios deben pagar impuestos\").",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-c55d7440",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la lógica deóntica de Von Wright, ¿qué implica que los operadores deónticos de \"obligatorio\" y \"prohibido\" sean interdefinibles?",
+    "opciones": [
+      "Que expresan de manera idéntica las pautas de justicia objetiva de la escolástica.",
+      "Que carecen de contenido normativo real y se reducen a descripciones empíricas del legislador.",
+      "Que uno de ellos se define en función del otro; declarar prohibida una conducta equivale a declarar obligatoria su omisión.",
+      "Que ambos requieren de forma necesaria una consecuencia coactiva de nulidad procesal civil."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "La interdefinibilidad deóntica permite formular lógicamente los caracteres: prohibir la acción P es formalmente equivalente a obligar a no-P (la omisión de P).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-da6d2791",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la función o uso del lenguaje que predomina en la formulación de las normas de un ordenamiento jurídico?",
+    "opciones": [
+      "El uso informativo o asertivo, orientado a transmitir la verdad de la realidad.",
+      "El uso expresivo, dirigido a exteriorizar las emociones del emisor.",
+      "El uso directivo o prescriptivo, cuyo fin es guiar y modificar el comportamiento ajeno.",
+      "El uso interrogativo, dirigido a conocer el sentido axiológico de la conducta."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Las normas jurídicas son fundamentalmente prescripciones que pretenden que los destinatarios adopten un curso de acción deseable o eviten uno indeseable; de ellas no tiene sentido predicar verdad o falsedad.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-e4fed296",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "En la justificación de las decisiones judiciales, ¿cómo se diferencia la \"justificación interna\" de la \"justificación externa\" de una sentencia?",
+    "opciones": [
+      "La interna se refiere a la validez lógica del silogismo; la externa analiza la validez material y la verdad de las premisas utilizadas.",
+      "La interna se formula por escrito; la externa se manifiesta de forma oral en los debates del tribunal de alzada.",
+      "La interna se restringe a las garantías penales; la externa regula de forma exclusiva el common law.",
+      "Son conceptos idénticos que carecen de utilidad gnoseológica en la dogmática procesal."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "La justificación interna controla la coherencia deductiva de la conclusión a partir de las premisas (que la deducción lógica sea correcta). La justificación externa se ocupa de fundamentar que las premisas (la norma aplicada y los hechos probados) sean razonables, verdaderas y legalmente válidas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-e752f416",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿A qué se denomina \"motivación de la sentencia\" en el Estado de Derecho contemporáneo y qué función democrática satisface?",
+    "opciones": [
+      "A la intención oculta o psicológica que el magistrado experimenta de forma personal al fallar.",
+      "El escepticismo ético que faculta a los jueces penales a desobedecer la Constitución del Estado.",
+      "A la exteriorización fundada de los argumentos lógicos y valorativos que justifican la decisión, garantizando el control de racionalidad.",
+      "A una pauta consuetudinaria de cortesía que carece de sanción coactiva institucionalizada."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Motivar la sentencia es la obligación de expresar las razones fácticas y normativas del fallo. Cumple una función de control democrático y de exclusión de la arbitrariedad, permitiendo que las partes apelen el razonamiento y que la sociedad fiscalice la racionalidad del poder judicial.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-e8e0a0ab",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Por qué Carlos Nino critica el positivismo ideológico al analizar la justificación moral de las decisiones judiciales?",
+    "opciones": [
+      "Porque confunde de manera sistemática los juicios deónticos con las proposiciones descriptivas del positivismo metodológico.",
+      "Porque una mera descripción de hechos (ej. \"la ley manda X\") no es una razón operativa suficiente para justificar moralmente un fallo.",
+      "Porque el formalismo impide que los jueces de primera instancia recurran a la analogía en presencia de lagunas penales.",
+      "Porque reduce el derecho a predicciones fácticas sobre el comportamiento sociológico de los tribunales superiores."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Un juez adopta decisiones morales y legalmente vinculantes al sentenciar. El razonamiento práctico exige que, para justificar una acción, no baste con invocar la existencia de un hecho (que la ley dispone algo); se requiere asumir un compromiso moral de obediencia, lo que derriba el mito de la neutralidad judicial pura.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-eaabfc0a",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Al analizar el lenguaje como un sistema de símbolos, ¿qué postulado define la \"regla de la libertad de estipulación\"?",
+    "opciones": [
+      "Que las palabras están unidas de forma metafísica y necesaria a las esencias de las cosas de la realidad.",
+      "Que los hombres pueden decidir libremente asignar cualquier significado a una palabra, siempre que no generen ambigüedad.",
+      "Que el legislador del Estado posee competencia exclusiva para definir los términos del diccionario común.",
+      "Que las expresiones de las leyes penales deben guardar una correspondencia unívoca con la teología."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La libertad de estipulación (convencionalismo) consagra que no existen esencias naturales ligadas a las palabras; un emisor puede proponer o estipular un significado nuevo para un término, requiriéndose únicamente consistencia en su uso para posibilitar la comunicación.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-f6d4cf35",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "Carlos Cossio propone una estructura disyuntiva para la norma jurídica en la Teoría Egológica. ¿Qué elementos integran este esquema disyuntivo?",
+    "opciones": [
+      "El principio teológico de la ley natural acoplado de manera inductiva a la ley humana del Parlamento nacional.",
+      "La endonorma (que regula la conducta lícita y la prestación) y la perinorma (que prevé la sanción ante la ilicitud) unidas por la cópula \"o\".",
+      "Las profecías realistas del common law asociadas de forma deductiva a la regla de reconocimiento de Hart.",
+      "El derecho objetivo y el derecho subjetivo entendidos como entes metafísicos idénticos derivados del Estado."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Cossio da igual valor ontológico a la conducta lícita e ilícita. Estructura la norma de forma disyuntiva: \"Dado A (hecho antecedente), debe ser la prestación (endonorma); o dada la no prestación (ilícito), debe ser la sanción (perinorma)\", unidas por la disyunción.",
+    "puntos_base": 100
+  },
+  {
     "id": "10111-f8e6a6d4",
     "id_categoria": "10111",
     "categoria_nombre": "Introducción al Derecho",
@@ -84,6 +1556,38 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Hart identifica estas tres cuestiones como los problemas recurrentes que dificultan la definición del derecho, mostrando la complejidad de deslindar la obligación jurídica de la mera amenaza de fuerza o del deber puramente moral",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-f94dab03",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la crítica que Ronald Dworkin dirige contra la discrecionalidad judicial en los denominados \"casos difíciles\"?",
+    "opciones": [
+      "Sostiene que ante colisiones el juez es incapaz de emplear de forma lógica el silogismo deductivo formal.",
+      "Considera que la analogía es una herramienta arbitraria que desvirtúa la neutralidad descriptiva de la dogmática.",
+      "Niega que la textura abierta del lenguaje natural obligue a los magistrados a adoptar valoraciones éticas.",
+      "Afirma que los jueces no deben actuar como legisladores sustitutos creando leyes ex post facto, y que existe una única solución correcta basada en principios."
+    ],
+    "respuesta_correcta_index": 3,
+    "fundamento_juridico": "Dworkin se opone a que los jueces \"creen\" derecho de forma discrecional o política ante lagunas normativas. Sostiene la tesis de la \"única solución correcta\": el sistema integrado por reglas y principios éticos provee una solución jurídica preexistente que el juez (ej. Hércules) debe descubrir y aplicar.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10111-fd7db350",
+    "id_categoria": "10111",
+    "categoria_nombre": "Introducción al Derecho",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el postulado metodológico central de la \"Escuela de la Exégesis\" surgida en Francia tras la sanción del Código Napoleón de 1804?",
+    "opciones": [
+      "La libre interpretación científica del derecho basada de forma exclusiva en la sociología del presente.",
+      "El culto al texto de la ley escrita y la búsqueda inflexible de la intención histórica del legislador como único criterio válido.",
+      "El voluntarismo estructurado que faculta a los magistrados a ponderar la justicia material de cada caso.",
+      "La disolución de los dualismos metodológicos a través del análisis del common law anglosajón."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La Exégesis consagra el estatalismo y formalismo extremo. La ley positiva es perfecta e inequívoca; si presenta zonas de penumbra, se debe desentrañar de forma reconstructiva cuál fue la intención psicológica exacta que el legislador tuvo al dictarla.",
     "puntos_base": 100
   },
   {
@@ -20775,6 +22279,38 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-0004858f",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "La obligación de los Estados de arreglar sus controversias por medios pacíficos se caracteriza por ser una obligación de:",
+    "opciones": [
+      "Resultado absoluto e inmediato en todos los casos.",
+      "Mero comportamiento, que exige a los Estados buscar de buena fe una solución pacífica.",
+      "Sometimiento automático al arbitraje internacional únicamente.",
+      "Acatamiento exclusivo de las directrices del Secretario de Estado de la metrópoli."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-0447a3e6",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la principal característica del Estatuto de la Corte Penal Internacional (Estatuto de Roma)?",
+    "opciones": [
+      "Somete de manera obligatoria y automática a todas las personas civiles del mundo.",
+      "Es complementario de las jurisdicciones penales nacionales de los Estados partes.",
+      "Es un órgano subsidiario del Consejo de Seguridad de Naciones Unidas.",
+      "Es una convención no vinculante desprovista de penas de reclusión."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-05d4797b",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -20787,6 +22323,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Resolución 3314 (XXIX)."
     ],
     "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-10ab63dd",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "Según el artículo 4 del PIDCP, ¿cuál de los siguientes es un derecho inderogable en caso de estado de excepción o emergencia?",
+    "opciones": [
+      "El derecho a la libre circulación de mercaderías e importación.",
+      "El derecho a la vida, a la integridad personal y a no ser sometido a torturas o esclavitud.",
+      "El derecho a huelga y la sindicación libre.",
+      "El derecho a la libre elección de medios de transporte sanitario. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+    ],
+    "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -20807,6 +22359,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-126f81b9",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Qué órgano intergubernamental de la ONU fue creado en 2006 en reemplazo de la Comisión de Derechos Humanos de la Asamblea General?",
+    "opciones": [
+      "La Subcomisión de Promoción y Protección de Minorías.",
+      "El Consejo de Derechos Humanos de la Asamblea General (integrado por 47 Estados).",
+      "El Comité para la Eliminación de la Discriminación Racial.",
+      "La Corte Internacional de Derechos Humanos."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-1288ad2e",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -20817,6 +22385,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La pérdida del derecho a voto en la Asamblea General.",
       "La inhabilitación permanente de sus jueces ante la Corte Internacional de Justicia.",
       "El congelamiento absoluto de todos los activos de su Banco Central en el exterior. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-16d9b30f",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "La Declaración Americana de los Derechos y Deberes del Hombre (Bogotá, 1948) se caracteriza por ser:",
+    "opciones": [
+      "Un tratado comercial de libre comercio sin jerarquía de derechos.",
+      "El primer instrumento internacional de derechos humanos de carácter general.",
+      "Una ley nacional de deudas del Estado argentino.",
+      "Una opinión consultiva no vinculante del Tribunal de La Haya. UNIDAD 9: EL SIDH Y LA OEA"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21175,6 +22759,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-4796c6b8",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cómo se define el Derecho Internacional Humanitario (DIH)?",
+    "opciones": [
+      "Una rama del Derecho Internacional que regula las relaciones diplomáticas bilaterales.",
+      "Un conjunto de normas que limita por razones humanitarias los efectos de los conflictos armados.",
+      "Una directiva de deudas del FMI de carácter imperativo.",
+      "Una opinión consultiva de la Corte Penal Internacional. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-4a3d20cc",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -21217,6 +22817,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El principio de la integridad territorial de los Estados.",
       "El principio de la asimetría económica de las economías menores.",
       "El principio de la autolimitación del poder unilateral."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-53cdb700",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "Según el enfoque del Dr. Consani, los modelos relacional e institucional son:",
+    "opciones": [
+      "Etapas diacrónicas sucesivas donde uno reemplaza irreversiblemente al otro.",
+      "Modelos ideales sincrónicos que coexisten en una tensión dialéctica permanente.",
+      "Estructuras jurídicas idénticas sin tensiones metodológicas.",
+      "Teorías utópicas sin correlato con la realidad internacional. UNIDAD 2: FUENTES DEL DERECHO INTERNACIONAL PÚBLICO"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21319,6 +22935,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-61e288ad",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cuáles son los cuatro crímenes de competencia de la Corte Penal Internacional según el artículo 5 del Estatuto?",
+    "opciones": [
+      "El crimen de agresión, el genocidio, los crímenes de lesa humanidad y los crímenes de guerra.",
+      "La piratería, el secuestro de aeronaves, la trata de personas y el lavado de dinero.",
+      "La contaminación masiva, el incumplimiento de deudas, el contrabando aduanero y la protesta.",
+      "La difamación mediática, la secesión, el desvío fluvial y el estoppel comercial."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-63718c7a",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -21329,6 +22961,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El Plan Keynes (Reino Unido) y el Plan White (Estados Unidos).",
       "El Plan Drago y el Plan Porter de deudas pecuniarias.",
       "El Plan Shackleton y el Plan de Madrid sobre inversiones."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-64c748c3",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "El principio de libre determinación de los pueblos, según la Resolución 1514 (XV), otorga el derecho de decidir su destino político a:",
+    "opciones": [
+      "Cualquier minoría nacional o étnica que desee la secesión de un Estado soberano.",
+      "Los pueblos de los territorios sometidos a dominación colonial y ocupación extranjera.",
+      "Los grupos insurgentes armados que no cuentan con un mando responsable.",
+      "Las corporaciones transnacionales en el marco de sus inversiones. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21367,6 +23015,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-6f2741e0",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Qué precedente histórico en el Océano Índico muestra que el Reino Unido exceptuó la aplicación de la autodeterminación por razones de interés militar?",
+    "opciones": [
+      "El caso de la isla de Mauricio en 1810.",
+      "El caso del archipiélago de Chagos (isla Diego García y la expulsión de su población).",
+      "El caso de la península de Kowloon y la devolución de Hong Kong.",
+      "El caso de las islas Hanish entre Yemen y Eritrea. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-7430216b",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -21377,6 +23041,38 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Ser un Estado, ser amante de la paz, aceptar las obligaciones de la Carta, estar capacitado para cumplirlas y estar dispuesto a ello.",
       "Tener reconocimiento absoluto de todas las potencias, contar con ejército regular, poseer salida al mar, y firmar el TIAR.",
       "Ser admitido por unanimidad en la Asamblea General sin recomendación del Consejo de Seguridad."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-75362c95",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "En el modelo institucional, ¿en qué tres niveles se encuentra condicionado el poder del Estado?",
+    "opciones": [
+      "Autolimitación unilateral, inmunidad soberana y estoppel procesal.",
+      "Aceptación colectiva, cierta autonomía de la organización y cierta jerarquía normativa.",
+      "Exclusión del individuo, protesta diplomática y aquiescencia.",
+      "No existe condicionalidad alguna; el poder estatal sigue siendo ilimitado en todos los niveles."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-76f2da30",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Qué caso paradigmático de la CIJ sirve para ilustrar los elementos constitutivos de las obligaciones erga omnes?",
+    "opciones": [
+      "Caso del Canal de Corfú (Reino Unido c/ Albania).",
+      "Caso de la Barcelona Traction, Light and Power Company, Limited (Bélgica c/ España).",
+      "Caso de las Actividades Militares y Paramilitares en y contra Nicaragua.",
+      "Caso de las Pasteras sobre el río Uruguay (Argentina c/ Uruguay)."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21425,6 +23121,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Doscientas millas marinas; derechos de soberanía para exploración, explotación, conservación de recursos vivos y no vivos.",
       "Trescientas cincuenta millas marinas; derechos de soberanía exclusiva para la pesca INDNR de especies sedentarias.",
       "Veinticuatro millas marinas; derechos de soberanía absoluta y sobrevuelo comercial."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-80716099",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cuál de las siguientes es una manifestación de la persistencia del modelo relacional en la estructura de la ONU?",
+    "opciones": [
+      "La conformación plenamente supranacional de la Asamblea General.",
+      "La existencia del derecho de veto para los cinco miembros permanentes del Consejo de Seguridad.",
+      "El sometimiento obligatorio y automático a la jurisdicción de la CIJ sin necesidad de consentimiento.",
+      "La desaparición de los grupos informales de Estados (como el G77 o el GRULAC)."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21511,6 +23223,38 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-8ea41944",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cómo se define la soberanía territorial del Estado en el derecho internacional general?",
+    "opciones": [
+      "Como una competencia condicionada por la voluntad unilateral de terceros Estados.",
+      "Como el derecho de ejercer en el territorio, de forma plena y exclusiva, las funciones de Estado.",
+      "Como el ejercicio discrecional de la fuerza armada en las relaciones internacionales.",
+      "Como la sumisión obligatoria y automática a todos los mandatos del Consejo de Seguridad."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-9687c1ce",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Qué derecho de navegación gozan los buques de todas las naciones en el Mar Territorial?",
+    "opciones": [
+      "El derecho de libre navegación absoluta sin controles aduaneros.",
+      "El derecho de paso inocente (que no afecte la paz, el buen orden o la seguridad).",
+      "El derecho de paso en tránsito sin necesidad de enarbolar el pabellón.",
+      "El derecho de persecución en caliente de buques infractores. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-9ab24fee",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -21585,6 +23329,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La organización trata de desarrollar su influencia y autoridad de manera independiente, apoyada en sus órganos.",
       "Las organizaciones nunca extienden sus competencias más allá de los textos expresos de sus estatutos.",
       "Los Estados miembros terminan absorbiendo por completo la estructura administrativa. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-aab51379",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "El artículo 103 de la Carta de la ONU es un ejemplo claro de qué característica del modelo institucional?",
+    "opciones": [
+      "De la anarquía de las soberanías absolutas.",
+      "De la jerarquía normativa (primacía de las obligaciones de la Carta sobre otros tratados).",
+      "De la incondicionalidad del Poder estatal o autolimitación clásica.",
+      "Del dominio reservado absoluto de las jurisdicciones domésticas. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21815,6 +23575,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-cc1e4a98",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "En el modelo relacional, ¿cómo se manifiesta el nacimiento de los Estados y el reconocimiento de terceros?",
+    "opciones": [
+      "El nacimiento depende de la admisión colectiva y el reconocimiento es constitutivo.",
+      "El nacimiento es ficticio y el reconocimiento es absoluto e irreversible.",
+      "El nacimiento es efectivo y espontáneo, y el reconocimiento tiene carácter relativo.",
+      "El reconocimiento es centralizado y dictado por órganos plenipotenciarios."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-cdf91aa9",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -21847,6 +23623,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-d33cc298",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Qué órgano de resolución arbitral de diferencias de inversiones fue creado en el ámbito del Banco Mundial en 1966?",
+    "opciones": [
+      "La Corte Penal Internacional.",
+      "El Centro Internacional de Arreglo de Diferencias relativas a Inversiones (CIADI).",
+      "El Tribunal Permanente de Revisión del MERCOSUR.",
+      "La Corte Centroamericana de Justicia."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-d3b50f50",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -21873,6 +23665,38 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Comisión Interamericana de Derechos Humanos (CIDH) y la Corte Interamericana de Derechos Humanos.",
       "La Subsecretaría de Asuntos Jurídicos y la Asamblea General.",
       "El Tribunal Permanente de Revisión y la Corte Penal Internacional."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-d6d82254",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Qué órgano convencional de la ONU tiene a su cargo la supervisión del cumplimiento del PIDCP?",
+    "opciones": [
+      "El Consejo de Derechos Humanos de la Asamblea General.",
+      "El Comité de Derechos Humanos (integrado por 18 expertos que actúan a título personal).",
+      "El Comité de Derechos Económicos, Sociales y Culturales del ECOSOC.",
+      "La Comisión Interamericana de Derechos Humanos."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-d9a4e3fb",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cómo es el sistema de adopción de decisiones (poder de voto) dentro de la estructura del FMI?",
+    "opciones": [
+      "Un Estado, un voto, garantizando la igualdad jurídica de todos los miembros.",
+      "Un sistema de voto ponderado según la cuota financiera que aporta cada Estado.",
+      "Voto calificado de dos tercios de los países latinoamericanos asociados.",
+      "Consenso absoluto sin necesidad de aportes de capital de reserva."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21927,6 +23751,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10138-e516b87e",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Qué convención internacional de 1982 es considerada la 'piedra angular' del derecho del mar actual?",
+    "opciones": [
+      "La Convención de Ginebra sobre el mar territorial de 1958.",
+      "La Convención de las Naciones Unidas sobre el Derecho del Mar (CONVEMAR).",
+      "La Convención sobre la protección del patrimonio cultural subacuático de la UNESCO.",
+      "El Tratado de Montevideo sobre espacios marítimos subregionales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10138-e919ca6d",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -21939,6 +23779,38 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Condicionalidad del Poder y represión colectiva institucionalizada."
     ],
     "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-ea043744",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "Según la opinión consultiva de la CIJ de 1950, ¿qué carácter tiene la recomendación del Consejo de Seguridad para la admisión de un miembro?",
+    "opciones": [
+      "Es una mera formalidad que la Asamblea General puede obviar discrecionalmente.",
+      "Es una decisión facultativa; la Asamblea puede admitir a un Estado aún con una recomendación negativa.",
+      "Debe ser favorable para que la Asamblea General pueda decidir la admisión de un nuevo miembro.",
+      "Es de competencia exclusiva del Comité de Descolonización sin consulta judicial."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-ed05da13",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cuándo y a través de qué instrumento se constituyó formalmente la Organización de las Naciones Unidas?",
+    "opciones": [
+      "El 24 de octubre de 1945, con la entrada en vigencia de la Carta de las Naciones Unidas.",
+      "El 10 de diciembre de 1948, con la Declaración Universal de Derechos Humanos.",
+      "El 28 de junio de 1919, con la firma del Tratado de Versalles y el nacimiento de la Liga.",
+      "El 11 de febrero de 1945, durante el transcurso de los Acuerdos de Yalta."
+    ],
+    "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -21969,6 +23841,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Porque un fallo adverso cerraría el reclamo definitivamente, y existen condicionantes políticos en el poder mundial.",
       "Porque el Estatuto de la CIJ prohíbe que los miembros permanentes del Consejo sean parte en un litigio.",
       "Porque la Argentina carece de títulos históricos y geológicos de soberanía sobre la plataforma continental."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10138-f97a9a6b",
+    "id_categoria": "10138",
+    "categoria_nombre": "Derecho Internacional Público",
+    "dificultad": "media",
+    "pregunta": "¿Cómo es la relación entre el Poder y el Derecho en el modelo institucional?",
+    "opciones": [
+      "Horizontal y desprovista de órganos tripartitos propios.",
+      "Vertical y de subordinación, implicando imposición de poderes supraestatales y supranacionales.",
+      "Anárquica y libertaria, basada en la total autonomía estatal.",
+      "Incondicionada y absoluta, donde el poder no puede ser regulado."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -32276,6 +34164,1606 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "El límite de las restricciones radica en la razonabilidad; si desnaturalizan o restringen de tal modo el uso y goce que afectan la plenitud del derecho, la mera restricción deja de ser tal para convertirse en una servidumbre o expropiación, las cuales sí requieren ley e indemnización [103, 105, 106].",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-0042d527",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 128 bis, ¿cuáles son los principios bajo los cuales el Poder Ejecutivo Nacional debe llevar adelante la política de aviación civil argentina?",
+    "opciones": [
+      "Fomento al de monopolio estatal de rutas y tarifas de rampa.",
+      "Permitir su crecimiento, bajo los principios de la seguridad y la libertad de mercado, conforme a acuerdos con terceros estados.",
+      "Prohibición de de hecho de operación de aerolíneas extranjeras.",
+      "Subvención del de 100% de los billetes comerciales de rampa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 128 bis (incorporado por Decreto N° 70/2023) establece una pauta de fomento comercial: la política aeronáutica argentina se rige bajo los principios pilares de seguridad operacional y libertad de mercado, fomentando la reciprocidad. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-02be1806",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Bajo las disposiciones del Artículo 15, ¿cuáles son los requisitos previos para la entrada al territorio argentino de aeronaves extranjeras privadas y públicas?",
+    "opciones": [
+      "Las privadas y públicas ingresan libremente sin requisitos de aviso previo por fomento al libre acceso recíproco.",
+      "El ingreso de aeronaves públicas extranjeras está supeditado a autorización previa del Poder Ejecutivo; las de matrícula privada extranjeras necesitan permiso de la autoridad aeronáutica.",
+      "Ambas de manera de exclusiva requieren autorización del Congreso de la Nación.",
+      "Se rigen únicamente por las de leyes de aduana y migración, sin requerir permisos de la autoridad aeronáutica."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 15 exige para las aeronaves públicas extranjeras (por ejemplo, aeronaves militares de otro Estado) la autorización previa del Poder Ejecutivo de la Nación; mientras que para las aeronaves extranjeras privadas exige permiso previo de la autoridad aeronáutica (ANAC). CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-040d6305",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 5° del Código Aeronáutico, ¿qué efectos produce el aterrizaje de una aeronave en una propiedad privada ajena y no autorizada?",
+    "opciones": [
+      "Autoriza al propietario del terreno a secuestrar la aeronave y retener la tripulación hasta que se le pague una fianza.",
+      "Ninguna aeronave debe aterrizar en aeródromos privados sin autorización del propietario salvo fuerza mayor; sin embargo, el aterrizaje en propiedades privadas no autoriza al propietario del suelo a impedir la continuación del vuelo.",
+      "Constituye un delito de usurpación flagrante que faculta a la destrucción inmediata de la aeronave.",
+      "El aterrizaje de emergencia en un predio privado transfiere automáticamente el 50% de la propiedad de la aeronave al dueño del terreno."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 5° prohíbe aterrizar en aeródromos privados sin autorización (salvo fuerza mayor), pero establece expresamente que si una aeronave de hecho aterriza en una propiedad privada (campo o predio no aeródromo), el propietario del terreno no tiene derecho a impedir la continuación del vuelo (despegue) de la aeronave. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-05e74e66",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Bajo las previsiones del Artículo 29, ¿qué estatus de carácter jurídico ostentan los 'lugares aptos' denunciados y sobre quién recae la responsabilidad de su uso?",
+    "opciones": [
+      "Son de hecho considerados aeródromos privados, y la ANAC responde de manera civil por cualquier accidente.",
+      "Los de lugares aptos denunciados no son aeródromos. La operación se realizará siempre bajo responsabilidad del piloto al mando.",
+      "Son zonas de aterrizaje de hecho exentas de control aduanero y de frontera.",
+      "Quedan clausurados ipso facto de manera permanente."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 29 (sustituido por Decreto N° 70/2023) obliga a comunicar la existencia de de lugares aptos de uso habitual, pero aclara expresamente que estos lugares 'no son aeródromos' y que cualquier operación aérea se realiza bajo responsabilidad del piloto al mando de la aeronave. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-0a34706e",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 107 del Código Aeronáutico, ¿es obligatorio que todas las aeronaves afectadas a servicios aerocomerciales de bandera argentina posean matrícula nacional?",
+    "opciones": [
+      "Sí, es un de requisito absoluto bajo sanción de decomiso.",
+      "Deben tener matrícula argentina, pero se permitirá la utilización de matrícula extranjera bajo reciprocidad y convenios de doble vigilancia.",
+      "No, cualquier de aeronave extranjera puede operar cabotaje sin restricciones.",
+      "Solo se de exige matrícula argentina para planeadores y helicópteros."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 107 (sustituido por Decreto N° 338/2025) permite la utilización de aeronaves con matrícula extranjera en servicios comerciales argentinos, siempre que se verifiquen convenios de reciprocidad y de doble vigilancia de la seguridad operacional con el país de matrícula. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-0d151512",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 88 del Código Aeronáutico, ¿es obligatorio que en cada aeródromo público exista un Jefe de aeródromo designado?",
+    "opciones": [
+      "No, la ANAC de hecho puede centralizar el control de varios.",
+      "Sí, en todo aeródromo público donde la Autoridad Aeronáutica Nacional lo determine técnicamente como exigencia habrá un jefe designado por aquella.",
+      "Solo en aeródromos públicos destinados a la operación de grandes líneas de rampa.",
+      "El jefe es de hecho elegido por los asociados del aeroclub local."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 88 (según sustitución del Decreto N° 338/2025) exige que en los aeródromos públicos habilitados donde se determine técnicamente necesario, la autoridad aeronáutica nacional designará un Jefe de Aeródromo para que ejerza la representación estatal.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-0f5fc520",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 119 del Código Aeronáutico Argentino, ¿cuál es el título legal constitutivo del contrato de transporte de mercancías?",
+    "opciones": [
+      "El talón de de rampa de carga comercial de rampa.",
+      "La carta de porte, la que debe expresar que se trata de transporte aéreo.",
+      "El billete de de pasaje de mercancías con numeración correlativa.",
+      "El manifiesto de de carga firmado por el Jefe de aeródromo público."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 119 consagra a la carta de porte como el título legal y probatorio del contrato de transporte de carga aérea, debiendo constar de manera fehaciente que el servicio se ejecuta por vía aérea.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-128b4766",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Si el transportador comercial acepta embarcar a un pasajero en un vuelo sin haberle expedido el billete de pasaje correspondiente, ¿qué sanción civil sufre conforme al Artículo 114?",
+    "opciones": [
+      "Se le aplica de hecho una multa de 300 argentinos oro de rampa.",
+      "No podrá ampararse en las disposiciones de este Código que limitan su responsabilidad.",
+      "El contrato se de declara nulo de pleno derecho.",
+      "Pierde la de de hecho propiedad de la aeronave afectada."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 114 impone una sanción severa al transportador irregular: si embarca a un pasajero sin emitirle su pasaje o billete de viaje, pierde el beneficio legal de limitación de responsabilidad cuantitativa (fijada en el Art. 144) por cualquier infortunio. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-13875d33",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 28 del Código Aeronáutico, ¿cómo se determinan las contraprestaciones que deben abonar los usuarios por el uso de los aeródromos públicos?",
+    "opciones": [
+      "Son de libre fijación por las empresas aéreas privadas de rampa de rampa.",
+      "Los servicios y prestaciones que no sean de navegación aérea (Art. 13) estarán sujetos a derechos cuyos importes serán fijados por el Poder Ejecutivo.",
+      "Quedan exentos de pago todos los vuelos de cabotaje comercial regular.",
+      "Los aranceles son de carácter municipal y fijados por los concejos deliberantes."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 28 regula el régimen tarifario de los aeródromos públicos, delegando en el Poder Ejecutivo Nacional la atribución exclusiva para fijar las tasas o derechos aeroportuarios civiles que deben solventar los explotadores de aeronaves por el uso de las instalaciones. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-15117a40",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 167, si en un abordaje aéreo existe concurrencia de culpa de los explotadores implicados, ¿cómo se distribuye la responsabilidad civil por daños?",
+    "opciones": [
+      "Responde de de hecho manera exclusiva la de mayor peso.",
+      "La responsabilidad de los explotadores de cada una de las aeronaves es proporcional a la gravedad de la falta. Si no pudiera determinarse, por partes iguales.",
+      "Quedan ambos de de hecho eximidos por compensación de culpas.",
+      "Responde de de hecho la aseguradora de la aeronave matriculada."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 167 regula la concurrencia de culpa en abordajes civiles: se aplica el criterio de proporcionalidad según la gravedad de la falta de cada operador, recurriéndose de forma subsidiaria a la división por partes iguales si no puede determinarse. BLOQUE TEMÁTICO: AUXILIO, INVESTIGACIÓN Y SEGUROS",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-19440b83",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Qué organismo ejerce la función de Autoridad Aeronáutica Nacional y tiene la competencia para dictar las normas de seguridad operacional de la aviación civil de acuerdo al Artículo 2° bis?",
+    "opciones": [
+      "La Fuerza Aérea Argentina a través de su Comando de Regiones Aéreas.",
+      "La Administración Nacional de Aviación Civil (ANAC).",
+      "La Junta de Seguridad en el Transporte (JST) en forma exclusiva.",
+      "El Ministerio de Defensa en coordinación con el Ministerio de Seguridad."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Conforme al Artículo 2° bis (incorporado por Decreto N° 941/2024), la Autoridad Aeronáutica Nacional es ejercida por la Administración Nacional de Aviación Civil (ANAC), la cual tiene la atribución para establecer o dictar todas las normas de seguridad operacional de la aviación civil y su sistematización. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-23b95369",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Es obligatoria la habilitación de un aeródromo por parte del Estado argentino según el Artículo 27 del Código Aeronáutico?",
+    "opciones": [
+      "No, los aeródromos privados de hecho están exentos de habilitación estatal.",
+      "Sí, todo de aeródromo deberá ser habilitado por la autoridad aeronáutica nacional, la que fijará su régimen y condiciones de funcionamiento.",
+      "Solo se exige habilitación para de aeródromos comerciales internacionales.",
+      "La habilitación de rampa de hecho es de carácter opcional ante la ANAC."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 27 dispone de manera obligatoria que todo aeródromo (público o privado) de hecho debe ser habilitado por la autoridad aeronáutica nacional (ANAC), que fijará el régimen de funcionamiento conforme a las normas generales.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-29e17fef",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Antes de la partida, durante el vuelo, en el aterrizaje o en su estacionamiento, ¿qué facultades de inspección y verificación tiene la Autoridad Aeronáutica Nacional de acuerdo con el Artículo 12?",
+    "opciones": [
+      "Ninguna, pues violaría las garantías individuales y el derecho constitucional a la intimidad sin orden judicial previa.",
+      "Puede practicar verificaciones relativas a las personas, aeronaves, tripulaciones y cosas transportadas, y tomar las de medidas de seguridad adecuadas.",
+      "Exclusivamente puede inspeccionar aeronaves de matrícula extranjera, estando exentas las aeronaves de matrícula argentina.",
+      "Sus facultades se limitan exclusivamente al control de la documentación digital en la rampa, no pudiendo inspeccionar la carga o equipajes."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 12 faculta de manera amplia a la Autoridad Aeronáutica Nacional para realizar verificaciones técnico-operativas y administrativas sobre personas, aeronaves, tripulaciones y cosas transportadas antes de la partida, en vuelo, en el aterrizaje o estacionamiento, pudiendo dictar de inmediato medidas de seguridad (como inmovilizar el aparato). CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-2a3f05ed",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 35 del Código Aeronáutico, ¿sobre quién recae la obligación y el costo del señalamiento de las estructuras que constituyen un peligro para la circulación aérea?",
+    "opciones": [
+      "Sobre la ANAC de de manera centralizada e integral de rampa.",
+      "Está a cargo del propietario los gastos de instalación y funcionamiento de las marcas, señales o luces que corresponda.",
+      "Sobre la aerolínea comercial que opere la ruta correspondientes de rampa.",
+      "Es un costo de hecho compartido por partes iguales entre el Estado y el Municipio."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 35 establece que es de hecho obligatorio el señalamiento de los obstáculos que constituyan peligro para la navegación aérea, y pone expresamente a cargo del dueño o propietario los gastos de instalación y funcionamiento de marcas o señales correspondientes. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-2c55dceb",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 10 (Modificación al Artículo 587 del Código Aduanero), ¿cuál es la condición de las exportaciones de mercaderías nacionales que se envíen desde el continente destinadas a ser empleadas o consumidas en misiones de exploración o explotación en el mar territorial, ZEE o lecho submarino nacional?",
+    "opciones": [
+      "Deben pagar de de hecho derechos de exportación comunes.",
+      "Está exenta del pago de los tributos que la gravaren y de la aplicación de prohibiciones cuando se destinare a exploración, explotación o cultivo en dichos ámbitos.",
+      "Requieren de de hecho el depósito de una fianza del 2%.",
+      "Su exención de de hecho rige si se transportan en buques públicos."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La modificación al Artículo 587 del Código Aduanero exime de derechos tributarios y de prohibiciones el abastecimiento continental de mercancías con destino a actividades económicas soberanas que se desarrollen legítimamente dentro del mar territorial, ZEE o plataforma continental argentina.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-2eaf74bc",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Si con posteridad a la aprobación de las superficies de despeje se comprobase una violación por un obstáculo prohibido, ¿qué acciones corresponden según el Artículo 34?",
+    "opciones": [
+      "El propietario del de predio vecino tiene derecho a exigir expropiación del terreno.",
+      "El de propietario del aeródromo, la autoridad o un tercero interesado, intimará al infractor la eliminación del obstáculo. El intimado deberá, a su exclusivo costo e inmediatamente eliminarlo e indemnizar daños.",
+      "Se admitirá mantener el de obstáculo si el infractor paga una tasa de rampa.",
+      "La ANAC de hecho procederá a la demolición de la aeronave civil."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 34 (sustituido por Decreto N° 70/2023) establece un de procedimiento expedito de intimación: ante una infracción que afecte la de seguridad operacional, el infractor de hecho debe retirar el obstáculo inmediatamente a su exclusivo costo.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-30552dcd",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De conformidad con el Artículo 153 del Código Aeronáutico Argentino, ¿qué tipo de responsabilidad civil asumen el transportador contractual y el de hecho?",
+    "opciones": [
+      "Responsabilidad de de hecho subsidiaria o de exclusión de rampa.",
+      "Ambos le responderán solidariamente por los daños que se le hubiesen originado, pudiendo demandar tanto a uno como al otro.",
+      "Queda excluida toda de de hecho responsabilidad del de hecho.",
+      "Responde únicamente la de de hecho ANAC como garante del sistema."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 153 recepta las reglas de solidaridad civil para el supuesto de desdoblamiento de la figura del transportador (contractual y de hecho), facultando al usuario a accionar indistinta y solidariamente contra uno o contra ambos. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-3567621b",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 195 del Código Aeronáutico Argentino, ¿qué sucede si un contrato de seguro de vida común que se concrete en el país contiene una cláusula que excluye el riesgo de muerte en vuelos de transporte aéreo regular?",
+    "opciones": [
+      "La exclusión de de hecho es válida y el asegurador no paga.",
+      "No podrá ser excluido de los contratos de seguros de vida o incapacidad por accidente el riesgo resultante de vuelos regulares comerciales; toda cláusula que así lo establezca es nula.",
+      "Se reduce la de de hecho indemnización a la mitad del valor.",
+      "Provoca la de de hecho invalidez total del contrato."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 195 protege de manera categórica al pasajero común del transporte de línea regular, declarando la nulidad absoluta de cualquier cláusula que intente eludir el pago del seguro de vida fundado en riesgos de la navegación regular.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-37541f6c",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 39 del Código Aeronáutico Argentino, ¿qué sucede si una aeronave inscripta en el Registro de la República Argentina es inscripta en un registro extranjero?",
+    "opciones": [
+      "Mantiene de manera permanente la doble nacionalidad aeronáutica como de rampa.",
+      "Pierde la nacionalidad argentina al ser inscripta en un Estado extranjero.",
+      "Requiere la homologación previa del cónsul del país extranjero de rampa.",
+      "Se suspende la matrícula argentina hasta el pago total de las hipotecas."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 39 consagra el principio de unicidad de la matrícula aeronáutica: la inscripción de una aeronave argentina en un registro extranjero provoca de pleno derecho la pérdida automática de la nacionalidad argentina.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-38788115",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 46, ¿cuáles son las causales por las cuales la autoridad aeronáutica puede cancelar de oficio la matrícula de una aeronave?",
+    "opciones": [
+      "Únicamente por falta de pago de las de tasas de navegación por más de 3 meses.",
+      "Por la cesación o pérdida de los requisitos del artículo 48, o cuando de la autoridad establezca la pérdida de la individualidad de la aeronave.",
+      "Por decisión discrecional de la de ANAC sin requerir sumario previo.",
+      "Si la aeronave de hecho permanece inactiva por más de 12 meses."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 46 regula que la pérdida de los requisitos subjetivos que exige la ley (Art. 48) o la pérdida física de su individualidad (destrucción o desarmado) produce la cancelación registral inmediata de la matrícula de oficio.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-3a021ce8",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De conformidad con el Artículo 99 (según sustitución del Decreto N° 338/2025), ¿qué exigencias societarias de domicilio y control se imponen a las sociedades que exploten servicios de transporte aéreo interno?",
+    "opciones": [
+      "Tener el de 100% de las acciones nominales de propiedad estatal de rampa.",
+      "Tener domicilio permanente en la República Argentina; su control y dirección debe estar en manos de personas humanas con domicilio legal en la República; y su presidente, gerentes y 2/3 de los directores con domicilio legal en el país.",
+      "Únicamente se de exige que un director suplente mantenga domicilio legal.",
+      "No rigen de de hecho exigencias de domicilio nacional para el cabotaje."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 99 (con las modificaciones del Decreto N° 338/2025) mantiene el control territorial del cabotaje al exigir que el domicilio societario permanente, el control de dirección, y la mayoría calificada (dos tercios de directores, presidente y gerentes) tengan domicilio legal en la República Argentina. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-3a8daa41",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 29 bis, ¿qué servicios esenciales aeroportuarios de rampa quedan regulados bajo principios de libre competencia y acceso a mercados?",
+    "opciones": [
+      "Exclusivamente el control de la torre de navegación aérea.",
+      "Los de servicios esenciales aeroportuarios, entendidos como los servicios de rampa en general, regulados y fiscalizados por la autoridad.",
+      "Los de servicios de cafetería, free shops y de estacionamiento.",
+      "Únicamente el mantenimiento de rampa de motores de aviación general."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 29 bis (incorporado por Decreto N° 70/2023) introduce un régimen de competencia para los servicios aeroportuarios, definiendo a los de servicios esenciales aeroportuarios como los servicios de rampa en general, los cuales deben de prestarse bajo principios de libre competencia.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-3c68d768",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 113 del Código Aeronáutico Argentino, ¿cómo debe probarse el contrato de transporte de pasajeros?",
+    "opciones": [
+      "Exclusivamente de mediante la presentación de la factura comercial de rampa.",
+      "Debe ser probado por escrito o con formato electrónico. En servicios regulares, se prueba con el billete de pasaje escrito o digital.",
+      "Requiere la de anotación previa en el libro de a bordo de la aeronave.",
+      "Únicamente se de admite como prueba la tarjeta de embarque física."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 113 (sustituido por Decreto N° 70/2023) reconoce plenamente el uso de medios digitales en la contratación de transporte aéreo, admitiendo el billete de pasaje en formato electrónico o digital como prueba del contrato.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-3e1d6828",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 150, ¿qué derechos asisten al pasajero que no se presente o llegue con atraso al vuelo regular, en caso de que la aeronave parta con todas sus plazas ocupadas?",
+    "opciones": [
+      "El pasajero de de hecho pierde el 100% de la tarifa sin derecho.",
+      "El transportador deberá reintegrar el ochenta por ciento (80%) del precio del billete de pasaje.",
+      "Tiene derecho a de de hecho reubicación gratuita en primera clase.",
+      "Reintegro del de de hecho 100% más gastos ordinarios."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 150 prevé que si el pasajero no se presenta en término al vuelo regular pierde el importe, pero si el transportista comercializa esa plaza y vuela con ocupación total, debe restituirle el 80% del valor para evitar el enriquecimiento sin causa. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-3e868f49",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Cuáles son las condiciones legales para el transporte de mercancías peligrosas en aeronaves comerciales según el Artículo 9° del Código Aeronáutico?",
+    "opciones": [
+      "Está de manera absoluta prohibido bajo cualquier circunstancia en el espacio aéreo argentino.",
+      "El transporte de cosas peligrosas será reglamentado por la autoridad aeronáutica; en ningún caso se autorizará en aeronaves con pasajeros, salvo material radiactivo reglamentado y fiscalizado.",
+      "Se permite libremente siempre que el transportador cobre una tasa de riesgo equivalente al 100% del flete ordinario.",
+      "Únicamente se requiere dar aviso a los pasajeros del vuelo mediante un cartel informativo en la cabina."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 9° estipula que el transporte de cosas peligrosas será reglamentado por la autoridad aeronáutica. Prohíbe de forma absoluta transportar elementos peligrosos en aeronaves que lleven pasajeros, con la única excepción de material radiactivo que se transporte conforme a las reglamentaciones y bajo fiscalización. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-40caf80a",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 6° del Código Aeronáutico, ¿puede el titular del derecho de propiedad sobre un terreno oponerse al sobrevuelo de una aeronave por su espacio aéreo?",
+    "opciones": [
+      "Sí, fundado en el carácter absoluto de la propiedad privada sobre el suelo y el espacio aéreo suprayacente.",
+      "No, nadie puede oponerse al paso de una aeronave en razón de un derecho de propiedad; pero si dicho paso le produjese algún perjuicio, tendrá derecho a indemnización.",
+      "Sí, pero únicamente si la aeronave vuela a velocidad supersónica.",
+      "No, y tampoco se admite indemnización alguna bajo ningún concepto de daño por ser el espacio aéreo de dominio exclusivo del Estado."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 6° derriba el concepto de propiedad absoluta del suelo usque ad coelum, estableciendo que nadie puede oponerse al paso de una aeronave en razón de un derecho de propiedad. No obstante, consagra el derecho a indemnización si el paso causa un perjuicio de hecho en la superficie.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-468d51d6",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 37, ¿cuál es el criterio diferenciador que utiliza la ley argentina para clasificar a las aeronaves en públicas o privadas?",
+    "opciones": [
+      "El origen del capital; si el Estado posee el 51% o más de las acciones, la aeronave es de rampa.",
+      "El destino de uso de la aeronave; son aeronaves públicas las destinadas al servicio del de poder público. Las demás son privadas, aunque pertenezcan al Estado.",
+      "La matrícula de la aeronave; las de matrícula 'LQ' son de carácter público y las 'LV' son privadas.",
+      "El peso de despegue; las de aviación ligera son privadas y las de gran de porte son públicas."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 37 adopta un criterio de afectación funcional: son públicas las destinadas al servicio del poder público. Las demás aeronaves, incluso aquellas de propiedad del Estado que no sirvan al imperium, se reputan como de carácter privado.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-46be2f14",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 94, ¿cuándo se considera legalmente 'interno' (cabotaje) o 'internacional' un servicio de transporte aéreo comercial?",
+    "opciones": [
+      "Es interno de de hecho si se realiza con aeronaves pequeñas de rampa.",
+      "Interno el realizado entre dos o más puntos de la República; internacional el realizado entre el territorio nacional y el de un Estado extranjero (o con escala de hecho pactada en el extranjero).",
+      "Es interno de de hecho únicamente si no requiere el sobrevuelo marítimo.",
+      "Internacional es de hecho solo aquel servicio regular sin escalas."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 94 define con precisión los ámbitos geográfico-legales de transporte: la nota clave de internacionalidad radica en que el punto de partida y de destino estén en distintos Estados, o que mediando un trayecto de puntos nacionales argentinos se pacte una escala en el extranjero. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-4f4fff95",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Si un pasajero fallece en vuelo, ¿qué medidas de custodia debe adoptar el comandante conforme al Artículo 85 del Código Aeronáutico?",
+    "opciones": [
+      "Debe proceder al de sepelio marítimo tirando el cuerpo al mar.",
+      "Deberá tomar medidas de seguridad con respecto a los efectos que pertenezcan al fallecido, entregándolos bajo inventario a la autoridad competente en la primera escala.",
+      "Puede subastar de inmediato los bienes del causante de rampa.",
+      "Retener los de efectos a favor de la aerolínea comercial."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 85 del Código Aeronáutico regula que ante el fallecimiento de un pasajero, el comandante se erige en custodio legal de los efectos y bienes del fallecido, debiendo labrar inventario y entregarlos bajo acta a la autoridad competente en la primera escala.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-5034a6f0",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 33 del Código Aeronáutico, ¿cuál es el requisito previo para que un aeródromo público pueda ser habilitado por la autoridad?",
+    "opciones": [
+      "La construcción de una de aduana nacional en sus dependencias.",
+      "La eliminación de previa de las construcciones, plantaciones o estructuras que se erijan a una altura mayor que la limitada por las superficies de despeje.",
+      "El pago de una de garantía del 5% del valor de las tierras de rampa.",
+      "Contar con un de mínimo de 10 vuelos semanales comerciales aprobados."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 33 condiciona la habilitación operativa formal del de aeródromo por parte del Estado a la erradicación o de eliminación de todos aquellos obstáculos que violen las superficies de despeje determinadas en las áreas colindantes. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-5300b63b",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 56, ¿cuál es el plazo de caducidad que extingue la inscripción de la hipoteca aeronáutica si esta no es renovada?",
+    "opciones": [
+      "A los 3 años de de la fecha de su inscripción.",
+      "La hipoteca se extingue de pleno derecho a los siete años de la fecha de su inscripción, si ésta no fuese renovada.",
+      "A los 10 años de de la fecha de su inscripción.",
+      "No caduca nunca de de hecho."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 56 dispone la extinción de pleno derecho (caducidad de la inscripción registral de la hipoteca) al transcurrir siete años desde la fecha del registro si las partes no solicitaron su oportuna renovación.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-5798921d",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 34, ¿qué plazo tiene el infractor intimado por el propietario o autoridad antes de que se proceda a la remoción del obstáculo a su costa?",
+    "opciones": [
+      "Deberá eliminar el obstáculo inmediatamente y a su exclusivo costo de rampa.",
+      "Cuenta con un plazo de gracia de 90 días corridos prorrogable por la ANAC.",
+      "Puede interponer un recurso administrativo que suspende la obligación por 2 años.",
+      "Un plazo de 30 días según lo dispuesto por el Decreto 5764/1967 de rampa."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "El Artículo 34 (conforme Decreto N° 70/2023) exige que la remoción del obstáculo infractor se realice de manera 'inmediata y a su exclusivo costo' por verse afectada de forma grave la seguridad operacional de los vuelos. BLOQUE TEMÁTICO: REGISTRO, PROPIEDAD E HIPOTECAS",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-57cc46f7",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 84, ¿qué obligación técnica tiene el comandante antes del despegue y qué facultades ostenta respecto a la realización del vuelo?",
+    "opciones": [
+      "Ninguna, pues la de aeronavegabilidad es certificada previamente.",
+      "Tiene la obligación de asegurarse antes de la partida de la eficiencia de la aeronave y de las condiciones de seguridad, pudiendo disponer su suspensión bajo su responsabilidad.",
+      "Debe requerir de autorización por escrito del propietario para suspender.",
+      "Su función se limita de hecho a encender los motores."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 84 confiere el control técnico final de seguridad al comandante: debe fiscalizar la eficiencia de la aeronave antes de partir y posee la potestad legal absoluta de suspender o abortar un despegue si considera que no están garantizadas las condiciones de seguridad.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-595a9903",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Conserva sus efectos jurídicos la hipoteca de un motor si este es instalado en una aeronave hipotecada a favor de un acreedor registral distinto según el Artículo 52?",
+    "opciones": [
+      "No, se extingue la hipoteca por de accesión de las cosas muebles.",
+      "Sí, la hipoteca de motores de hecho mantiene sus efectos aun cuando ellos se instalen en una aeronave hipotecada a distinto acreedor.",
+      "Sí, pero requiere la unificación de de los acreedores por convenio.",
+      "No, el motor pasa a formar de parte de la garantía de la aeronave."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 52 establece expresamente la supervivencia de la garantía: la hipoteca sobre el motor mantiene plena autonomía y vigencia jurídica, sin importar que el motor sea montado en una aeronave gravada a favor de otro acreedor hipotecario. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-59e0b809",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 115, ¿cuáles son los datos mínimos que debe indicar el billete de pasaje regular?",
+    "opciones": [
+      "Nombre de de la tripulación y marcas del fabricante de rampa.",
+      "Número de orden; lugar y fecha de emisión; punto de partida y de destino; nombre y domicilio del transportador.",
+      "Cotización de de argentinos oro y número de seguro de rampa.",
+      "Domicilio de de los pasajeros y lista de escalas técnicas."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 115 enumera los requisitos de forma sustanciales que debe contener el billete de pasaje (físico o digital) para individualizar los elementos del contrato de transporte de personas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-5a28f4c9",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Defina el concepto técnico de 'superficies de despeje de obstáculos' conforme al Artículo 30 del Código Aeronáutico:",
+    "opciones": [
+      "Son los cercos perimetrales y alambrados que rodean la pista de aterrizaje.",
+      "Son las de áreas imaginarias, oblicuas y horizontales, que se extienden sobre cada aeródromo y sus inmediaciones, tendientes a limitar la altura de los obstáculos a la circulación aérea.",
+      "Son los corredores de de navegación aérea de aproximación terminal de rampa.",
+      "Son áreas de de asfalto destinadas al frenado de emergencia de aeronaves."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 30 define las superficies de despeje de obstáculos como áreas virtuales o imaginarias en el espacio (oblicuas y horizontales) de de carácter técnico para limitar la altura permitida de cualquier construcción o plantación en las inmediaciones del aeródromo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-5c7380f1",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 130 bis del Código Aeronáutico Argentino, ¿qué reglamento de carácter obligatorio debe sancionar la autoridad aeronáutica?",
+    "opciones": [
+      "Un reglamento de de control militar de aduanas de rampa.",
+      "Un reglamento relativo a la protección de los derechos del pasajero.",
+      "Un código de de hecho conducta exclusivo para aeroclubes.",
+      "Un arancel de de hecho precios mínimos unificados."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 130 bis (incorporado por Decreto N° 70/2023) impone a la autoridad aeronáutica la obligación de dictar un reglamento especial de protección de los derechos del pasajero, para regular las contingencias comerciales de la industria.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-5f757a27",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De conformidad con el Artículo 185 del Código Aeronáutico, ¿cuál es la finalidad del sumario de investigación técnica de accidentes de aviación civil y qué valor probatorio se le asigna?",
+    "opciones": [
+      "Tiene por fin de de hecho determinar la culpa penal de los pilotos.",
+      "Determinar causas y establecer medidas tendientes a evitar su repetición. La investigación no puede asignar responsabilidad o culpa ni es admisible como prueba judicial.",
+      "Su única de de hecho finalidad es sancionar administrativamente.",
+      "Es un de de hecho trámite optativo sin fuerza de ley."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 185 (según Decreto N° 70/2023) consagra la naturaleza técnica de la investigación de accidentes: busca determinar causas físicas para dictar directivas de seguridad operacional, prohibiendo expresamente su admisibilidad como prueba de culpa judicial civil o penal.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-60ef5b7b",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 2° ter del Código Aeronáutico, ¿cuál de las siguientes funciones NO puede ser delegada por la ANAC en personas humanas o jurídicas?",
+    "opciones": [
+      "Las evaluaciones y certificaciones médicas aeronáuticas y su fiscalización.",
+      "Las certificaciones y aprobaciones de aeronavegabilidad y operaciones, y la expedición de certificados de idoneidad.",
+      "La fiscalización de los aeródromos, servicios aeroportuarios y servicios de navegación aérea.",
+      "El control policial y la defensa del espacio aéreo nacional."
+    ],
+    "respuesta_correcta_index": 3,
+    "fundamento_juridico": "El Artículo 2° ter (incorporado por Decreto N° 941/2024) permite delegar evaluaciones médicas, aeronavegabilidad, expedición de certificados de idoneidad y fiscalización de aeródromos, pero el control policial y la defensa del espacio aéreo es una potestad exclusiva e indelegable del Poder Ejecutivo Nacional (Art. 13).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-6337c973",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 26, ¿cuál es la diferencia de carácter conceptual entre un 'aeródromo público', un 'aeropuerto' y un 'aeropuerto internacional'?",
+    "opciones": [
+      "No hay diferencia jurídica, usándose los de tres términos de forma indistinta y sinónima.",
+      "El aeródromo público es de uso general; los aeropuertos son de aeródromos públicos con servicios e intensidad de movimiento que justifican tal denominación; y son internacionales cuando se de destinan a aeronaves provenientes del o con destino al extranjero y cuentan con aduana, migraciones y sanidad.",
+      "Los de aeropuertos internacionales son de dominio exclusivo de la Fuerza Aérea, mientras que los aeródromos son provinciales.",
+      "El aeropuerto es comercial regular y el de aeródromo civil es de carácter deportivo."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 26 establece una escala de de jerarquías de la infraestructura: un aeropuerto es un aeródromo público con servicios y movimiento que lo justifica, y adquiere el carácter de internacional cuando está habilitado para recibir vuelos transfronterizos prestando de servicios obligatorios de sanidad, aduana, migraciones, etc. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-63878fb7",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Cómo define y clasifica el Artículo 25 del Código Aeronáutico los aeródromos y qué relevancia jurídica tiene la propiedad de la tierra?",
+    "opciones": [
+      "Se clasifican según el patrimonio del propietario; si es privado el de terreno, el aeródromo es privado a perpetuidad.",
+      "Son aeródromos públicos los de destinados al uso público; los demás son de carácter privado. La condición del propietario de la tierra no califica al aeródromo.",
+      "Todos los aeródromos de hecho en territorio nacional son de dominio público del Estado por razones de defensa nacional.",
+      "Son públicos aquellos que de cuentan con pistas de asfalto y de hormigón; privados aquellos con pistas de pasto."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 25 del Código Aeronáutico fija un criterio de destino de uso para la clasificación: son públicos los destinados al uso de carácter público (abiertos al tráfico general) y privados los demás. Se aclara expresamente que la titularidad del dominio de la tierra (sea del Estado, de provincia o de un particular) no altera esta clasificación.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-645d4685",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 165 del Código Aeronáutico, ¿cuál es el concepto legal de 'abordaje aéreo' y en qué momentos se considera que la aeronave está 'en movimiento'?",
+    "opciones": [
+      "Es toda colisión de de hecho aeronaves en rampa únicamente.",
+      "Abordaje es toda colisión entre dos o más aeronaves en movimiento. Está en movimiento: 1) servicios/equipos funcionando con tripulación, pasaje o carga a bordo; 2) se desplaza por propia fuerza motriz; 3) se halla en vuelo.",
+      "Es la interferencia de de hecho un pasajero sobre la cabina.",
+      "Es toda aproximación de de hecho menor a 500 metros en ruta."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 165 regula de manera amplia la colisión aeronáutica (abordaje), asimilando como aeronave en movimiento no solo el desplazamiento físico por propulsión, sino también la fase estática en rampa con sistemas encendidos y personas o carga a bordo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-6f2ea38b",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Defina qué se considera legalmente 'aeronave' conforme al Artículo 36 del Código Aeronáutico Argentino:",
+    "opciones": [
+      "Exclusivamente aquellos aviones comerciales de transporte de pasajeros propulsados por motores de de rampa.",
+      "Se consideran aeronaves tripuladas y no tripuladas los aparatos o mecanismos que puedan de circular en el espacio aéreo y que sean aptos para transportar personas o cosas.",
+      "Todo objeto fabricado por el hombre capaz de flotar temporalmente en la atmósfera merced al helio.",
+      "Solo los artefactos mecánicos con peso de despegue superior a 5.700 kilogramos y de matrícula comercial."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 36 (sustituido por Decreto N° 70/2023) contiene una definición de avanzada que asimila tanto a aeronaves tripuladas como no tripuladas (drones), requiriendo dos notas: aptitud para circular en el espacio aéreo y capacidad para transportar personas o cosas. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-701e5a09",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 68, ¿cómo se rigen la forma y los tipos de contratos sobre aeronaves (tales como locación o fletamento) entre las partes?",
+    "opciones": [
+      "Están de de hecho sujetos a formularios inalterables obligatorios.",
+      "Se rigen por el principio de la libertad contractual y serán válidos entre partes (por escrito e inscritos si transfieren calidad de explotador).",
+      "Deben de hecho formalizarse mediante escritura pública obligatoria.",
+      "Solo son de de hecho válidos si se celebran en territorio nacional."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 68 (sustituido por DNU N° 70/2023) consagra la autonomía de la voluntad en los contratos de utilización, exigiendo instrumento escrito e inscripción registral para aquellos contratos que transfieren la calidad de explotador aeronáutico. BLOQUE TEMÁTICO: CONTRATO DE TRANSPORTE CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-74f151ae",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 3° de la Ley 23.968 de Espacios Marítimos, ¿cuál es la extensión del mar territorial argentino y sobre qué elementos ejerce la Nación soberanía plena?",
+    "opciones": [
+      "Se extiende de de hecho hasta 200 millas marinas de rampa.",
+      "El mar territorial argentino se extiende hasta doce (12) millas marinas de las líneas de base. La Nación posee soberanía plena sobre el mar territorial, espacio aéreo, lecho y subsuelo.",
+      "Se extiende de de hecho hasta las 24 millas marinas.",
+      "Tiene una de de hecho extensión de 12 kilómetros terrestres."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 3° de la Ley N° 23.968 de Espacios Marítimos fija la frontera del mar territorial en 12 millas marinas, consagrando la soberanía de la Nación sobre el lecho, subsuelo, masa de agua y, en perfecta consonancia con el derecho aeronáutico, sobre el espacio aéreo suprayacente.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-78a532ac",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 85, ¿qué funciones de Registro Civil ejerce excepcionalmente el comandante a bordo de una aeronave argentina?",
+    "opciones": [
+      "No ejerce ninguna, de estando reservadas a las oficinas de superficie.",
+      "Registrar en los de libros correspondientes los nacimientos, defunciones, matrimonios y testamentos, ocurridos, celebrados o extendidos a bordo y remitir copia.",
+      "Puede otorgar de cartas de ciudadanía y pasaportes de rampa.",
+      "Está facultado de de hecho para dictar sentencias de divorcio."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 85 otorga al comandante funciones de registro civil por delegación de la soberanía estatal: asienta nacimientos, bodas in extremis, decesos y testamentos a bordo de la aeronave, debiendo remitir copia autenticada de los mismos. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-7adf005f",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Bajo las disposiciones del Artículo 48, ¿cuáles son los de requisitos de domicilio exigidos para ser propietario de una aeronave nacional?",
+    "opciones": [
+      "Ser de nacionalidad argentina nativo con residencia de hecho.",
+      "Persona humana: domicilio legal en la República; Copropietarios: mayoría con derechos que exceden la mitad con domicilio legal en la República; Sociedades: constituida conforme a leyes argentinas y domicilio legal en la República.",
+      "Tener la nacionalidad y el 100% de de los fondos en el Banco de la Nación.",
+      "Ser propietario de un aeródromo habilitado de rampa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 48 (conforme sustitución del Decreto N° 70/2023) estructura los requisitos de propiedad con base en la teoría del domicilio legal en territorio de la República, aplicable tanto a personas humanas, copropiedades, o sociedades bajo ley nacional. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-7e203c2e",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con los Artículos 175 y 176 del Código Aeronáutico, ¿qué obligaciones de búsqueda y auxilio se imponen a explotadores y comandantes?",
+    "opciones": [
+      "No existe ninguna de de hecho obligación legal de auxilio.",
+      "Explotadores y comandantes están obligados (según posibilidades) a colaborar en búsqueda. El comandante debe prestar auxilio a otras aeronaves y salvamento de personas.",
+      "La obligación es de de hecho absoluta aun con riesgo inminente de vida.",
+      "Únicamente se de de hecho exige auxilio si es del mismo explotador."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Los Artículos 175 y 176 consagran la solidaridad aeronáutica como un deber legal de orden público, imponiendo la colaboración de búsqueda ante requerimiento de la autoridad y el auxilio y salvamento directo de personas en peligro. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-8462be0e",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "A los fines de la responsabilidad por daños a terceros en superficie, ¿cómo define el Artículo 156 el lapso temporal en el cual se considera que una aeronave se encuentra 'en vuelo'?",
+    "opciones": [
+      "Desde que se de de hecho cierran las compuertas de la cabina.",
+      "Desde que se aplica la fuerza motriz para despegar hasta que termina el recorrido de aterrizaje.",
+      "Exclusivamente desde de de hecho que cruza la altitud de transición.",
+      "Desde el encendido de de hecho inicial de los motores en rampa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 156 fija el concepto temporal de aeronave 'en vuelo' delimitado de forma estricta por la aplicación de la fuerza motriz para iniciar la carrera de despegue hasta la culminación del recorrido de frenado en el aterrizaje. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-87023758",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 103, ¿cuál es el plazo máximo por el cual se otorgan las autorizaciones para operar servicios de transporte regular o no regular, y cómo se operará su prórroga?",
+    "opciones": [
+      "Por un período de de 5 años tras el cual la ruta caduca.",
+      "Serán otorgadas por un período que no excederá los quince (15) años. Dicha autorización será prorrogada automáticamente.",
+      "Por tiempo de de hecho indeterminado y sin controles operacionales.",
+      "Por un plazo de de de 30 años conforme a las reglas generales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 103 (según sustitución del Decreto N° 338/2025) establece un plazo máximo de quince años para las autorizaciones, consagrando la prórroga automática de las mismas para brindar previsibilidad y estabilidad de inversión a los explotadores.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-871e0294",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 79, ¿quién inviste la condición de 'comandante' de una aeronave de matrícula argentina?",
+    "opciones": [
+      "El propietario registral de de la aeronave de manera indelegable.",
+      "El piloto habilitado para conducirla, investido de las funciones de comandante (el piloto al mando por presunción si no hay designado). En aeronaves no tripuladas, el piloto a distancia.",
+      "El comisario de a de bordo de mayor rango jerárquico.",
+      "El inspector de la de ANAC que viaje a bordo en misión oficial."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 79 (sustituido por Decreto N° 70/2023) estructura la de figura del comandante: es un piloto habilitado, designado por el explotador. Asimismo, introduce la norma de que en drones o aeronaves no tripuladas, el piloto a distancia reviste el carácter de comandante. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-87e15d7b",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 149, ¿cuál es la consecuencia legal si el destinatario de un equipaje o mercancía omitiere formular la protesta en los plazos fijados por la ley?",
+    "opciones": [
+      "Se le aplica una de de hecho multa por obstrucción de rampa.",
+      "La falta de protesta en los plazos previstos hace inadmisible toda acción contra el transportador, salvo el caso de fraude de éste.",
+      "Mantiene la acción de de hecho pero se reduce la indemnización 50%.",
+      "No produce de de hecho ningún efecto adverso."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 149 dispone que la protesta formal (en el documento o por escrito auténtico) dentro de los plazos de caducidad legal es condición de admisibilidad de la acción, cuya omisión extingue la acción civil contra el transportador (salvo fraude).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-886076b6",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Bajo las previsiones del Artículo 82, en caso de peligro inminente para la aeronave, ¿cuál es la obligación legal del comandante?",
+    "opciones": [
+      "Está facultado para de saltar en paracaídas de forma prioritaria.",
+      "Está obligado a permanecer en su puesto hasta tanto haya tomado las medidas útiles para salvar a los pasajeros, la tripulación y los bienes que se encuentran a bordo.",
+      "Debe ceder el de mando técnico al copiloto de rampa.",
+      "Su única obligación de de hecho es dar aviso por radio a la torre."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 82 instituye una de las obligaciones éticas y legales de la aviación: el comandante es el último en abandonar la aeronave en peligro, debiendo coordinar activamente el salvamento de personas y bienes a bordo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-88b2ea37",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Cómo se caracteriza el principio general de tránsito y circulación de aeronaves establecido en el Artículo 3° del Código Aeronáutico?",
+    "opciones": [
+      "Es de carácter libre en todo el espacio aéreo argentino, sujeto exclusivamente a las tasas que decidan cobrar las aerolíneas comerciales.",
+      "Es libre en el espacio aéreo argentino, en cuanto no fuere limitado por la legislación vigente, debiendo regularse para posibilitar un movimiento seguro y ordenado.",
+      "Está prohibido de manera general para la aviación civil privada, requiriendo autorización especial para cada vuelo.",
+      "Es totalmente libre y desregulado, no pudiendo la autoridad establecer normas que restrinjan la circulación bajo ningún concepto."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 3° del Código Aeronáutico establece que el despegue, circulación y aterrizaje de aeronaves es libre en el espacio aéreo argentino en cuanto no fueren limitados por la legislación vigente, debiendo el tránsito regularse para posibilitar el movimiento seguro y ordenado de las aeronaves. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-8e0bf6e5",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 52 del Código Aeronáutico Argentino, ¿qué bienes pueden ser objeto de hipoteca y qué garantía real queda taxativamente excluida?",
+    "opciones": [
+      "Solo las aeronaves terminadas de de rampa; la prenda es para los motores.",
+      "Las aeronaves (en de construcción o indivisas) y los motores inscritos. Ni las aeronaves ni los motores son susceptibles de prenda con registro.",
+      "Únicamente se admite de hipoteca sobre aeronaves de matrícula militar.",
+      "Se admite la prenda común sobre de aeronaves y la hipoteca queda prohibida."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 52 del Código Aeronáutico (sustituido por Decreto N° 70/2023) autoriza la hipoteca de aeronaves (aun en construcción) y de motores inscriptos. Al mismo tiempo, prohíbe de forma taxativa la prenda con registro sobre estos bienes.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-95eaaa6d",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Cuáles son los créditos que gozan de privilegio sobre la aeronave de acuerdo con el orden establecido en el Artículo 60?",
+    "opciones": [
+      "Únicamente los créditos del de fabricante y de rampa de rampa.",
+      "1) Gastos causídicos que beneficien al acreedor hipotecario; 2) Tasas y tributos (2 años anteriores); 3) Búsqueda, asistencia o salvamento; 4) Reparaciones extraordinarias fuera de destino; 5) Emolumentos de tripulación por último mes de trabajo.",
+      "1) Sueldos de tripulación (12 de meses); 2) Multas de la ANAC; 3) Tasas de aduana.",
+      "Todo crédito documentado de de un banco comercial nacional prioritario."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 60 (sustituido por Decreto N° 70/2023) contiene una nómina taxativa de créditos privilegiados de derecho aeronáutico en un orden riguroso de preferencia de cobro, los cuales desplazan a cualquier otra preferencia.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-9bbfe27e",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 50, ¿qué efectos produce frente a terceros la transferencia de dominio, contratos de locación o hipotecas si estos no son inscriptos en el Registro?",
+    "opciones": [
+      "Producen efectos plenos de por el solo consentimiento.",
+      "No producirán efectos contra terceros si de no van seguidos de la inscripción en el Registro Nacional de Aeronaves.",
+      "Tienen validez frente a de terceros durante un plazo de gracia de 6 meses.",
+      "Surten efectos contra de terceros únicamente en el fuero penal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 50 instituye el carácter declarativo y de oponibilidad de la inscripción registral aeronáutica: la falta de inscripción obstaculiza que se hagan valer o sean oponibles los actos a terceros de buena fe. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-9d5a7929",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 191, ¿qué seguro obligatorio de personal está obligado a constituir y mantener el explotador de aeronaves de matrícula argentina?",
+    "opciones": [
+      "Un seguro de de de hecho vida comercial genérico.",
+      "Obligado a asegurar a su personal, habitual u ocasionalmente con función a bordo, contra los accidentes susceptibles de producirse en cumplimiento del servicio.",
+      "Está exento si de de hecho firman una exención voluntaria.",
+      "Un seguro médico de de hecho exclusivo para enfermedades tropicales."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 191 del Código Aeronáutico consagra el seguro aeronáutico obligatorio de tripulaciones contra riesgos de accidentes laborales en vuelo, para tutelar de manera eficaz la vida e integridad física del personal de a bordo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-a2c792a9",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 139 del Código Aeronáutico, ¿cuál es el presupuesto temporal y espacial de la responsabilidad del transportador por muerte o lesión de un pasajero?",
+    "opciones": [
+      "Desde que el de pasajero compra el pasaje hasta el desembarco.",
+      "Cuando el accidente se haya producido a bordo de la aeronave o durante las operaciones de embarco o desembarco.",
+      "Únicamente de de hecho mientras la aeronave se encuentra en vuelo.",
+      "Cuando el daño de de hecho se produce por la caída de la aeronave."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 139 fija los límites espacio-temporales de la responsabilidad del transportador: la cobertura por daños físicos abarca todo el tiempo en que el pasajero esté a bordo y los lapsos de operaciones de embarco y desembarco.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-a315bb3e",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 21 del Código Aeronáutico, ¿dónde deben cumplir con los de requisitos de fiscalización de frontera las aeronaves privadas extranjeras que ingresen al territorio nacional y no se destinen al transporte comercial?",
+    "opciones": [
+      "Pueden realizar la de fiscalización en cualquier aeródromo civil privado de rampa.",
+      "En el aeródromo o aeropuerto internacional de entrada más próximo a la de frontera, salvo dispensa que indique ruta a seguir.",
+      "Están completamente de eximidas de fiscalización si provienen de países del Mercosur.",
+      "Exclusivamente en el Aeropuerto de Internacional de Ezeiza, sin admitirse escala intermedia."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 21 dispone que las de aeronaves privadas que no se destinen a transporte regular deben cumplir la de fiscalización en el aeródromo o aeropuerto internacional de entrada más cercano a la frontera del espacio aéreo ingresado, a menos que la de autoridad otorgue una dispensa de ruta fijando un aeródromo de fiscalización alternativo. BLOQUE TEMÁTICO: INFRAESTRUCTURA AERONÁUTICA CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-a60a4946",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 144 del Código Aeronáutico Argentino, ¿cuál es el límite de responsabilidad del transportador frente a cada pasajero por daños corporales?",
+    "opciones": [
+      "Hasta un monto de de 50.000 dólares de rampa.",
+      "Hasta la suma equivalente en pesos a mil (1000) argentinos oro, de acuerdo a la cotización en el momento de ocurrir el hecho.",
+      "No existe límite de de hecho de responsabilidad civil en Argentina.",
+      "Hasta un máximo de de de 300 argentinos oro cotizados."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 144 (según modificación de la Ley N° 22.390) consagra la limitación de responsabilidad civil en el transporte de personas, fijando el tope indemnizatorio en 1000 argentinos oro por cada pasajero, cotizados al momento del hecho.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-a63f54ea",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 112, ¿qué garantía económica de cumplimiento debe constituir y depositar toda empresa autorizada a prestar servicios aerocomerciales?",
+    "opciones": [
+      "Una fianza de de rampa por el 50% de la facturación.",
+      "Una suma equivalente al dos por ciento de su capital social en efectivo, títulos nacionales o garantía equivalente, dentro de los 15 días.",
+      "No se de hecho exigen cauciones financieras bajo el nuevo régimen comercial.",
+      "Un depósito de de de 1000 argentinos oro de cotización bancaria."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 112 (sustituido por Decreto N° 70/2023) exige el depósito de una caución del 2% del capital social para respaldar el cumplimiento de las obligaciones operativas derivadas de la autorización de rutas, la cual se libera de forma progresiva.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-a67275c5",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 145, ¿cuáles son los límites de responsabilidad del transportador para el equipaje registrado, las mercancías y el equipaje de mano?",
+    "opciones": [
+      "Hasta 500 dólares de de fianza y 20 por kilo de carga.",
+      "Equipaje registrado y mercancías: hasta 2 argentinos oro por kg. Objetos cuya guarda conserva el pasajero: hasta 40 argentinos oro en total.",
+      "Se indemniza de de hecho siempre a valor de reposición del bien.",
+      "No rigen de de hecho límites de ninguna naturaleza."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 145 (conforme Ley N° 22.390) estipula límites de responsabilidad de 2 argentinos oro por kilogramo bruto para carga y equipaje registrado en bodega, y un tope global de 40 argentinos oro para los efectos personales de mano de cabina. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-ac7f6840",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De conformidad con el Artículo 42, ¿es posible matricular de forma condicionada una aeronave a nombre de un comprador o tomador mediante un contrato que reserve el dominio (como el leasing)?",
+    "opciones": [
+      "No, el Código exige de manera absoluta e de inflexible acreditar la propiedad definitiva al 100%.",
+      "Sí, podrá matricularse de forma condicionada a nombre del comprador (bajo reserva de dominio) o del tomador (que transfiera la calidad de explotador) previo cumplimiento de los requisitos del Art. 48 y la inscripción del contrato.",
+      "Sí, pero únicamente si el vendedor es una empresa de rampa.",
+      "Solo se permite para aeronaves de transporte regular comercial de rampa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 42 (sustituido por Decreto N° 70/2023) posibilita la matriculación condicionada a nombre del comprador (pacto de reserva de dominio) o del tomador (leasing), lo que dinamiza la financiación de la industria aeronáutica. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-ac92ce6c",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 134 del Código Aeronáutico, ¿qué obligación de transporte gratuito tienen los transportadores nacionales y extranjeros respecto a funcionarios de la autoridad?",
+    "opciones": [
+      "Deben trasladar de de hecho gratuitamente a todo empleado estatal.",
+      "Están obligados a trasladar gratuitamente en sus aeronaves a un funcionario de la autoridad aeronáutica que deba viajar en misión de inspección.",
+      "Deben reservar de de hecho el 10% de sus plazas para la ANAC.",
+      "Están exentas de de hecho las empresas extranjeras de aviación."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 134 consagra una carga pública para los explotadores aéreos: deben transportar sin costo a los inspectores de la ANAC en misión oficial de control técnico o fiscalización, debiendo conservar la plaza solicitada hasta 24 horas antes. BLOQUE TEMÁTICO: RESPONSABILIDAD CIVIL Y DAÑOS CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-acd2f14c",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 116, ¿cómo se prueba legalmente el transporte de equipajes registrados y qué bultos quedan excluidos de dicha documentación?",
+    "opciones": [
+      "Se prueba de de hecho con la carta de porte comercial de rampa.",
+      "Se prueba con el talón de equipajes (por escrito o digital). No se incluirán en el talón los objetos personales que el pasajero conserve bajo su guarda.",
+      "Se prueba de de hecho con la sola declaración verbal del pasajero.",
+      "Requiere la de de hecho firma del comandante en el billete."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 116 (sustituido por Decreto N° 70/2023) regula el equipaje registrado que viaja en bodega, exigiéndose el talón de equipaje. Queda excluido el equipaje de mano, que permanece bajo guarda directa del pasajero. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b1723c8f",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 155 del Código Aeronáutico, ¿qué extremos probatorios bastan para que un tercero damnificado en la superficie tenga derecho a reparación por daños?",
+    "opciones": [
+      "Debe probar de de hecho la culpa del piloto al mando.",
+      "Con sólo probar que los daños provienen de una aeronave en vuelo o de una persona o cosa caída o arrojada, siempre que sean consecuencia directa.",
+      "Debe acreditar de de hecho ser propietario de tierras de cultivo.",
+      "No se admite acción de de hecho si no posee seguro agrícola."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 155 instaura la responsabilidad civil objetiva por daños en superficie: basta con acreditar la caída de un objeto de la aeronave o el nexo causal directo del vuelo con el perjuicio de hecho sufrido en la superficie, sin probar culpas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b24c3c4f",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Están obligadas las aeronaves civiles extranjeras a abonar derechos por el uso de aeródromos públicos en condiciones de igualdad con las nacionales?",
+    "opciones": [
+      "No, se les aplica un recargo del 500% en concepto de soberanía aeroportuaria aduanera de rampa.",
+      "Sí, bajo el principio de igualdad de trato y no discriminación del Convenio de Chicago y la legislación de rampa nacional.",
+      "Están completamente exentas si operan vuelos de fletamento o charter comercial de rampa.",
+      "Quedan sujetas a las tarifas que de manera unilateral decida el concesionario privado sin intervención estatal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Tanto el Convenio de Chicago como la reglamentación argentina consagran el principio de trato nacional e igualdad tarifaria para aeronaves extranjeras en aeropuertos públicos abiertos al uso público internacional, impidiendo tarifas discriminatorias. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b39a27d4",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En el caso de privilegios sobre la carga (por gastos de búsqueda o salvamento que la beneficiaron), ¿cuándo se produce la extinción de dicho privilegio según el Artículo 64?",
+    "opciones": [
+      "A los 3 meses de la de descarga si no se inscribe.",
+      "Los privilegios sobre la carga se extinguen si la acción no se ejercita dentro de los quince días siguientes a su descarga.",
+      "Al momento exacto en de que la carga entra en el predio o depósito.",
+      "A los dos años de de conformidad con el régimen general."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 64 establece un plazo perentorio de extinción sumamente breve: el privilegio sobre la carga fenece si la acción judicial de cobro no se entabla en un plazo de quince días a contar desde la finalización de la descarga, sin requerir inscripción. BLOQUE TEMÁTICO: PERSONAL AERONÁUTICO Y COMANDANTE CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b49baaac",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 147, ¿cuándo pierde el transportador el derecho a ampararse en las limitaciones cuantitativas de responsabilidad civil?",
+    "opciones": [
+      "Cuando se comprueba de de hecho que el piloto no tenía licencia.",
+      "Cuando el daño provenga de su dolo, o del dolo de algunas de las personas bajo su dependencia, actuando en ejercicio de sus funciones.",
+      "Si el vuelo regular de de hecho sufre una demora mayor a 12 horas.",
+      "Ante cualquier supuesto de de hecho culpa grave de tripulantes."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 147 establece que el transportador pierde el beneficio de limitación de responsabilidad cuantitativa si el daño es causado por dolo propio o de sus dependientes actuando en el ejercicio de sus funciones específicas. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b594f7a0",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En el marco de la regulación técnica, ¿qué diferencia sustancial existe entre un aeródromo público y una zona de 'lugar apto denunciado' según la doctrina de Videla Escalada?",
+    "opciones": [
+      "El aeródromo cuenta con habilitación estatal formal y un régimen de despeje de obstáculos de orden público; el lugar apto es transitorio y bajo exclusiva responsabilidad del piloto al mando.",
+      "No existe diferencia jurídica, pues la ANAC otorga los mismos derechos de expropiación a ambos predios.",
+      "Los aeródromos públicos solo admiten aeronaves extranjeras de gran porte comercial.",
+      "El lugar apto denunciado se declara de utilidad pública de manera de inmediata por ley."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "La doctrina aeronáutica argentina (Videla Escalada, fundado en Arts. 25, 27 y 29) destaca que la habilitación del aeródromo público constituye un acto administrativo de otorgamiento de estatus que genera limitaciones al dominio vecino (despeje de obstáculos), mientras que el lugar apto no goza de este amparo de seguridad pública, operándose bajo riesgo y cargo del piloto al mando.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b5a0c9b4",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 96 del Código Aeronáutico, ¿cuál es la regla general sobre la cesibilidad de las concesiones o autorizaciones otorgadas para la explotación comercial?",
+    "opciones": [
+      "Son de libre de cesibilidad y comercio en el mercado aeronáutico.",
+      "Las concesiones o autorizaciones no podrán ser cedidas. Excepcionalmente se podrán autorizar la cesión tras comprobar que funcionan en debida forma.",
+      "Pueden ser de hecho cedidas únicamente a favor de empresas públicas.",
+      "Caducan de de hecho de forma inmediata ante cualquier cambio accionario."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 96 prohíbe como regla general la transferencia o cesión discrecional de los permisos comerciales, admitiendo de forma restrictiva y excepcional la cesión previa aprobación de la autoridad aeronáutica nacional.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b773084a",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 7° de la Ley 23.968 de Espacios Marítimos, ¿a cuántos metros equivale la milla marina utilizada para delimitar las fronteras de los espacios soberanos?",
+    "opciones": [
+      "Equivale a la de de hecho milla terrestre inglesa de 1.609 metros.",
+      "Se entiende por milla marina la milla náutica internacional equivalente a mil ochocientos cincuenta y dos (1.852) metros.",
+      "Tiene una de de hecho equivalencia variable según las mareas.",
+      "Equivale de de hecho exactamente a dos mil (2.000) metros."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 7° de la Ley N° 23.968 consagra de manera formal la equivalencia internacional de la milla náutica en 1.852 metros, dotando de precisión técnica y jurídica a la cartografía oficial del Estado argentino. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b8538879",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 120, ¿en cuántos ejemplares debe extenderse la carta de porte y cuál es el destino de cada uno de ellos?",
+    "opciones": [
+      "En un solo de ejemplar electrónico de custodia estatal.",
+      "En triple ejemplar: uno para el transportador (firmado por remitente); otro para el destinatario (con firmas de transportador y remitente); y otro para el remitente.",
+      "En duplicado: de de hecho uno para el piloto y otro para la aduana.",
+      "En cuadruplicado, de de hecho debiendo entregarse el cuarto ejemplar."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 120 (sustituido por Decreto N° 70/2023) prescribe la formalidad del triple ejemplar (físico o electrónico) de la carta de porte para garantizar los derechos del remitente, el transportador y el destinatario. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-b979c2d5",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 13 del Código Aeronáutico, ¿a qué poder del Estado le corresponde de manera exclusiva la potestad de defensa del espacio aéreo nacional y su control policial?",
+    "opciones": [
+      "A la Administración Nacional de Aviación Civil (ANAC).",
+      "Al Poder Ejecutivo Nacional.",
+      "Al Congreso de la Nación mediante declaración de emergencia nacional.",
+      "Al de Ministerio de Seguridad en conjunto con el Poder Judicial Federal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 13 (según sustitución del Decreto N° 70/2023) aclara de forma tajante que 'la defensa del espacio aéreo y su control policial es potestad de exclusiva del Poder Ejecutivo Nacional', independientemente de la regulación de los servicios esenciales de navegación aérea.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-bb072fa7",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 146, ¿cuál es la sanción jurídica sobre cualquier cláusula contractual que pretenda eximir al transportador de su responsabilidad o fijar límites inferiores?",
+    "opciones": [
+      "Provoca la nulidad de de hecho de todo el contrato de transporte.",
+      "Toda cláusula que tienda a eximir al transportador de su responsabilidad o a fijar un límite inferior es nula; pero la nulidad de tales cláusulas no entraña la del contrato.",
+      "Es válida en de de hecho vuelos no regulares o de fomento.",
+      "Se le impone una de de hecho multa administrativa en rampa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 146 consagra el carácter de orden público de la responsabilidad aeronáutica: declara nula cualquier cláusula que intente exonerar o disminuir los mínimos legales del transportista, pero preserva la validez del contrato de transporte.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-bf2b9af5",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Bajo los plazos de prescripción instituidos en el Título XIV, ¿cuál es el plazo de prescripción para las acciones penales o administrativas por faltas o infracciones al Código Aeronáutico según el Artículo 230?",
+    "opciones": [
+      "Prescriben a de de hecho los 6 meses del hecho.",
+      "Se cumple a los cuatro años de ocurrido el hecho o de la fecha de notificación de la sanción.",
+      "Prescriben al de de hecho año de conformidad con las comunes.",
+      "Son de de hecho carácter imprescriptible por la seguridad."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 230 del Código Aeronáutico consagra de forma específica que el plazo de prescripción liberatoria para las acciones de sanción e infracción de faltas aeronáuticas se cumple a los cuatro años, contados desde la comisión del hecho. BLOQUE TEMÁTICO: ESPACIOS MARÍTIMOS - LEY 23.968 CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-c09f67b0",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 81, ¿cuáles son los alcances de la autoridad de a bordo que inviste el comandante de una aeronave?",
+    "opciones": [
+      "Tiene facultades absolutas de sobre los pasajeros, no respondiendo civilmente.",
+      "Tiene poder de disciplina sobre la tripulación y de autoridad sobre los pasajeros. Debe velar por la seguridad de los mismos, no pudiendo ausentarse de la aeronave sin tomar las medidas correspondientes.",
+      "Su autoridad cesa de de hecho en modo automático.",
+      "Exclusivamente tiene de autoridad sobre los aspectos de la cabina de mando."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 81 consagra la jerarquía y el principio de autoridad del comandante, invistiéndolo de poder disciplinario y de seguridad pública sobre pasajeros y tripulación durante la operación del vuelo para garantizar el orden y la seguridad.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-c1398f78",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 104 del Código Aeronáutico Argentino, ¿concede exclusividad comercial el otorgamiento y operación de una ruta aérea de cabotaje o internacional?",
+    "opciones": [
+      "Sí, otorga de hecho un monopolio de ruta para garantizar inversión.",
+      "La operación de una ruta no importa exclusividad. Las autoridades competentes promoverán las reglas de sana competencia y libertad de mercado.",
+      "Sí, pero de de hecho únicamente en las rutas de fomento regional.",
+      "Solo concede de de hecho exclusividad si la empresa es estatal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 104 (sustituido por Decreto N° 338/2025) consagra de manera expresa el principio de no exclusividad de las rutas aéreas, erigiendo como directiva para los organismos del Estado el fomento de la sana competencia y la libertad de mercado. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-c388c102",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 86 del Código Aeronáutico, ¿bajo qué condiciones tiene derecho el comandante de la aeronave de arrojar mercancías o equipajes durante el vuelo (echazón)?",
+    "opciones": [
+      "Siempre que el de peso exceda el límite máximo de despegue.",
+      "Si lo considerara indispensable para la seguridad de la aeronave.",
+      "Únicamente si de los dueños de las mercancías no viajan.",
+      "Está totalmente de hecho prohibido arrojar mercancías."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 86 confiere al comandante la potestad de echazón (arrojar carga o equipaje en vuelo) cuando esta medida sea necesaria para alivianar la aeronave o conjurar un peligro que comprometa la seguridad operacional. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-c91c1618",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En caso de uso ilegítimo de una aeronave por parte de un tercero sin consentimiento, ¿sobre quién recae la responsabilidad civil por daños causados según el Artículo 158?",
+    "opciones": [
+      "Responde única de de hecho y exclusivamente el dueño registral.",
+      "Responde el que la usa sin consentimiento. El explotador será responsable solidariamente salvo que pruebe haber tomado las medidas adecuadas.",
+      "Queda exento de de de hecho responsabilidad el explotador.",
+      "La responsabilidad civil de de hecho se transfiere a la ANAC."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 158 impone al explotador un deber de custodia activa sobre el material de vuelo: responde solidariamente con el usuario ilegítimo a menos que demuestre haber adoptado todas las medidas adecuadas para evitar el uso no autorizado.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-ca586f51",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Decreto N° 92/1970, ¿qué criterio debe adoptarse para la designación del nombre e identificación de los aeropuertos y aeródromos públicos en Argentina?",
+    "opciones": [
+      "Deben identificarse exclusivamente con nombres de próceres de la aviación militar argentina.",
+      "Se realizará adoptando el nombre del municipio, localidad o accidente geográfico más cercano a éstos o bien el de la localidad más importante a que sirven.",
+      "Deben identificarse siempre mediante un código de números correlativos asignados por la OACI.",
+      "Es de libre elección del propietario del terreno privado donde se emplace el aeródromo público."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Conforme a la Nota de Antecedentes al Artículo 25 del Código Aeronáutico (Decreto N° 92/1970), la identificación formal de los aeródromos públicos y aeropuertos debe ajustarse a la denominación del accidente geográfico, municipio o de la localidad más cercana de relevancia a la que prestan su servicio.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-d7cbee97",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 90, ¿quién ejerce la función equivalente a la autoridad en un aeródromo privado y qué obligación de comunicación se impone?",
+    "opciones": [
+      "El Jefe de de aeródromo público de la localidad más cercana.",
+      "Un encargado, pudiendo dicha función estar a cargo del propietario, tenedor del campo o persona designada, cuyos datos deben comunicarse.",
+      "Está prohibido de hecho tener encargados en aeródromos privados.",
+      "Cualquier persona de hecho que resida en el predio vecino."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 90 permite que los aeródromos privados tengan un encargado (que puede ser el propio dueño del campo, el tenedor o una persona designada), imponiendo la obligación de notificar formalmente sus datos a la autoridad aeronáutica. BLOQUE TEMÁTICO: AERONÁUTICA COMERCIAL Y CONTRATOS CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-da715eff",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 105 del Código Aeronáutico, ¿qué extremos debe comprobar la autoridad de manera previa al otorgamiento de cualquier autorización comercial aérea?",
+    "opciones": [
+      "Exclusivamente de el depósito de las tasas correspondientes.",
+      "Comprobación previa de la capacidad técnica y económico - financiera del explotador, y de la posibilidad de utilizar aeropuertos, servicios e infraestructura.",
+      "Que la de totalidad de las aeronaves hayan sido construidas en el país.",
+      "Únicamente de de hecho que los tripulantes posean nacionalidad argentina."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 105 prohíbe otorgar permisos comerciales 'a ciegas', exigiendo una rigurosa auditoría y comprobación previa de la solvencia técnica, operativa y económico-financiera para asegurar que el prestatario es idóneo y apto para operar.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-dcb436a9",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿En qué casos puede la autoridad aeronáutica dispensar de manera de excepción el régimen general de ingreso de aeronaves extranjeras (públicas o privadas) según el Artículo 17?",
+    "opciones": [
+      "Únicamente en caso de de vuelos comerciales de turismo de alta temporada.",
+      "Cuando se trate de operaciones de búsqueda, asistencia y salvamento, o de de vuelos que respondan a razones de salud o humanitarias.",
+      "Si el de explotador de la aeronave acredita ser propietario de tierras de cultivo en la Patagonia argentina.",
+      "Bajo ninguna circunstancia, ya que la de soberanía espacial argentina es de carácter absoluto e inderogable."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 17 del Código Aeronáutico contempla excepciones al de régimen restrictivo de ingreso extranjero para salvaguardar vidas humanas, en misiones de búsqueda, asistencia y salvamento, o razones sanitarias o humanitarias.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-de23fecc",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el ámbito espacial de aplicación que rige taxativamente el Código Aeronáutico Argentino conforme a su artículo 1°?",
+    "opciones": [
+      "Rige exclusivamente el espacio aéreo sobre el territorio continental de la República Argentina.",
+      "Rige la aeronáutica civil en el territorio de la República, su mar territorial y aguas adyacentes, y el espacio aéreo que los cubre, extendiéndose además a los espacios bajo su jurisdicción o derechos de soberanía conforme a tratados internacionales.",
+      "Rige de manera irrestricta la aeronáutica civil y militar dentro del territorio de la República y sobre aguas internacionales.",
+      "Aplica exclusivamente al espacio aéreo sobre el territorio nacional terrestre, quedando excluidas las aguas jurisdiccionales por regirse por el derecho marítimo."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 1° del Código Aeronáutico establece con claridad meridiana que este rige la aeronáutica civil en el territorio de la República Argentina, su mar territorial y aguas adyacentes y el espacio aéreo que los cubre, extendiendo además su aplicación a todos los espacios en los que la República Argentina ejerza jurisdicción y/o derechos de soberanía de conformidad con tratados internacionales. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-deb1962a",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 76 del Código Aeronáutico, ¿qué medida preventiva pueden adoptar los inspectores de la ANAC sobre las licencias del personal aeronáutico ante irregularidades?",
+    "opciones": [
+      "Ninguna, pues solo un de juez penal federal puede suspender.",
+      "Pueden disponer la de suspensión permanente de forma directa de rampa.",
+      "Podrán, como medida preventiva, suspender las actividades del personal aeronáutico y retener su licencia de forma temporal y no sancionatoria.",
+      "Aplicar una multa directa de de rampa."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "El Artículo 76 (conforme sustitución del Decreto N° 941/2024) otorga poder de policía operacional inmediato a los inspectores de la ANAC, facultándolos para retener preventivamente licencias para salvaguardar la seguridad operacional, aclarando que esta medida no constituye una sanción sino una tutela de seguridad.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-df72ff82",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 4° del Código Aeronáutico, ¿cuál es la regla general para la partida y aterrizaje de aeronaves y qué excepciones se contemplan de forma taxativa?",
+    "opciones": [
+      "Deben despegar y aterrizar siempre en aeródromos públicos; no se admiten excepciones bajo ninguna circunstancia.",
+      "Deben partir de o aterrizar en aeródromos públicos o privados, salvo caso de fuerza mayor, aeronaves públicas en ejercicio de funciones, misiones de búsqueda, asistencia y salvamento, o funciones sanitarias.",
+      "Pueden operar en cualquier campo o terreno plano, requiriendo únicamente declarar la posición GPS a posteriori.",
+      "Deben partir exclusivamente de aeropuertos internacionales, exceptuándose únicamente a los planeadores deportivos y helicópteros."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 4° consagra la obligación de que las aeronaves partan de o aterricen en aeródromos públicos o privados. Exceptúa taxativamente de esta obligación los casos de fuerza mayor, aeronaves públicas en ejercicio de sus funciones, misiones de búsqueda, asistencia y salvamento, y vuelos en funciones sanitarias.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-e43b4a59",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 10 (Modificación al Artículo 586 del Código Aduanero), ¿qué beneficio fiscal asiste a la importación al territorio aduanero de mercadería originaria y procedente del mar territorial, ZEE o lecho submarino nacional?",
+    "opciones": [
+      "Debe tributar de de hecho un derecho de importación reducido.",
+      "Se halla exenta del pago de los tributos que la gravaren y de la aplicación de prohibiciones de carácter económico.",
+      "Está sujeta de de hecho al pago de una tasa especial.",
+      "No tiene ningún de de hecho beneficio fiscal de aduana."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 586 del Código Aduanero (conforme reformas del Art. 10 de la Ley N° 23.968) establece una exención tributaria y económica absoluta para el ingreso al continente nacional de mercaderías obtenidas soberanamente en los espacios marítimos argentinos. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-e98af5c1",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En caso de que una situación de derecho aeronáutico no esté expresamente prevista en el Código Aeronáutico, tratados internacionales, o leyes complementarias, ¿cuál es el orden legal de integración jerárquica para resolver la laguna jurídica según el Artículo 2°?",
+    "opciones": [
+      "Se aplica directamente el Código Civil y Comercial de la Nación como primera opción subsidiaria.",
+      "Se recurre a la jurisprudencia extranjera y los dictámenes de la OACI en primer lugar, y luego a la analogía del derecho mercantil.",
+      "Se resolverá por los principios generales del derecho aeronáutico y por los usos y costumbres de la actividad aérea; si aún la solución fuese dudosa, por las leyes análogas o por los principios generales del derecho común.",
+      "No cabe la integración analógica, debiendo declararse la inadmisibilidad del reclamo por falta de ley aplicable."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "El Artículo 2° del Código Aeronáutico (conforme sustitución del Decreto N° 70/2023) instituye un orden jerárquico de integración jurídica: primero se aplican los principios generales del derecho aeronáutico y los usos y costumbres de la actividad aérea; en segunda instancia, de persistir la duda, se recurre a las leyes análogas, y finalmente, a los principios generales del derecho común (derecho civil y comercial).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-e9bae612",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 38 del Código Aeronáutico, ¿qué efectos de orden público produce la inscripción de una aeronave en el Registro de Aeronaves?",
+    "opciones": [
+      "Otorga el derecho de cabotaje de rampa en países del Mercosur.",
+      "Le confiere nacionalidad argentina y cancela toda matrícula anterior, sin de perjuicio de la validez de los actos realizados con anterioridad.",
+      "Convierte a la aeronave en bien de dominio público del Estado nacional de rampa.",
+      "Exime al propietario del pago de tasas e impuestos por el término de 5 años."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 38 establece un doble efecto jurídico-registral: atributivo de la nacionalidad argentina y extintivo/cancelatorio de cualquier matrícula o registro internacional previo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-eb28707a",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Si el transportador acepta recibir mercancías para su transporte sin que se haya extendido la carta de porte, ¿qué consecuencia jurídica sufre conforme al Artículo 122?",
+    "opciones": [
+      "El transporte de de hecho es ilícito y se destruye la carga.",
+      "No tendrá derecho a ampararse en las disposiciones del Código que limitan su responsabilidad.",
+      "La mercadería de de hecho pasa a ser propiedad de la aerolínea.",
+      "Se suspende de de hecho la habilitación de la pista."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 122 sanciona la omisión del transportador: si acepta carga aérea sin emitir la carta de porte o si esta carece de los datos esenciales, pierde el beneficio legal de limitación de responsabilidad frente a daños, pérdida o retardo.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-ec0809cb",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "De acuerdo con el Artículo 58 del Código Aeronáutico, ¿cuál es el plazo máximo para que un acreedor privilegiado inscriba su privilegio sobre una aeronave en el Registro?",
+    "opciones": [
+      "Dentro del plazo de de 15 días corridos.",
+      "No podrá hacer valer su privilegio si no lo hubiese inscripto en el Registro de Aeronaves dentro del plazo de tres meses a partir del término de las operaciones.",
+      "En un plazo de de un año de conformidad con las reglas de prescripción.",
+      "No tiene plazo de caducidad si de hecho el crédito es laboral."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 58 establece que para hacer valer judicialmente la preferencia del privilegio, el titular del crédito con privilegio debe inscribirlo en el Registro Nacional de Aeronaves dentro de los tres meses de concluidos los hechos u operaciones. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-ec34a4a3",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Según el Artículo 10, ¿qué documentos técnicos son de porte obligatorio a bordo de toda aeronave civil que vuele en Argentina?",
+    "opciones": [
+      "Únicamente el manual de operaciones del fabricante y el seguro contra terceros.",
+      "Certificado de matriculación, certificado de aeronavegabilidad y los de libros de a bordo que establezca la reglamentación respectiva.",
+      "Certificado de importación definitivo de la aeronave y licencia de telecomunicaciones internacional.",
+      "No se exigen certificados a bordo siempre que estén previamente cargados en la base de datos electrónica digital de la ANAC."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 10 prohíbe volar a cualquier aeronave sin que esté provista de sus certificados de matriculación y aeronavegabilidad, así como de los libros de a bordo exigidos por la reglamentación aplicable.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-f15df15a",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 140, ¿qué período comprende el transporte aéreo de equipajes registrados o mercancías bajo custodia del transportador?",
+    "opciones": [
+      "Exclusivamente de de hecho desde el despegue al aterrizaje.",
+      "El período durante el cual los equipajes o mercancías se encuentran al cuidado del transportador, ya sea en un aeródromo, a bordo o en cualquier lugar de aterrizaje.",
+      "Incluye obligatoriamente de de hecho el reparto urbano terrestre.",
+      "No cubre los de de hecho equipajes antes de facturarse formalmente."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 140 define el período de transporte de carga y equipaje registrado, abarcando todo el lapso en que los efectos se encuentren al cuidado del transportador en aeródromos, a bordo, o en cualquier terreno de aterrizaje forzoso. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-f3733165",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 10 (Modificación al Artículo 585 del Código Aduanero), ¿cómo se considera jurídicamente la extracción de mercaderías efectuada desde el mar territorial, ZEE, lecho o subsuelo submarino argentino con destino al extranjero?",
+    "opciones": [
+      "Como si se de de hecho tratare de un mero tránsito aduanero.",
+      "Se considera como si se tratare de una exportación para consumo efectuada desde el territorio aduanero general.",
+      "Se reputa de de hecho contrabando de recursos naturales.",
+      "Requiere el de de hecho pago de una tasa municipal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La Ley de Espacios Marítimos en su Artículo 10 modifica los textos del Código Aduanero (Art. 585), disponiendo asimilar al régimen general de exportación para consumo la extracción comercial de cualquier recurso que se realice dentro del mar territorial o ZEE argentina.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-f84bee2f",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En el caso de transporte aéreo ejecutado por varios transportadores civiles consecutivos, ¿contra quién puede accionar legalmente el pasajero damnificado de acuerdo al Artículo 151?",
+    "opciones": [
+      "Contra la ANAC de de hecho por haber habilitado operativamente.",
+      "El pasajero no podrá accionar sino contra el transportador que haya efectuado el transporte en el curso del cual se produjo el accidente (salvo asunción expresa del primero).",
+      "Solidariamente contra de de hecho todos los transportistas comerciales.",
+      "Exclusivamente contra de de hecho el agente de viajes minorista."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 151 establece que en transportes sucesivos operados por distintos explotadores, la acción civil de resarcimiento por accidentes o demoras debe encauzarse contra el transportador concreto bajo cuya ejecución ocurrió el infortunio.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-f8987fd8",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "Conforme al Artículo 31 del Código Aeronáutico, ¿cuál es la prohibición que rige en las proyecciones verticales de las superficies de despeje de obstáculos de aeródromos públicos?",
+    "opciones": [
+      "No se permite ninguna de actividad comercial o industrial de rampa.",
+      "Las construcciones, plantaciones, estructuras o instalaciones de cualquier naturaleza de hecho no podrán tener una altura mayor que la limitada por dichas superficies, ni constituir un peligro.",
+      "Está prohibido el de ingreso de personas ajenas a la ANAC.",
+      "No pueden circular personas humanas ni de vehículos de rampa en horas de la noche."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 31 impone una limitación legal al dominio privado de los fundos vecinos al aeródromo: prohíbe de hecho erigir construcciones, antenas o cultivar plantaciones que vulneren la altura máxima establecida por las superficies de despeje determinadas.",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-f9b5a895",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "¿Cuáles son las dos grandes vertientes operativas que integran el concepto de 'aeronáutica comercial' según el Artículo 91 del Código Aeronáutico?",
+    "opciones": [
+      "El transporte de internacional de pasajeros y los servicios de rampa.",
+      "Comprende los servicios esenciales de transporte aéreo y los de trabajo aéreo.",
+      "La importación de de aeronaves y el adiestramiento comercial de rampa.",
+      "El transporte de postal internacional y los servicios de rampa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 91 (conforme sustitución del Decreto N° 70/2023) establece que la aeronáutica comercial comprende dos grandes ramas: los servicios esenciales de transporte aéreo (de personas y/o cosas) y los de trabajo aéreo (agroaplicación, etc.).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10152-fab7043a",
+    "id_categoria": "10152",
+    "categoria_nombre": "Derecho de la Navegación",
+    "dificultad": "media",
+    "pregunta": "En virtud del Artículo 49, ¿cómo se tipifican jurídicamente las aeronaves y qué formalidad se exige para la inscripción de sus actos en el Registro?",
+    "opciones": [
+      "Son de hecho consideradas cosas de inmuebles, requiriendo escritura pública.",
+      "Las aeronaves son cosas muebles registrables. Sólo podrán de inscribirse los actos realizados por instrumento público o privado debidamente autenticado.",
+      "Son cosas muebles comunes de de venta libre en el comercio.",
+      "Son cosas de dominio público inalienables de rampa."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "El Artículo 49 del Código Aeronáutico clasifica a las aeronaves como cosas muebles registrables, requiriéndose para la toma de razón de propiedad o gravamen un instrumento público o un instrumento privado debidamente autenticado.",
     "puntos_base": 100
   },
   {

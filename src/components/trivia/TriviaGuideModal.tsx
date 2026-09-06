@@ -16,6 +16,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { RANGOS_JURIDICOS } from '@/data/triviaData';
+import { CICLO_RAMAS, getRamaById, getRamaDeLaSemana } from '@/data/ramasTrivia';
 import { cn } from '../../lib/utils';
 
 export interface TriviaGuideModalProps {
@@ -25,6 +26,7 @@ export interface TriviaGuideModalProps {
 
 export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onClose }) => {
   const [activeGuideTab, setActiveGuideTab] = useState<'modos' | 'puntos' | 'rangos' | 'temporadas' | 'logros'>('modos');
+  const ramaActual = getRamaDeLaSemana();
 
   // Bloquea el scroll de fondo en mobile mientras la guía está abierta.
   useEffect(() => {
@@ -290,6 +292,63 @@ export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onCl
                   <p className="text-slate-700 dark:text-slate-300 text-xs leading-relaxed">
                     Existe un <strong>único Ranking Oficial</strong>. Ya no hay rankings divididos ni confusos: todos los estudiantes compiten en una tabla de mérito centralizada ordenada por sus <strong>Puntos de Rango</strong> ganados en Duelos 1vs1.
                   </p>
+                </div>
+
+                {/* CICLO DE RAMAS DE LOS DUELOS 1V1 */}
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 space-y-2.5">
+                  <h3 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                    <Swords className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    <span>Ciclo de Ramas de los Duelos 1v1</span>
+                  </h3>
+                  <p className="text-slate-700 dark:text-slate-300 text-xs leading-relaxed">
+                    El competitivo no se juega por materia suelta sino por <strong>ramas del derecho</strong>. Cada
+                    semana hay una <strong>rama fija</strong> que rota los jueves 19:00 junto con el reset de duelos, y
+                    al abrir una sala se sortea <strong>una segunda rama al azar</strong>. De las 5 preguntas, 3 salen
+                    de la rama de la semana y 2 de la sorteada. Tu rival recibe exactamente las mismas.
+                  </p>
+
+                  <div className="space-y-1.5 pt-1">
+                    {CICLO_RAMAS.map((ramaId, idx) => {
+                      const rama = getRamaById(ramaId);
+                      const esActual = ramaId === ramaActual.id;
+                      return (
+                        <div
+                          key={ramaId}
+                          className={cn(
+                            "p-2.5 rounded-xl border flex items-center gap-3 transition-all",
+                            esActual
+                              ? "bg-amber-500/15 border-amber-500/50 shadow-sm"
+                              : "bg-white dark:bg-black/40 border-slate-200 dark:border-white/10"
+                          )}
+                        >
+                          <span className={cn(
+                            "w-6 h-6 rounded-lg flex items-center justify-center font-mono font-black text-[10px] shrink-0 border",
+                            esActual
+                              ? "bg-amber-500 text-slate-950 border-amber-300"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10"
+                          )}>
+                            {idx + 1}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <span className={cn(
+                              "font-black text-xs block truncate",
+                              esActual ? "text-amber-800 dark:text-amber-300" : "text-slate-900 dark:text-white"
+                            )}>
+                              {rama.nombre}
+                            </span>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                              {rama.detalle}
+                            </span>
+                          </div>
+                          {esActual && (
+                            <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300 shrink-0 font-mono">
+                              Esta semana
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2">

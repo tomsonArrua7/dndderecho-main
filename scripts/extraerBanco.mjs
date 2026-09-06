@@ -164,13 +164,21 @@ function parsearFormatoB(lineas, materia) {
   let enunciado = [], opciones = [], correcta = -1, destino = null;
 
   const cerrar = () => {
-    if (enunciado.length && opciones.length === 4 && correcta >= 0) {
-      preguntas.push({
-        materia,
-        pregunta: limpiar(enunciado.join(" ")),
-        opciones: opciones.map(o => limpiar(o.join(" ").replace(new RegExp(MARCA_CORRECTA.source, "gi"), ""))),
-        respuesta_correcta_index: correcta
-      });
+    if (enunciado.length && opciones.length === 4) {
+      // Cuando la opción ocupa varias líneas, la marca puede quedar partida
+      // ("... [3" / "OPCIÓN CORRECTA]"). Al unir las líneas se reconstruye, así
+      // que si no se detectó durante la acumulación se busca sobre el texto ya armado.
+      const textos = opciones.map(o => limpiar(o.join(" ")));
+      const indice = correcta >= 0 ? correcta : textos.findIndex(t => MARCA_CORRECTA.test(t));
+
+      if (indice >= 0) {
+        preguntas.push({
+          materia,
+          pregunta: limpiar(enunciado.join(" ")),
+          opciones: textos.map(t => limpiar(t.replace(new RegExp(MARCA_CORRECTA.source, "gi"), ""))),
+          respuesta_correcta_index: indice
+        });
+      }
     }
     enunciado = []; opciones = []; correcta = -1; destino = null;
   };
@@ -330,7 +338,11 @@ function parsearFormatoE(lineas, materia) {
     const linea = limpiar(cruda);
     if (!linea) continue;
 
-    const preg = linea.match(/^PREGUNTA\s*\d+\s*[:.\-]?\s*(.*)$/i);
+    // Ojo: algunos documentos marcan la respuesta con líneas que también
+    // arrancan con "Pregunta N:" ("Pregunta 5: opción Correcta [C]"), así que
+    // esas no pueden confundirse con el inicio de una pregunta nueva.
+    const esLineaDeRespuesta = /opci[oó]n\s+correcta/i.test(linea);
+    const preg = esLineaDeRespuesta ? null : linea.match(/^PREGUNTA\s*\d+\s*[:.\-]?\s*(.*)$/i);
     if (preg) { cerrar(); enunciado = preg[1] ? [preg[1]] : []; destino = "enunciado"; continue; }
 
     // "RESPUESTA CORRECTA: B" o la variante "Pregunta uno: opción Correcta [A]"
@@ -338,7 +350,7 @@ function parsearFormatoE(lineas, materia) {
       || linea.match(/opci[oó]n\s+correcta\s*:?\s*[\[\(]?\s*([A-D])\s*[\]\)]?/i);
     if (resp) { correcta = resp[1].toUpperCase().charCodeAt(0) - 65; destino = null; continue; }
 
-    const just = linea.match(/^(?:Justificaci[oó]n|Fundamento(?:\s+jur[ií]dico)?|Fundamentaci[oó]n)\s*:?\s*(.*)$/i);
+    const just = linea.match(/^(?:Justificaci[oó]n(?:\s+jur[ií]dica)?|Fundamento(?:\s+jur[ií]dico)?|Fundamentaci[oó]n(?:\s+jur[ií]dica)?)\s*:?\s*(.*)$/i);
     if (just) { fundamento = just[1] ? [just[1]] : []; destino = "fundamento"; continue; }
 
     const op = linea.match(/^([A-D])\)\s*(.+)$/);
@@ -369,7 +381,8 @@ function detectarFormato(texto) {
   if (/✅/.test(texto)) return "A";
   if (/Explicaci[oó]n\s*:/i.test(texto) && /\[.?\]\s*[A-D]\)/.test(texto)) return "C";
   if (/RESPUESTA\s+CORRECTA\s*:\s*\(?[A-D]\)?\b/i.test(texto)) return "E";
-  if (/opci[oó]n\s+correcta\s*:?\s*[\[\(]\s*[A-D]\s*[\]\)]/i.test(texto)) return "E";
+  // "Opción Correcta: B" o "opción Correcta [A]" (con o sin corchetes)
+  if (/opci[oó]n\s+correcta\s*:?\s*[\[\(]?\s*[A-D]\b/i.test(texto)) return "E";
   return null;
 }
 

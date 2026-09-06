@@ -17,6 +17,7 @@ import {
   Award
 } from "lucide-react";
 import { RangoJuridico } from "@/data/triviaData";
+import { getRamaDeLaSemana, getProximaRotacion } from "@/data/ramasTrivia";
 import { cn } from "@/lib/utils";
 
 // Import 3D Assets generated for game modes
@@ -75,6 +76,14 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
   onSelectTab,
   activeTab
 }) => {
+  const ramaSemana = getRamaDeLaSemana();
+  const restanteRotacion = Math.max(0, getProximaRotacion() - Date.now());
+  const diasRotacion = Math.floor(restanteRotacion / 86400000);
+  const horasRotacion = Math.floor((restanteRotacion / 3600000) % 24);
+  const cuentaRotacion = diasRotacion > 0
+    ? `${diasRotacion}d ${horasRotacion}h`
+    : `${horasRotacion}h ${Math.floor((restanteRotacion / 60000) % 60)}m`;
+
   const totalPartidas1v1 = (userStats.victoriasDuelo || 0) + (userStats.derrotasDuelo || 0) + (userStats.empatesDuelo || 0);
   const winrate1v1 = totalPartidas1v1 > 0 
     ? Math.round(((userStats.victoriasDuelo || 0) / totalPartidas1v1) * 100) 
@@ -83,38 +92,60 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
   return (
     <div className="w-full flex flex-col gap-6 select-none">
       
-      {/* 1. TOP STATUS BAR: SEASON & REGLAS */}
-      <div className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-red-950/40 via-[#0A1124]/70 to-blue-950/40 border border-white/10 backdrop-blur-md shadow-lg">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shrink-0" />
-          <span className="text-xs font-black text-white uppercase tracking-wider truncate font-mono">
-            {seasonInfo.badgeText}
-          </span>
-          <span className="hidden sm:inline text-xs text-slate-400 font-mono">
-            · {seasonInfo.weeklyCountdown}
-          </span>
+      {/* 1. TOP STATUS BAR: SEASON, RAMA DE LA SEMANA & REGLAS */}
+      <div className="w-full px-4 py-2.5 rounded-2xl bg-gradient-to-r from-red-950/40 via-[#0A1124]/70 to-blue-950/40 border border-white/10 backdrop-blur-md shadow-lg space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shrink-0" />
+            <span className="text-xs font-black text-white uppercase tracking-wider truncate font-mono">
+              {seasonInfo.badgeText}
+            </span>
+            <span className="hidden sm:inline text-xs text-slate-400 font-mono">
+              · {seasonInfo.weeklyCountdown}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={onOpenRangosModal}
+              className="flex items-center gap-1.5 text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
+            >
+              <Trophy className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Escala de Rangos</span>
+              <span className="sm:hidden">Rangos</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenGuideModal}
+              className="flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white bg-white/5 border border-white/15 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+              <span>Reglas</span>
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={onOpenRangosModal}
-            className="flex items-center gap-1.5 text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
-          >
-            <Trophy className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Escala de Rangos</span>
-            <span className="sm:hidden">Rangos</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenGuideModal}
-            className="flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white bg-white/5 border border-white/15 px-3 py-1.5 rounded-xl transition-all active:scale-95 cursor-pointer"
-          >
-            <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-            <span>Reglas</span>
-          </button>
-        </div>
+        {/* Rama fija de los duelos de esta semana, visible desde cualquier pestaña */}
+        <button
+          type="button"
+          onClick={onOpenGuideModal}
+          className="w-full flex items-center gap-1.5 pt-2 border-t border-white/10 text-left cursor-pointer group"
+          title="Ver el ciclo completo de ramas en las Reglas"
+        >
+          <Swords className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span className="text-[11px] text-slate-400 shrink-0">
+            <span className="hidden sm:inline">Rama de la semana:</span>
+            <span className="sm:hidden">Rama:</span>
+          </span>
+          <span className="text-[11px] font-black text-amber-300 truncate group-hover:underline">
+            {ramaSemana.nombre}
+          </span>
+          <span className="text-[10px] font-mono text-slate-500 shrink-0 ml-auto pl-2">
+            rota en {cuentaRotacion}
+          </span>
+        </button>
       </div>
 
       {/* 2. COMPACT PLAYER CARD (GAME STATUS BAR) */}
