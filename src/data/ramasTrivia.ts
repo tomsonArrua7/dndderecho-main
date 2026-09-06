@@ -57,8 +57,8 @@ export const RAMAS_JURIDICAS: RamaJuridica[] = [
 ];
 
 /**
- * Orden del ciclo de "rama de la semana". Rota cada jueves 19:00, junto con el
- * reset semanal de duelos 1v1. Empieza en Constitucional.
+ * Orden del ciclo de ramas. Avanza en cada cierre de temporada, que ocurre los
+ * domingos 19:00. Empieza en Constitucional.
  */
 export const CICLO_RAMAS: RamaId[] = ["constitucional", "penal", "privado", "internacional", "administrativo"];
 
@@ -124,7 +124,7 @@ function tomarAlAzar<T>(arr: T[], n: number): T[] {
 }
 
 /**
- * Arma las preguntas de un duelo: 3 de la rama fija de la semana y 2 de la
+ * Arma las preguntas de un duelo: 3 de la rama fija de la temporada y 2 de la
  * sorteada. Si alguna rama no llega a su cupo, la otra completa; si aun así
  * falta, se completa con el pool general para no dejar la sala sin preguntas.
  */

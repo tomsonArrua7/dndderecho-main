@@ -115,7 +115,29 @@ const SEASON_START_TIMESTAMP = new Date("2026-09-06T19:00:00-03:00").getTime();
 /** Vida de una sala pública sin rival. Igual al plazo del barrido en la base. */
 const EXPIRACION_SALA_MS = 30 * 60 * 1000;
 
-function getLiveSeasonInfo() {
+/** Duración mínima de una temporada; espeja la guarda de la base. */
+const DURACION_MINIMA_MS = 6 * 24 * 60 * 60 * 1000;
+
+/**
+ * Primer domingo 19:00 que cierra la temporada vigente. Se saltea el domingo en
+ * que la temporada arranca: la base no cierra una temporada de menos de 6 días.
+ */
+function getProximoCierre(inicioTemporada: number, now: number): number {
+  const cierre = new Date(now);
+  let diasHastaDomingo = (0 - cierre.getDay() + 7) % 7;
+  if (diasHastaDomingo === 0 && (cierre.getHours() > 19 || (cierre.getHours() === 19 && cierre.getMinutes() > 0))) {
+    diasHastaDomingo = 7;
+  }
+  cierre.setDate(cierre.getDate() + diasHastaDomingo);
+  cierre.setHours(19, 0, 0, 0);
+
+  while (cierre.getTime() - inicioTemporada < DURACION_MINIMA_MS) {
+    cierre.setDate(cierre.getDate() + 7);
+  }
+  return cierre.getTime();
+}
+
+function getLiveSeasonInfo(inicioTemporada: number = SEASON_START_TIMESTAMP) {
   const now = Date.now();
   if (now < SEASON_START_TIMESTAMP) {
     const diff = Math.max(0, SEASON_START_TIMESTAMP - now);
@@ -126,48 +148,24 @@ function getLiveSeasonInfo() {
     const timeStr = d > 0 ? `${d}d ${h}h ${m}m ${s}s` : `${h}h ${m}m ${s}s`;
     return {
       isStarted: false,
-      bannerTitle: "🚀 Próximo Inicio de Temporada Competitiva",
       badgeText: "Hoy 19:00 hs",
       countdownText: `Comienza en: ${timeStr}`,
-      weeklyCountdown: `Comienza en: ${timeStr}`,
-      monthlyCountdown: `Comienza en: ${timeStr}`
+      weeklyCountdown: `Comienza en: ${timeStr}`
     };
   } else {
-    const nowObj = new Date();
-    const nextThursday = new Date(nowObj);
-    let daysToAdd = (4 - nowObj.getDay() + 7) % 7;
-    if (daysToAdd === 0 && (nowObj.getHours() > 19 || (nowObj.getHours() === 19 && nowObj.getMinutes() > 0))) {
-      daysToAdd = 7;
-    }
-    nextThursday.setDate(nextThursday.getDate() + daysToAdd);
-    nextThursday.setHours(19, 0, 0, 0);
-
-    const diffW = Math.max(0, nextThursday.getTime() - now);
+    // Las temporadas van de domingo a domingo: cierran los domingos 19:00 ART,
+    // que es cuando corre el cron de reset en la base.
+    const diffW = Math.max(0, getProximoCierre(inicioTemporada, now) - now);
     const wd = Math.floor(diffW / (1000 * 60 * 60 * 24));
     const wh = Math.floor((diffW / (1000 * 60 * 60)) % 24);
     const wm = Math.floor((diffW / 1000 / 60) % 60);
     const ws = Math.floor((diffW / 1000) % 60);
 
-    const nextMonth13 = new Date(nowObj);
-    if (nowObj.getDate() > 13 || (nowObj.getDate() === 13 && nowObj.getHours() >= 19)) {
-      nextMonth13.setMonth(nextMonth13.getMonth() + 1);
-    }
-    nextMonth13.setDate(13);
-    nextMonth13.setHours(19, 0, 0, 0);
-
-    const diffM = Math.max(0, nextMonth13.getTime() - now);
-    const md = Math.floor(diffM / (1000 * 60 * 60 * 24));
-    const mh = Math.floor((diffM / (1000 * 60 * 60)) % 24);
-    const mm = Math.floor((diffM / 1000 / 60) % 60);
-    const ms = Math.floor((diffM / 1000) % 60);
-
     return {
       isStarted: true,
-      bannerTitle: "🔥 Temporada Competitiva Oficial en Curso",
       badgeText: "TEMPORADA ACTIVA",
-      countdownText: `Reset 1v1 en: ${wd}d ${wh}h ${wm}m ${ws}s`,
-      weeklyCountdown: `Reset Semanal 1v1 en: ${wd}d ${wh}h ${wm}m ${ws}s`,
-      monthlyCountdown: `Reset Mensual General en: ${md}d ${mh}h ${mm}m ${ms}s`
+      countdownText: `Cierra en: ${wd}d ${wh}h ${wm}m ${ws}s`,
+      weeklyCountdown: `Cierra la temporada en: ${wd}d ${wh}h ${wm}m ${ws}s`
     };
   }
 }
@@ -576,19 +574,26 @@ export default function Trivia() {
   // rama fija del competitivo, así el cambio de rama acompaña al cierre real de
   // temporada y no a un calendario paralelo que puede desincronizarse.
   const [numeroTemporada, setNumeroTemporada] = useState<number | null>(null);
+  // Arranque de la temporada vigente: el último cierre registrado o, si todavía
+  // no cerró ninguna, el inicio de la temporada 1.
+  const [inicioTemporada, setInicioTemporada] = useState<number>(SEASON_START_TIMESTAMP);
 
   useEffect(() => {
     let vigente = true;
     supabase
       .from("trivia_temporadas")
-      .select("id", { count: "exact", head: true })
-      .then(({ count, error }) => {
+      .select("cerrada_at", { count: "exact" })
+      .order("cerrada_at", { ascending: false })
+      .limit(1)
+      .then(({ data, count, error }) => {
         if (!vigente) return;
         if (error) {
           console.error("No se pudo leer la temporada vigente:", error);
           return;
         }
         setNumeroTemporada((count ?? 0) + 1);
+        const ultimoCierre = data?.[0]?.cerrada_at;
+        if (ultimoCierre) setInicioTemporada(new Date(ultimoCierre).getTime());
       });
     return () => { vigente = false; };
   }, []);
@@ -632,15 +637,16 @@ export default function Trivia() {
   // Estado y auto-apertura del Tutorial / Guía de juego en la primera visita
   const [showGuideModal, setShowGuideModal] = useState(false);
 
-  // Contador en tiempo real constante para la Temporada Competitiva (Inicio: Jueves 13 de Agosto 19:00 hs)
+  // Contador en vivo de la temporada, recalculado sobre el arranque real.
   const [seasonInfo, setSeasonInfo] = useState(() => getLiveSeasonInfo());
 
   useEffect(() => {
+    setSeasonInfo(getLiveSeasonInfo(inicioTemporada));
     const timer = setInterval(() => {
-      setSeasonInfo(getLiveSeasonInfo());
+      setSeasonInfo(getLiveSeasonInfo(inicioTemporada));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [inicioTemporada]);
 
   useEffect(() => {
     try {

@@ -43,11 +43,9 @@ export interface TriviaMobileDashboardProps {
   puntosFaltantes: number;
   seasonInfo: {
     isStarted: boolean;
-    bannerTitle: string;
     badgeText: string;
     countdownText: string;
     weeklyCountdown: string;
-    monthlyCountdown: string;
   };
   onStartRanked: () => void;
   onOpenPracticeModal: () => void;
