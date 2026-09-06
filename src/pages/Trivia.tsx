@@ -384,6 +384,8 @@ export default function Trivia() {
   const [loadingDuelos, setLoadingDuelos] = useState(false);
   const [inputCodigoDuelo, setInputCodigoDuelo] = useState("");
   const [createdDueloModal, setCreatedDueloModal] = useState<DueloTrivia | null>(null);
+  // Sala cuya ruleta se está mostrando a quien se suma, antes de empezar a responder.
+  const [ruletaDuelo, setRuletaDuelo] = useState<DueloTrivia | null>(null);
   const [activeDuelRoom, setActiveDuelRoom] = useState<DueloTrivia | null>(null);
 
   // Registro de resultados de duelo ya vistos (para no repetir popups en cada refresco, estilo Preguntados)
@@ -1503,7 +1505,7 @@ export default function Trivia() {
   };
 
   // Unirse a un Duelo 1vs1 (por código o lista)
-  const handleJoinDuelo = async (duelo: DueloTrivia) => {
+  const handleJoinDuelo = async (duelo: DueloTrivia, opciones?: { saltearRuleta?: boolean }) => {
     if (!bancoDisponible()) return;
     const isPlayer1 = (user?.id && duelo.player1Id === user.id) || duelo.player1Nombre === userName;
     const isPlayer2 = (user?.id && duelo.player2Id === user.id) || (duelo.player2Nombre && duelo.player2Nombre === userName);
@@ -1512,6 +1514,16 @@ export default function Trivia() {
     if (!isPlayer1 && !isPlayer2 && duelo.player2Id && duelo.player2Nombre) {
       toast.error("Esta sala ya está ocupada por dos jugadores.");
       fetchDuelosFromSupabase();
+      return;
+    }
+
+    // Antes de responder se gira la ruleta, que revela el sorteo ya grabado en la
+    // sala. No se muestra si el duelo terminó ni si este jugador ya respondió
+    // (ahí entra a ver el marcador, no a jugar), ni cuando ya se mostró al crear.
+    const yaRespondi = isPlayer1 ? duelo.player1Completed : (isPlayer2 ? !!duelo.player2Completed : false);
+    const duelFinalizado = duelo.status === "finalizado" || (duelo.player1Completed && duelo.player2Completed);
+    if (!opciones?.saltearRuleta && duelo.ramaFija && duelo.ramaAzar && !yaRespondi && !duelFinalizado) {
+      setRuletaDuelo(duelo);
       return;
     }
 
@@ -2968,9 +2980,26 @@ export default function Trivia() {
             onConfirmar={() => {
               const duel = createdDueloModal;
               setCreatedDueloModal(null);
-              handleJoinDuelo(duel);
+              handleJoinDuelo(duel, { saltearRuleta: true });
             }}
             onCerrar={() => setCreatedDueloModal(null)}
+          />
+        )}
+
+        {/* RULETA DE RAMAS AL SUMARSE A UNA SALA: revela el sorteo ya grabado */}
+        {ruletaDuelo && ruletaDuelo.ramaFija && ruletaDuelo.ramaAzar && (
+          <RuletaRamasModal
+            isOpen={true}
+            modo="unirse"
+            codigoSala={ruletaDuelo.id}
+            ramaFija={ruletaDuelo.ramaFija as RamaId}
+            ramaAzar={ruletaDuelo.ramaAzar as RamaId}
+            onConfirmar={() => {
+              const duel = ruletaDuelo;
+              setRuletaDuelo(null);
+              handleJoinDuelo(duel, { saltearRuleta: true });
+            }}
+            onCerrar={() => setRuletaDuelo(null)}
           />
         )}
 

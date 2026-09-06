@@ -31,7 +31,11 @@ export const RuletaRamasModal: React.FC<RuletaRamasModalProps> = ({
   onCerrar
 }) => {
   const [girando, setGirando] = useState(true);
-  const [visible, setVisible] = useState<RamaId>(ramaAzar);
+  // Arranca en cualquier rama menos la sorteada, para no adelantar el resultado
+  // en el primer frame antes de que empiece a girar.
+  const [visible, setVisible] = useState<RamaId>(
+    () => CICLO_RAMAS.find(r => r !== ramaAzar && r !== ramaFija) || ramaAzar
+  );
   const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
@@ -108,16 +112,20 @@ export const RuletaRamasModal: React.FC<RuletaRamasModalProps> = ({
             <Dices className={cn("w-3.5 h-3.5", girando && "animate-spin")} />
             {girando ? "Sorteando segunda rama..." : "Segunda rama"}
           </span>
-          <motion.h4
-            key={azar.id + String(girando)}
-            initial={{ opacity: 0.4, y: girando ? -6 : 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={cn("text-base font-black", girando && "text-slate-500 dark:text-slate-400")}
-          >
-            {azar.nombre}
-          </motion.h4>
-          {!girando && (
-            <p className="text-[11px] text-slate-600 dark:text-slate-400">{azarFinal.detalle}</p>
+          {girando ? (
+            <motion.h4
+              key={azar.id}
+              initial={{ opacity: 0.4, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-base font-black text-slate-500 dark:text-slate-400"
+            >
+              {azar.nombre}
+            </motion.h4>
+          ) : (
+            <>
+              <h4 className="text-base font-black">{azarFinal.nombre}</h4>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400">{azarFinal.detalle}</p>
+            </>
           )}
         </div>
 
