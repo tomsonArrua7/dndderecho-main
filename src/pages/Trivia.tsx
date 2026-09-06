@@ -9,6 +9,7 @@ import { TriviaMobileDashboard } from "@/components/trivia/TriviaMobileDashboard
 import { PracticeSetupModal } from "@/components/trivia/PracticeSetupModal";
 import { TriviaInGameView, PowerUpsState } from "@/components/trivia/TriviaInGameView";
 import { TriviaPostMatchModal } from "@/components/trivia/TriviaPostMatchModal";
+import { RuletaRamasModal } from "@/components/trivia/RuletaRamasModal";
 import { toast } from "sonner";
 import { 
   Trophy, 
@@ -44,8 +45,6 @@ import {
   Swords,
   Globe,
   Users,
-  Copy,
-  Check,
   Search,
   Share2,
   Trash2,
@@ -55,6 +54,7 @@ import {
   Zap,
   Plus,
   RefreshCw,
+  Calendar,
   Eye,
   Loader2
 } from "lucide-react";
@@ -70,6 +70,16 @@ import {
   DueloTrivia,
   CategoriaTrivia
 } from "@/data/triviaData";
+import {
+  RAMAS_JURIDICAS,
+  getRamaById,
+  getRamaDeLaSemana,
+  getProximaRotacion,
+  sortearRamasDuelo,
+  seleccionarPreguntasDuelo,
+  getMateriasDeRama,
+  RamaId
+} from "@/data/ramasTrivia";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -362,9 +372,6 @@ export default function Trivia() {
   const [showRangosModal, setShowRangosModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
 
-  // Selector de materia de Duelos 1v1: arranca colapsado (la mayoría usa el default "Toda la Carrera")
-  const [dueloSelectorExpanded, setDueloSelectorExpanded] = useState(false);
-
   // Filtro de tipo de actividad en la pestaña unificada "Mi Historial"
   const [historialFiltro, setHistorialFiltro] = useState<"todos" | "duelos" | "practica">("todos");
 
@@ -372,17 +379,12 @@ export default function Trivia() {
   const [selectedYearFilter, setSelectedYearFilter] = useState<number>(0);
   const [selectedCategoria, setSelectedCategoria] = useState<string>("todas");
 
-  // Filtro de Año y Materia para Duelos 1v1 (Totalmente independiente)
-  const [dueloSelectedYearFilter, setDueloSelectedYearFilter] = useState<number>(0);
-  const [dueloSelectedCategoria, setDueloSelectedCategoria] = useState<string>("todas");
-  
   // Estado de Duelos 1v1 conectados a Supabase
   const [duelosList, setDuelosList] = useState<DueloTrivia[]>([]);
   const [loadingDuelos, setLoadingDuelos] = useState(false);
   const [inputCodigoDuelo, setInputCodigoDuelo] = useState("");
   const [createdDueloModal, setCreatedDueloModal] = useState<DueloTrivia | null>(null);
   const [activeDuelRoom, setActiveDuelRoom] = useState<DueloTrivia | null>(null);
-  const [copiedCode, setCopiedCode] = useState(false);
 
   // Registro de resultados de duelo ya vistos (para no repetir popups en cada refresco, estilo Preguntados)
   const [seenDuelResults, setSeenDuelResults] = useState<string[]>(() => {
@@ -557,7 +559,10 @@ export default function Trivia() {
   const [isParcialFlashModalOpen, setIsParcialFlashModalOpen] = useState(false);
   const [loadingParcialFlash, setLoadingParcialFlash] = useState(false);
   const [materiaParcialFlash, setMateriaParcialFlash] = useState("Derecho Civil I");
-  const [dbTriviaQuestions, setDbTriviaQuestions] = useState<TriviaQuestion[]>([]);
+
+  // Preguntas generadas por IA durante esta sesión (Parcial Flash). Se suman al
+  // pool en memoria; el banco oficial sigue siendo el generado del repositorio.
+  const [preguntasIA, setPreguntasIA] = useState<TriviaQuestion[]>([]);
 
   // Estado y auto-apertura del Tutorial / Guía de juego en la primera visita
   const [showGuideModal, setShowGuideModal] = useState(false);
@@ -582,42 +587,16 @@ export default function Trivia() {
     } catch {}
   }, []);
 
-  // Cargar preguntas aprobadas de la base de datos Supabase
-  useEffect(() => {
-    async function fetchDbQuestions() {
-      try {
-        const { data, error } = await supabase.from("trivia_preguntas").select("*").eq("aprobado", true);
-        if (!error && data && data.length > 0) {
-          const mapped: TriviaQuestion[] = data
-            .filter((d: any) => d && d.pregunta && Array.isArray(d.opciones) && d.opciones.length === 4)
-            .map((d: any) => ({
-              id: d.id || `db_${Math.random()}`,
-              id_categoria: d.materia ? d.materia.toLowerCase().replace(/\s+/g, "_") : "general",
-              categoria_nombre: d.materia || "Derecho General",
-              dificultad: d.dificultad || "media",
-              pregunta: d.pregunta,
-              opciones: d.opciones,
-              respuesta_correcta_index: typeof d.respuesta_correcta_index === "number" ? d.respuesta_correcta_index : 0,
-              fundamento_juridico: d.fundamento_juridico || "",
-              puntos_base: 100
-            }));
-          setDbTriviaQuestions(mapped);
-        }
-      } catch (e) {
-        console.warn("No se pudieron cargar preguntas de DB Supabase:", e);
-      }
-    }
-    fetchDbQuestions();
-  }, []);
-
-  // Pool general de preguntas estrictamente desduplicado por ID y por texto
+  // Pool general de preguntas, desduplicado por id y por texto.
+  // El banco es local (generado desde los documentos de cátedra); ya no se
+  // consulta Supabase por preguntas. A eso se le suman las que genera la IA
+  // durante la sesión para el Parcial Flash.
   const allQuestionsCombined = useMemo(() => {
-    const raw = [...TRIVIA_QUESTIONS, ...dbTriviaQuestions];
     const seenIds = new Set<string>();
     const seenTexts = new Set<string>();
     const result: TriviaQuestion[] = [];
 
-    for (const q of raw) {
+    for (const q of [...TRIVIA_QUESTIONS, ...preguntasIA]) {
       if (!q || !q.pregunta) continue;
       const normText = q.pregunta.trim().toLowerCase();
       if (!seenIds.has(q.id) && !seenTexts.has(normText)) {
@@ -627,7 +606,7 @@ export default function Trivia() {
       }
     }
     return result;
-  }, [dbTriviaQuestions]);
+  }, [preguntasIA]);
 
   const solicitarExplicacionIA = async (q: TriviaQuestion, opcionIndex: number) => {
     try {
@@ -857,7 +836,7 @@ export default function Trivia() {
           }
 
           // Añadir inmediatamente a la base en memoria
-          setDbTriviaQuestions(prev => [...formatted, ...prev]);
+          setPreguntasIA(prev => [...formatted, ...prev]);
           toast.success(`✨ ¡Se agregaron 5 nuevas preguntas oficiales de ${materiaNombre} al banco general!`);
         } else {
           toast.error("La IA no devolvió preguntas. Probá de nuevo.");
@@ -1154,6 +1133,8 @@ export default function Trivia() {
             player2Completed: d.player2_completed || false,
             ganadorId: d.ganador_id || undefined,
             porAbandono: d.por_abandono || false,
+            ramaFija: d.rama_fija || undefined,
+            ramaAzar: d.rama_azar || undefined,
             status: d.status || "esperando_rival",
             createdAt: d.created_at ? new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Reciente",
             createdAtRaw: d.created_at || undefined
@@ -1331,11 +1312,6 @@ export default function Trivia() {
     ? CATEGORIAS_TRIVIA
     : CATEGORIAS_TRIVIA.filter(cat => cat.anio === selectedYearFilter || cat.id === "todas");
 
-  // Filtrado de Categorías según el Año Seleccionado para Duelos
-  const filteredDueloCategorias = dueloSelectedYearFilter === 0
-    ? CATEGORIAS_TRIVIA
-    : CATEGORIAS_TRIVIA.filter(cat => cat.anio === dueloSelectedYearFilter || cat.id === "todas");
-
   // Power-Ups Handlers
   const handleUseNulidad = () => {
     if (isAnswered || powerUps.nulidadCount <= 0 || powerUps.disabledOptionIndices.length > 0) return;
@@ -1444,18 +1420,22 @@ export default function Trivia() {
   // Crear Duelo 1vs1 en Supabase (con selector propio de materia y CERO preguntas repetidas)
   const handleCreateDuelo = async (esPublico: boolean, overrideCatId?: string) => {
     const randomCode = `DND-${Math.floor(100 + Math.random() * 900)}`;
-    const catIdToUse = overrideCatId || dueloSelectedCategoria;
-    const cat = CATEGORIAS_TRIVIA.find(c => c.id === catIdToUse) || CATEGORIAS_TRIVIA[0];
 
-    const pool = getQuestionsForCategory(cat.id, cat.nombre, allQuestionsCombined);
-    const finalPool = getStrictUniqueQuestions(pool, 5, allQuestionsCombined);
+    // El sorteo se resuelve acá, al crear la sala, y queda grabado: el rival que
+    // entra después gira la ruleta y le cae exactamente el mismo resultado.
+    const [ramaFija, ramaAzar] = sortearRamasDuelo();
+    const nombreRamas = `${getRamaById(ramaFija).nombre} + ${getRamaById(ramaAzar).nombre}`;
+
+    const finalPool = seleccionarPreguntasDuelo(ramaFija, ramaAzar, allQuestionsCombined, 5);
     const selectedQIds = finalPool.map(q => q.id);
 
     const dbRow = {
       id: randomCode,
       es_publico: esPublico,
-      materia_id: cat.id,
-      materia_nombre: cat.nombre,
+      materia_id: "ramas",
+      materia_nombre: nombreRamas,
+      rama_fija: ramaFija,
+      rama_azar: ramaAzar,
       preguntas_ids: selectedQIds,
       player1_id: user?.id || null,
       player1_nombre: userName,
@@ -1476,8 +1456,10 @@ export default function Trivia() {
     const nuevoDueloFrontend: DueloTrivia = {
       id: randomCode,
       esPublico,
-      materiaId: cat.id,
-      materiaNombre: cat.nombre,
+      materiaId: "ramas",
+      materiaNombre: nombreRamas,
+      ramaFija,
+      ramaAzar,
       preguntasIds: selectedQIds,
       player1Id: user?.id || "p1_anon",
       player1Nombre: userName,
@@ -2180,123 +2162,46 @@ export default function Trivia() {
               </div>
             </div>
 
-            {/* SELECTOR DE MATERIA: COLAPSADO POR DEFECTO, SOLO SE EXPANDE SI SE QUIERE CAMBIAR EL DEFAULT */}
-            <div className="rounded-2xl bg-slate-950/80 dark:bg-slate-950/80 bg-slate-50 border border-white/10 dark:border-white/10 border-slate-200 shadow-md overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setDueloSelectorExpanded(v => !v)}
-                className="w-full p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer text-left"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-red-600/20 border border-red-500/40 text-amber-400 flex items-center justify-center shrink-0">
-                    <GraduationCap className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block">Materia del duelo</span>
-                    <span className="text-xs sm:text-sm font-black text-white dark:text-white text-slate-900 truncate block">
-                      {dueloSelectedCategoria === "todas"
-                        ? "Toda la Carrera (Mix general)"
-                        : (CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria)?.nombre || "Materia Seleccionada")}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="hidden sm:inline text-[10px] font-mono text-slate-400">5 preguntas · 20s por turno</span>
-                  <span className="text-[11px] font-bold text-amber-400 flex items-center gap-0.5">
-                    {dueloSelectorExpanded ? "Cerrar" : "Cambiar"}
-                    <ChevronRight className={cn("w-3.5 h-3.5 transition-transform", dueloSelectorExpanded && "rotate-90")} />
-                  </span>
-                </div>
-              </button>
+            {/* RAMA DE LA SEMANA Y REGLA DEL SORTEO (el competitivo ya no se elige por materia) */}
+            {(() => {
+              const ramaSemana = getRamaDeLaSemana();
+              const restante = Math.max(0, getProximaRotacion() - Date.now());
+              const d = Math.floor(restante / 86400000);
+              const h = Math.floor((restante / 3600000) % 24);
+              const m = Math.floor((restante / 60000) % 60);
+              const cuenta = d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`;
 
-              {dueloSelectorExpanded && (
-                <div className="p-4 sm:p-5 pt-0 space-y-4">
-                  {/* Filtro Rápido de Años */}
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block">
-                      Filtrar por año de la carrera:
-                    </span>
-                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                      {[
-                        { anio: 0, label: "Toda la Carrera" },
-                        { anio: 1, label: "1º Año" },
-                        { anio: 2, label: "2º Año" },
-                        { anio: 3, label: "3º Año" },
-                        { anio: 4, label: "4º Año" },
-                        { anio: 5, label: "5º Año" },
-                      ].map((item) => (
-                        <button
-                          key={item.anio}
-                          onClick={() => {
-                            setDueloSelectedYearFilter(item.anio);
-                            if (item.anio === 0) setDueloSelectedCategoria("todas");
-                            else {
-                              const firstOfThatYear = CATEGORIAS_TRIVIA.find(c => c.anio === item.anio);
-                              if (firstOfThatYear) setDueloSelectedCategoria(firstOfThatYear.id);
-                            }
-                          }}
-                          className={cn(
-                            "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer shrink-0 border",
-                            dueloSelectedYearFilter === item.anio
-                              ? "bg-red-600 text-white border-red-500 shadow-md shadow-red-900/30"
-                              : "bg-white/5 dark:bg-white/5 bg-slate-200 text-slate-300 dark:text-slate-300 text-slate-700 border-white/10 dark:border-white/10 border-slate-300 hover:bg-white/10"
-                          )}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Menú Desplegable de Materia */}
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 text-slate-600 block flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Desplegable de Materias disponibles:</span>
-                    </label>
-                    <select
-                      value={dueloSelectedCategoria}
-                      onChange={(e) => setDueloSelectedCategoria(e.target.value)}
-                      className="w-full p-3.5 rounded-2xl bg-slate-900 dark:bg-slate-900 bg-white border-2 border-red-500/60 focus:border-red-500 text-white dark:text-white text-slate-900 text-xs sm:text-sm font-black focus:outline-none shadow-xl cursor-pointer transition-all"
-                    >
-                      {filteredDueloCategorias.map(cat => (
-                        <option key={cat.id} value={cat.id} className="bg-slate-900 text-white py-2">
-                          {cat.nombre} {cat.id === "todas" ? "(Toda la Carrera)" : `(${getQuestionCountForCategory(cat.id)} preguntas)`}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Tarjeta de Materia Seleccionada Actualmente */}
-                  {(() => {
-                    const currentCat = CATEGORIAS_TRIVIA.find(c => c.id === dueloSelectedCategoria) || CATEGORIAS_TRIVIA[0];
-                    const Icon = ICON_MAP[currentCat.icono] || BookOpen;
-                    const count = getQuestionCountForCategory(currentCat.id);
-
-                    return (
-                      <div className="p-3.5 rounded-2xl bg-red-950/40 dark:bg-red-950/40 bg-red-50 border border-red-500/40 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 text-amber-400 flex items-center justify-center shrink-0">
-                            <Icon className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-black text-white dark:text-white text-slate-900 block">{currentCat.nombre}</span>
-                              <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-bold">
-                                {currentCat.anio === 0 ? "General" : `${currentCat.anio}º Año`}
-                              </span>
-                            </div>
-                            <span className="text-[10px] text-slate-400 dark:text-slate-400 text-slate-600 block">
-                              Banco de {count} preguntas exclusivas listas para el duelo
-                            </span>
-                          </div>
-                        </div>
+              return (
+                <div className="rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/10 p-4 sm:p-5 space-y-3 shadow-md">
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                        <Calendar className="w-5 h-5" />
                       </div>
-                    );
-                  })()}
+                      <div className="min-w-0">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
+                          Rama de la semana
+                        </span>
+                        <span className="text-sm font-black text-slate-900 dark:text-white block truncate">
+                          {ramaSemana.nombre}
+                        </span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
+                          {ramaSemana.detalle}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 shrink-0 pt-1">
+                      rota en {cuenta}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-white/10 pt-3 leading-relaxed">
+                    Al abrir la sala se sortea una segunda rama al azar. Son 5 preguntas:
+                    3 de la rama de la semana y 2 de la sorteada, y tu rival recibe exactamente las mismas.
+                  </p>
                 </div>
-              )}
-            </div>
+              );
+            })()}
 
             {/* BOTONES DE ACCIÓN: SIEMPRE VISIBLES, CON O SIN SELECTOR EXPANDIDO */}
             <div className="flex flex-col sm:flex-row items-center gap-2">
@@ -2402,7 +2307,19 @@ export default function Trivia() {
                                 <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500/20 text-red-300 border border-red-500/30 font-mono">
                                   {duelo.id}
                                 </span>
-                                <span className="text-xs font-black text-white dark:text-white text-slate-900">{duelo.materiaNombre}</span>
+                                {duelo.ramaFija && duelo.ramaAzar ? (
+                                  <span className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                                      {getRamaById(duelo.ramaFija as RamaId).nombre}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400">+</span>
+                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/30">
+                                      {getRamaById(duelo.ramaAzar as RamaId).nombre}
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span className="text-xs font-black text-white dark:text-white text-slate-900">{duelo.materiaNombre}</span>
+                                )}
 
                                 {isParticipant && (
                                   <span className={cn(
@@ -3011,64 +2928,22 @@ export default function Trivia() {
           </div>
         )}
 
-        {/* MODAL SALA DE DUELO CREADA */}
-        <AnimatePresence>
-          {createdDueloModal && (
-            <div className="fixed inset-0 z-[10050] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-md w-full bg-white dark:bg-[#0D1527] border border-red-200 dark:border-red-500/40 rounded-3xl p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xl relative text-center text-slate-900 dark:text-white"
-              >
-                <div className="w-16 h-16 mx-auto rounded-2xl bg-red-500/10 dark:bg-red-500/20 border border-red-500/30 dark:border-red-500/40 flex items-center justify-center text-red-600 dark:text-red-400">
-                  <Swords className="w-8 h-8" />
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white">¡Sala de Duelo Creada Exitosamente!</h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-300">Compartí este código con tu rival o inicien la partida directamente:</p>
-                  
-                  <div className="py-3 px-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-red-200 dark:border-red-500/40 font-mono text-2xl font-black text-red-600 dark:text-red-400 tracking-widest flex items-center justify-center gap-3 my-2">
-                    <span>{createdDueloModal.id}</span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(createdDueloModal.id);
-                        setCopiedCode(true);
-                        setTimeout(() => setCopiedCode(false), 2000);
-                      }}
-                      className="p-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-slate-300 text-xs transition-all cursor-pointer"
-                      title="Copiar Código"
-                    >
-                      {copiedCode ? <Check className="w-4 h-4 text-emerald-500 dark:text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {copiedCode && <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block">¡Código copiado al portapapeles!</span>}
-                </div>
-
-                <div className="flex flex-col gap-2 pt-2">
-                  <button
-                    onClick={() => {
-                      const duel = createdDueloModal;
-                      setCreatedDueloModal(null);
-                      handleJoinDuelo(duel);
-                    }}
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-[#C41E24] hover:from-red-500 hover:to-red-400 text-white font-black text-xs uppercase tracking-wider shadow-lg cursor-pointer"
-                  >
-                    Iniciar Duelo Ahora
-                  </button>
-
-                  <button
-                    onClick={() => setCreatedDueloModal(null)}
-                    className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-slate-300 font-bold text-xs uppercase cursor-pointer"
-                  >
-                    Cerrar y Esperar Rival
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+        {/* RULETA DE RAMAS AL CREAR LA SALA (reemplaza al viejo modal de código) */}
+        {createdDueloModal && createdDueloModal.ramaFija && createdDueloModal.ramaAzar && (
+          <RuletaRamasModal
+            isOpen={true}
+            modo="crear"
+            codigoSala={createdDueloModal.id}
+            ramaFija={createdDueloModal.ramaFija as RamaId}
+            ramaAzar={createdDueloModal.ramaAzar as RamaId}
+            onConfirmar={() => {
+              const duel = createdDueloModal;
+              setCreatedDueloModal(null);
+              handleJoinDuelo(duel);
+            }}
+            onCerrar={() => setCreatedDueloModal(null)}
+          />
+        )}
 
         {/* MODAL DE RESULTADO DE DUELO 1V1 */}
         <AnimatePresence>
