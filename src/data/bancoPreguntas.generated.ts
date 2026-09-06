@@ -1,7 +1,7 @@
 // ARCHIVO GENERADO POR scripts/importarBanco.mjs — NO EDITAR A MANO.
 // Para regenerarlo: node scripts/importarBanco.mjs [carpetas...]
-// Generado: 2026-09-06T15:18:38.106Z
-// Preguntas: 3428
+// Generado: 2026-09-06T15:34:36.246Z
+// Preguntas: 3410
 
 import type { TriviaQuestion } from "./triviaData";
 
@@ -1616,7 +1616,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Constitucional laico, declarando la absoluta libertad de cultos y la abolición del regio patronato episcopal.",
       "Unitario centralizado, concentrando de facto la totalidad del poder legislativo de la República en la Legislatura porteña.",
       "Confederativo, en el cual las provincias se aliaban de forma ofensiva-defensiva, mantenían su autonomía e independencia interna y creaban una Comisión Representativa provisoria.",
-      "Presidencialista rígido, consagrando a Juan Manuel de Rosas como mandatario perpetuo con la suma del poder público. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 27Año 2026"
+      "Presidencialista rígido, consagrando a Juan Manuel de Rosas como mandatario perpetuo con la suma del poder público."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -1872,7 +1872,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La retroversión de la soberanía al pueblo ante la ausencia o caducidad de la autoridad del rey legítimo, gobernando provisionalmente en su nombre.",
       "Los fueros feudales de Aragón y de León que prohibían al rey ausentarse del territorio peninsular sin aprobación del Senado.",
       "El derecho divino absoluto de José I Bonaparte para reinar unilateralmente en los dominios de ultramar.",
-      "La supremacía constitucional de la Carta o Estatuto autoritario de Bayona dictado por Napoleón. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 13Año 2026"
+      "La supremacía constitucional de la Carta o Estatuto autoritario de Bayona dictado por Napoleón."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -1952,7 +1952,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Conceder plena autonomía legislativa a los Cabildos de campaña para sancionar sus propias leyes orgánicas locales.",
       "Establecer la división tripartita de poderes y decretar la abolición del tributo y del patronato real.",
       "Crear un senado provincial integrado de forma equitativa por representantes elegidos por el sufragio secreto aborigen.",
-      "Gobernar de manera directa y centralizada desde Madrid, dividiendo la jurisdicción del Virreinato en ocho intendencias y cuatro gobernaciones militares bajo el mando directo de funcionarios nombrados por el rey. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 11Año 2026"
+      "Gobernar de manera directa y centralizada desde Madrid, dividiendo la jurisdicción del Virreinato en ocho intendencias y cuatro gobernaciones militares bajo el mando directo de funcionarios nombrados por el rey."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2016,7 +2016,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Comprende el período transcurrido desde la firma de las Capitulaciones de Santa Fe en 1492 hasta la Semana de Mayo de 1810.",
       "Abarca desde la primera expedición expedicionaria de Colón en 1492 hasta la pérdida definitiva de los últimos territorios de ultramar (Cuba y Puerto Rico) en 1898.",
       "Abarca desde la llegada de Juan Díaz de Solís en 1516 hasta la sanción de la Constitución Nacional de 1853.",
-      "Se limita a los siglos XVII y XVIII, coincidiendo de manera exclusiva con los reinados de la dinastía de los Austrias. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 8Año 2026"
+      "Se limita a los siglos XVII y XVIII, coincidiendo de manera exclusiva con los reinados de la dinastía de los Austrias."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2047,8 +2047,8 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "opciones": [
       "Porque exigía la dote obligatoria de diez mil pesos de capital para votar a los senadores en los colegios comiciales.",
       "Porque creó de manera anticipada un Poder Ejecutivo nacional unipersonal (Rivadavia), sin existir previamente una Constitución ratificada por las provincias como mandaba la Ley Fundamental.",
-      "Porque prohibió la dote de los aborígenes y suprimió los tribunales de alzada civiles de las parroquias litorales.",
-      "Porque dispuso la nacionalización absoluta de los yacimientos de petróleo e hidrocarburos de la provincia de Salta. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 24Año 2026"
+      "Porque prohibió la dote de los aborígenes y suprimió los tribunales de alzada civiles de las parroquias",
+      "Porque dispuso la nacionalización absoluta de los yacimientos de petróleo e hidrocarburos de la provincia de Salta."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2064,7 +2064,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El símbolo institucional de la existencia de la ciudad, un órgano de autogobierno integrado por regidores y alcaldes encargados de la administración local y la justicia de primera instancia.",
       "Un colegio de sacerdotes pontífices secrets custodios de los mores maiorum eclesiásticos.",
       "La oficina de recaudación impositiva dependiente directa y exclusivamente de la Casa de Contratación de Sevilla.",
-      "La guarnición militar provincial encargada exclusivamente de repeler invasiones portuguesas de ultramar. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 10Año 2026"
+      "La guarnición militar provincial encargada exclusivamente de repeler invasiones portuguesas de ultramar."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2096,7 +2096,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Derogar de facto las aduanas y consagrar la laicidad de las instituciones universitarias litorales.",
       "Aprobar la Constitución unitaria rivadaviana de 1826 declarando a Buenos Aires como capital nacional.",
       "Facultar al Director del Estado a convocar e invitar a todas las ciudades y villas de las provincias interiores a elegir diputados para reunirse en un nuevo Congreso en la ciudad de Tucumán.",
-      "Establecer la base de representación de un senador militar de grado mínimo de coronel por cada departamento. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 20Año 2026"
+      "Establecer la base de representación de un senador militar de grado mínimo de coronel por cada departamento."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2160,7 +2160,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El reglamento que convocó formalmente e inauguró las sesiones de la Asamblea General de 1813.",
       "Un pacto interprovincial de paz que, al ordenar a Santa Fe retirar su diputado de Córdoba, frustró la posibilidad de organizar el país bajo las ideas federales del Congreso de Bustos, favoreciendo la centralización porteña.",
       "La entrega directa de la propiedad territorial de las Misiones a la jurisdicción eclesiástica de Buenos Aires.",
-      "Una constitución federal modelo copiada de los Artículos de Confederación norteamericanos de 1777. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 22Año 2026"
+      "Una constitución federal modelo copiada de los Artículos de Confederación norteamericanos de 1777."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2224,7 +2224,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La revolución del 11 de septiembre de 1852 y la consiguiente secesión de la provincia, separándose de la Confederación para organizarse autónomamente con su propia Constitución de 1854.",
       "La aprobación absoluta del acuerdo mediante elecciones populares directas de sufragio universal e indio.",
       "Decretar la nacionalización del Banco de las Provincias Unidas para transferirlo a la Santa Sede de Roma.",
-      "Iniciar operaciones militares ofensivas-defensivas aliada a las fuerzas del general unitario Juan Lavalle. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 29Año 2026"
+      "Iniciar operaciones militares ofensivas-defensivas aliada a las fuerzas del general unitario Juan Lavalle."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2240,7 +2240,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Porque consagró los postulados liberales de que la soberanía radicaba en la Nación y no en el Rey, instaurando una monarquía constitucional con separación de poderes y derechos civiles.",
       "Porque ratificó de manera formal el derecho divino absoluto del monarca Fernando VII para gobernar sin límites parlamentarios.",
       "Porque abolió de manera definitiva y perpetua la religión católica romana como fe estatal en la península.",
-      "Porque ordenó la inmediata disolución de los ejércitos y la entrega de todas las armas reales a las milicias criollas. PARTE III: LA REVOLUCIÓN DE MAYO Y PRIMEROS GOBIERNOS PATRIOS HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 12Año 2026"
+      "Porque ordenó la inmediata disolución de los ejércitos y la entrega de todas las armas reales a las milicias criollas. PARTE III: LA REVOLUCIÓN DE MAYO Y PRIMEROS GOBIERNOS PATRIOS"
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2256,7 +2256,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La pacificación, evitar la guerra civil, celebrar elecciones libres con una lista moderada consensuada y establecer que ningún individuo sería molestado por sus opiniones anteriores.",
       "La nacionalización absoluta de los depósitos bancarios de la provincia de Buenos Aires para transferirlos a Entre Ríos.",
       "Declarar a la religión católica romana como dogma supremo e inmutable de las juntas provinciales de campaña.",
-      "La cesión de facto de la Banda Oriental al Emperador Pedro I de Brasil bajo la garantía militar de la Santa Alianza. PARTE V: LA CONFEDERACIÓN ROSISTA, EL PACTO FEDERAL Y LA CONSTITUCIÓN DE 1853 HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 26Año 2026"
+      "La cesión de facto de la Banda Oriental al Emperador Pedro I de Brasil bajo la garantía militar de la Santa Alianza. PARTE V: LA CONFEDERACIÓN ROSISTA, EL PACTO FEDERAL Y LA CONSTITUCIÓN DE 1853"
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2320,7 +2320,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Imponer obligatoriamente las leyes de aduanas unitarias de Rivadavia para el libre comercio con Inglaterra.",
       "Decretar la inmediata disolución de las gobernaciones militares e intendencias locales de la dominación borbónica.",
       "Convocarlas a un Congreso de carácter federal en la provincia de Córdoba para discutir la laicidad de la enseñanza.",
-      "Notificar los sucesos de la instalación de la Junta de Buenos Aires e invitar a las ciudades y villas interiores a elegir diputados para incorporarse paulatinamente al nuevo Gobierno. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 14Año 2026"
+      "Notificar los sucesos de la instalación de la Junta de Buenos Aires e invitar a las ciudades y villas interiores a elegir diputados para incorporarse paulatinamente al nuevo Gobierno."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2336,7 +2336,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Se nacionalizaba de forma definitiva y perpetua la Universidad de Buenos Aires para transferirla a Entre Ríos.",
       "Las autoridades nacionales residirían provisoriamente en la ciudad de Buenos Aires con jurisdicción federal en su municipio, hasta tanto el Congreso sancionara una ley de capital definitiva.",
       "Se suprimía de facto la dote de los aborígenes y los juzgados de paz de los tres departamentos de campaña.",
-      "Se decretaba la inmediata e incondicional federalización de la totalidad del territorio de la provincia de Buenos Aires. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 30Año 2026"
+      "Se decretaba la inmediata e incondicional federalización de la totalidad del territorio de la provincia de Buenos Aires."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2400,7 +2400,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Los decretos de necesidad y urgencia dictados por el Congreso Nacional Constituyente de Buenos Aires de 1824-1827.",
       "Las reformas aduaneras y las leyes de compromiso dictadas durante la presidencia de Bartolomé Mitre en 1862.",
       "La Constitución Nacional originaria sancionada por el Congreso de Santa Fe en mayo de 1853.",
-      "El Derecho Público Provincial, destacándose las reformas constitucionales de San Juan (1927), Entre Ríos (1933) y Santiago del Estero (1939). HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 6Año 2026"
+      "El Derecho Público Provincial, destacándose las reformas constitucionales de San Juan (1927), Entre Ríos (1933) y Santiago del Estero (1939)."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2432,7 +2432,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El partido político único de la Confederación encargado exclusivamente de aplicar las leyes laicas del unicato.",
       "Una corriente de pensamiento de impronta romántica y liberal que rechazaba tanto las prácticas absolutistas de Rosas como el formalismo abstracto de los unitarios, postulando una síntesis superadora.",
       "Un colegio de juristas conservadores dedicado de oficio a redactar el código civil de la provincia de Buenos Aires.",
-      "Un grupo militar de facto que organizó la invasión de la Banda Oriental con el apoyo de la marina francesa. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 28Año 2026"
+      "Un grupo militar de facto que organizó la invasión de la Banda Oriental con el apoyo de la marina francesa."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2448,7 +2448,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La revisión periódica anual de los estatutos de las provincias por un comisario militar designado por el Director Provisorio.",
       "El examen obligatorio de las leyes antes de su sanción por un Consejo de Estado integrado por representantes de la Iglesia católica.",
       "La exigencia de que las constituciones dictadas por las provincias debían ser revisadas y aprobadas por el Congreso Nacional antes de su promulgación, suprimida en la reforma de 1860.",
-      "La facultad del Presidente de la Nación de vetar en forma absoluta los fallos judiciales dictados por la Alta Corte de Justicia. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 7Año 2026"
+      "La facultad del Presidente de la Nación de vetar en forma absoluta los fallos judiciales dictados por la Alta Corte de Justicia."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2496,7 +2496,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La nacionalización de las rentas fiscales de la aduana exterior de Buenos Aires para dividirlas proporcionalmente.",
       "La total y absoluta derogación de la esclavitud civil de las personas negras de origen africano mediante comicios directos.",
       "Consagrar la laicidad de la enseñanza primaria declarándola gratuita y exenta de sostenimiento católico.",
-      "La abolición del mayorazgo, la supresión de los títulos de nobleza, la prohibición del tormento para la investigación de la verdad y la eliminación de los trabajos forzados indígenas (mita, encomienda). HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 17Año 2026"
+      "La abolición del mayorazgo, la supresión de los títulos de nobleza, la prohibición del tormento para la investigación de la verdad y la eliminación de los trabajos forzados indígenas (mita, encomienda)."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2560,7 +2560,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Haber limitado ciertas potestades absolutas del monarca, especialmente la prohibición de crear impuestos o tributos sin el consentimiento de los barones y eclesiásticos del reino.",
       "Consagrar el sufragio universal masculino y femenino directo para la elección de los miembros de la Cámara de los Comunes.",
       "Dictar la primera constitución escrita, rígida y sistemática que sirvió de modelo para el constitucionalismo latino.",
-      "Establecer la abolición definitiva del régimen feudal y de la esclavitud en todas las islas británicas. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 5Año 2026"
+      "Establecer la abolición definitiva del régimen feudal y de la esclavitud en todas las islas británicas."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2608,7 +2608,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Porque entregaba el control del puerto exterior y la aduana exclusivamente al Gobierno de la provincia Oriental.",
       "Porque abolió la religión católica romana declarando la absoluta laicidad de la educación primaria de las provincias.",
       "Porque declaraba que la soberanía originaria residía en el pueblo de cada provincia con derecho de secesión.",
-      "Porque no definía forma de Estado ni de gobierno para facilitar una monarquía, no otorgaba autonomías a las provincias y organizaba un Senado estamentario integrado por obispos, militares de alta gradación y delegados universitarios. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 21Año 2026"
+      "Porque no definía forma de Estado ni de gobierno para facilitar una monarquía, no otorgaba autonomías a las provincias y organizaba un Senado estamentario integrado por obispos, militares de alta gradación y delegados universitarios."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2704,7 +2704,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El dictado formal de la primera constitución territorial federal redactada por la Joven Argentina.",
       "La inmediata disolución del Consulado y el restablecimiento del cargo vitalicio de Adelantado del Sud.",
       "La concentración del poder ejecutivo en un órgano de tres miembros y un retorno a la centralización de las decisiones políticas en Buenos Aires, neutralizando la influencia de los diputados provinciales.",
-      "La asunción del poder soberano absoluto por parte de los comisionados eclesiásticos partidarios de Artigas. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 15Año 2026"
+      "La asunción del poder soberano absoluto por parte de los comisionados eclesiásticos partidarios de Artigas."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2797,8 +2797,8 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "dificultad": "media",
     "pregunta": "Durante su gestión como gobernador de Buenos Aires (1827-1828), Manuel Dorrego desplegó una activa política orientada a:",
     "opciones": [
-      "Contraer nuevos empréstitos con la banca Baring Brothers para financiar la supresión de las aduanas litorales.",
-      "Declarar rebeldes a los oficiales del Ejército del Norte y suprimir los Jueces de Paz de las parroquias litorales.",
+      "Contraer nuevos empréstitos con la banca Baring Brothers para financiar la supresión de las aduanas",
+      "Declarar rebeldes a los oficiales del Ejército del Norte y suprimir los Jueces de Paz de las parroquias",
       "Firmar tratados bilaterales de paz y amistad sólida con las provincias interiores, delegando éstas en Buenos Aires el ejercicio de las relaciones exteriores y adhiriéndose progresivamente al sistema federal.",
       "Imponer militarmente en las provincias del norte el régimen de las intendencias y de la Constitución unitaria de 1826."
     ],
@@ -2896,7 +2896,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La abolición del tributo de la dote y la habilitación de los indígenas para ocupar cargos de regidores en los Cabildos.",
       "La supresión definitiva de los juicios de residencia para todos los funcionarios eclesiásticos indianos.",
       "La entrega directa de la propiedad quiritaria de las tierras públicas de la Corona a los caciques locales.",
-      "La supresión del trabajo servil, la prohibición de trasladarlos de su residencia habitual, la nulidad de su compraventa y el pago de una tasa anual en reemplazo de prestaciones. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 9Año 2026"
+      "La supresión del trabajo servil, la prohibición de trasladarlos de su residencia habitual, la nulidad de su compraventa y el pago de una tasa anual en reemplazo de prestaciones."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -2944,7 +2944,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Declarar la guerra ofensiva-defensiva contra el Imperio de Brasil bajo la mediación de la Santa Alianza.",
       "La disolución de facto del ejército nacional para formar milicias provinciales al mando de los regidores del Cabildo.",
       "El rechazo del tratado por el Congreso y por el propio Presidente, debido a que implicaba renunciar a la Banda Oriental, lo cual forzó la dimisión de Rivadavia a su cargo.",
-      "La entrega de la dote matrimonial y de los cementerios civiles porteños a la administración de las congregaciones eclesiásticas. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 25Año 2026"
+      "La entrega de la dote matrimonial y de los cementerios civiles porteños a la administración de las congregaciones eclesiásticas."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -3008,7 +3008,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Interpretar libremente el sentido lingüístico actual de los textos normativos antiguos sin recurrir a su contexto original.",
       "Aplicar las técnicas de hallazgo, acumulación y ordenamiento de testimonios, documentos y objetos materiales para transformarlos en fuentes históricas veraces.",
       "Sustituir el análisis racional de las fuentes primarias por especulaciones ideológicas puramente teóricas.",
-      "Juzgar moralmente la conducta de los funcionarios coloniales mediante sentencias judiciales inapelables. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 4Año 2026"
+      "Juzgar moralmente la conducta de los funcionarios coloniales mediante sentencias judiciales inapelables."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -3021,7 +3021,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "dificultad": "media",
     "pregunta": "Las célebres 'Instrucciones Orientales de 1813' dictadas por Artigas a sus diputados contenían como lineamientos básicos:",
     "opciones": [
-      "Nacionalizar las propiedades de los extranjeros intestados y suprimir los Jueces de Paz de las parroquias litorales.",
+      "Nacionalizar las propiedades de los extranjeros intestados y suprimir los Jueces de Paz de las parroquias",
       "Sometimiento absoluto al gobierno directorial de Buenos Aires, supresión de las aduanas provinciales y sufragio calificado.",
       "Establecer una monarquía constitucional atemperada bajo el linaje soberano de un príncipe de la dinastía Inca.",
       "Declaración de la independencia absoluta de España, adopción del sistema de confederación, separación de poderes, autonomías provinciales, libertad civil y aduanas libres locales."
@@ -3056,7 +3056,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Declarar obligatoria y gratuita la enseñanza primaria, disponiendo al legislativo el deber preciso de fomentar seminarios para las ciencias, artes y aulas de gramática.",
       "La prohibición de enseñar lectura y escritura a las personas de origen aborigen o mulato.",
       "Subordinar las universidades provinciales a la fiscalización de la Casa de Contratación de Sevilla.",
-      "Entregar la dirección exclusiva de todas las escuelas a los sacerdotes pontífices jesuitas. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 19Año 2026"
+      "Entregar la dirección exclusiva de todas las escuelas a los sacerdotes pontífices jesuitas."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -3104,7 +3104,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Prohibía la adquisición de campos de campaña a toda persona que no ostentara la dote de diez mil pesos.",
       "Disponía la parcelación y entrega directa de pequeñas parcelas de campo a los aborígenes sometidos.",
       "Arrendaba tierras públicas de la Provincia hipotecadas por la deuda externa, sin fijar límites de extensión, lo que favoreció en los hechos la concentración de la tierra y el surgimiento del gran latifundio ganadero.",
-      "Nacionalizaba las propiedades rurales improductivas sin indemnización previa para entregárselas a los peones. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 23Año 2026"
+      "Nacionalizaba las propiedades rurales improductivas sin indemnización previa para entregárselas a los peones."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -3136,7 +3136,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El establecimiento obligatorio del juicio por jurados populares para las causas civiles en campaña.",
       "La subordinación absoluta de los tribunales de comercio provinciales a la dirección directa del Virrey.",
       "La asignación del poder de policía alta y baja a los jueces de paz de las parroquias litorales.",
-      "La supresión definitiva de la Real Audiencia colonial, creando en su lugar un organismo superior de apelaciones denominado Cámara de Apelaciones. PARTE IV: LA ASAMBLEA DEL XIII, EL CONGRESO DE TUCUMÁN Y EL RIVADAVISMO HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 16Año 2026"
+      "La supresión definitiva de la Real Audiencia colonial, creando en su lugar un organismo superior de apelaciones denominado Cámara de Apelaciones. PARTE IV: LA ASAMBLEA DEL XIII, EL CONGRESO DE TUCUMÁN Y EL RIVADAVISMO"
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -3152,7 +3152,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La negativa de los diputados artiguistas de jurar fidelidad al monarca cautivo Fernando VII.",
       "Cuestiones de legalidad formal e irregularidad en los procesos de elección, lo cual sirvió para ocultar una maniobra centralista del gobierno que buscaba excluir sus posturas federales del seno constituyente.",
       "La expresa prohibición del Estatuto de Bayona de admitir diputados de la provincia Oriental.",
-      "Carecer de la dote patrimonial de diez mil pesos exigida como requisito sine qua non por la ley electoral. HISTORIA CONSTITUCIONALSIMULACRO DE EXAMEN UNIFICADO FCJyS — Universidad Nacional de La Plata (UNLP)Página 18Año 2026"
+      "Carecer de la dote patrimonial de diez mil pesos exigida como requisito sine qua non por la ley electoral."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Historia Constitucional conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -14739,7 +14739,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Someten al civil a la quiebra comercial de hecho de forma directa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "La doctrina (Fontanarrosa y Gómez Leo) y el Código civil (art. 1192) establecen que los libros del comerciante no pueden hacer prueba plena en contra de un civil que no tiene el deber de llevar libros regulares para defenderse en igualdad. Funcionan solo como principio de prueba por escrito que debe integrarse con otras pruebas (Image 185, p. 172).",
+    "fundamento_juridico": "La doctrina (Fontanarrosa y Gómez Leo) y el Código civil (art. 1192) establecen que los libros del comerciante no pueden hacer prueba plena en contra de un civil que no tiene el deber de llevar libros regulares para defenderse en igualdad. Funcionan solo como principio de prueba por escrito que debe integrarse con otras pruebas",
     "puntos_base": 100
   },
   {
@@ -14851,7 +14851,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Sí, pero únicamente si el trabajador recibe su pago en moneda metálica acuñada."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El trabajo humano no es una cosa mueble en sí misma, sino una manifestación inmaterial que se agota en el acto de su producción. Su adquisición (contratación) se encuadra en las locaciones de servicios o empleo y solo es comercial para el empleador si se asocia a una organización sistemática de empresa comercial o industrial (Image 62, p. 120).",
+    "fundamento_juridico": "El trabajo humano no es una cosa mueble en sí misma, sino una manifestación inmaterial que se agota en el acto de su producción. Su adquisición (contratación) se encuadra en las locaciones de servicios o empleo y solo es comercial para el empleador si se asocia a una organización sistemática de empresa comercial o industrial",
     "puntos_base": 100
   },
   {
@@ -14883,7 +14883,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El sistema de la recepción física por triplicado ante el Registro."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El derecho argentino adopta el sistema mixto o de la expedición con atenuaciones. El contrato queda perfeccionado desde el momento en que el aceptante envía (expide) su aceptación al proponente (art. 1154), pero se permite la retractación de la aceptación si llega antes o al mismo tiempo que la aceptación original (art. 1155) (Image 137, p. 78).",
+    "fundamento_juridico": "El derecho argentino adopta el sistema mixto o de la expedición con atenuaciones. El contrato queda perfeccionado desde el momento en que el aceptante envía (expide) su aceptación al proponente (art. 1154), pero se permite la retractación de la aceptación si llega antes o al mismo tiempo que la aceptación original (art. 1155) (Image",
     "puntos_base": 100
   },
   {
@@ -14931,7 +14931,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El comprador debe declarar bajo juramento mercantil su propósito de reventa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Para evitar fraudes y amparar la buena fe del co-contratante, la intención de especular debe ser cognoscible. Si el comprador adquiere bienes en cantidades que exceden visiblemente las necesidades de consumo de un particular, se presume iuris tantum su carácter mercantil, siendo la intención cognoscible por las circunstancias (Image 63, p. 123).",
+    "fundamento_juridico": "Para evitar fraudes y amparar la buena fe del co-contratante, la intención de especular debe ser cognoscible. Si el comprador adquiere bienes en cantidades que exceden visiblemente las necesidades de consumo de un particular, se presume iuris tantum su carácter mercantil, siendo la intención cognoscible por las circunstancias",
     "puntos_base": 100
   },
   {
@@ -15219,7 +15219,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Exclusivamente en caso de muerte o incapacidad civil de la contraparte."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "La teoría de la imprevisión (introducida por la ley 17.711 en el art. 1198) exige que una de las prestaciones se haya tornado 'excesivamente onerosa' como consecuencia de un hecho extraordinario e imprevisible (v.gr., hiperinflación, guerra, devaluación abrupta). Da derecho a solicitar la resolución o un reajuste equitativo (Image 151, p. 115).",
+    "fundamento_juridico": "La teoría de la imprevisión (introducida por la ley 17.711 en el art. 1198) exige que una de las prestaciones se haya tornado 'excesivamente onerosa' como consecuencia de un hecho extraordinario e imprevisible (v.gr., hiperinflación, guerra, devaluación abrupta). Da derecho a solicitar la resolución o un reajuste equitativo (Image",
     "puntos_base": 100
   },
   {
@@ -15635,7 +15635,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La obligación de conservar la correspondencia por veinte años."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Gómez Leo sostiene que las obligaciones comunes (matrícula, libros, conservación) son técnicamente 'cargas', pues su inobservancia acarrea la pérdida de ventajas mas no acción directa de cumplimiento. La única y verdadera obligación exigible por un tercero pretensor es la de rendir cuentas en las condiciones legales (Image 165, p. 6).",
+    "fundamento_juridico": "Gómez Leo sostiene que las obligaciones comunes (matrícula, libros, conservación) son técnicamente 'cargas', pues su inobservancia acarrea la pérdida de ventajas mas no acción directa de cumplimiento. La única y verdadera obligación exigible por un tercero pretensor es la de rendir cuentas en las condiciones legales (Image",
     "puntos_base": 100
   },
   {
@@ -15939,7 +15939,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El pacto de preferencia recíproco en condominio."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 988 CCyCN: Considera abusivas y se tienen por no escritas las cláusulas que desnaturalizan obligaciones, limitan responsabilidad o restringen derechos del adherente. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 988 CCyCN: Considera abusivas y se tienen por no escritas las cláusulas que desnaturalizan obligaciones, limitan responsabilidad o restringen derechos del adherente.",
     "puntos_base": 100
   },
   {
@@ -15971,7 +15971,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Incurre en dolo penal por rescisión unilateral intempestiva."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Art. 1261 CCyCN: El comitente puede desistir unilateralmente de la obra, indemnizando gastos, trabajos y utilidades (con facultad de atenuación judicial de la utilidad). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1261 CCyCN: El comitente puede desistir unilateralmente de la obra, indemnizando gastos, trabajos y utilidades (con facultad de atenuación judicial de la utilidad).",
     "puntos_base": 100
   },
   {
@@ -16003,7 +16003,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La oferta dirigida a persona determinada es irrevocable y jamás puede retractarse."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 975 CCyCN: La oferta puede ser retractada si la comunicación del retiro es recibida por el destinatario antes o al mismo tiempo que la oferta. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 975 CCyCN: La oferta puede ser retractada si la comunicación del retiro es recibida por el destinatario antes o al mismo tiempo que la oferta.",
     "puntos_base": 100
   },
   {
@@ -16035,7 +16035,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Transmite el derecho real de dominio de manera automática al comprador."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Borda y Art. 1018 CCyCN: El boleto genera una obligación de hacer. Ante la rebeldía de escriturar, el juez otorga la escritura si la contraprestación está cumplida o garantizada. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Borda y Art. 1018 CCyCN: El boleto genera una obligación de hacer. Ante la rebeldía de escriturar, el juez otorga la escritura si la contraprestación está cumplida o garantizada.",
     "puntos_base": 100
   },
   {
@@ -16051,7 +16051,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No tiene ninguna carga de denunciar antes de la prescripción anual."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1054 CCyCN: El adquirente debe denunciar el defecto al garante dentro de los 60 días de descubierto, bajo pena de extinguir la responsabilidad (salvo mala fe). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1054 CCyCN: El adquirente debe denunciar el defecto al garante dentro de los 60 días de descubierto, bajo pena de extinguir la responsabilidad (salvo mala fe).",
     "puntos_base": 100
   },
   {
@@ -16131,7 +16131,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Que se realice exclusivamente mediante escritura pública bajo pena de nulidad."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Art. 972 CCyCN. Define la oferta exigiéndole destinatario determinado o determinable, animus obligandi, y precisión suficiente (elementos esenciales particulares). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 972 CCyCN. Define la oferta exigiéndole destinatario determinado o determinable, animus obligandi, y precisión suficiente (elementos esenciales particulares).",
     "puntos_base": 100
   },
   {
@@ -16147,7 +16147,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Requieren la conformidad judicial previa bajo pena de nulidad."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Art. 1008 CCyCN: Los bienes ajenos pueden ser objeto de los contratos. Si el promitente garantiza la entrega, la obligación es de resultado (objetiva). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1008 CCyCN: Los bienes ajenos pueden ser objeto de los contratos. Si el promitente garantiza la entrega, la obligación es de resultado (objetiva).",
     "puntos_base": 100
   },
   {
@@ -16163,7 +16163,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Las modificaciones contractuales se rigen por la libertad absoluta de formas."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1015 CCyCN: Solo son formales los contratos a los cuales la ley les impone una forma determinada. Rige el principio de libertad de formas (Art. 284). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1015 CCyCN: Solo son formales los contratos a los cuales la ley les impone una forma determinada. Rige el principio de libertad de formas (Art. 284).",
     "puntos_base": 100
   },
   {
@@ -16195,7 +16195,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La teoría de la recepción (Art. 980)."
     ],
     "respuesta_correcta_index": 3,
-    "fundamento_juridico": "Arts. 980 y 983 CCyCN. El Código adopta la teoría de la recepción, perfeccionándose el contrato entre ausentes cuando la aceptación es recibida por el proponente en su plazo. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN 2. PRESUPUESTOS Y ELEMENTOS DEL CONTRATO",
+    "fundamento_juridico": "Arts. 980 y 983 CCyCN. El Código adopta la teoría de la recepción, perfeccionándose el contrato entre ausentes cuando la aceptación es recibida por el proponente en su plazo. 2. PRESUPUESTOS Y ELEMENTOS DEL CONTRATO",
     "puntos_base": 100
   },
   {
@@ -16211,7 +16211,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Seña, Pacto Comisorio y Saneamiento."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Borda y Art. 1003 CCyCN: Los elementos esenciales sin los cuales el contrato no puede existir como tal son el consentimiento, el objeto y la causa (causa-fin). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN 3. FORMA, PRUEBA Y EFECTOS DE LOS CONTRATOS",
+    "fundamento_juridico": "Borda y Art. 1003 CCyCN: Los elementos esenciales sin los cuales el contrato no puede existir como tal son el consentimiento, el objeto y la causa (causa-fin). 3. FORMA, PRUEBA Y EFECTOS DE LOS CONTRATOS",
     "puntos_base": 100
   },
   {
@@ -16291,7 +16291,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El juez puede adecuar de oficio las prestaciones en todos los supuestos."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1078 CCyCN: La demanda por cumplimiento no impide deducir la resolución posterior; pero la opción resolutoria es excluyente y obsta al cumplimiento posterior. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1078 CCyCN: La demanda por cumplimiento no impide deducir la resolución posterior; pero la opción resolutoria es excluyente y obsta al cumplimiento posterior.",
     "puntos_base": 100
   },
   {
@@ -16323,7 +16323,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Los contratos gratuitos pueden ser conmutativos o aleatorios de manera indistinta."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 968 CCyCN: Los contratos onerosos son conmutativos cuando las ventajas son ciertas. Son aleatorios cuando las ventajas o pérdidas dependen de un acontecimiento incierto. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 968 CCyCN: Los contratos onerosos son conmutativos cuando las ventajas son ciertas. Son aleatorios cuando las ventajas o pérdidas dependen de un acontecimiento incierto.",
     "puntos_base": 100
   },
   {
@@ -16403,7 +16403,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Tienen derecho de arrepentimiento unilateral sin pago de indemnización."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1024 CCyCN: Los efectos del contrato se extienden activa y pasivamente a los sucesores universales, salvo obligaciones inherentes o incompatibles. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1024 CCyCN: Los efectos del contrato se extienden activa y pasivamente a los sucesores universales, salvo obligaciones inherentes o incompatibles.",
     "puntos_base": 100
   },
   {
@@ -16499,7 +16499,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Inoponibilidad frente a los acreedores quirografarios."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Art. 1002, inc. c) CCyCN. Los abogados tienen prohibido comprar bienes litigiosos en procesos en que intervienen. La nulidad es absoluta debido al interés del orden público y la moral. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1002, inc. c) CCyCN. Los abogados tienen prohibido comprar bienes litigiosos en procesos en que intervienen. La nulidad es absoluta debido al interés del orden público y la moral.",
     "puntos_base": 100
   },
   {
@@ -16579,7 +16579,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No puede ser opuesta frente a concursos o quiebras."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1578 CCyCN: Valida la fianza general con objeto indeterminado, pero impone doble límite para resguardo: monto máximo expreso y plazo de 5 años. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1578 CCyCN: Valida la fianza general con objeto indeterminado, pero impone doble límite para resguardo: monto máximo expreso y plazo de 5 años.",
     "puntos_base": 100
   },
   {
@@ -16627,7 +16627,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El objeto del contrato sea la enajenación de un fondo de comercio."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1125 CCyCN: Regula la diferencia entre compraventa de cosa futura y contrato de obra, priorizando este último si la obligación principal es mano de obra o se aportan materiales. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1125 CCyCN: Regula la diferencia entre compraventa de cosa futura y contrato de obra, priorizando este último si la obligación principal es mano de obra o se aportan materiales.",
     "puntos_base": 100
   },
   {
@@ -16675,7 +16675,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Únicamente en los contratos celebrados por medios electrónicos."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Art. 979 CCyCN: El silencio importa aceptación sólo cuando existe el deber de expedirse (por ley, voluntad, usos, o conducta previa). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 979 CCyCN: El silencio importa aceptación sólo cuando existe el deber de expedirse (por ley, voluntad, usos, o conducta previa).",
     "puntos_base": 100
   },
   {
@@ -16691,7 +16691,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Requiere la homologación previa del Registro de la Propiedad Inmueble."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1225 CCyCN: La obligación del fiador cesa de pleno derecho al vencimiento del plazo locativo. Es nula la cláusula que anticipa la fianza de prórrogas sin consentimiento posterior. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1225 CCyCN: La obligación del fiador cesa de pleno derecho al vencimiento del plazo locativo. Es nula la cláusula que anticipa la fianza de prórrogas sin consentimiento posterior.",
     "puntos_base": 100
   },
   {
@@ -16707,7 +16707,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Exige que el tercero sea designado judicialmente en el plazo de 10 días."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1029 CCyCN. El contrato para persona a designar permite transferir la posición contractual, desligando al intermediario al revelarse y aceptarse al tercero. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1029 CCyCN. El contrato para persona a designar permite transferir la posición contractual, desligando al intermediario al revelarse y aceptarse al tercero.",
     "puntos_base": 100
   },
   {
@@ -16755,7 +16755,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No existe ninguna diferencia jurídica, son sinónimos absolutos en el Código actual."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Borda aclara que la convención jurídica se refiere a acuerdos de voluntades no patrimoniales pero con coacción jurídica (ej. art. 439), mientras que el contrato está destinado a reglar derechos patrimoniales (art. 957, 1003). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Borda aclara que la convención jurídica se refiere a acuerdos de voluntades no patrimoniales pero con coacción jurídica (ej. art. 439), mientras que el contrato está destinado a reglar derechos patrimoniales (art. 957, 1003).",
     "puntos_base": 100
   },
   {
@@ -16771,7 +16771,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No tiene ningún límite, pues el Código consagra un contractualismo absoluto."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 958 CCyCN: Las partes son libres para celebrar un contrato y determinar su contenido dentro de los límites impuestos por la ley, el orden público, la moral y las buenas costumbres. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 958 CCyCN: Las partes son libres para celebrar un contrato y determinar su contenido dentro de los límites impuestos por la ley, el orden público, la moral y las buenas costumbres.",
     "puntos_base": 100
   },
   {
@@ -16803,7 +16803,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La interpretación que libere al deudor en todos los supuestos."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1061 CCyCN: El contrato debe interpretarse conforme a la intención común de las partes y al principio de la buena fe. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1061 CCyCN: El contrato debe interpretarse conforme a la intención común de las partes y al principio de la buena fe.",
     "puntos_base": 100
   },
   {
@@ -16819,7 +16819,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Si se trata de un contrato preliminar con plazo de un año."
     ],
     "respuesta_correcta_index": 0,
-    "fundamento_juridico": "Art. 1088, inc. c) CCyCN. El requerimiento no es necesario si el plazo es esencial, hay imposibilidad, o el deudor declara de manera inequívoca que no cumplirá. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1088, inc. c) CCyCN. El requerimiento no es necesario si el plazo es esencial, hay imposibilidad, o el deudor declara de manera inequívoca que no cumplirá.",
     "puntos_base": 100
   },
   {
@@ -16899,7 +16899,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Solo es viable si lo autoriza expresamente el Ministerio Público Fiscal."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Borda y Art. 53 LDC: La CSJN ha ratificado que el beneficio de gratuidad en las acciones de consumo equivale al beneficio de litigar sin gastos presumido. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN 6. CONTRATOS EN PARTICULAR",
+    "fundamento_juridico": "Borda y Art. 53 LDC: La CSJN ha ratificado que el beneficio de gratuidad en las acciones de consumo equivale al beneficio de litigar sin gastos presumido. 6. CONTRATOS EN PARTICULAR",
     "puntos_base": 100
   },
   {
@@ -16995,7 +16995,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Los contratos conmutativos."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Borda explica que han desaparecido los contratos reales como categoría constitutiva. En el Código actual, todos los contratos son consensuales (se perfeccionan por el mero consentimiento). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Borda explica que han desaparecido los contratos reales como categoría constitutiva. En el Código actual, todos los contratos son consensuales (se perfeccionan por el mero consentimiento).",
     "puntos_base": 100
   },
   {
@@ -17027,7 +17027,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Queda a exclusivo criterio del Ministerio Público Fiscal."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Borda aclara que se invierte la carga de la prueba en la excepción de incumplimiento total: el actor que demanda cumplimiento debe probar haber cumplido u ofrecido cumplir. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Borda aclara que se invierte la carga de la prueba en la excepción de incumplimiento total: el actor que demanda cumplimiento debe probar haber cumplido u ofrecido cumplir.",
     "puntos_base": 100
   },
   {
@@ -17059,7 +17059,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Deben ser autorizadas previamente por la autoridad de aplicación local."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Borda y Art. 988, 1117 CCyCN: Las cláusulas de exención de saneamiento en contratos por adhesión o consumo desnaturalizan las obligaciones del proveedor y son nulas. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Borda y Art. 988, 1117 CCyCN: Las cláusulas de exención de saneamiento en contratos por adhesión o consumo desnaturalizan las obligaciones del proveedor y son nulas.",
     "puntos_base": 100
   },
   {
@@ -17107,7 +17107,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es indeterminado, sujeto a la teoría de la imprevisión."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1177 CCyCN: Fija los límites máximos del contrato de suministro, distinguiendo la naturaleza de las cosas objeto de entrega periódica. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1177 CCyCN: Fija los límites máximos del contrato de suministro, distinguiendo la naturaleza de las cosas objeto de entrega periódica.",
     "puntos_base": 100
   },
   {
@@ -17235,7 +17235,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Una publicación periodística genérica de oferta de mercaderías."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1020 CCyCN, párrafo 2º: El principio de prueba instrumental comprende cualquier instrumento que emane de la otra parte y que haga verosímil el contrato. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1020 CCyCN, párrafo 2º: El principio de prueba instrumental comprende cualquier instrumento que emane de la otra parte y que haga verosímil el contrato.",
     "puntos_base": 100
   },
   {
@@ -17267,7 +17267,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Provocan la nulidad total de todo el contrato de adhesión."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 985 CCyCN: Se tienen por no convenidas aquellas cláusulas que efectúan un reenvío a textos o documentos que no se facilitan previa o simultáneamente. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 985 CCyCN: Se tienen por no convenidas aquellas cláusulas que efectúan un reenvío a textos o documentos que no se facilitan previa o simultáneamente.",
     "puntos_base": 100
   },
   {
@@ -17283,7 +17283,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es un contrato bilateral e innominado con plazo legal de un año."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Borda aclara que el convenio de confidencialidad tutela la reserva de la información compartida, pero no constituye un compromiso de concretar el negocio determinado de fondo. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Borda aclara que el convenio de confidencialidad tutela la reserva de la información compartida, pero no constituye un compromiso de concretar el negocio determinado de fondo.",
     "puntos_base": 100
   },
   {
@@ -17299,7 +17299,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No tiene ninguna obligación, pues el arrepentimiento es gratuito."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1059 CCyCN: Si se arrepiente quien recibió la seña, debe restituirla doblada (devolución de la cosa/dinero y otra suma igual). GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN 4. EFECTOS PARTICULARES Y OBLIGACIÓN DE SANEAMIENTO",
+    "fundamento_juridico": "Art. 1059 CCyCN: Si se arrepiente quien recibió la seña, debe restituirla doblada (devolución de la cosa/dinero y otra suma igual). 4. EFECTOS PARTICULARES Y OBLIGACIÓN DE SANEAMIENTO",
     "puntos_base": 100
   },
   {
@@ -17427,7 +17427,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Sujetos a las reglas de la evicción de manera imperativa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1076 CCyCN: El contrato puede ser extinguido por rescisión bilateral. Esta produce efectos solo para el futuro y no afecta derechos de terceros de buena fe. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1076 CCyCN: El contrato puede ser extinguido por rescisión bilateral. Esta produce efectos solo para el futuro y no afecta derechos de terceros de buena fe.",
     "puntos_base": 100
   },
   {
@@ -17443,7 +17443,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es necesario que intervenga el Ministerio Público Fiscal."
     ],
     "respuesta_correcta_index": 0,
-    "fundamento_juridico": "Art. 1048, inc. a) CCyCN: El adquirente debe citar por evicción al enajenante al proceso judicial, bajo pena de eximirlo de responsabilidad ante la falta de citación. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1048, inc. a) CCyCN: El adquirente debe citar por evicción al enajenante al proceso judicial, bajo pena de eximirlo de responsabilidad ante la falta de citación.",
     "puntos_base": 100
   },
   {
@@ -17459,7 +17459,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Pedir la nulidad relativa del contrato por falsa causa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Art. 1090 CCyCN: La frustración definitiva de la finalidad autoriza a declarar la resolución si proviene de alteración extraordinaria, ajena y supera el riesgo. GUÍA DE ESTUDIO: 100 PREGUNTAS DE CONTRATOSEXAMEN DE AUTOEVALUACIÓN",
+    "fundamento_juridico": "Art. 1090 CCyCN: La frustración definitiva de la finalidad autoriza a declarar la resolución si proviene de alteración extraordinaria, ajena y supera el riesgo.",
     "puntos_base": 100
   },
   {
@@ -20679,6 +20679,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10136-039ea4ef",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿Qué innovador instituto de control de receso legislativo se creó en la histórica Constitución para el Estado de Buenos Aires de 1854, integrada originalmente por Valentín Alsina,Carlos Tejedor y Dalmacio Vélez Sarsfield?",
+    "opciones": [
+      "El Consejo de la Magistratura.",
+      "La Comisión Permanente (compuesta por tres senadores y cuatro diputados).",
+      "El Jurado de Enjuiciamiento de Magistrados.",
+      "El Tribunal Social de Responsabilidad Política."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10136-05eaa609",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -20689,22 +20705,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El derecho de toda persona a conocer lo que conste de la misma en registros o bancos de datos deorganismos públicos, o privados destinados a proveer informes, y requerir su rectificación, actualización ocancelación.",
       "El derecho a prohibir la publicación de noticias periodísticas que afecten a funcionarios.",
       "El derecho a fiscalizar las declaraciones juradas fiscales de los contribuyentes locales."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10136-0689c933",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "¿Qué requisito formal indispensable impone el artículo 168 de la Constituciónbonaerense para que exista sentencia válida de un tribunal colegiado en el territorio de laProvincia?",
-    "opciones": [
-      "La firma exclusiva del presidente del tribunal colegiado.",
-      "Que los jueces den su voto en todas las cuestiones esenciales a decidir y que concurra mayoría deopiniones acerca de cada una de ellas.",
-      "Que el acuerdo sea rubricado en un plazo de cuarenta y ocho horas ante el Defensor del Pueblo.",
-      "Que cuente con el dictamen favorable del Ministerio Público."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -20935,6 +20935,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10136-2789121e",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿Qué atribución originaria y exclusiva confiere el artículo 161 inciso 1 de la Constitución de la PBA a la Suprema Corte de Justicia provincial en materia de controlconstitucional?",
+    "opciones": [
+      "Resolver en grado de apelación las multas contravencionales locales.",
+      "Conocer y resolver originaria y de apelación acerca de la constitucionalidad o inconstitucionalidad deleyes, decretos, ordenanzas o reglamentos provinciales o municipales que se controviertan por parteinteresada.",
+      "Juzgar y suspender preventivamente a los senadores bajo causa judicial común.",
+      "Autorizar los allanamientos solicitados por las autoridades de salubridad municipal."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10136-2c1c1706",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -20983,22 +20999,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-3176a7f1",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "¿Qué municipalista cubano influyó de forma decisiva en el Primer CongresoPanamericano de Municipios celebrado en La Habana en 1938, propugnando la autarquía comouna crisis del derecho administrativo?",
-    "opciones": [
-      "Adriano Carmona Romay.",
-      "Ives Orlando Tito de Oliveira.",
-      "Salvador Dana Montaño.",
-      "Alcides Greca."
-    ],
-    "respuesta_correcta_index": 0,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10136-35f91d2e",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -21015,6 +21015,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10136-36d72b54",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "Según el artículo 159, ¿cuál de las siguientes es una atribución de control del Tribunal de Cuentas bonaerense?",
+    "opciones": [
+      "Dictar sentencias penales condenatorias por delitos de corrupción administrativa.",
+      "Examinar las cuentas de percepción e inversión de las rentas públicas, tanto provinciales comomunicipales, aprobarlas o desaprobarlas e indicar los alcances y funcionarios responsables.",
+      "Autorizar directamente los empréstitos externos del Gobernador en el extranjero.",
+      "Dirimir las competencias y disputas de límites de las municipalidades. CAPÍTULO 7: ESTRUCTURA DEL PODER JUDICIAL Y EL CONSEJO DE LA MAGISTRATURA Constitución de la PBA - Sección VI: Artículos 159 al 189"
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10136-36f70eb2",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -21025,6 +21041,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Derecho Constitucional Subnacional.",
       "Derecho Constitucional Provincial.",
       "Derecho Constitucional Comparado de las Provincias Argentinas."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10136-385d7afa",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es el método de enseñanza y análisis defendido por el Dr. Hernán Luna porconsiderarlo el \"más moderno, integrador y interdisciplinario\" para aprehender el Derecho Público Provincial?",
+    "opciones": [
+      "El método exegético puro.",
+      "El método histórico-político alberdiano.",
+      "El método pluralista o interdisciplinario.",
+      "El método autárquico de la Escuela del Litoral."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21079,22 +21111,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-3e479c50",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "¿Cuál es el método de enseñanza y análisis defendido por el Dr. Hernán Luna porconsiderarlo el \"más moderno, integrador y interdisciplinario\" para aprehender el Derecho PúblicoProvincial?",
-    "opciones": [
-      "El método exegético puro.",
-      "El método histórico-político alberdiano.",
-      "El método pluralista o interdisciplinario.",
-      "El método autárquico de la Escuela del Litoral."
-    ],
-    "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10136-3f85d84c",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -21102,7 +21118,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "pregunta": "Según el artículo 1 de la Constitución de la Provincia de Buenos Aires (PBA), ¿cuáles el estatus de la Provincia dentro de la República Argentina?",
     "opciones": [
       "Es un estado soberano e independiente que puede declarar la secesión por voto de dos tercios de la Legislatura.",
-      "Como parte integrante de la Nación, tiene el libre ejercicio de todos los poderes y derechos que por laConstitución Nacional no hayan sido delegados al Gobierno de la Nación.",
+      "Como parte integrante de la Nación, tiene el libre ejercicio de todos los poderes y derechos que por la Constitución Nacional no hayan sido delegados al Gobierno de la Nación.",
       "Es un territorio autónomo de administración delegada subordinado directamente al Presidente de la Nación.",
       "Es un distrito electoral único regido por leyes orgánicas del Congreso Nacional."
     ],
@@ -21127,16 +21143,32 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-3fe4be73",
+    "id": "10136-44ce8e92",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "¿Cómo se compone la Cámara de Senadores de la PBA y cuál es el límite máximoque puede fijar la Legislatura con el voto de dos tercios de cada Cámara, según el artículo 75 de laConstitución?",
+    "pregunta": "¿En qué año y en qué universidad se creó la primera cátedra de Derecho Público Provincial y Municipal en la República Argentina, teniendo como primer profesor titular aldestacado jurista Arturo M. Bas?",
     "opciones": [
-      "Se compone de 30 senadores, elevable hasta 40.",
-      "Se compone de 42 senadores, elevable por dos tercios hasta 50 como máximo.",
-      "Se compone de 84 senadores, renovándose por mitades.",
-      "Se compone de un senador por cada partido de la Provincia."
+      "En 1907, en la Universidad Nacional de Córdoba.",
+      "En 1912, en la Universidad Nacional de La Plata.",
+      "En 1937, en la Universidad de Buenos Aires.",
+      "En 1853, en la Universidad de San Felipe."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10136-464fcc6b",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿A qué concepto alude la doctrina moderna cuando utiliza el término de \"Derecho Constitucional Subnacional\" en el plano internacional, según el autor Antonio María Hernández(h)?",
+    "opciones": [
+      "Únicamente al estudio comparado de los cantones de la Confederación Helvética.",
+      "A una terminología de origen anglosajón que engloba a los Estados Miembros, Länder, cantones yprovincias de estados federados o regiones autónomas.",
+      "A las leyes dictadas exclusivamente por municipios con Cartas Orgánicas dictadas por Convención.",
+      "A las normas de derecho internacional que rigen los tratados parciales entre provincias."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21255,22 +21287,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-51343aaa",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "¿Qué define la doctrina constitucional como \"Poder Constituyente de CuartoGrado\"?",
-    "opciones": [
-      "El poder de reforma constitucional que ejerce el Congreso Nacional en sesiones extraordinarias.",
-      "El ejercicio del sufragio por parte de los extranjeros en las elecciones locales.",
-      "El poder constituyente municipal que ejercen las municipalidades autónomas de primera categoría paradictar sus propias Cartas Orgánicas (Municipios de Convención).",
-      "El poder para reformar las constituciones de los estados supranacionales como el Mercosur."
-    ],
-    "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10136-548a2cad",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -21351,34 +21367,18 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-5f64b60c",
+    "id": "10136-61e1fca1",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "¿Qué atribución originaria y exclusiva confiere el artículo 161 inciso 1 de laConstitución de la PBA a la Suprema Corte de Justicia provincial en materia de controlconstitucional?",
+    "pregunta": "¿Qué municipalista cubano influyó de forma decisiva en el Primer Congreso Panamericano de Municipios celebrado en La Habana en 1938, propugnando la autarquía comouna crisis del derecho administrativo?",
     "opciones": [
-      "Resolver en grado de apelación las multas contravencionales locales.",
-      "Conocer y resolver originaria y de apelación acerca de la constitucionalidad o inconstitucionalidad deleyes, decretos, ordenanzas o reglamentos provinciales o municipales que se controviertan por parteinteresada.",
-      "Juzgar y suspender preventivamente a los senadores bajo causa judicial común.",
-      "Autorizar los allanamientos solicitados por las autoridades de salubridad municipal."
+      "Adriano Carmona Romay.",
+      "Ives Orlando Tito de Oliveira.",
+      "Salvador Dana Montaño.",
+      "Alcides Greca."
     ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10136-67568df3",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "¿Cuál es la doctrina pacífica actual sobre los \"límites implícitos\" del PoderConstituyente Derivado en las constituciones rígidas, denominados comúnmente como\"cláusulas pétreas\"?",
-    "opciones": [
-      "Que no existen límites implícitos y la reforma puede alterar cualquier artículo de la Constitución.",
-      "Que existen ciertos contenidos intangibles (ej. forma republicana de gobierno, federalismo, etc.) que nopueden reformarse, según la tesis de constitucionalistas como Germán Bidart Campos y Linares Quintana.",
-      "Que solo la Suprema Corte de Justicia puede declarar la intangibilidad temporal de un artículo.",
-      "Que los límites implícitos desaparecen a los diez años de sancionada la constitución."
-    ],
-    "respuesta_correcta_index": 1,
+    "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -21409,6 +21409,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es inamovible, encargado de defender el patrimonio del Fisco, siendo parte legítima en los juicioscontencioso administrativos y en todos aquellos en que se controviertan intereses del Estado.",
       "Dura cuatro años y refrenda con su firma los decretos del poder de policía municipal.",
       "Es inamovible y preside la asamblea de mayores contribuyentes del partido."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10136-6a02f18f",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿Cuál es la doctrina pacífica actual sobre los \"límites implícitos\" del Poder Constituyente Derivado en las constituciones rígidas, denominados comúnmente como\"cláusulas pétreas\"?",
+    "opciones": [
+      "Que no existen límites implícitos y la reforma puede alterar cualquier artículo de la Constitución.",
+      "Que existen ciertos contenidos intangibles (ej. forma republicana de gobierno, federalismo, etc.) que nopueden reformarse, según la tesis de constitucionalistas como Germán Bidart Campos y Linares Quintana.",
+      "Que solo la Suprema Corte de Justicia puede declarar la intangibilidad temporal de un artículo.",
+      "Que los límites implícitos desaparecen a los diez años de sancionada la constitución."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21479,34 +21495,50 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-72b842bd",
+    "id": "10136-72252cef",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "Según el artículo 20 inciso 1, ¿ante qué jueces y en qué casos procede la garantía deHabeas Corpus en la Provincia?",
+    "pregunta": "¿Qué destacado jurista e intelectual argentino, primer Premio Nobel de la Paz denuestro país, redactó en el año 1907 el primer programa de estudios de la asignatura en la Universidad Nacional de La Plata?",
     "opciones": [
-      "Solo ante los jueces de Casación Penal, en casos de condena penal firme.",
-      "Ante cualquier juez, cuando de modo actual o inminente se sufra en forma ilegal o arbitraria restricción oamenaza en su libertad personal, o por desaparición forzada.",
-      "Ante los juzgados Contencioso Administrativos en caso de multas policiales de tránsito.",
-      "Exclusivamente ante la Suprema Corte de Justicia en sesión plenaria."
+      "Dr. Carlos Saavedra Lamas.",
+      "Dr. Joaquín V. González.",
+      "Dr. Juan Bautista Alberdi.",
+      "Dr. Adolfo Korn Villafañe."
+    ],
+    "respuesta_correcta_index": 0,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10136-755d26d0",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿Qué histórica constitución provincial argentina de 1921 fue pionera y vanguardistaen consagrar por primera vez en el país la autonomía municipal plena, reconociendo Cartas Orgánicas, inmunidades parlamentarias a concejales e institutos de democracia semidirecta?",
+    "opciones": [
+      "La Constitución de la Provincia de Buenos Aires de 1889.",
+      "La Constitución de la Provincia de Santa Fe de 1921.",
+      "La Constitución de la Provincia de Córdoba de 1923.",
+      "La Constitución de la Provincia de Entre Ríos de 1932."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
   {
-    "id": "10136-74e21f44",
+    "id": "10136-76ee1907",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "¿Qué artículo de la Constitución de la PBA dirime y faculta de forma exclusiva a laSuprema Corte de Justicia provincial para juzgar y resolver los conflictos internos municipales?",
+    "pregunta": "Según el artículo 5, ¿cuál es la Capital de la Provincia de Buenos Aires y dóndedeben funcionar permanentemente las Cámaras Legislativas, el Poder Ejecutivo y la Suprema Corte de Justicia?",
     "opciones": [
-      "El artículo 161.",
-      "El artículo 180.",
-      "El artículo 196.",
-      "El artículo 208."
+      "La Ciudad Autónoma de Buenos Aires.",
+      "La ciudad de La Plata.",
+      "La ciudad de Bahía Blanca.",
+      "La ciudad de Mar del Plata."
     ],
-    "respuesta_correcta_index": 2,
+    "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -21534,7 +21566,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "pregunta": "¿Cómo se integra la Junta Electoral permanente de la Provincia de Buenos Airessegún el artículo 62 de la Constitución provincial?",
     "opciones": [
       "Por los ministros de Gobierno, de Justicia y el Presidente de la Legislatura.",
-      "Por los presidentes de la Suprema Corte de Justicia, del Tribunal de Cuentas y de tres Cámaras deApelación del Departamento de la Capital, presididos por el primero.",
+      "Por los presidentes de la Suprema Corte de Justicia, del Tribunal de Cuentas y de tres Cámaras de Apelación del Departamento de la Capital, presididos por el primero.",
       "Por cinco senadores y cinco diputados elegidos por sorteo en asamblea.",
       "Por el Fiscal de Estado y el Defensor del Pueblo de forma rotativa."
     ],
@@ -21591,11 +21623,11 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-8c2a88ed",
+    "id": "10136-8b229514",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "Conforme al artículo 79 de la Constitución bonaerense, ¿quién debe presidir elSenado de la PBA cuando el acusado en un juicio político sea el Gobernador o el Vicegobernador?",
+    "pregunta": "Conforme al artículo 79 de la Constitución bonaerense, ¿quién debe presidir el Senado de la PBA cuando el acusado en un juicio político sea el Gobernador o el Vicegobernador?",
     "opciones": [
       "El Vicegobernador de la Provincia.",
       "El Presidente Provisorio del Senado.",
@@ -21623,32 +21655,48 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-9042d4f7",
+    "id": "10136-90e66ff4",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "¿En qué año y en qué universidad se creó la primera cátedra de Derecho PúblicoProvincial y Municipal en la República Argentina, teniendo como primer profesor titular aldestacado jurista Arturo M. Bas?",
+    "pregunta": "De acuerdo con el artículo 9 de la Constitución de la PBA, ¿cuál es la actitud del Gobierno de la Provincia respecto al culto Católico Apostólico Romano?",
     "opciones": [
-      "En 1907, en la Universidad Nacional de Córdoba.",
-      "En 1912, en la Universidad Nacional de La Plata.",
-      "En 1937, en la Universidad de Buenos Aires.",
-      "En 1853, en la Universidad de San Felipe."
+      "Lo declara religión oficial obligatoria en todos los niveles educativos provinciales.",
+      "Se mantiene neutral y secular sin destinar fondos públicos para el sostenimiento de ningún culto.",
+      "Coopera a sostener el culto Católico Apostólico Romano, con arreglo a las prescripciones de la Constitución Nacional.",
+      "Delega la asistencia espiritual de las prisiones y hospitales a los municipios."
     ],
-    "respuesta_correcta_index": 0,
+    "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
   {
-    "id": "10136-9366741d",
+    "id": "10136-911b8c9d",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "¿Qué innovador instituto de control de receso legislativo se creó en la históricaConstitución para el Estado de Buenos Aires de 1854, integrada originalmente por Valentín Alsina,Carlos Tejedor y Dalmacio Vélez Sarsfield?",
+    "pregunta": "¿Qué define la doctrina constitucional como \"Poder Constituyente de Cuarto Grado\"?",
     "opciones": [
-      "El Consejo de la Magistratura.",
-      "La Comisión Permanente (compuesta por tres senadores y cuatro diputados).",
-      "El Jurado de Enjuiciamiento de Magistrados.",
-      "El Tribunal Social de Responsabilidad Política."
+      "El poder de reforma constitucional que ejerce el Congreso Nacional en sesiones extraordinarias.",
+      "El ejercicio del sufragio por parte de los extranjeros en las elecciones locales.",
+      "El poder constituyente municipal que ejercen las municipalidades autónomas de primera categoría paradictar sus propias Cartas Orgánicas (Municipios de Convención).",
+      "El poder para reformar las constituciones de los estados supranacionales como el Mercosur."
+    ],
+    "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10136-9438fbb8",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿A qué grado de Poder Constituyente pertenece la facultad que poseen los Estados Miembros (provincias) para dictar o reformar sus propias constituciones en ejercicio de suautonomía?",
+    "opciones": [
+      "Poder Constituyente de Primer Grado.",
+      "Poder Constituyente de Segundo Grado.",
+      "Poder Constituyente de Tercer Grado.",
+      "Poder Constituyente de Cuarto Grado."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21665,22 +21713,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "En todos los partidos que no sean cabecera de departamento judicial, siendo competentes en faltasprovinciales, menor cuantía y causas vecinales.",
       "Exclusivamente en las cabeceras departamentales de alta litigiosidad.",
       "En las colonias agrarias del interior, para juzgar de forma predominantemente escrita."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10136-969445b0",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "¿A qué concepto alude la doctrina moderna cuando utiliza el término de \"DerechoConstitucional Subnacional\" en el plano internacional, según el autor Antonio María Hernández(h)?",
-    "opciones": [
-      "Únicamente al estudio comparado de los cantones de la Confederación Helvética.",
-      "A una terminología de origen anglosajón que engloba a los Estados Miembros, Länder, cantones yprovincias de estados federados o regiones autónomas.",
-      "A las leyes dictadas exclusivamente por municipios con Cartas Orgánicas dictadas por Convención.",
-      "A las normas de derecho internacional que rigen los tratados parciales entre provincias."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21731,6 +21763,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El Defensor del Pueblo. CAPÍTULO 8: RÉGIMEN MUNICIPAL, CULTURA, EDUCACIÓN Y REFORMA DE LA CONSTITUCIÓN Constitución de la PBA - Sección VII, VIII y IX: Artículos 190 al 222"
     ],
     "respuesta_correcta_index": 2,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
+    "id": "10136-ab00070e",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "Según el artículo 20 inciso 1, ¿ante qué jueces y en qué casos procede la garantía de Habeas Corpus en la Provincia?",
+    "opciones": [
+      "Solo ante los jueces de Casación Penal, en casos de condena penal firme.",
+      "Ante cualquier juez, cuando de modo actual o inminente se sufra en forma ilegal o arbitraria restricción oamenaza en su libertad personal, o por desaparición forzada.",
+      "Ante los juzgados Contencioso Administrativos en caso de multas policiales de tránsito.",
+      "Exclusivamente ante la Suprema Corte de Justicia en sesión plenaria."
+    ],
+    "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -21799,22 +21847,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-b24aed8b",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "Según el artículo 159, ¿cuál de las siguientes es una atribución de control delTribunal de Cuentas bonaerense?",
-    "opciones": [
-      "Dictar sentencias penales condenatorias por delitos de corrupción administrativa.",
-      "Examinar las cuentas de percepción e inversión de las rentas públicas, tanto provinciales comomunicipales, aprobarlas o desaprobarlas e indicar los alcances y funcionarios responsables.",
-      "Autorizar directamente los empréstitos externos del Gobernador en el extranjero.",
-      "Dirimir las competencias y disputas de límites de las municipalidades. CAPÍTULO 7: ESTRUCTURA DEL PODER JUDICIAL Y EL CONSEJO DE LA MAGISTRATURA Constitución de la PBA - Sección VI: Artículos 159 al 189"
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10136-b3d42743",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -21847,16 +21879,16 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-b8a08f17",
+    "id": "10136-b7e66f56",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "¿Qué histórica constitución provincial argentina de 1921 fue pionera y vanguardistaen consagrar por primera vez en el país la autonomía municipal plena, reconociendo CartasOrgánicas, inmunidades parlamentarias a concejales e institutos de democracia semidirecta?",
+    "pregunta": "¿Qué requisito formal indispensable impone el artículo 168 de la Constituciónbonaerense para que exista sentencia válida de un tribunal colegiado en el territorio de la Provincia?",
     "opciones": [
-      "La Constitución de la Provincia de Buenos Aires de 1889.",
-      "La Constitución de la Provincia de Santa Fe de 1921.",
-      "La Constitución de la Provincia de Córdoba de 1923.",
-      "La Constitución de la Provincia de Entre Ríos de 1932."
+      "La firma exclusiva del presidente del tribunal colegiado.",
+      "Que los jueces den su voto en todas las cuestiones esenciales a decidir y que concurra mayoría deopiniones acerca de cada una de ellas.",
+      "Que el acuerdo sea rubricado en un plazo de cuarenta y ocho horas ante el Defensor del Pueblo.",
+      "Que cuente con el dictamen favorable del Ministerio Público."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -21911,11 +21943,11 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-c1950675",
+    "id": "10136-c02bf625",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "Conforme al artículo 159 de la Constitución de la PBA, ¿cómo se compone elTribunal de Cuentas provincial y quiénes son sus miembros?",
+    "pregunta": "Conforme al artículo 159 de la Constitución de la PBA, ¿cómo se compone el Tribunal de Cuentas provincial y quiénes son sus miembros?",
     "opciones": [
       "Se compone de cinco diputados y cinco senadores contadores.",
       "Se compone de un presidente abogado y cuatro vocales contadores públicos, todos inamovibles,nombrados por el Poder Ejecutivo con acuerdo del Senado.",
@@ -21950,7 +21982,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "pregunta": "De acuerdo con el manual de Luna, ¿qué son los \"Municipios de Convención\"(también llamados de Carta o Autónomos en plenitud) y los \"Municipios de Delegación\"?",
     "opciones": [
       "Los de Convención son creados por tratados interprovinciales; los de Delegación son creados por el Gobernadordurante el receso.",
-      "Los de Convención son aquellos autorizados por su población y constitución para dictarse su propiaCarta Orgánica; los de Delegación son aquellos menores que se rigen por la Ley Orgánica dictada por laLegislatura Provincial.",
+      "Los de Convención son aquellos autorizados por su población y constitución para dictarse su propia Carta Orgánica; los de Delegación son aquellos menores que se rigen por la Ley Orgánica dictada por la Legislatura Provincial.",
       "Los de Convención rigen en la Capital Federal; los de Delegación en el conurbano bonaerense.",
       "Los de Convención carecen de Concejo Deliberante; los de Delegación carecen de Intendente."
     ],
@@ -21959,18 +21991,18 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-d28a321d",
+    "id": "10136-db5cb600",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
     "dificultad": "media",
-    "pregunta": "¿A qué grado de Poder Constituyente pertenece la facultad que poseen los EstadosMiembros (provincias) para dictar o reformar sus propias constituciones en ejercicio de suautonomía?",
+    "pregunta": "¿Qué artículo de la Constitución de la PBA dirime y faculta de forma exclusiva a la Suprema Corte de Justicia provincial para juzgar y resolver los conflictos internos municipales?",
     "opciones": [
-      "Poder Constituyente de Primer Grado.",
-      "Poder Constituyente de Segundo Grado.",
-      "Poder Constituyente de Tercer Grado.",
-      "Poder Constituyente de Cuarto Grado."
+      "El artículo 161.",
+      "El artículo 180.",
+      "El artículo 196.",
+      "El artículo 208."
     ],
-    "respuesta_correcta_index": 1,
+    "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -22087,38 +22119,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10136-e63dc239",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "Según el artículo 5, ¿cuál es la Capital de la Provincia de Buenos Aires y dóndedeben funcionar permanentemente las Cámaras Legislativas, el Poder Ejecutivo y la SupremaCorte de Justicia?",
-    "opciones": [
-      "La Ciudad Autónoma de Buenos Aires.",
-      "La ciudad de La Plata.",
-      "La ciudad de Bahía Blanca.",
-      "La ciudad de Mar del Plata."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10136-e9c3be91",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "De acuerdo con el artículo 9 de la Constitución de la PBA, ¿cuál es la actitud delGobierno de la Provincia respecto al culto Católico Apostólico Romano?",
-    "opciones": [
-      "Lo declara religión oficial obligatoria en todos los niveles educativos provinciales.",
-      "Se mantiene neutral y secular sin destinar fondos públicos para el sostenimiento de ningún culto.",
-      "Coopera a sostener el culto Católico Apostólico Romano, con arreglo a las prescripciones de laConstitución Nacional.",
-      "Delega la asistencia espiritual de las prisiones y hospitales a los municipios."
-    ],
-    "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10136-e9f33a80",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -22131,22 +22131,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Declaró inconstitucionales las tasas impositivas municipales por no ser aprobadas en asamblea legislativa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10136-ecc27a85",
-    "id_categoria": "10136",
-    "categoria_nombre": "Derecho Público, Provincial y Municipal",
-    "dificultad": "media",
-    "pregunta": "¿Qué destacado jurista e intelectual argentino, primer Premio Nobel de la Paz denuestro país, redactó en el año 1907 el primer programa de estudios de la asignatura en laUniversidad Nacional de La Plata?",
-    "opciones": [
-      "Dr. Carlos Saavedra Lamas.",
-      "Dr. Joaquín V. González.",
-      "Dr. Juan Bautista Alberdi.",
-      "Dr. Adolfo Korn Villafañe."
-    ],
-    "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -22192,7 +22176,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "En la Confederación no existe división de poderes en los órganos centrales, mientras que en el Estado Federal sí.",
       "En la Confederación los estados miembros gozan de los derechos de nulificación y secesión y mantienensu soberanía; en el Estado Federal delegan facultades soberanas al poder central y son autónomos.",
       "El Estado Federal nace de un pacto o tratado internacional, mientras que la Confederación nace exclusivamentede una Constitución.",
-      "En la Confederación el poder del Estado Central se ejerce directamente sobre los ciudadanos; en el EstadoFederal se ejerce sobre las provincias."
+      "En la Confederación el poder del Estado Central se ejerce directamente sobre los ciudadanos; en el Estado Federal se ejerce sobre las provincias."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22247,6 +22231,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10136-fab3bf42",
+    "id_categoria": "10136",
+    "categoria_nombre": "Derecho Público, Provincial y Municipal",
+    "dificultad": "media",
+    "pregunta": "¿Cómo se compone la Cámara de Senadores de la PBA y cuál es el límite máximoque puede fijar la Legislatura con el voto de dos tercios de cada Cámara, según el artículo 75 de la Constitución?",
+    "opciones": [
+      "Se compone de 30 senadores, elevable hasta 40.",
+      "Se compone de 42 senadores, elevable por dos tercios hasta 50 como máximo.",
+      "Se compone de 84 senadores, renovándose por mitades.",
+      "Se compone de un senador por cada partido de la Provincia."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "Contenido de Derecho Público, Provincial y Municipal conforme al programa oficial de la cátedra (FCJyS UNLP).",
+    "puntos_base": 100
+  },
+  {
     "id": "10136-fcaee02e",
     "id_categoria": "10136",
     "categoria_nombre": "Derecho Público, Provincial y Municipal",
@@ -22279,38 +22279,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-0004858f",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "La obligación de los Estados de arreglar sus controversias por medios pacíficos se caracteriza por ser una obligación de:",
-    "opciones": [
-      "Resultado absoluto e inmediato en todos los casos.",
-      "Mero comportamiento, que exige a los Estados buscar de buena fe una solución pacífica.",
-      "Sometimiento automático al arbitraje internacional únicamente.",
-      "Acatamiento exclusivo de las directrices del Secretario de Estado de la metrópoli."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-0447a3e6",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Cuál es la principal característica del Estatuto de la Corte Penal Internacional (Estatuto de Roma)?",
-    "opciones": [
-      "Somete de manera obligatoria y automática a todas las personas civiles del mundo.",
-      "Es complementario de las jurisdicciones penales nacionales de los Estados partes.",
-      "Es un órgano subsidiario del Consejo de Seguridad de Naciones Unidas.",
-      "Es una convención no vinculante desprovista de penas de reclusión."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-05d4797b",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -22323,22 +22291,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Resolución 3314 (XXIX)."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-10ab63dd",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "Según el artículo 4 del PIDCP, ¿cuál de los siguientes es un derecho inderogable en caso de estado de excepción o emergencia?",
-    "opciones": [
-      "El derecho a la libre circulación de mercaderías e importación.",
-      "El derecho a la vida, a la integridad personal y a no ser sometido a torturas o esclavitud.",
-      "El derecho a huelga y la sindicación libre.",
-      "El derecho a la libre elección de medios de transporte sanitario. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
-    ],
-    "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -22359,22 +22311,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-126f81b9",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Qué órgano intergubernamental de la ONU fue creado en 2006 en reemplazo de la Comisión de Derechos Humanos de la Asamblea General?",
-    "opciones": [
-      "La Subcomisión de Promoción y Protección de Minorías.",
-      "El Consejo de Derechos Humanos de la Asamblea General (integrado por 47 Estados).",
-      "El Comité para la Eliminación de la Discriminación Racial.",
-      "La Corte Internacional de Derechos Humanos."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-1288ad2e",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -22384,23 +22320,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La expulsión inmediata de la Organización por decisión unilateral del Secretario General.",
       "La pérdida del derecho a voto en la Asamblea General.",
       "La inhabilitación permanente de sus jueces ante la Corte Internacional de Justicia.",
-      "El congelamiento absoluto de todos los activos de su Banco Central en el exterior. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-16d9b30f",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "La Declaración Americana de los Derechos y Deberes del Hombre (Bogotá, 1948) se caracteriza por ser:",
-    "opciones": [
-      "Un tratado comercial de libre comercio sin jerarquía de derechos.",
-      "El primer instrumento internacional de derechos humanos de carácter general.",
-      "Una ley nacional de deudas del Estado argentino.",
-      "Una opinión consultiva no vinculante del Tribunal de La Haya. UNIDAD 9: EL SIDH Y LA OEA"
+      "El congelamiento absoluto de todos los activos de su Banco Central en el exterior."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22448,7 +22368,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El método inductivo puro de las ciencias duras.",
       "El método dialéctico cerrado o finalista con síntesis profética.",
       "El método dialéctico abierto, que asume la coexistencia sincrónica de oposiciones sin predecir un final feliz.",
-      "El método deductivo formal basado en la premisa del realismo político unilateral. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "El método deductivo formal basado en la premisa del realismo político unilateral."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22480,7 +22400,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Organización Mundial del Comercio (OMC) y el GATT de 1947.",
       "El Fondo Monetario Internacional (FMI) y el Banco Internacional de Reconstrucción y Fomento (BIRF/Banco Mundial).",
       "La Asociación Latinoamericana de Integración (ALADI) y el Banco del Sur.",
-      "El Banco Interamericano de Desarrollo (BID) y la Corporación Andina de Fomento. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "El Banco Interamericano de Desarrollo (BID) y la Corporación Andina de Fomento."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22560,7 +22480,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Caso Velásquez Rodríguez c/ Honduras.",
       "Caso Claude Reyes y otros c/ Chile (Caso Trillium).",
       "Caso de las Comunidades Indígenas del Distrito de Toledo c/ Belice.",
-      "Caso de los Niños de la Calle c/ Guatemala. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Caso de los Niños de la Calle c/ Guatemala."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22592,7 +22512,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Por el voto afirmativo de nueve miembros, sin distinción de la nacionalidad de los votantes.",
       "Por el voto afirmativo de nueve miembros, incluidos los votos concurrentes de los miembros permanentes (derecho de veto).",
       "Por el voto de la mayoría de dos tercios de los miembros presentes y votantes de la Asamblea General.",
-      "Por la unanimidad absoluta de los quince miembros de forma indivisible. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Por la unanimidad absoluta de los quince miembros de forma indivisible."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22608,7 +22528,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El derecho de descubrimiento de marinos franceses en el siglo XIX únicamente.",
       "La sucesión de los títulos de España (Virreinato del Río de la Plata), el utis possidetis iuris y la ocupación efectiva previa a 1833.",
       "Las disposiciones expresas de los Acuerdos de Madrid de 1989 y 1990 de soberanía compartida.",
-      "La resolución unilateral dictada por la Reina de Inglaterra en 2008. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "La resolución unilateral dictada por la Reina de Inglaterra en 2008."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22736,7 +22656,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No existe diferencia alguna; ambos conceptos son equivalentes en su totalidad.",
       "Las normas de ius cogens son dispositivas y las erga omnes son imperativas.",
       "Toda norma de ius cogens tiene efectos erga omnes, pero no toda obligación erga omnes es una norma imperativa.",
-      "Las obligaciones erga omnes se limitan a tratados bilaterales y el ius cogens es consuetudinario regional. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Las obligaciones erga omnes se limitan a tratados bilaterales y el ius cogens es consuetudinario regional."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22768,7 +22688,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Una rama del Derecho Internacional que regula las relaciones diplomáticas bilaterales.",
       "Un conjunto de normas que limita por razones humanitarias los efectos de los conflictos armados.",
       "Una directiva de deudas del FMI de carácter imperativo.",
-      "Una opinión consultiva de la Corte Penal Internacional. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Una opinión consultiva de la Corte Penal Internacional."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22817,22 +22737,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El principio de la integridad territorial de los Estados.",
       "El principio de la asimetría económica de las economías menores.",
       "El principio de la autolimitación del poder unilateral."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-53cdb700",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "Según el enfoque del Dr. Consani, los modelos relacional e institucional son:",
-    "opciones": [
-      "Etapas diacrónicas sucesivas donde uno reemplaza irreversiblemente al otro.",
-      "Modelos ideales sincrónicos que coexisten en una tensión dialéctica permanente.",
-      "Estructuras jurídicas idénticas sin tensiones metodológicas.",
-      "Teorías utópicas sin correlato con la realidad internacional. UNIDAD 2: FUENTES DEL DERECHO INTERNACIONAL PÚBLICO"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -22967,22 +22871,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-64c748c3",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "El principio de libre determinación de los pueblos, según la Resolución 1514 (XV), otorga el derecho de decidir su destino político a:",
-    "opciones": [
-      "Cualquier minoría nacional o étnica que desee la secesión de un Estado soberano.",
-      "Los pueblos de los territorios sometidos a dominación colonial y ocupación extranjera.",
-      "Los grupos insurgentes armados que no cuentan con un mando responsable.",
-      "Las corporaciones transnacionales en el marco de sus inversiones. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-64f7c75b",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -22992,7 +22880,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Ronda del Milenio.",
       "La Ronda Doha (o Ronda del Desarrollo).",
       "La Ronda del Cono Sur de integración regional.",
-      "La Ronda de Seattle sobre comercio de servicios. UNIDAD 6: DERECHO DEL MAR, NUEVOS DESARROLLOS Y DERECHO FLUVIAL DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "La Ronda de Seattle sobre comercio de servicios. UNIDAD 6: DERECHO DEL MAR, NUEVOS DESARROLLOS Y DERECHO FLUVIAL"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23015,22 +22903,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-6f2741e0",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Qué precedente histórico en el Océano Índico muestra que el Reino Unido exceptuó la aplicación de la autodeterminación por razones de interés militar?",
-    "opciones": [
-      "El caso de la isla de Mauricio en 1810.",
-      "El caso del archipiélago de Chagos (isla Diego García y la expulsión de su población).",
-      "El caso de la península de Kowloon y la devolución de Hong Kong.",
-      "El caso de las islas Hanish entre Yemen y Eritrea. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-7430216b",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -23041,38 +22913,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Ser un Estado, ser amante de la paz, aceptar las obligaciones de la Carta, estar capacitado para cumplirlas y estar dispuesto a ello.",
       "Tener reconocimiento absoluto de todas las potencias, contar con ejército regular, poseer salida al mar, y firmar el TIAR.",
       "Ser admitido por unanimidad en la Asamblea General sin recomendación del Consejo de Seguridad."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-75362c95",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "En el modelo institucional, ¿en qué tres niveles se encuentra condicionado el poder del Estado?",
-    "opciones": [
-      "Autolimitación unilateral, inmunidad soberana y estoppel procesal.",
-      "Aceptación colectiva, cierta autonomía de la organización y cierta jerarquía normativa.",
-      "Exclusión del individuo, protesta diplomática y aquiescencia.",
-      "No existe condicionalidad alguna; el poder estatal sigue siendo ilimitado en todos los niveles."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-76f2da30",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Qué caso paradigmático de la CIJ sirve para ilustrar los elementos constitutivos de las obligaciones erga omnes?",
-    "opciones": [
-      "Caso del Canal de Corfú (Reino Unido c/ Albania).",
-      "Caso de la Barcelona Traction, Light and Power Company, Limited (Bélgica c/ España).",
-      "Caso de las Actividades Militares y Paramilitares en y contra Nicaragua.",
-      "Caso de las Pasteras sobre el río Uruguay (Argentina c/ Uruguay)."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23168,7 +23008,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Una igualdad de hecho en términos de escala económica y militar.",
       "Una igualdad jurídica ante el Derecho que concede igual capacidad de poseer derechos y obligaciones.",
       "La desaparición absoluta de cualquier distinción de trato dentro de los organismos internacionales.",
-      "La imposición de un sistema de voto ponderado idéntico para todas las naciones del mundo. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "La imposición de un sistema de voto ponderado idéntico para todas las naciones del mundo."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23239,22 +23079,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-9687c1ce",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Qué derecho de navegación gozan los buques de todas las naciones en el Mar Territorial?",
-    "opciones": [
-      "El derecho de libre navegación absoluta sin controles aduaneros.",
-      "El derecho de paso inocente (que no afecte la paz, el buen orden o la seguridad).",
-      "El derecho de paso en tránsito sin necesidad de enarbolar el pabellón.",
-      "El derecho de persecución en caliente de buques infractores. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-9ab24fee",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -23296,7 +23120,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Ley 17.711.",
       "La Ley 23.968.",
       "La Ley 23.775 (modificada por Ley 26.552).",
-      "La Ley 24.922. UNIDAD 8: SISTEMA DE PROTECCIÓN DE LOS DERECHOS HUMANOS (ONU Y ART. 75 INC. 22 CN) DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "La Ley 24.922. UNIDAD 8: SISTEMA DE PROTECCIÓN DE LOS DERECHOS HUMANOS (ONU Y ART. 75 INC. 22 CN)"
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23328,23 +23152,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Cada organización tiende a disolverse inmediatamente tras cumplir su fin original.",
       "La organización trata de desarrollar su influencia y autoridad de manera independiente, apoyada en sus órganos.",
       "Las organizaciones nunca extienden sus competencias más allá de los textos expresos de sus estatutos.",
-      "Los Estados miembros terminan absorbiendo por completo la estructura administrativa. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-aab51379",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "El artículo 103 de la Carta de la ONU es un ejemplo claro de qué característica del modelo institucional?",
-    "opciones": [
-      "De la anarquía de las soberanías absolutas.",
-      "De la jerarquía normativa (primacía de las obligaciones de la Carta sobre otros tratados).",
-      "De la incondicionalidad del Poder estatal o autolimitación clásica.",
-      "Del dominio reservado absoluto de las jurisdicciones domésticas. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Los Estados miembros terminan absorbiendo por completo la estructura administrativa."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23440,7 +23248,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Oficina de Evaluación de Impacto Ambiental del PNUMA.",
       "La Comisión de Expertos en la Aplicación de Convenios y Recomendaciones.",
       "El Consejo de Administración Fiduciaria de las Naciones Unidas.",
-      "El Comité de los Derechos del Niño. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "El Comité de los Derechos del Niño."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23488,7 +23296,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El fomento de las misiones de observaciones electorales de la UPD.",
       "El de 'gestores de la deuda' y promotores de planes de ajuste estructural.",
       "La de jueces ad hoc en disputas fronterizas terrestres y marítimas.",
-      "La entrega directa de vacunas contra el dengue a través de la OPS. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "La entrega directa de vacunas contra el dengue a través de la OPS."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23504,7 +23312,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Norma dispositiva de aplicación regional facultativa.",
       "Norma imperativa de derecho internacional general o ius cogens.",
       "Directiva política no vinculante desprovista de sanción colectiva.",
-      "Principio clásico aplicable únicamente a los buques de guerra. UNIDAD 4: ORGANIZACIÓN DE LAS NACIONES UNIDAS (ONU) DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Principio clásico aplicable únicamente a los buques de guerra. UNIDAD 4: ORGANIZACIÓN DE LAS NACIONES UNIDAS (ONU)"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23520,7 +23328,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Limitar la competencia del Consejo de Seguridad en materia de seguridad colectiva.",
       "Garantizar que las personas civiles y combatientes queden bajo la protección del derecho de gentes en los casos no previstos.",
       "Establecer la nulidad de los tratados de límites fluviales internacionales.",
-      "Garantizar el cobro compulsivo de deudas por parte de los Estados acreedores. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Garantizar el cobro compulsivo de deudas por parte de los Estados acreedores."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23536,7 +23344,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La Declaración Americana de Derechos y Deberes del Hombre.",
       "La Convención Americana sobre Derechos Humanos (Pacto de San José).",
       "El Protocolo de San Salvador sobre Derechos Económicos.",
-      "La Carta Democrática Interamericana. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "La Carta Democrática Interamericana."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23575,22 +23383,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-cc1e4a98",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "En el modelo relacional, ¿cómo se manifiesta el nacimiento de los Estados y el reconocimiento de terceros?",
-    "opciones": [
-      "El nacimiento depende de la admisión colectiva y el reconocimiento es constitutivo.",
-      "El nacimiento es ficticio y el reconocimiento es absoluto e irreversible.",
-      "El nacimiento es efectivo y espontáneo, y el reconocimiento tiene carácter relativo.",
-      "El reconocimiento es centralizado y dictado por órganos plenipotenciarios."
-    ],
-    "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-cdf91aa9",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -23600,7 +23392,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Una protesta oportuna y reiterada formulada por escrito ante la CIJ.",
       "Una declaración de renuncia expresa a derechos de soberanía territorial.",
       "Un consentimiento manifestado a través del silencio o inacción ante un hecho que exigiría una reacción positiva.",
-      "Un recurso formal ante las comisiones de investigación técnica de la ONU. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "Un recurso formal ante las comisiones de investigación técnica de la ONU."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23617,22 +23409,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El Acuerdo General sobre Aranceles Aduaneros y Comercio (GATT).",
       "El Pacto Andino o Acuerdo de Cartagena.",
       "La Carta de la Habana para la Organización Internacional de Comercio."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-d33cc298",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Qué órgano de resolución arbitral de diferencias de inversiones fue creado en el ámbito del Banco Mundial en 1966?",
-    "opciones": [
-      "La Corte Penal Internacional.",
-      "El Centro Internacional de Arreglo de Diferencias relativas a Inversiones (CIADI).",
-      "El Tribunal Permanente de Revisión del MERCOSUR.",
-      "La Corte Centroamericana de Justicia."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23671,38 +23447,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-d6d82254",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Qué órgano convencional de la ONU tiene a su cargo la supervisión del cumplimiento del PIDCP?",
-    "opciones": [
-      "El Consejo de Derechos Humanos de la Asamblea General.",
-      "El Comité de Derechos Humanos (integrado por 18 expertos que actúan a título personal).",
-      "El Comité de Derechos Económicos, Sociales y Culturales del ECOSOC.",
-      "La Comisión Interamericana de Derechos Humanos."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-d9a4e3fb",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Cómo es el sistema de adopción de decisiones (poder de voto) dentro de la estructura del FMI?",
-    "opciones": [
-      "Un Estado, un voto, garantizando la igualdad jurídica de todos los miembros.",
-      "Un sistema de voto ponderado según la cuota financiera que aporta cada Estado.",
-      "Voto calificado de dos tercios de los países latinoamericanos asociados.",
-      "Consenso absoluto sin necesidad de aportes de capital de reserva."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-dca56ed1",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -23712,7 +23456,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La OIT, el FMI y la Corte Penal Internacional.",
       "La Comisión de Límites, la Autoridad Internacional de los Fondos Marinos y el Tribunal Internacional del Derecho del Mar.",
       "La Comisión Jurídica, la Secretaría del PNUMA y el Tribunal del MERCOSUR.",
-      "La CEPAL, el Comité de Descolonización y la Corte Centroamericana. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "La CEPAL, el Comité de Descolonización y la Corte Centroamericana."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -23751,22 +23495,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
-    "id": "10138-e516b87e",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Qué convención internacional de 1982 es considerada la 'piedra angular' del derecho del mar actual?",
-    "opciones": [
-      "La Convención de Ginebra sobre el mar territorial de 1958.",
-      "La Convención de las Naciones Unidas sobre el Derecho del Mar (CONVEMAR).",
-      "La Convención sobre la protección del patrimonio cultural subacuático de la UNESCO.",
-      "El Tratado de Montevideo sobre espacios marítimos subregionales."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
     "id": "10138-e919ca6d",
     "id_categoria": "10138",
     "categoria_nombre": "Derecho Internacional Público",
@@ -23795,22 +23523,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es de competencia exclusiva del Comité de Descolonización sin consulta judicial."
     ],
     "respuesta_correcta_index": 2,
-    "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10138-ed05da13",
-    "id_categoria": "10138",
-    "categoria_nombre": "Derecho Internacional Público",
-    "dificultad": "media",
-    "pregunta": "¿Cuándo y a través de qué instrumento se constituyó formalmente la Organización de las Naciones Unidas?",
-    "opciones": [
-      "El 24 de octubre de 1945, con la entrada en vigencia de la Carta de las Naciones Unidas.",
-      "El 10 de diciembre de 1948, con la Declaración Universal de Derechos Humanos.",
-      "El 28 de junio de 1919, con la firma del Tratado de Versalles y el nacimiento de la Liga.",
-      "El 11 de febrero de 1945, durante el transcurso de los Acuerdos de Yalta."
-    ],
-    "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
     "puntos_base": 100
   },
@@ -23872,7 +23584,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La denuncia de un particular, la recomendación de la OEA y la opinión de la Corte IDH.",
       "La remisión de un Estado parte, la remisión del Consejo de Seguridad y la actuación de oficio del Fiscal (proprio motu).",
       "La solicitud de la Comisión Jurídica de la ONU, la queja de una ONG y la declaración del PNUMA.",
-      "El arbitraje internacional de la CPA, el compromiso bilateral y la firma del Pacto de Bogotá. DERECHO INTERNACIONAL PÚBLICO — BANCO DE EXAMENUNIDADES 1 A 10"
+      "El arbitraje internacional de la CPA, el compromiso bilateral y la firma del Pacto de Bogotá."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Derecho Internacional Público conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -34179,7 +33891,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Subvención del de 100% de los billetes comerciales de rampa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 128 bis (incorporado por Decreto N° 70/2023) establece una pauta de fomento comercial: la política aeronáutica argentina se rige bajo los principios pilares de seguridad operacional y libertad de mercado, fomentando la reciprocidad. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 128 bis (incorporado por Decreto N° 70/2023) establece una pauta de fomento comercial: la política aeronáutica argentina se rige bajo los principios pilares de seguridad operacional y libertad de mercado, fomentando la reciprocidad.",
     "puntos_base": 100
   },
   {
@@ -34195,7 +33907,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Se rigen únicamente por las de leyes de aduana y migración, sin requerir permisos de la autoridad aeronáutica."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 15 exige para las aeronaves públicas extranjeras (por ejemplo, aeronaves militares de otro Estado) la autorización previa del Poder Ejecutivo de la Nación; mientras que para las aeronaves extranjeras privadas exige permiso previo de la autoridad aeronáutica (ANAC). CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 15 exige para las aeronaves públicas extranjeras (por ejemplo, aeronaves militares de otro Estado) la autorización previa del Poder Ejecutivo de la Nación; mientras que para las aeronaves extranjeras privadas exige permiso previo de la autoridad aeronáutica (ANAC).",
     "puntos_base": 100
   },
   {
@@ -34211,7 +33923,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El aterrizaje de emergencia en un predio privado transfiere automáticamente el 50% de la propiedad de la aeronave al dueño del terreno."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 5° prohíbe aterrizar en aeródromos privados sin autorización (salvo fuerza mayor), pero establece expresamente que si una aeronave de hecho aterriza en una propiedad privada (campo o predio no aeródromo), el propietario del terreno no tiene derecho a impedir la continuación del vuelo (despegue) de la aeronave. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 5° prohíbe aterrizar en aeródromos privados sin autorización (salvo fuerza mayor), pero establece expresamente que si una aeronave de hecho aterriza en una propiedad privada (campo o predio no aeródromo), el propietario del terreno no tiene derecho a impedir la continuación del vuelo (despegue) de la aeronave.",
     "puntos_base": 100
   },
   {
@@ -34227,7 +33939,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Quedan clausurados ipso facto de manera permanente."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 29 (sustituido por Decreto N° 70/2023) obliga a comunicar la existencia de de lugares aptos de uso habitual, pero aclara expresamente que estos lugares 'no son aeródromos' y que cualquier operación aérea se realiza bajo responsabilidad del piloto al mando de la aeronave. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 29 (sustituido por Decreto N° 70/2023) obliga a comunicar la existencia de de lugares aptos de uso habitual, pero aclara expresamente que estos lugares 'no son aeródromos' y que cualquier operación aérea se realiza bajo responsabilidad del piloto al mando de la aeronave.",
     "puntos_base": 100
   },
   {
@@ -34243,7 +33955,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Solo se de exige matrícula argentina para planeadores y helicópteros."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 107 (sustituido por Decreto N° 338/2025) permite la utilización de aeronaves con matrícula extranjera en servicios comerciales argentinos, siempre que se verifiquen convenios de reciprocidad y de doble vigilancia de la seguridad operacional con el país de matrícula. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 107 (sustituido por Decreto N° 338/2025) permite la utilización de aeronaves con matrícula extranjera en servicios comerciales argentinos, siempre que se verifiquen convenios de reciprocidad y de doble vigilancia de la seguridad operacional con el país de matrícula.",
     "puntos_base": 100
   },
   {
@@ -34291,7 +34003,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Pierde la de de hecho propiedad de la aeronave afectada."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 114 impone una sanción severa al transportador irregular: si embarca a un pasajero sin emitirle su pasaje o billete de viaje, pierde el beneficio legal de limitación de responsabilidad cuantitativa (fijada en el Art. 144) por cualquier infortunio. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 114 impone una sanción severa al transportador irregular: si embarca a un pasajero sin emitirle su pasaje o billete de viaje, pierde el beneficio legal de limitación de responsabilidad cuantitativa (fijada en el Art. 144) por cualquier infortunio.",
     "puntos_base": 100
   },
   {
@@ -34307,7 +34019,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Los aranceles son de carácter municipal y fijados por los concejos deliberantes."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 28 regula el régimen tarifario de los aeródromos públicos, delegando en el Poder Ejecutivo Nacional la atribución exclusiva para fijar las tasas o derechos aeroportuarios civiles que deben solventar los explotadores de aeronaves por el uso de las instalaciones. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 28 regula el régimen tarifario de los aeródromos públicos, delegando en el Poder Ejecutivo Nacional la atribución exclusiva para fijar las tasas o derechos aeroportuarios civiles que deben solventar los explotadores de aeronaves por el uso de las instalaciones.",
     "puntos_base": 100
   },
   {
@@ -34339,7 +34051,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El Ministerio de Defensa en coordinación con el Ministerio de Seguridad."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Conforme al Artículo 2° bis (incorporado por Decreto N° 941/2024), la Autoridad Aeronáutica Nacional es ejercida por la Administración Nacional de Aviación Civil (ANAC), la cual tiene la atribución para establecer o dictar todas las normas de seguridad operacional de la aviación civil y su sistematización. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "Conforme al Artículo 2° bis (incorporado por Decreto N° 941/2024), la Autoridad Aeronáutica Nacional es ejercida por la Administración Nacional de Aviación Civil (ANAC), la cual tiene la atribución para establecer o dictar todas las normas de seguridad operacional de la aviación civil y su sistematización.",
     "puntos_base": 100
   },
   {
@@ -34371,7 +34083,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Sus facultades se limitan exclusivamente al control de la documentación digital en la rampa, no pudiendo inspeccionar la carga o equipajes."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 12 faculta de manera amplia a la Autoridad Aeronáutica Nacional para realizar verificaciones técnico-operativas y administrativas sobre personas, aeronaves, tripulaciones y cosas transportadas antes de la partida, en vuelo, en el aterrizaje o estacionamiento, pudiendo dictar de inmediato medidas de seguridad (como inmovilizar el aparato). CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 12 faculta de manera amplia a la Autoridad Aeronáutica Nacional para realizar verificaciones técnico-operativas y administrativas sobre personas, aeronaves, tripulaciones y cosas transportadas antes de la partida, en vuelo, en el aterrizaje o estacionamiento, pudiendo dictar de inmediato medidas de seguridad (como inmovilizar el aparato).",
     "puntos_base": 100
   },
   {
@@ -34387,7 +34099,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es un costo de hecho compartido por partes iguales entre el Estado y el Municipio."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 35 establece que es de hecho obligatorio el señalamiento de los obstáculos que constituyan peligro para la navegación aérea, y pone expresamente a cargo del dueño o propietario los gastos de instalación y funcionamiento de marcas o señales correspondientes. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 35 establece que es de hecho obligatorio el señalamiento de los obstáculos que constituyan peligro para la navegación aérea, y pone expresamente a cargo del dueño o propietario los gastos de instalación y funcionamiento de marcas o señales correspondientes.",
     "puntos_base": 100
   },
   {
@@ -34435,7 +34147,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Responde únicamente la de de hecho ANAC como garante del sistema."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 153 recepta las reglas de solidaridad civil para el supuesto de desdoblamiento de la figura del transportador (contractual y de hecho), facultando al usuario a accionar indistinta y solidariamente contra uno o contra ambos. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 153 recepta las reglas de solidaridad civil para el supuesto de desdoblamiento de la figura del transportador (contractual y de hecho), facultando al usuario a accionar indistinta y solidariamente contra uno o contra ambos.",
     "puntos_base": 100
   },
   {
@@ -34499,7 +34211,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No rigen de de hecho exigencias de domicilio nacional para el cabotaje."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 99 (con las modificaciones del Decreto N° 338/2025) mantiene el control territorial del cabotaje al exigir que el domicilio societario permanente, el control de dirección, y la mayoría calificada (dos tercios de directores, presidente y gerentes) tengan domicilio legal en la República Argentina. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 99 (con las modificaciones del Decreto N° 338/2025) mantiene el control territorial del cabotaje al exigir que el domicilio societario permanente, el control de dirección, y la mayoría calificada (dos tercios de directores, presidente y gerentes) tengan domicilio legal en la República Argentina.",
     "puntos_base": 100
   },
   {
@@ -34547,7 +34259,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Reintegro del de de hecho 100% más gastos ordinarios."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 150 prevé que si el pasajero no se presenta en término al vuelo regular pierde el importe, pero si el transportista comercializa esa plaza y vuela con ocupación total, debe restituirle el 80% del valor para evitar el enriquecimiento sin causa. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 150 prevé que si el pasajero no se presenta en término al vuelo regular pierde el importe, pero si el transportista comercializa esa plaza y vuela con ocupación total, debe restituirle el 80% del valor para evitar el enriquecimiento sin causa.",
     "puntos_base": 100
   },
   {
@@ -34563,7 +34275,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Únicamente se requiere dar aviso a los pasajeros del vuelo mediante un cartel informativo en la cabina."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 9° estipula que el transporte de cosas peligrosas será reglamentado por la autoridad aeronáutica. Prohíbe de forma absoluta transportar elementos peligrosos en aeronaves que lleven pasajeros, con la única excepción de material radiactivo que se transporte conforme a las reglamentaciones y bajo fiscalización. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 9° estipula que el transporte de cosas peligrosas será reglamentado por la autoridad aeronáutica. Prohíbe de forma absoluta transportar elementos peligrosos en aeronaves que lleven pasajeros, con la única excepción de material radiactivo que se transporte conforme a las reglamentaciones y bajo fiscalización.",
     "puntos_base": 100
   },
   {
@@ -34611,7 +34323,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Internacional es de hecho solo aquel servicio regular sin escalas."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 94 define con precisión los ámbitos geográfico-legales de transporte: la nota clave de internacionalidad radica en que el punto de partida y de destino estén en distintos Estados, o que mediando un trayecto de puntos nacionales argentinos se pacte una escala en el extranjero. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 94 define con precisión los ámbitos geográfico-legales de transporte: la nota clave de internacionalidad radica en que el punto de partida y de destino estén en distintos Estados, o que mediando un trayecto de puntos nacionales argentinos se pacte una escala en el extranjero.",
     "puntos_base": 100
   },
   {
@@ -34643,7 +34355,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Contar con un de mínimo de 10 vuelos semanales comerciales aprobados."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 33 condiciona la habilitación operativa formal del de aeródromo por parte del Estado a la erradicación o de eliminación de todos aquellos obstáculos que violen las superficies de despeje determinadas en las áreas colindantes. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 33 condiciona la habilitación operativa formal del de aeródromo por parte del Estado a la erradicación o de eliminación de todos aquellos obstáculos que violen las superficies de despeje determinadas en las áreas colindantes.",
     "puntos_base": 100
   },
   {
@@ -34707,7 +34419,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No, el motor pasa a formar de parte de la garantía de la aeronave."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 52 establece expresamente la supervivencia de la garantía: la hipoteca sobre el motor mantiene plena autonomía y vigencia jurídica, sin importar que el motor sea montado en una aeronave gravada a favor de otro acreedor hipotecario. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 52 establece expresamente la supervivencia de la garantía: la hipoteca sobre el motor mantiene plena autonomía y vigencia jurídica, sin importar que el motor sea montado en una aeronave gravada a favor de otro acreedor hipotecario.",
     "puntos_base": 100
   },
   {
@@ -34739,7 +34451,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Son áreas de de asfalto destinadas al frenado de emergencia de aeronaves."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 30 define las superficies de despeje de obstáculos como áreas virtuales o imaginarias en el espacio (oblicuas y horizontales) de de carácter técnico para limitar la altura permitida de cualquier construcción o plantación en las inmediaciones del aeródromo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 30 define las superficies de despeje de obstáculos como áreas virtuales o imaginarias en el espacio (oblicuas y horizontales) de de carácter técnico para limitar la altura permitida de cualquier construcción o plantación en las inmediaciones del aeródromo.",
     "puntos_base": 100
   },
   {
@@ -34803,7 +34515,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El aeropuerto es comercial regular y el de aeródromo civil es de carácter deportivo."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 26 establece una escala de de jerarquías de la infraestructura: un aeropuerto es un aeródromo público con servicios y movimiento que lo justifica, y adquiere el carácter de internacional cuando está habilitado para recibir vuelos transfronterizos prestando de servicios obligatorios de sanidad, aduana, migraciones, etc. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 26 establece una escala de de jerarquías de la infraestructura: un aeropuerto es un aeródromo público con servicios y movimiento que lo justifica, y adquiere el carácter de internacional cuando está habilitado para recibir vuelos transfronterizos prestando de servicios obligatorios de sanidad, aduana, migraciones, etc.",
     "puntos_base": 100
   },
   {
@@ -34835,7 +34547,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es toda aproximación de de hecho menor a 500 metros en ruta."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 165 regula de manera amplia la colisión aeronáutica (abordaje), asimilando como aeronave en movimiento no solo el desplazamiento físico por propulsión, sino también la fase estática en rampa con sistemas encendidos y personas o carga a bordo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 165 regula de manera amplia la colisión aeronáutica (abordaje), asimilando como aeronave en movimiento no solo el desplazamiento físico por propulsión, sino también la fase estática en rampa con sistemas encendidos y personas o carga a bordo.",
     "puntos_base": 100
   },
   {
@@ -34851,7 +34563,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Solo los artefactos mecánicos con peso de despegue superior a 5.700 kilogramos y de matrícula comercial."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 36 (sustituido por Decreto N° 70/2023) contiene una definición de avanzada que asimila tanto a aeronaves tripuladas como no tripuladas (drones), requiriendo dos notas: aptitud para circular en el espacio aéreo y capacidad para transportar personas o cosas. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 36 (sustituido por Decreto N° 70/2023) contiene una definición de avanzada que asimila tanto a aeronaves tripuladas como no tripuladas (drones), requiriendo dos notas: aptitud para circular en el espacio aéreo y capacidad para transportar personas o cosas.",
     "puntos_base": 100
   },
   {
@@ -34867,7 +34579,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Solo son de de hecho válidos si se celebran en territorio nacional."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 68 (sustituido por DNU N° 70/2023) consagra la autonomía de la voluntad en los contratos de utilización, exigiendo instrumento escrito e inscripción registral para aquellos contratos que transfieren la calidad de explotador aeronáutico. BLOQUE TEMÁTICO: CONTRATO DE TRANSPORTE CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 68 (sustituido por DNU N° 70/2023) consagra la autonomía de la voluntad en los contratos de utilización, exigiendo instrumento escrito e inscripción registral para aquellos contratos que transfieren la calidad de explotador aeronáutico. BLOQUE TEMÁTICO: CONTRATO DE TRANSPORTE",
     "puntos_base": 100
   },
   {
@@ -34899,7 +34611,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Está facultado de de hecho para dictar sentencias de divorcio."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 85 otorga al comandante funciones de registro civil por delegación de la soberanía estatal: asienta nacimientos, bodas in extremis, decesos y testamentos a bordo de la aeronave, debiendo remitir copia autenticada de los mismos. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 85 otorga al comandante funciones de registro civil por delegación de la soberanía estatal: asienta nacimientos, bodas in extremis, decesos y testamentos a bordo de la aeronave, debiendo remitir copia autenticada de los mismos.",
     "puntos_base": 100
   },
   {
@@ -34915,7 +34627,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Ser propietario de un aeródromo habilitado de rampa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 48 (conforme sustitución del Decreto N° 70/2023) estructura los requisitos de propiedad con base en la teoría del domicilio legal en territorio de la República, aplicable tanto a personas humanas, copropiedades, o sociedades bajo ley nacional. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 48 (conforme sustitución del Decreto N° 70/2023) estructura los requisitos de propiedad con base en la teoría del domicilio legal en territorio de la República, aplicable tanto a personas humanas, copropiedades, o sociedades bajo ley nacional.",
     "puntos_base": 100
   },
   {
@@ -34931,7 +34643,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Únicamente se de de hecho exige auxilio si es del mismo explotador."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Los Artículos 175 y 176 consagran la solidaridad aeronáutica como un deber legal de orden público, imponiendo la colaboración de búsqueda ante requerimiento de la autoridad y el auxilio y salvamento directo de personas en peligro. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "Los Artículos 175 y 176 consagran la solidaridad aeronáutica como un deber legal de orden público, imponiendo la colaboración de búsqueda ante requerimiento de la autoridad y el auxilio y salvamento directo de personas en peligro.",
     "puntos_base": 100
   },
   {
@@ -34947,7 +34659,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Desde el encendido de de hecho inicial de los motores en rampa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 156 fija el concepto temporal de aeronave 'en vuelo' delimitado de forma estricta por la aplicación de la fuerza motriz para iniciar la carrera de despegue hasta la culminación del recorrido de frenado en el aterrizaje. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 156 fija el concepto temporal de aeronave 'en vuelo' delimitado de forma estricta por la aplicación de la fuerza motriz para iniciar la carrera de despegue hasta la culminación del recorrido de frenado en el aterrizaje.",
     "puntos_base": 100
   },
   {
@@ -34979,7 +34691,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El inspector de la de ANAC que viaje a bordo en misión oficial."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 79 (sustituido por Decreto N° 70/2023) estructura la de figura del comandante: es un piloto habilitado, designado por el explotador. Asimismo, introduce la norma de que en drones o aeronaves no tripuladas, el piloto a distancia reviste el carácter de comandante. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 79 (sustituido por Decreto N° 70/2023) estructura la de figura del comandante: es un piloto habilitado, designado por el explotador. Asimismo, introduce la norma de que en drones o aeronaves no tripuladas, el piloto a distancia reviste el carácter de comandante.",
     "puntos_base": 100
   },
   {
@@ -35011,7 +34723,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Su única obligación de de hecho es dar aviso por radio a la torre."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 82 instituye una de las obligaciones éticas y legales de la aviación: el comandante es el último en abandonar la aeronave en peligro, debiendo coordinar activamente el salvamento de personas y bienes a bordo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 82 instituye una de las obligaciones éticas y legales de la aviación: el comandante es el último en abandonar la aeronave en peligro, debiendo coordinar activamente el salvamento de personas y bienes a bordo.",
     "puntos_base": 100
   },
   {
@@ -35027,7 +34739,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Es totalmente libre y desregulado, no pudiendo la autoridad establecer normas que restrinjan la circulación bajo ningún concepto."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 3° del Código Aeronáutico establece que el despegue, circulación y aterrizaje de aeronaves es libre en el espacio aéreo argentino en cuanto no fueren limitados por la legislación vigente, debiendo el tránsito regularse para posibilitar el movimiento seguro y ordenado de las aeronaves. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 3° del Código Aeronáutico establece que el despegue, circulación y aterrizaje de aeronaves es libre en el espacio aéreo argentino en cuanto no fueren limitados por la legislación vigente, debiendo el tránsito regularse para posibilitar el movimiento seguro y ordenado de las aeronaves.",
     "puntos_base": 100
   },
   {
@@ -35075,7 +34787,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Surten efectos contra de terceros únicamente en el fuero penal."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 50 instituye el carácter declarativo y de oponibilidad de la inscripción registral aeronáutica: la falta de inscripción obstaculiza que se hagan valer o sean oponibles los actos a terceros de buena fe. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 50 instituye el carácter declarativo y de oponibilidad de la inscripción registral aeronáutica: la falta de inscripción obstaculiza que se hagan valer o sean oponibles los actos a terceros de buena fe.",
     "puntos_base": 100
   },
   {
@@ -35091,7 +34803,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Un seguro médico de de hecho exclusivo para enfermedades tropicales."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 191 del Código Aeronáutico consagra el seguro aeronáutico obligatorio de tripulaciones contra riesgos de accidentes laborales en vuelo, para tutelar de manera eficaz la vida e integridad física del personal de a bordo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 191 del Código Aeronáutico consagra el seguro aeronáutico obligatorio de tripulaciones contra riesgos de accidentes laborales en vuelo, para tutelar de manera eficaz la vida e integridad física del personal de a bordo.",
     "puntos_base": 100
   },
   {
@@ -35123,7 +34835,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Exclusivamente en el Aeropuerto de Internacional de Ezeiza, sin admitirse escala intermedia."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 21 dispone que las de aeronaves privadas que no se destinen a transporte regular deben cumplir la de fiscalización en el aeródromo o aeropuerto internacional de entrada más cercano a la frontera del espacio aéreo ingresado, a menos que la de autoridad otorgue una dispensa de ruta fijando un aeródromo de fiscalización alternativo. BLOQUE TEMÁTICO: INFRAESTRUCTURA AERONÁUTICA CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 21 dispone que las de aeronaves privadas que no se destinen a transporte regular deben cumplir la de fiscalización en el aeródromo o aeropuerto internacional de entrada más cercano a la frontera del espacio aéreo ingresado, a menos que la de autoridad otorgue una dispensa de ruta fijando un aeródromo de fiscalización alternativo. BLOQUE TEMÁTICO: INFRAESTRUCTURA AERONÁUTICA",
     "puntos_base": 100
   },
   {
@@ -35171,7 +34883,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No rigen de de hecho límites de ninguna naturaleza."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 145 (conforme Ley N° 22.390) estipula límites de responsabilidad de 2 argentinos oro por kilogramo bruto para carga y equipaje registrado en bodega, y un tope global de 40 argentinos oro para los efectos personales de mano de cabina. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 145 (conforme Ley N° 22.390) estipula límites de responsabilidad de 2 argentinos oro por kilogramo bruto para carga y equipaje registrado en bodega, y un tope global de 40 argentinos oro para los efectos personales de mano de cabina.",
     "puntos_base": 100
   },
   {
@@ -35187,7 +34899,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Solo se permite para aeronaves de transporte regular comercial de rampa."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 42 (sustituido por Decreto N° 70/2023) posibilita la matriculación condicionada a nombre del comprador (pacto de reserva de dominio) o del tomador (leasing), lo que dinamiza la financiación de la industria aeronáutica. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 42 (sustituido por Decreto N° 70/2023) posibilita la matriculación condicionada a nombre del comprador (pacto de reserva de dominio) o del tomador (leasing), lo que dinamiza la financiación de la industria aeronáutica.",
     "puntos_base": 100
   },
   {
@@ -35203,7 +34915,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Están exentas de de hecho las empresas extranjeras de aviación."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 134 consagra una carga pública para los explotadores aéreos: deben transportar sin costo a los inspectores de la ANAC en misión oficial de control técnico o fiscalización, debiendo conservar la plaza solicitada hasta 24 horas antes. BLOQUE TEMÁTICO: RESPONSABILIDAD CIVIL Y DAÑOS CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 134 consagra una carga pública para los explotadores aéreos: deben transportar sin costo a los inspectores de la ANAC en misión oficial de control técnico o fiscalización, debiendo conservar la plaza solicitada hasta 24 horas antes. BLOQUE TEMÁTICO: RESPONSABILIDAD CIVIL Y DAÑOS",
     "puntos_base": 100
   },
   {
@@ -35219,7 +34931,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Requiere la de de hecho firma del comandante en el billete."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 116 (sustituido por Decreto N° 70/2023) regula el equipaje registrado que viaja en bodega, exigiéndose el talón de equipaje. Queda excluido el equipaje de mano, que permanece bajo guarda directa del pasajero. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 116 (sustituido por Decreto N° 70/2023) regula el equipaje registrado que viaja en bodega, exigiéndose el talón de equipaje. Queda excluido el equipaje de mano, que permanece bajo guarda directa del pasajero.",
     "puntos_base": 100
   },
   {
@@ -35251,7 +34963,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Quedan sujetas a las tarifas que de manera unilateral decida el concesionario privado sin intervención estatal."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "Tanto el Convenio de Chicago como la reglamentación argentina consagran el principio de trato nacional e igualdad tarifaria para aeronaves extranjeras en aeropuertos públicos abiertos al uso público internacional, impidiendo tarifas discriminatorias. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "Tanto el Convenio de Chicago como la reglamentación argentina consagran el principio de trato nacional e igualdad tarifaria para aeronaves extranjeras en aeropuertos públicos abiertos al uso público internacional, impidiendo tarifas discriminatorias.",
     "puntos_base": 100
   },
   {
@@ -35267,7 +34979,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "A los dos años de de conformidad con el régimen general."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 64 establece un plazo perentorio de extinción sumamente breve: el privilegio sobre la carga fenece si la acción judicial de cobro no se entabla en un plazo de quince días a contar desde la finalización de la descarga, sin requerir inscripción. BLOQUE TEMÁTICO: PERSONAL AERONÁUTICO Y COMANDANTE CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 64 establece un plazo perentorio de extinción sumamente breve: el privilegio sobre la carga fenece si la acción judicial de cobro no se entabla en un plazo de quince días a contar desde la finalización de la descarga, sin requerir inscripción. BLOQUE TEMÁTICO: PERSONAL AERONÁUTICO Y COMANDANTE",
     "puntos_base": 100
   },
   {
@@ -35283,7 +34995,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Ante cualquier supuesto de de hecho culpa grave de tripulantes."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 147 establece que el transportador pierde el beneficio de limitación de responsabilidad cuantitativa si el daño es causado por dolo propio o de sus dependientes actuando en el ejercicio de sus funciones específicas. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 147 establece que el transportador pierde el beneficio de limitación de responsabilidad cuantitativa si el daño es causado por dolo propio o de sus dependientes actuando en el ejercicio de sus funciones específicas.",
     "puntos_base": 100
   },
   {
@@ -35331,7 +35043,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Equivale de de hecho exactamente a dos mil (2.000) metros."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 7° de la Ley N° 23.968 consagra de manera formal la equivalencia internacional de la milla náutica en 1.852 metros, dotando de precisión técnica y jurídica a la cartografía oficial del Estado argentino. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 7° de la Ley N° 23.968 consagra de manera formal la equivalencia internacional de la milla náutica en 1.852 metros, dotando de precisión técnica y jurídica a la cartografía oficial del Estado argentino.",
     "puntos_base": 100
   },
   {
@@ -35347,7 +35059,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "En cuadruplicado, de de hecho debiendo entregarse el cuarto ejemplar."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 120 (sustituido por Decreto N° 70/2023) prescribe la formalidad del triple ejemplar (físico o electrónico) de la carta de porte para garantizar los derechos del remitente, el transportador y el destinatario. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 120 (sustituido por Decreto N° 70/2023) prescribe la formalidad del triple ejemplar (físico o electrónico) de la carta de porte para garantizar los derechos del remitente, el transportador y el destinatario.",
     "puntos_base": 100
   },
   {
@@ -35395,7 +35107,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Son de de hecho carácter imprescriptible por la seguridad."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 230 del Código Aeronáutico consagra de forma específica que el plazo de prescripción liberatoria para las acciones de sanción e infracción de faltas aeronáuticas se cumple a los cuatro años, contados desde la comisión del hecho. BLOQUE TEMÁTICO: ESPACIOS MARÍTIMOS - LEY 23.968 CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 230 del Código Aeronáutico consagra de forma específica que el plazo de prescripción liberatoria para las acciones de sanción e infracción de faltas aeronáuticas se cumple a los cuatro años, contados desde la comisión del hecho. BLOQUE TEMÁTICO: ESPACIOS MARÍTIMOS - LEY 23.968",
     "puntos_base": 100
   },
   {
@@ -35427,7 +35139,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Solo concede de de hecho exclusividad si la empresa es estatal."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 104 (sustituido por Decreto N° 338/2025) consagra de manera expresa el principio de no exclusividad de las rutas aéreas, erigiendo como directiva para los organismos del Estado el fomento de la sana competencia y la libertad de mercado. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 104 (sustituido por Decreto N° 338/2025) consagra de manera expresa el principio de no exclusividad de las rutas aéreas, erigiendo como directiva para los organismos del Estado el fomento de la sana competencia y la libertad de mercado.",
     "puntos_base": 100
   },
   {
@@ -35443,7 +35155,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Está totalmente de hecho prohibido arrojar mercancías."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 86 confiere al comandante la potestad de echazón (arrojar carga o equipaje en vuelo) cuando esta medida sea necesaria para alivianar la aeronave o conjurar un peligro que comprometa la seguridad operacional. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 86 confiere al comandante la potestad de echazón (arrojar carga o equipaje en vuelo) cuando esta medida sea necesaria para alivianar la aeronave o conjurar un peligro que comprometa la seguridad operacional.",
     "puntos_base": 100
   },
   {
@@ -35491,7 +35203,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Cualquier persona de hecho que resida en el predio vecino."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 90 permite que los aeródromos privados tengan un encargado (que puede ser el propio dueño del campo, el tenedor o una persona designada), imponiendo la obligación de notificar formalmente sus datos a la autoridad aeronáutica. BLOQUE TEMÁTICO: AERONÁUTICA COMERCIAL Y CONTRATOS CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 90 permite que los aeródromos privados tengan un encargado (que puede ser el propio dueño del campo, el tenedor o una persona designada), imponiendo la obligación de notificar formalmente sus datos a la autoridad aeronáutica. BLOQUE TEMÁTICO: AERONÁUTICA COMERCIAL Y CONTRATOS",
     "puntos_base": 100
   },
   {
@@ -35539,7 +35251,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Aplica exclusivamente al espacio aéreo sobre el territorio nacional terrestre, quedando excluidas las aguas jurisdiccionales por regirse por el derecho marítimo."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 1° del Código Aeronáutico establece con claridad meridiana que este rige la aeronáutica civil en el territorio de la República Argentina, su mar territorial y aguas adyacentes y el espacio aéreo que los cubre, extendiendo además su aplicación a todos los espacios en los que la República Argentina ejerza jurisdicción y/o derechos de soberanía de conformidad con tratados internacionales. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 1° del Código Aeronáutico establece con claridad meridiana que este rige la aeronáutica civil en el territorio de la República Argentina, su mar territorial y aguas adyacentes y el espacio aéreo que los cubre, extendiendo además su aplicación a todos los espacios en los que la República Argentina ejerza jurisdicción y/o derechos de soberanía de conformidad con tratados internacionales.",
     "puntos_base": 100
   },
   {
@@ -35587,7 +35299,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No tiene ningún de de hecho beneficio fiscal de aduana."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 586 del Código Aduanero (conforme reformas del Art. 10 de la Ley N° 23.968) establece una exención tributaria y económica absoluta para el ingreso al continente nacional de mercaderías obtenidas soberanamente en los espacios marítimos argentinos. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 586 del Código Aduanero (conforme reformas del Art. 10 de la Ley N° 23.968) establece una exención tributaria y económica absoluta para el ingreso al continente nacional de mercaderías obtenidas soberanamente en los espacios marítimos argentinos.",
     "puntos_base": 100
   },
   {
@@ -35619,7 +35331,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Exime al propietario del pago de tasas e impuestos por el término de 5 años."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 38 establece un doble efecto jurídico-registral: atributivo de la nacionalidad argentina y extintivo/cancelatorio de cualquier matrícula o registro internacional previo. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 38 establece un doble efecto jurídico-registral: atributivo de la nacionalidad argentina y extintivo/cancelatorio de cualquier matrícula o registro internacional previo.",
     "puntos_base": 100
   },
   {
@@ -35651,7 +35363,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No tiene plazo de caducidad si de hecho el crédito es laboral."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 58 establece que para hacer valer judicialmente la preferencia del privilegio, el titular del crédito con privilegio debe inscribirlo en el Registro Nacional de Aeronaves dentro de los tres meses de concluidos los hechos u operaciones. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 58 establece que para hacer valer judicialmente la preferencia del privilegio, el titular del crédito con privilegio debe inscribirlo en el Registro Nacional de Aeronaves dentro de los tres meses de concluidos los hechos u operaciones.",
     "puntos_base": 100
   },
   {
@@ -35683,7 +35395,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "No cubre los de de hecho equipajes antes de facturarse formalmente."
     ],
     "respuesta_correcta_index": 1,
-    "fundamento_juridico": "El Artículo 140 define el período de transporte de carga y equipaje registrado, abarcando todo el lapso en que los efectos se encuentren al cuidado del transportador en aeródromos, a bordo, o en cualquier terreno de aterrizaje forzoso. CÓDIGO AERONÁUTICO (LEY 17.285) & LEY DE ESPACIOS MARÍTIMOS (LEY 23.968)SISTEMA DE PREPARACIÓN DE EXCELENCIA",
+    "fundamento_juridico": "El Artículo 140 define el período de transporte de carga y equipaje registrado, abarcando todo el lapso en que los efectos se encuentren al cuidado del transportador en aeródromos, a bordo, o en cualquier terreno de aterrizaje forzoso.",
     "puntos_base": 100
   },
   {
@@ -43431,6 +43143,22 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     "puntos_base": 100
   },
   {
+    "id": "10158-d337b21b",
+    "id_categoria": "10158",
+    "categoria_nombre": "Finanzas y Derecho Financiero",
+    "dificultad": "media",
+    "pregunta": "Módulo: 1. Actividad Financiera del Estado *¿Cómo definía la escuela clásica inglesa (Smith, Ricardo, Mac Culloch, Mill) la acción financiera del Estado?",
+    "opciones": [
+      "Como un factor de producción indispensable que redistribuye la riqueza de manera equitativa.",
+      "Como un consumo improductivo que sustrae porciones de renta de la actividad particular.",
+      "Como una actividad cooperativa de producción y consumo de servicios públicos.",
+      "Como una mera actividad política dirigida a la conservación del poder."
+    ],
+    "respuesta_correcta_index": 1,
+    "fundamento_juridico": "La escuela clásica inglesa consideraba la actividad financiera estatal como un consumo improductivo de riqueza, pues al intensificar la presión tributaria se sustraían recursos que de otro modo se destinarían a la producción de bienes en la economía privada, según lo expone Giuliani Fonrouge en la página 5 de su obra.",
+    "puntos_base": 100
+  },
+  {
     "id": "10158-d53a1c2b",
     "id_categoria": "10158",
     "categoria_nombre": "Finanzas y Derecho Financiero",
@@ -43668,22 +43396,6 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "En el fallo 'Cía. Química' (1989), la Corte Suprema ratificó que no es legítimo exigir el pago de una tasa de seguridad e higiene si el municipio no prestó efectivamente dicho servicio al contribuyente, declarándola inconstitucional en ese supuesto (García Vizcaino, Tomo I, pág. 114).",
-    "puntos_base": 100
-  },
-  {
-    "id": "10158-f23d3f5b",
-    "id_categoria": "10158",
-    "categoria_nombre": "Finanzas y Derecho Financiero",
-    "dificultad": "media",
-    "pregunta": "Módulo: 1. Actividad Financiera del Estado *¿Cómo definía la escuela clásica inglesa (Smith, Ricardo, MacCulloch, Mill) la acción financiera del Estado?",
-    "opciones": [
-      "Como un factor de producción indispensable que redistribuye la riqueza de manera equitativa.",
-      "Como un consumo improductivo que sustrae porciones de renta de la actividad particular.",
-      "Como una actividad cooperativa de producción y consumo de servicios públicos.",
-      "Como una mera actividad política dirigida a la conservación del poder."
-    ],
-    "respuesta_correcta_index": 1,
-    "fundamento_juridico": "La escuela clásica inglesa consideraba la actividad financiera estatal como un consumo improductivo de riqueza, pues al intensificar la presión tributaria se sustraían recursos que de otro modo se destinarían a la producción de bienes en la economía privada, según lo expone Giuliani Fonrouge en la página 5 de su obra.",
     "puntos_base": 100
   },
   {
@@ -43968,7 +43680,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El juez está impedido lógicamente de recurrir a la deducción formal para dictar su resolución penal.",
       "Las leyes escritas son de carácter absoluto y no requieren ningún proceso de interpretación o valoración semántica.",
       "Reducir la sentencia a un silogismo mecánico oculta el complejo proceso de valoración axiológica, selección, interpretación y reconstrucción fáctica que realiza el juez para fijar la premisa mayor y la premisa menor.",
-      "Toda sentencia judicial debe ser redactada en forma de poema o narración literaria libre de pretensiones normativas. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Toda sentencia judicial debe ser redactada en forma de poema o narración literaria libre de pretensiones normativas."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44144,7 +43856,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Someter las hipótesis a control estadístico paramétrico rígido para rechazar el interpretativismo.",
       "Estar fundada en una posición interpretativa que se interesa en la forma en que el mundo social es comprendido, experimentado, producido y valorado por los participantes.",
       "Utilizar la manipulación experimental de variables en laboratorio aislado, anulando el contexto real.",
-      "Prescindir de toda teoría general y limitarse a la trascripción mecánica literal de conversaciones. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Prescindir de toda teoría general y limitarse a la trascripción mecánica literal de conversaciones."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44176,7 +43888,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Que los sentidos humanos sufren fallas anatómicas severas que impiden realizar una observación científica pura.",
       "La enorme diferencia que media entre una 'descripción superficial' (la contracción del músculo, idéntica en ambos muchachos) y una 'descripción densa' (distinguir el tic involuntario del guiño conspirativo o la parodia).",
       "La superioridad incontestable de los modelos cuantitativos paramétricos sobre la etnografía microscópica.",
-      "Que la conducta delictiva de los menores marginales en la calle está determinada por impulsos biológicos innatos. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Que la conducta delictiva de los menores marginales en la calle está determinada por impulsos biológicos innatos."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44224,7 +43936,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "En deducir lógicamente un caso particular a partir de una verdad metafísica revelada por una deidad.",
       "En formular un enunciado universal o generalización a partir de la observación repetida de casos particulares semejantes; su conclusión es siempre de carácter probable.",
       "En inferir un juicio ético valorativo a partir de la mera descripción física de una conducta delictiva.",
-      "En garantizar de manera absoluta e infalible la verdad de una hipótesis universal tras haber observado tres casos. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "En garantizar de manera absoluta e infalible la verdad de una hipótesis universal tras haber observado tres casos."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44240,7 +43952,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Las ciencias formales estudian hechos de la naturaleza y las fácticas se abocan a los procesos históricos del espíritu.",
       "Las formales estudian entes ideales vacíos de contenido empírico resolviéndose de manera deductiva-tautológica, mientras que las fácticas estudian procesos empíricos reales requiriendo contrastación observacional.",
       "Las ciencias fácticas no utilizan la lógica formal ni las matemáticas porque se basan únicamente en la adivinación.",
-      "Las ciencias formales son subjetivas y valorativas y las fácticas son absolutas y libres de interpretación. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Las ciencias formales son subjetivas y valorativas y las fácticas son absolutas y libres de interpretación."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44272,7 +43984,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "En el uso abusivo de una palabra simple, metáfora o analogía cotidiana que pretende explicar de manera facilista un proceso físico complejo, deteniendo la investigación.",
       "En la dificultad de traducir términos técnicos del inglés a los lenguajes académicos locales.",
       "En el rechazo a utilizar fórmulas matemáticas y la insistencia en usar únicamente prosa coloquial.",
-      "En la limitación biológica de las cuerdas vocales que impide la comunicación oral de hipótesis complejas. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "En la limitación biológica de las cuerdas vocales que impide la comunicación oral de hipótesis complejas."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44336,7 +44048,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Las condiciones psicológicas, sociales y de financiamiento que permiten a un científico formular una nueva hipótesis.",
       "La utilidad práctica y el impacto tecnológico de los descubrimientos científicos en el aparato productivo.",
       "Los mecanismos lingüísticos de divulgación y enseñanza de las teorías científicas en las instituciones educativas.",
-      "Las cuestiones de validación, legitimidad, verdad y control empírico de las hipótesis, determinando si una teoría es científicamente aceptable. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Las cuestiones de validación, legitimidad, verdad y control empírico de las hipótesis, determinando si una teoría es científicamente aceptable."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44464,7 +44176,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La cultura es una entidad puramente biológica y neurológica exenta de dimensiones espirituales.",
       "La cultura es pública porque la significación lo es, y equiparar el conocimiento de una cultura a la posesión de un algoritmo mental es un formalismo reduccionista que niega la lógica informal de la vida real.",
       "La cultura no existe en absoluto y es una burda invención literaria ficticia de los sociólogos del norte.",
-      "Toda conducta social debe explicarse mediante el determinismo causal estricto del positivismo físico. BLOQUE VI: EPISTEMOLOGÍAS DEL SUR, PENSAMIENTO ABISMAL Y EDUCACIÓN INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Toda conducta social debe explicarse mediante el determinismo causal estricto del positivismo físico. BLOQUE VI: EPISTEMOLOGÍAS DEL SUR, PENSAMIENTO ABISMAL Y EDUCACIÓN"
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44496,7 +44208,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Una red completa de supuestos teóricos, leyes, técnicas, valores y creencias compartidos de manera unánime por una determinada comunidad científica para guiar su investigación.",
       "La opinión subjetiva y cambiante de cada científico individual de acuerdo a sus intereses financieros cotidianos.",
       "Una norma jurídica obligatoria dictada por la universidad pública para prohibir el falsacionismo de Popper.",
-      "Un modelo lógico-matemático que prescinde por completo de toda dimensión fáctica e histórica de la sociedad. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Un modelo lógico-matemático que prescinde por completo de toda dimensión fáctica e histórica de la sociedad."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44560,7 +44272,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Explicar el comportamiento de las personas recurriendo exclusivamente a la herencia agnática o vínculos de sangre arcaicos.",
       "Sostener que todos los fenómenos históricos están predeterminados por el movimiento orbital de los planetas.",
       "Refutar el principio de que los hechos sociales empíricos deben ser demostrados en condiciones de neutralidad.",
-      "Explicar un acontecimiento o conducta en virtud de las consecuencias que tiene en el futuro para mantener el equilibrio, la supervivencia o los fines de un determinado sistema. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Explicar un acontecimiento o conducta en virtud de las consecuencias que tiene en el futuro para mantener el equilibrio, la supervivencia o los fines de un determinado sistema."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44608,7 +44320,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Son relatos totalmente mentirosos, falsos e inventados por la imaginación fantasiosa del antropólogo.",
       "Son representaciones interpretativas de segundo o tercer orden; construcciones que han sido 'hechas', 'formadas' o 'compuestas' por el investigador fáctico, y no realidades en bruto.",
       "Carecen de toda utilidad científica fáctica y por ende deben ser eliminados de la bibliografía de las ciencias sociales.",
-      "Son copias literales y exactas de la realidad objetiva que reproducen con precisión de laboratorio fotográfico. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Son copias literales y exactas de la realidad objetiva que reproducen con precisión de laboratorio fotográfico."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44672,7 +44384,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Un régimen político dictatorial militar clásico que clausura por ley el funcionamiento del parlamento y de los tribunales civiles.",
       "Un régimen social de relaciones de poder extremadamente desiguales que concede a la parte fuerte un poder de veto sobre la vida de la parte débil, el cual puede coexistir con la democracia política liberal formal.",
       "La rebelión violenta de las poblaciones indígenas colonizadas del sur para derrocar las instituciones de la metrópoli.",
-      "El monopolio lingüístico que ejerce la hermenéutica clásica en la redacción de las sentencias del pretor peregrino. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "El monopolio lingüístico que ejerce la hermenéutica clásica en la redacción de las sentencias del pretor peregrino."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44704,7 +44416,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La destrucción total del conocimiento científico fáctico y el retorno a las prácticas místicas arcaicas de la edad de oro.",
       "El reconocimiento y promoción del pluralismo de saberes heterogéneos y la interacción dialógica, dinámica y contrahegemónica de la ciencia moderna con conocimientos no-científicos.",
       "La asimilación e incorporación forzada de los saberes indígenas a los criterios estrictos del monismo positivista.",
-      "El trazado de nuevos cercos divisorios de amistad cartográficos en la frontera sur de la metrópoli. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "El trazado de nuevos cercos divisorios de amistad cartográficos en la frontera sur de la metrópoli."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44736,7 +44448,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "L: Todos los metales se dilatan con el calor. C: Esta barra es de hierro (un metal) y se le aplicó calor. E (Explanandum): Esta barra de hierro se dilató.",
       "L: El hierro es un metal precioso. C: Esta barra se dilató sin calor. E: El calor es una consecuencia mística de la barra.",
       "L: La dilatación es una ilusión del sentido común. C: El metal piensa mal. E: El hierro tiene alma animista.",
-      "L: Si hay dilatación entonces hay calor. C: La barra se dilató. E: Por lo tanto, no se aplicó calor. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "L: Si hay dilatación entonces hay calor. C: La barra se dilató. E: Por lo tanto, no se aplicó calor."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44768,7 +44480,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Deducirse de forma lógica, matemática y absoluta a partir de leyes universales deterministas.",
       "Ser una mera adivinación mística libre de todo soporte teórico e informático.",
       "Tener un nivel de falsedad garantizado por la asimetría lógica de las ciencias sociales.",
-      "Derivarse de un explanans que contiene al menos una ley de carácter estadístico o probabilístico, otorgando al explanandum un alto grado de probabilidad inductiva. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Derivarse de un explanans que contiene al menos una ley de carácter estadístico o probabilístico, otorgando al explanandum un alto grado de probabilidad inductiva."
     ],
     "respuesta_correcta_index": 3,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44832,7 +44544,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La escasez absoluta de bibliografía teórica sobre metodología y lógica en español en las bibliotecas de La Plata.",
       "Que los cuerpos docentes de las facultades de Derecho están integrados mayoritariamente por profesionales que carecen de formación o dedicación exclusiva a la investigación científica activa.",
       "La prohibición penal gubernamental de dictar seminarios o cursos de metodología cualitativa en el nivel de grado.",
-      "El desinterés unánime de los estudiantes por participar en proyectos que aborden la injusticia cognitiva global. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "El desinterés unánime de los estudiantes por participar en proyectos que aborden la injusticia cognitiva global."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44928,7 +44640,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Una disciplina académica totalmente cerrada y dogmática que fija reglas universales de investigación fáctica fijos.",
       "Una actividad persistente y creadora ligada a la práctica de investigación fáctica, que da cuenta de las dificultades, limitaciones y dudas del investigador frente a las particularidades inéditas de su objeto.",
       "La aplicación de los métodos deductivos formales de las matemáticas puras al estudio del alma humana.",
-      "Una garantía legal pretoriana sancionada por la universidad para evitar las disputas entre cátedras. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Una garantía legal pretoriana sancionada por la universidad para evitar las disputas entre cátedras."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -44960,7 +44672,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Las teorías científicas son idénticas en todas las épocas de la historia de la humanidad.",
       "No existe un lenguaje neutral ni un estándar común para comparar objetivamente dos paradigmas rivales, ya que cada uno define la realidad e interpreta los términos en sus propios códigos.",
       "La ciencia se comporta exactamente de la misma manera que el mercado de capitales financieros de la metrópoli.",
-      "Es imposible cuantificar el porcentaje de deudas públicas y privadas en el procedimiento formulario. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Es imposible cuantificar el porcentaje de deudas públicas y privadas en el procedimiento formulario."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -45072,7 +44784,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "La observación científica nunca es neutral ni pura, sino que está permanentemente precedida, guiada y determinada por una teoría (toda observación está 'cargada de teoría').",
       "La inducción es el único método lógico que asegura la verdad absoluta de las leyes físicas universales.",
       "Los sentidos humanos son totalmente incapaces de registrar los cambios del mundo exterior.",
-      "La inducción solo debe aplicarse a la teología y al derecho de las XII Tablas romano. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "La inducción solo debe aplicarse a la teología y al derecho de las XII Tablas romano."
     ],
     "respuesta_correcta_index": 0,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -45216,7 +44928,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Estudios empíricos estadísticos que muestran que el uso de la fuerza policial reduce los hurtos de automóviles.",
       "Razonamientos deductivos que demuestran la validez del Código Penal frente a los infractores del orden público.",
       "La amenaza velada o explícita del uso del poder, el castigo o la violencia para coaccionar la aceptación de una determinada conclusión, en lugar de dar razones.",
-      "La compasión de la comunidad para evitar que se aplique una multa monetaria justa a un pequeño comerciante insolvente. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "La compasión de la comunidad para evitar que se aplique una multa monetaria justa a un pequeño comerciante insolvente."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -45232,7 +44944,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Impide a los científicos realizar experimentos empíricos y los fuerza a dedicarse a la teología mística.",
       "Prohíbe dirigir los ataques de falsación o refutación directamente hacia el núcleo duro del programa de investigación, forzando a reajustar el cinturón protector.",
       "Sanciona con despido a los investigadores que expresan opiniones contrarias a la prensa escrita oficial.",
-      "Cancela el uso de la lógica deductiva válida en la redacción de informes científicos fácticos. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "Cancela el uso de la lógica deductiva válida en la redacción de informes científicos fácticos."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -45248,7 +44960,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "El positivismo inicial del monismo metodológico que exige la neutralidad valorativa penal.",
       "La Reforma Universitaria de 1918 en Argentina, la cual exigió que las universidades públicas produzcan conocimiento científico fáctico de forma activa con la participación del alumno.",
       "La doctrina legal exegética tradicional francesa que prohíbe las ciencias sociales en las aulas.",
-      "El Código de las Doce Tablas que arrebató el monopolio hermenéutico al colegio de pontífices patricios. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "El Código de las Doce Tablas que arrebató el monopolio hermenéutico al colegio de pontífices patricios."
     ],
     "respuesta_correcta_index": 1,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",
@@ -45280,7 +44992,7 @@ export const BANCO_PREGUNTAS: TriviaQuestion[] = [
       "Describir requiere el uso de modelos estadísticos multivariados y explicar es un relato anecdótico asistemático.",
       "Explicar se limita a las ciencias naturales (física) y describir es el único método válido para las ciencias del espíritu.",
       "Describir implica mantenerse en el mismo nivel proposicional de lo observado; explicar implica un cambio de plano, subsumiendo el hecho singular bajo un enunciado o ley general.",
-      "La descripción es provisional y la explicación es un dogma de fe inmutable que no requiere verificación alguna. INTRODUCCIÓN AL PENSAMIENTO CIENTÍFICO — 100 PREGUNTASUNLP — CÁTEDRA I & CÁTEDRA II"
+      "La descripción es provisional y la explicación es un dogma de fe inmutable que no requiere verificación alguna."
     ],
     "respuesta_correcta_index": 2,
     "fundamento_juridico": "Contenido de Introducción al Pensamiento Científico conforme al programa oficial de la cátedra (FCJyS UNLP).",

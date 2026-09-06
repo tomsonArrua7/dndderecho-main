@@ -16,17 +16,20 @@ import {
   UserCheck
 } from 'lucide-react';
 import { RANGOS_JURIDICOS } from '@/data/triviaData';
-import { CICLO_RAMAS, getRamaById, getRamaDeLaSemana } from '@/data/ramasTrivia';
+import { CICLO_RAMAS, getRamaById, getRamaDeTemporada } from '@/data/ramasTrivia';
 import { cn } from '../../lib/utils';
 
 export interface TriviaGuideModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Temporada en curso, para marcar cuál rama se está jugando. */
+  numeroTemporada?: number | null;
 }
 
-export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onClose }) => {
+export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onClose, numeroTemporada }) => {
   const [activeGuideTab, setActiveGuideTab] = useState<'modos' | 'puntos' | 'rangos' | 'temporadas' | 'logros'>('modos');
-  const ramaActual = getRamaDeLaSemana();
+  const temporada = numeroTemporada ?? 1;
+  const ramaActual = getRamaDeTemporada(temporada);
 
   // Bloquea el scroll de fondo en mobile mientras la guía está abierta.
   useEffect(() => {
@@ -302,9 +305,13 @@ export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onCl
                   </h3>
                   <p className="text-slate-700 dark:text-slate-300 text-xs leading-relaxed">
                     El competitivo no se juega por materia suelta sino por <strong>ramas del derecho</strong>. Cada
-                    semana hay una <strong>rama fija</strong> que rota los jueves 19:00 junto con el reset de duelos, y
-                    al abrir una sala se sortea <strong>una segunda rama al azar</strong>. De las 5 preguntas, 3 salen
-                    de la rama de la semana y 2 de la sorteada. Tu rival recibe exactamente las mismas.
+                    temporada tiene una <strong>rama fija</strong>, y al abrir una sala se sortea <strong>una segunda
+                    rama al azar</strong>. De las 5 preguntas, 3 salen de la rama de la temporada y 2 de la sorteada.
+                    Tu rival recibe exactamente las mismas. Cuando cierra la temporada, el ciclo avanza a la
+                    rama siguiente.
+                  </p>
+                  <p className="text-[11px] font-mono text-amber-700 dark:text-amber-300">
+                    Estás jugando la <strong>Temporada {temporada}</strong>.
                   </p>
 
                   <div className="space-y-1.5 pt-1">
@@ -342,7 +349,7 @@ export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onCl
                           </div>
                           {esActual && (
                             <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300 shrink-0 font-mono">
-                              Esta semana
+                              Temporada actual
                             </span>
                           )}
                         </div>

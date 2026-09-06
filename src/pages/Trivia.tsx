@@ -73,8 +73,7 @@ import {
 import {
   RAMAS_JURIDICAS,
   getRamaById,
-  getRamaDeLaSemana,
-  getProximaRotacion,
+  getRamaDeTemporada,
   sortearRamasDuelo,
   seleccionarPreguntasDuelo,
   getMateriasDeRama,
@@ -107,7 +106,14 @@ const ICON_MAP: Record<string, any> = {
   Zap
 };
 
-const SEASON_START_TIMESTAMP = new Date("2026-08-13T19:00:00-03:00").getTime();
+/**
+ * Arranque de la Temporada 1. Debe coincidir con el valor por defecto de
+ * fn_inicio_temporada_vigente() en la base (migración 20260906180000).
+ */
+const SEASON_START_TIMESTAMP = new Date("2026-09-06T19:00:00-03:00").getTime();
+
+/** Vida de una sala pública sin rival. Igual al plazo del barrido en la base. */
+const EXPIRACION_SALA_MS = 30 * 60 * 1000;
 
 function getLiveSeasonInfo() {
   const now = Date.now();
@@ -121,7 +127,7 @@ function getLiveSeasonInfo() {
     return {
       isStarted: false,
       bannerTitle: "🚀 Próximo Inicio de Temporada Competitiva",
-      badgeText: "Jueves 13 de Agosto 19:00 hs",
+      badgeText: "Hoy 19:00 hs",
       countdownText: `Comienza en: ${timeStr}`,
       weeklyCountdown: `Comienza en: ${timeStr}`,
       monthlyCountdown: `Comienza en: ${timeStr}`
@@ -566,6 +572,27 @@ export default function Trivia() {
   // pool en memoria; el banco oficial sigue siendo el generado del repositorio.
   const [preguntasIA, setPreguntasIA] = useState<TriviaQuestion[]>([]);
 
+  // Número de temporada en curso = temporadas ya cerradas + 1. De acá sale la
+  // rama fija del competitivo, así el cambio de rama acompaña al cierre real de
+  // temporada y no a un calendario paralelo que puede desincronizarse.
+  const [numeroTemporada, setNumeroTemporada] = useState<number | null>(null);
+
+  useEffect(() => {
+    let vigente = true;
+    supabase
+      .from("trivia_temporadas")
+      .select("id", { count: "exact", head: true })
+      .then(({ count, error }) => {
+        if (!vigente) return;
+        if (error) {
+          console.error("No se pudo leer la temporada vigente:", error);
+          return;
+        }
+        setNumeroTemporada((count ?? 0) + 1);
+      });
+    return () => { vigente = false; };
+  }, []);
+
   // El banco pesa ~3 MB y se carga aparte del bundle inicial.
   const [banco, setBanco] = useState<TriviaQuestion[]>([]);
   const bancoListo = banco.length > 0;
@@ -585,6 +612,18 @@ export default function Trivia() {
   const bancoDisponible = () => {
     if (!bancoListo) {
       toast.info("Cargando el banco de preguntas, esperá un segundo...");
+      return false;
+    }
+    return true;
+  };
+
+  /**
+   * La rama fija se graba en la sala, así que no se puede crear un duelo sin
+   * saber en qué temporada estamos: quedaría con la rama equivocada.
+   */
+  const temporadaDisponible = () => {
+    if (numeroTemporada === null) {
+      toast.info("Sincronizando la temporada en curso, esperá un segundo...");
       return false;
     }
     return true;
@@ -1052,32 +1091,15 @@ export default function Trivia() {
         markDuelAsSeen(duel.id);
         setActiveDuelRoom(duel);
 
-        // Guardar notificación persistente en el Centro de Notificaciones y disparar evento en vivo
-        try {
-          const currentNotifs = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
-          const existingIndex = currentNotifs.findIndex((n: any) => n.id === duel.id);
-          const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
-          const motivo = duel.porAbandono
-            ? `${oppName} abandonó el duelo`
-            : `Tu rival ${oppName} completó el duelo`;
-          const newNotif = {
-            id: duel.id,
-            title: `⚔️ Duelo 1v1: ${duel.materiaNombre}`,
-            description: `${motivo}. Resultado: ${outcomeLabel}`,
-            materiaNombre: duel.materiaNombre,
-            timestamp: duel.createdAt || "Reciente",
-            seen: false,
-            date: Date.now()
-          };
-          if (existingIndex >= 0) {
-            currentNotifs[existingIndex] = newNotif;
-          } else {
-            currentNotifs.unshift(newNotif);
-          }
-          localStorage.setItem("dnd_duel_notifications", JSON.stringify(currentNotifs.slice(0, 20)));
-          window.dispatchEvent(new CustomEvent("dnd_duel_notification_event"));
-          toast.success(`⚔️ ${motivo} (${duel.materiaNombre}). Resultado: ${outcomeLabel}`);
-        } catch {}
+        // El Centro de Notificaciones se alimenta de trivia_notificaciones, que
+        // escribe el servidor al resolver el duelo y recuerda si ya se leyó. Acá
+        // sólo se avisa en el momento; guardar además una copia en localStorage
+        // hacía reaparecer como nuevas notificaciones ya leídas.
+        const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
+        const motivo = duel.porAbandono
+          ? `${oppName} abandonó el duelo`
+          : `Tu rival ${oppName} completó el duelo`;
+        toast.success(`⚔️ ${motivo} (${duel.materiaNombre}). Resultado: ${outcomeLabel}`);
 
         let duelQuestions = allQuestionsCombined.filter(q => duel.preguntasIds.includes(q.id));
         if (duelQuestions.length < 5) {
@@ -1111,14 +1133,15 @@ export default function Trivia() {
   const fetchDuelosFromSupabase = async () => {
     setLoadingDuelos(true);
     try {
-      // Limpieza proactiva en Supabase de salas en espera creadas hace más de 15 minutos sin rival
-      const fifteenMinsAgoISO = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+      // Las salas públicas duran 30 minutos. Si nadie entró, se borran sin
+      // computar nada (el barrido del servidor aplica el mismo plazo).
+      const vencimientoISO = new Date(Date.now() - EXPIRACION_SALA_MS).toISOString();
       supabase
         .from("trivia_duelos")
         .delete()
         .eq("status", "esperando_rival")
         .is("player2_id", null)
-        .lt("created_at", fifteenMinsAgoISO)
+        .lt("created_at", vencimientoISO)
         .then(() => {})
         .catch(() => {});
 
@@ -1131,12 +1154,12 @@ export default function Trivia() {
       if (data && !error) {
         const now = Date.now();
         const mapped: DueloTrivia[] = data
-          // Descartar salas expiradas (>15 minutos de espera sin rival)
+          // Descartar salas vencidas (más de 30 minutos esperando rival)
           .filter((d: any) => {
             const isWaitingWithoutRival = !d.player2_id && d.status === "esperando_rival";
             if (isWaitingWithoutRival && d.created_at) {
               const diffMs = now - new Date(d.created_at).getTime();
-              if (diffMs > 15 * 60 * 1000) return false;
+              if (diffMs > EXPIRACION_SALA_MS) return false;
             }
             return true;
           })
@@ -1169,46 +1192,11 @@ export default function Trivia() {
 
         setDuelosList(mapped);
 
-        if (isInitialLoadRef.current) {
-          isInitialLoadRef.current = false;
-          // En la carga inicial, sincronizar las notificaciones de los duelos finalizados para no perder ningún resultado
-          for (const duel of mapped) {
-            const isP1 = (user?.id && duel.player1Id === user.id) || duel.player1Nombre === userName;
-            const isP2 = (user?.id && duel.player2Id === user.id) || (duel.player2Nombre && duel.player2Nombre === userName);
-            if (!isP1 && !isP2) continue;
-            const isFinished = duel.status === "finalizado" || (duel.player1Completed && duel.player2Completed);
-            if (isFinished && !seenDuelResultsRef.current.includes(duel.id)) {
-              const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
-              const oppScore = isP1 ? (duel.player2Puntos || 0) : (duel.player1Puntos || 0);
-              const oppName = isP1 ? (duel.player2Nombre || "Rival") : (duel.player1Nombre || "Rival");
-              const { resultado: res } = interpretarResultadoDuelo(duel.ganadorId, !!isP1, myScore, oppScore);
-              const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
-              const motivoInicial = duel.porAbandono
-                ? `${oppName} abandonó el duelo`
-                : `Tu rival ${oppName} completó el duelo`;
-              try {
-                const currentNotifs = JSON.parse(localStorage.getItem("dnd_duel_notifications") || "[]");
-                if (!currentNotifs.some((n: any) => n.id === duel.id)) {
-                  const newNotif = {
-                    id: duel.id,
-                    title: `⚔️ Duelo 1v1: ${duel.materiaNombre}`,
-                    description: `${motivoInicial}. Resultado: ${outcomeLabel}`,
-                    materiaNombre: duel.materiaNombre,
-                    timestamp: duel.createdAt || "Reciente",
-                    seen: false,
-                    date: Date.now()
-                  };
-                  localStorage.setItem("dnd_duel_notifications", JSON.stringify([newNotif, ...currentNotifs].slice(0, 20)));
-                  window.dispatchEvent(new CustomEvent("dnd_duel_notification_event"));
-                }
-              } catch {}
-            }
-          }
-          checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
-        } else {
-          // Auto-activar modal y actualizar cuando el rival termina
-          checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
-        }
+        // Las notificaciones de duelos resueltos las escribe el servidor en
+        // trivia_notificaciones, que recuerda cuáles ya se leyeron. El cliente
+        // sólo decide si corresponde abrir el modal de resultado.
+        isInitialLoadRef.current = false;
+        checkAndTriggerUnseenResults(mapped, seenDuelResultsRef.current);
       }
     } catch (err) {
       console.error("Error al obtener duelos de Supabase:", err);
@@ -1448,12 +1436,12 @@ export default function Trivia() {
 
   // Crear Duelo 1vs1 en Supabase (con selector propio de materia y CERO preguntas repetidas)
   const handleCreateDuelo = async (esPublico: boolean, overrideCatId?: string) => {
-    if (!bancoDisponible()) return;
+    if (!bancoDisponible() || !temporadaDisponible()) return;
     const randomCode = `DND-${Math.floor(100 + Math.random() * 900)}`;
 
     // El sorteo se resuelve acá, al crear la sala, y queda grabado: el rival que
     // entra después gira la ruleta y le cae exactamente el mismo resultado.
-    const [ramaFija, ramaAzar] = sortearRamasDuelo();
+    const [ramaFija, ramaAzar] = sortearRamasDuelo(numeroTemporada!);
     const nombreRamas = `${getRamaById(ramaFija).nombre} + ${getRamaById(ramaAzar).nombre}`;
 
     const finalPool = seleccionarPreguntasDuelo(ramaFija, ramaAzar, allQuestionsCombined, 5);
@@ -2005,6 +1993,7 @@ export default function Trivia() {
           }}
           onSelectTab={(tab) => setActiveTab(tab)}
           activeTab={activeTab}
+          numeroTemporada={numeroTemporada}
         />
 
         {/* MODAL LIMPIO DE CONFIGURACIÓN DE PRÁCTICA */}
@@ -2203,14 +2192,9 @@ export default function Trivia() {
               </div>
             </div>
 
-            {/* RAMA DE LA SEMANA Y REGLA DEL SORTEO (el competitivo ya no se elige por materia) */}
+            {/* RAMA DE LA TEMPORADA Y REGLA DEL SORTEO (el competitivo ya no se elige por materia) */}
             {(() => {
-              const ramaSemana = getRamaDeLaSemana();
-              const restante = Math.max(0, getProximaRotacion() - Date.now());
-              const d = Math.floor(restante / 86400000);
-              const h = Math.floor((restante / 3600000) % 24);
-              const m = Math.floor((restante / 60000) % 60);
-              const cuenta = d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`;
+              const ramaSemana = getRamaDeTemporada(numeroTemporada ?? 1);
 
               return (
                 <div className="rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/10 p-4 sm:p-5 space-y-3 shadow-md">
@@ -2221,7 +2205,7 @@ export default function Trivia() {
                       </div>
                       <div className="min-w-0">
                         <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
-                          Rama de la semana
+                          Rama de la temporada
                         </span>
                         <span className="text-sm font-black text-slate-900 dark:text-white block truncate">
                           {ramaSemana.nombre}
@@ -2232,13 +2216,14 @@ export default function Trivia() {
                       </div>
                     </div>
                     <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 shrink-0 pt-1">
-                      rota en {cuenta}
+                      {numeroTemporada === null ? "sincronizando..." : `Temporada ${numeroTemporada}`}
                     </span>
                   </div>
 
                   <p className="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-white/10 pt-3 leading-relaxed">
                     Al abrir la sala se sortea una segunda rama al azar. Son 5 preguntas:
-                    3 de la rama de la semana y 2 de la sorteada, y tu rival recibe exactamente las mismas.
+                    3 de la rama de la temporada y 2 de la sorteada, y tu rival recibe exactamente las mismas.
+                    La rama cambia cuando cierra la temporada.
                   </p>
                 </div>
               );
@@ -3259,6 +3244,7 @@ export default function Trivia() {
         <TriviaGuideModal
           isOpen={showGuideModal}
           onClose={() => setShowGuideModal(false)}
+          numeroTemporada={numeroTemporada}
         />
 
         {/* MODAL DE RESULTADOS POST-PARTIDA CON ANIMACIÓN DE ELO Y TEXTO FLOTANTE DE MMR */}

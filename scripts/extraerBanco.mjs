@@ -102,10 +102,35 @@ function textoDocx(ruta) {
 
 async function textoPdf(ruta) {
   const d = await pdf(fs.readFileSync(ruta));
-  // Los compendios repiten encabezado y pie en cada página; se descartan.
-  return d.text
-    .split("\n")
-    .filter(l => !/^COMPENDIO DE|^Facultad de Ciencias Jur|P[áa]gina \d+$/.test(l.trim()))
+  const lineas = d.text.split("\n");
+
+  // Encabezados y pies se repiten en cada página y, al parsear, terminan
+  // pegados al texto de la opción anterior. Se detectan por repetición: una
+  // línea que aparece tres veces o más en el documento no es contenido.
+  // Las líneas estructurales también se repiten (una "RESPUESTA CORRECTA: B" por
+  // pregunta), así que quedan a salvo del filtro por repetición.
+  const esEstructural = t =>
+    /^(?:PREGUNTA|Pregunta)\s*\d+/i.test(t) ||
+    /^\[?.?\]?\s*[A-Da-d][\)\.]\s/.test(t) ||
+    /RESPUESTA\s+CORRECTA|opci[oó]n\s+correcta/i.test(t) ||
+    /^(?:Explicaci[oó]n|Justificaci[oó]n|Fundamento|Fundamentaci[oó]n)/i.test(t);
+
+  const frecuencia = new Map();
+  for (const l of lineas) {
+    const t = l.replace(/\s+/g, " ").trim();
+    if (esEstructural(t)) continue;
+    const clave = t.replace(/\d+/g, "#");
+    if (clave.length > 8) frecuencia.set(clave, (frecuencia.get(clave) || 0) + 1);
+  }
+
+  return lineas
+    .filter(l => {
+      const t = l.replace(/\s+/g, " ").trim();
+      if (/^P[áa]gina\s*\d+$/i.test(t)) return false;
+      if (esEstructural(t)) return true;
+      const clave = t.replace(/\d+/g, "#");
+      return !(clave.length > 8 && (frecuencia.get(clave) || 0) >= 3);
+    })
     .join("\n");
 }
 

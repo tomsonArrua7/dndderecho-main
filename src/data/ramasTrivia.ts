@@ -62,49 +62,34 @@ export const RAMAS_JURIDICAS: RamaJuridica[] = [
  */
 export const CICLO_RAMAS: RamaId[] = ["constitucional", "penal", "privado", "internacional", "administrativo"];
 
-/**
- * Jueves 19:00 en que arrancó la semana de Constitucional. Todo el ciclo se
- * calcula contando semanas desde acá, así el server y el cliente coinciden sin
- * necesidad de guardar estado.
- */
-export const ANCLA_CICLO_RAMAS = new Date("2026-09-03T19:00:00-03:00").getTime();
-
-const SEMANA_MS = 7 * 24 * 60 * 60 * 1000;
-
 export function getRamaById(id: RamaId): RamaJuridica {
   return RAMAS_JURIDICAS.find(r => r.id === id) || RAMAS_JURIDICAS[0];
 }
 
-/** Índice de semana dentro del ciclo (0..4) para un momento dado. */
-export function getIndiceSemana(now: number = Date.now()): number {
-  const semanas = Math.floor((now - ANCLA_CICLO_RAMAS) / SEMANA_MS);
-  const mod = semanas % CICLO_RAMAS.length;
-  return mod < 0 ? mod + CICLO_RAMAS.length : mod;
+/**
+ * La rama fija se ata al número de temporada, no a un ancla de tiempo: cada
+ * temporada que cierra hace avanzar el ciclo. Así el cambio de rama y el cierre
+ * de temporada nunca se desincronizan, aunque un cierre se atrase.
+ * La temporada 1 juega Constitucional.
+ */
+export function getRamaDeTemporada(numeroTemporada: number): RamaJuridica {
+  const largo = CICLO_RAMAS.length;
+  const idx = (((numeroTemporada - 1) % largo) + largo) % largo;
+  return getRamaById(CICLO_RAMAS[idx]);
 }
 
-/** Rama fija de la semana en curso. */
-export function getRamaDeLaSemana(now: number = Date.now()): RamaJuridica {
-  return getRamaById(CICLO_RAMAS[getIndiceSemana(now)]);
-}
-
-/** Rama que entra en la próxima rotación. */
-export function getRamaSiguiente(now: number = Date.now()): RamaJuridica {
-  return getRamaById(CICLO_RAMAS[(getIndiceSemana(now) + 1) % CICLO_RAMAS.length]);
-}
-
-/** Momento exacto de la próxima rotación (jueves 19:00). */
-export function getProximaRotacion(now: number = Date.now()): number {
-  const semanas = Math.floor((now - ANCLA_CICLO_RAMAS) / SEMANA_MS);
-  return ANCLA_CICLO_RAMAS + (semanas + 1) * SEMANA_MS;
+/** Rama que entra en la temporada siguiente. */
+export function getRamaSiguiente(numeroTemporada: number): RamaJuridica {
+  return getRamaDeTemporada(numeroTemporada + 1);
 }
 
 /**
- * Sorteo de duelo: la rama fija de la semana más una segunda al azar.
+ * Sorteo de duelo: la rama fija de la temporada más una segunda al azar.
  * El resultado se fija al crear la sala y se guarda en la fila del duelo, así
  * el rival gira la ruleta y le cae exactamente lo mismo.
  */
-export function sortearRamasDuelo(now: number = Date.now()): [RamaId, RamaId] {
-  const fija = getRamaDeLaSemana(now).id;
+export function sortearRamasDuelo(numeroTemporada: number): [RamaId, RamaId] {
+  const fija = getRamaDeTemporada(numeroTemporada).id;
   const resto = CICLO_RAMAS.filter(r => r !== fija);
   const azar = resto[Math.floor(Math.random() * resto.length)];
   return [fija, azar];

@@ -17,7 +17,7 @@ import {
   Award
 } from "lucide-react";
 import { RangoJuridico } from "@/data/triviaData";
-import { getRamaDeLaSemana, getProximaRotacion } from "@/data/ramasTrivia";
+import { getRamaDeTemporada } from "@/data/ramasTrivia";
 import { cn } from "@/lib/utils";
 
 // Import 3D Assets generated for game modes
@@ -57,6 +57,8 @@ export interface TriviaMobileDashboardProps {
   onOpenMyProfile?: () => void;
   onSelectTab: (tab: "jugar" | "duelos" | "ranking" | "historial") => void;
   activeTab: "jugar" | "duelos" | "ranking" | "historial";
+  /** Temporada en curso; null mientras se sincroniza con la base. */
+  numeroTemporada: number | null;
 }
 
 export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
@@ -74,15 +76,10 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
   onOpenGuideModal,
   onOpenMyProfile,
   onSelectTab,
-  activeTab
+  activeTab,
+  numeroTemporada
 }) => {
-  const ramaSemana = getRamaDeLaSemana();
-  const restanteRotacion = Math.max(0, getProximaRotacion() - Date.now());
-  const diasRotacion = Math.floor(restanteRotacion / 86400000);
-  const horasRotacion = Math.floor((restanteRotacion / 3600000) % 24);
-  const cuentaRotacion = diasRotacion > 0
-    ? `${diasRotacion}d ${horasRotacion}h`
-    : `${horasRotacion}h ${Math.floor((restanteRotacion / 60000) % 60)}m`;
+  const ramaSemana = getRamaDeTemporada(numeroTemporada ?? 1);
 
   const totalPartidas1v1 = (userStats.victoriasDuelo || 0) + (userStats.derrotasDuelo || 0) + (userStats.empatesDuelo || 0);
   const winrate1v1 = totalPartidas1v1 > 0 
@@ -135,15 +132,12 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
           title="Ver el ciclo completo de ramas en las Reglas"
         >
           <Swords className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span className="text-[11px] text-slate-400 shrink-0">
-            <span className="hidden sm:inline">Rama de la semana:</span>
-            <span className="sm:hidden">Rama:</span>
-          </span>
+          <span className="text-[11px] text-slate-400 shrink-0">Rama:</span>
           <span className="text-[11px] font-black text-amber-300 truncate group-hover:underline">
             {ramaSemana.nombre}
           </span>
           <span className="text-[10px] font-mono text-slate-500 shrink-0 ml-auto pl-2">
-            rota en {cuentaRotacion}
+            {numeroTemporada === null ? "…" : `Temporada ${numeroTemporada}`}
           </span>
         </button>
       </div>

@@ -104,7 +104,16 @@ function normalizarDificultad(d) {
 }
 
 function limpiarTexto(s) {
-  return (s || "").toString().replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").replace(/\s+/g, " ").trim();
+  return (s || "").toString()
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    // Algunos documentos pierden el espacio en el corte de l\u00EDnea y quedan
+    // pegadas ("laConstituci\u00F3n", "elcaso"). Se separa cuando una min\u00FAscula
+    // precede a una palabra que arranca en may\u00FAscula; las siglas en versales
+    // (UNLP, CCyC, FCJyS) no matchean porque exigen dos min\u00FAsculas despu\u00E9s.
+    .replace(/([a-z\u00E1\u00E9\u00ED\u00F3\u00FA\u00F1])([A-Z\u00C1\u00C9\u00CD\u00D3\u00DA\u00D1][a-z\u00E1\u00E9\u00ED\u00F3\u00FA\u00F1]{2,})/g, "$1 $2")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 // ---------------------------------------------------------------- carga
