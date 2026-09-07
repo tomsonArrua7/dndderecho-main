@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 export const HERRAMIENTAS = [
   { id: "general", label: "La página en general" },
   { id: "trivia", label: "Trivia Jurídica" },
+  { id: "parcial_flash", label: "Parcial Flash IA (beta)" },
   { id: "biblioteca", label: "Biblioteca de apuntes" },
   { id: "asistente", label: "Asistente DND (IA)" },
   { id: "permutero", label: "Permutero" }

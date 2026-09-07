@@ -14,10 +14,12 @@ import {
   Users,
   Target,
   Lock,
-  Award
+  Award,
+  MessageSquareHeart
 } from "lucide-react";
 import { RangoJuridico } from "@/data/triviaData";
 import { getRamaDeTemporada } from "@/data/ramasTrivia";
+import { abrirFeedback } from "@/components/FeedbackHost";
 import { cn } from "@/lib/utils";
 
 // Import 3D Assets generated for game modes
@@ -499,16 +501,25 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
                 <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 font-mono block">
                   🧠 Generado en Tiempo Real
                 </span>
-                <h3 className="text-xl font-black text-white tracking-tight pt-0.5">
-                  Parcial Flash IA
-                </h3>
+                <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                  <h3 className="text-xl font-black text-white tracking-tight">
+                    Parcial Flash IA
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider">
+                    Beta
+                  </span>
+                </div>
                 <p className="text-xs text-slate-300 pt-1.5 leading-relaxed">
                   Elegí una materia y nuestra IA armará un parcial de 5 preguntas basado en los programas oficiales de la facultad.
+                </p>
+                <p className="text-[11px] text-amber-300/80 pt-2 leading-relaxed">
+                  Está en fase de pruebas y calibración: puede equivocarse. Si ves algo raro, avisanos —
+                  cada aporte lo hace más preciso.
                 </p>
               </div>
             </div>
 
-            <div className="pt-5 relative z-10">
+            <div className="pt-5 relative z-10 space-y-2">
               <button
                 type="button"
                 onClick={onOpenParcialFlash}
@@ -516,6 +527,15 @@ export const TriviaMobileDashboard: React.FC<TriviaMobileDashboardProps> = ({
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Generar Parcial AI</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={abrirFeedback}
+                className="w-full py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 font-bold text-xs border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+              >
+                <MessageSquareHeart className="w-3.5 h-3.5 text-amber-400" />
+                <span>Dar feedback del Parcial IA</span>
               </button>
             </div>
           </motion.div>

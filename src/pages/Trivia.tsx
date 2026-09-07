@@ -820,7 +820,6 @@ export default function Trivia() {
         const selected = mezclar(matchingExisting).slice(0, 5);
         const pool = prepareQuestionPool(selected);
         setQuestionsPool(pool);
-      registrarVistas(pool);
         registrarVistas(pool);
         setCurrentIndex(0);
         setScore(0);
@@ -879,7 +878,10 @@ export default function Trivia() {
               opciones: q.opciones,
               respuesta_correcta_index: typeof q.respuesta_correcta_index === "number" ? q.respuesta_correcta_index : 0,
               fundamento_juridico: q.fundamento_juridico || `Generado por la IA para ${materiaLimpia}.`,
-              puntos_base: 100
+              puntos_base: 100,
+              // Marca el origen para que en el panel de reportes se distinga una
+              // pregunta generada por la IA de una que salió de los documentos.
+              origen: "parcial-flash-ia"
             }));
 
             // PERSISTIR LAS PREGUNTAS NUEVAS EN SUPABASE PARA SUMARLAS AL BANCO GLOBAL CONTINUAMENTE
@@ -3305,12 +3307,27 @@ export default function Trivia() {
           <DialogContent className="max-w-md bg-white dark:bg-[#0D1527] text-slate-900 dark:text-white border border-slate-200 dark:border-white/15 rounded-2xl p-6 shadow-2xl space-y-4">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400 animate-pulse" /> Generador de Parcial Flash con IA
+                <Sparkles className="h-5 w-5 text-amber-600 dark:text-amber-400 animate-pulse" />
+                <span>Parcial Flash con IA</span>
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider">
+                  Beta
+                </span>
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-600 dark:text-slate-300">
                 Ingresá la materia que querés evaluar. La IA generará en tiempo real un examen de 5 preguntas únicas adaptadas al nivel universitario de tu cursada.
               </DialogDescription>
             </DialogHeader>
+
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300 block">
+                En pruebas y calibración
+              </span>
+              <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                Todavía estamos ajustándolo, así que puede generar preguntas imprecisas o con la
+                respuesta mal marcada. No suma ni resta Puntos de Rango. Si ves algo mal, reportalo
+                desde la pregunta misma: cada aporte lo hace más preciso.
+              </p>
+            </div>
 
             <div className="space-y-3 pt-2">
               <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block">Materia para el Parcial Flash</label>

@@ -185,12 +185,18 @@ export const TriviaGuideModal: React.FC<TriviaGuideModalProps> = ({ isOpen, onCl
                       <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                       <span>3. Parcial Flash con IA</span>
                     </h3>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-500/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-[9px] font-mono font-bold flex items-center gap-1">
-                      <Lock className="w-2.5 h-2.5" /> En Calibración Técnica
+                    <span className="px-2 py-0.5 rounded-full bg-amber-500/15 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 text-[9px] font-mono font-bold">
+                      BETA
                     </span>
                   </div>
                   <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
-                    Generador de parciales instantáneos basados en inteligencia artificial. Actualmente en mantenimiento y ajuste para garantizar total exactitud con los programas de cátedra de la UNLP.
+                    Elegís una materia y la IA arma un parcial de 5 preguntas a partir de los programas
+                    oficiales de la cátedra. <strong>No suma ni resta Puntos de Rango.</strong>
+                  </p>
+                  <p className="text-amber-800 dark:text-amber-300 text-xs leading-relaxed">
+                    Está en fase de pruebas y calibración, así que puede equivocarse o generar preguntas
+                    imprecisas. Si ves algo mal, reportalo desde la misma pregunta o dejanos tu opinión
+                    desde el modo: cada aporte sirve para afinarlo.
                   </p>
                 </div>
 
