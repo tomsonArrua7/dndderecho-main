@@ -81,6 +81,7 @@ import {
   getMateriasDeRama,
   RamaId
 } from "@/data/ramasTrivia";
+import { decidirNotificacionDuelo } from "@/data/notificacionDuelo";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -1177,117 +1178,88 @@ export default function Trivia() {
 
   // Evaluar automáticamente si hay un duelo recién finalizado del jugador sin haber visto el modal (Estilo Preguntados)
   const checkAndTriggerUnseenResults = (duelos: DueloTrivia[], seenList: string[]) => {
-    // Si el jugador está respondiendo, mostrar acá el resultado de otro duelo le
-    // pisa el pool de preguntas y lo obliga a empezar la partida de cero. Queda
-    // anotado como pendiente y se muestra apenas la pantalla se libera.
-    if (partidaEnCursoRef.current) {
-      const tieneResultadoSinVer = duelos.some(d => {
-        const esMio =
-          (user?.id && (d.player1Id === user.id || d.player2Id === user.id)) ||
-          d.player1Nombre === userName ||
-          d.player2Nombre === userName;
-        const terminado = d.status === "finalizado" || (d.player1Completed && d.player2Completed);
-        return esMio && terminado && !seenList.includes(d.id);
-      });
-      if (tieneResultadoSinVer) resultadoDueloPendienteRef.current = true;
+    // La decisión de si corresponde mostrar el resultado ahora, posponerlo o no
+    // hacer nada vive en decidirNotificacionDuelo, que es pura y está cubierta
+    // por tests. Acá sólo se ejecuta lo que decidió.
+    const decision = decidirNotificacionDuelo(
+      duelos,
+      seenList,
+      {
+        partidaEnCurso: partidaEnCursoRef.current,
+        modalAbierto: duelOutcomeModalRef.current
+          ? (duelOutcomeModalRef.current.resultado === "esperando_rival" ? "esperando_rival" : "final")
+          : null,
+        modalDueloId: duelOutcomeModalRef.current?.dueloId
+      },
+      { userId: user?.id, userName }
+    );
+
+    if (decision.accion === "ninguna") return;
+
+    // Queda anotado para mostrarlo apenas la pantalla se libere.
+    if (decision.accion === "posponer") {
+      resultadoDueloPendienteRef.current = true;
       return;
     }
 
-    // Si el modal ya está abierto con un resultado FINAL (victoria/derrota/empate), no interrumpir
-    const isModalOpenWithFinalResult = duelOutcomeModalRef.current && duelOutcomeModalRef.current.resultado !== "esperando_rival";
-    if (isModalOpenWithFinalResult) return;
+    const duel = decision.duelo;
+    const isP1 = decision.soyPlayer1;
+    const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
+    const oppScore = isP1 ? (duel.player2Puntos || 0) : (duel.player1Puntos || 0);
+    const p1Score = duel.player1Puntos || 0;
+    const p1Aciertos = duel.player1Aciertos || 0;
+    const p2Score = duel.player2Puntos || 0;
+    const p2Aciertos = duel.player2Aciertos || 0;
+    const oppName = isP1 ? (duel.player2Nombre || "Rival") : (duel.player1Nombre || "Rival");
 
-    // El duelo cuya pantalla de espera está abierta va primero: es el resultado
-    // que el jugador está mirando. Si lo evaluara otro antes, ese otro bloquearía
-    // la actualización de la pantalla que tiene enfrente.
-    const esperandoId = duelOutcomeModalRef.current?.resultado === "esperando_rival"
-      ? duelOutcomeModalRef.current.dueloId
-      : undefined;
-    const enOrden = esperandoId
-      ? [...duelos].sort((a, b) => Number(b.id === esperandoId) - Number(a.id === esperandoId))
-      : duelos;
+    // El resultado sale de ganador_id, que escribió el servidor. Comparar
+    // puntajes acá volvía a abrir la puerta a que dos dispositivos mostraran
+    // veredictos distintos del mismo duelo.
+    const { resultado: res, puntos: ptsBonus } = interpretarResultadoDuelo(
+      duel.ganadorId,
+      isP1,
+      myScore,
+      oppScore
+    );
 
-    for (const duel of enOrden) {
-      const isP1 = (user?.id && duel.player1Id === user.id) || duel.player1Nombre === userName;
-      const isP2 = (user?.id && duel.player2Id === user.id) || (duel.player2Nombre && duel.player2Nombre === userName);
+    markDuelAsSeen(duel.id);
+    setActiveDuelRoom(duel);
 
-      if (!isP1 && !isP2) continue;
+    // El Centro de Notificaciones se alimenta de trivia_notificaciones, que
+    // escribe el servidor al resolver el duelo y recuerda si ya se leyó. Acá
+    // sólo se avisa en el momento; guardar además una copia en localStorage
+    // hacía reaparecer como nuevas notificaciones ya leídas.
+    const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
+    const motivo = duel.porAbandono
+      ? `${oppName} abandonó el duelo`
+      : `Tu rival ${oppName} completó el duelo`;
+    toast.success(`⚔️ ${motivo} (${duel.materiaNombre}). Resultado: ${outcomeLabel}`);
 
-      const isFinished = duel.status === "finalizado" || (duel.player1Completed && duel.player2Completed);
-      // La pantalla de "esperando rival" sólo se convierte en resultado si es la
-      // de ESTE duelo; si es la de otro, pisarla mostraba el veredicto equivocado.
-      const isWaitingThisDuel =
-        duelOutcomeModalRef.current?.resultado === "esperando_rival" &&
-        duelOutcomeModalRef.current?.dueloId === duel.id;
-      const isUnseen = !seenList.includes(duel.id);
-
-      // Con la pantalla de espera de otro duelo abierta, el resultado se guarda
-      // para después en vez de reemplazarla.
-      if (isFinished && isUnseen && duelOutcomeModalRef.current && !isWaitingThisDuel) {
-        resultadoDueloPendienteRef.current = true;
-        return;
-      }
-
-      if (isFinished && (isUnseen || isWaitingThisDuel)) {
-        const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
-        const oppScore = isP1 ? (duel.player2Puntos || 0) : (duel.player1Puntos || 0);
-        const p1Score = duel.player1Puntos || 0;
-        const p1Aciertos = duel.player1Aciertos || 0;
-        const p2Score = duel.player2Puntos || 0;
-        const p2Aciertos = duel.player2Aciertos || 0;
-        const oppName = isP1 ? (duel.player2Nombre || "Rival") : (duel.player1Nombre || "Rival");
-
-        // El resultado sale de ganador_id, que escribió el servidor. Comparar
-        // puntajes acá volvía a abrir la puerta a que dos dispositivos mostraran
-        // veredictos distintos del mismo duelo.
-        const { resultado: res, puntos: ptsBonus } = interpretarResultadoDuelo(
-          duel.ganadorId,
-          !!isP1,
-          myScore,
-          oppScore
-        );
-
-        markDuelAsSeen(duel.id);
-        setActiveDuelRoom(duel);
-
-        // El Centro de Notificaciones se alimenta de trivia_notificaciones, que
-        // escribe el servidor al resolver el duelo y recuerda si ya se leyó. Acá
-        // sólo se avisa en el momento; guardar además una copia en localStorage
-        // hacía reaparecer como nuevas notificaciones ya leídas.
-        const outcomeLabel = res === "victoria" ? "¡Victoria! (+50 pts)" : res === "derrota" ? "Derrota (-15 pts)" : "¡Empate! (+25 pts)";
-        const motivo = duel.porAbandono
-          ? `${oppName} abandonó el duelo`
-          : `Tu rival ${oppName} completó el duelo`;
-        toast.success(`⚔️ ${motivo} (${duel.materiaNombre}). Resultado: ${outcomeLabel}`);
-
-        let duelQuestions = allQuestionsCombined.filter(q => duel.preguntasIds.includes(q.id));
-        if (duelQuestions.length < 5) {
-          const fallbackPool = getQuestionsForCategory(duel.materiaId, duel.materiaNombre, allQuestionsCombined);
-          duelQuestions = elegirPreguntas(duelQuestions, 5, fallbackPool.length > 0 ? fallbackPool : allQuestionsCombined);
-        } else {
-          duelQuestions = elegirPreguntas(duelQuestions, 5, allQuestionsCombined);
-        }
-        setQuestionsPool(prepareQuestionPool(duelQuestions));
-        registrarVistas(duelQuestions);
-
-        setDuelOutcomeModal({
-          dueloId: duel.id,
-          resultado: res,
-          puntosGanados: ptsBonus,
-          rivalNombre: oppName,
-          p1Nombre: duel.player1Nombre || "Jugador 1",
-          p1Puntos: p1Score,
-          p1Aciertos: p1Aciertos,
-          p2Nombre: duel.player2Nombre || "Jugador 2",
-          p2Puntos: p2Score,
-          p2Aciertos: p2Aciertos
-        });
-
-        fetchUserStatsFromSupabase();
-        fetchRankingFromSupabase();
-        break;
-      }
+    let duelQuestions = allQuestionsCombined.filter(q => duel.preguntasIds.includes(q.id));
+    if (duelQuestions.length < 5) {
+      const fallbackPool = getQuestionsForCategory(duel.materiaId, duel.materiaNombre, allQuestionsCombined);
+      duelQuestions = elegirPreguntas(duelQuestions, 5, fallbackPool.length > 0 ? fallbackPool : allQuestionsCombined);
+    } else {
+      duelQuestions = elegirPreguntas(duelQuestions, 5, allQuestionsCombined);
     }
+    setQuestionsPool(prepareQuestionPool(duelQuestions));
+    registrarVistas(duelQuestions);
+
+    setDuelOutcomeModal({
+      dueloId: duel.id,
+      resultado: res,
+      puntosGanados: ptsBonus,
+      rivalNombre: oppName,
+      p1Nombre: duel.player1Nombre || "Jugador 1",
+      p1Puntos: p1Score,
+      p1Aciertos: p1Aciertos,
+      p2Nombre: duel.player2Nombre || "Jugador 2",
+      p2Puntos: p2Score,
+      p2Aciertos: p2Aciertos
+    });
+
+    fetchUserStatsFromSupabase();
+    fetchRankingFromSupabase();
   };
 
   // 3. Cargar Salas de Duelo 1vs1 desde Supabase DB (con eliminación automática de salas > 15 minutos sin rival)
