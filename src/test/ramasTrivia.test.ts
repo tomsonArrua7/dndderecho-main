@@ -10,21 +10,30 @@ import {
   getRamaDeMateria
 } from "@/data/ramasTrivia";
 import { BANCO_PREGUNTAS } from "@/data/bancoPreguntas.generated";
-import { cargarBancoPreguntas } from "@/data/triviaData";
+import { cargarBancoPreguntas, CATEGORIAS_TRIVIA } from "@/data/triviaData";
 
 describe("ciclo de ramas por temporada", () => {
   it("la temporada 1 juega Constitucional", () => {
     expect(getRamaDeTemporada(1).id).toBe("constitucional");
   });
 
-  it("recorre las 5 ramas sin repetir a lo largo del ciclo", () => {
+  it("recorre todas las ramas sin repetir a lo largo del ciclo", () => {
     const recorrido = Array.from({ length: CICLO_RAMAS.length }, (_, i) => getRamaDeTemporada(i + 1).id);
     expect(new Set(recorrido).size).toBe(RAMAS_JURIDICAS.length);
   });
 
+  it("las temporadas ya anunciadas no se corren al sumar ramas nuevas", () => {
+    expect(getRamaDeTemporada(1).id).toBe("constitucional");
+    expect(getRamaDeTemporada(2).id).toBe("penal");
+    expect(getRamaDeTemporada(3).id).toBe("privado");
+    expect(getRamaDeTemporada(4).id).toBe("internacional");
+    expect(getRamaDeTemporada(5).id).toBe("administrativo");
+  });
+
   it("vuelve al inicio después de un ciclo completo", () => {
-    expect(getRamaDeTemporada(6).id).toBe(getRamaDeTemporada(1).id);
-    expect(getRamaDeTemporada(13).id).toBe(getRamaDeTemporada(3).id);
+    const largo = CICLO_RAMAS.length;
+    expect(getRamaDeTemporada(largo + 1).id).toBe(getRamaDeTemporada(1).id);
+    expect(getRamaDeTemporada(largo * 2 + 3).id).toBe(getRamaDeTemporada(3).id);
   });
 
   it("la rama siguiente es la de la temporada que viene", () => {
@@ -86,6 +95,26 @@ describe("selección de preguntas del duelo", () => {
     // Sin preguntas nuevas disponibles igual tiene que armar el duelo completo.
     expect(elegidas).toHaveLength(5);
     expect(new Set(elegidas.map(q => q.id)).size).toBe(5);
+  });
+
+  it("Primer Año sólo trae preguntas de materias de 1º año", () => {
+    const idsPrimerAnio = new Set(
+      CATEGORIAS_TRIVIA.filter(c => c.anio === 1).map(c => c.id)
+    );
+    const pool = getPoolDeRama("primer_ano", BANCO_PREGUNTAS);
+    expect(pool.length).toBeGreaterThan(0);
+    for (const q of pool) {
+      expect(idsPrimerAnio.has(q.id_categoria)).toBe(true);
+    }
+  });
+
+  it("un duelo con Primer Año como rama fija se llena con 1º año", () => {
+    const idsPrimerAnio = new Set(
+      CATEGORIAS_TRIVIA.filter(c => c.anio === 1).map(c => c.id)
+    );
+    const elegidas = seleccionarPreguntasDuelo("primer_ano", "penal", BANCO_PREGUNTAS, 5);
+    const dePrimerAnio = elegidas.filter(q => idsPrimerAnio.has(q.id_categoria)).length;
+    expect(dePrimerAnio).toBeGreaterThanOrEqual(3);
   });
 
   it("da mayoría a la rama fija de la semana", () => {

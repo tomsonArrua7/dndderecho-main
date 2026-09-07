@@ -1,6 +1,12 @@
 import { CATEGORIAS_TRIVIA, TriviaQuestion } from "./triviaData";
 
-export type RamaId = "constitucional" | "penal" | "internacional" | "privado" | "administrativo";
+export type RamaId =
+  | "constitucional"
+  | "penal"
+  | "internacional"
+  | "privado"
+  | "administrativo"
+  | "primer_ano";
 
 export interface RamaJuridica {
   id: RamaId;
@@ -53,14 +59,39 @@ export const RAMAS_JURIDICAS: RamaJuridica[] = [
     materiaIds: ["10141", "10151"],
     icono: "Building2",
     color: "from-teal-600 to-cyan-700"
+  },
+  {
+    // La única rama que no es una materia del derecho sino un tramo de la
+    // carrera: junta todo 1º año para que quien recién arranca pueda competir
+    // con lo que efectivamente cursó.
+    // Faltan Introducción al Estudio de las Ciencias Sociales (10610) y Derecho
+    // Político (10114): se suman acá en cuanto entren sus preguntas al banco.
+    id: "primer_ano",
+    nombre: "Primer Año",
+    detalle: "Introducción al Derecho, Romano, Historia Constitucional, Sociología y Pensamiento Científico",
+    materiaIds: ["10111", "10112", "10113", "10121", "10616"],
+    icono: "GraduationCap",
+    color: "from-emerald-600 to-green-700"
   }
 ];
 
 /**
  * Orden del ciclo de ramas. Avanza en cada cierre de temporada, que ocurre los
  * domingos 19:00. Empieza en Constitucional.
+ *
+ * Primer Año va al final a propósito: el orden de las cinco primeras ya está
+ * publicado en la guía, así que se suma sin correr ninguna temporada anunciada.
+ * Igual entra en juego desde hoy, porque cualquier rama del ciclo puede salir
+ * sorteada como segunda rama del duelo.
  */
-export const CICLO_RAMAS: RamaId[] = ["constitucional", "penal", "privado", "internacional", "administrativo"];
+export const CICLO_RAMAS: RamaId[] = [
+  "constitucional",
+  "penal",
+  "privado",
+  "internacional",
+  "administrativo",
+  "primer_ano"
+];
 
 export function getRamaById(id: RamaId): RamaJuridica {
   return RAMAS_JURIDICAS.find(r => r.id === id) || RAMAS_JURIDICAS[0];

@@ -458,6 +458,9 @@ export default function Trivia() {
   const [duelistasLeaderboardList, setDuelistasLeaderboardList] = useState<any[]>([]);
   const [medallasLeaderboardList, setMedallasLeaderboardList] = useState<any[]>([]);
   const [loadingRanking, setLoadingRanking] = useState(false);
+  // La tabla muestra el top 50, pero el contador tiene que reflejar a todos los
+  // que jugaron. Se pide aparte como count porque la lista viene recortada.
+  const [totalClasificados, setTotalClasificados] = useState(0);
 
   // Modal para inspeccionar perfil público y medallas de otro estudiante
   const [inspectUserModal, setInspectUserModal] = useState<{
@@ -499,6 +502,8 @@ export default function Trivia() {
 
   // Modal de resultado final de Duelo 1v1
   const [duelOutcomeModal, setDuelOutcomeModal] = useState<{
+    /** Duelo al que pertenece la pantalla, para no confundirlo con otro. */
+    dueloId?: string;
     resultado: "victoria" | "derrota" | "empate" | "esperando_rival";
     puntosGanados: number;
     rivalNombre: string;
@@ -550,6 +555,17 @@ export default function Trivia() {
   // Timer por pregunta (20 segundos)
   const [timeLeft, setTimeLeft] = useState(20);
   const [gameOver, setGameOver] = useState(false);
+
+  // El polling de duelos corre sobre closures viejos, así que necesita leer por
+  // ref si el jugador está respondiendo ahora mismo.
+  const partidaEnCursoRef = useRef(false);
+  useEffect(() => {
+    partidaEnCursoRef.current = inGame;
+  }, [inGame]);
+
+  // Queda en true cuando se detecta un duelo resuelto que no se pudo mostrar por
+  // estar el jugador en medio de otra partida.
+  const resultadoDueloPendienteRef = useRef(false);
 
   // Estados de Power-Ups (Nulidad 50/50, Apelación, Prórroga +10s)
   const [powerUps, setPowerUps] = useState<PowerUpsState>({
@@ -1095,6 +1111,17 @@ export default function Trivia() {
   const fetchRankingFromSupabase = async () => {
     setLoadingRanking(true);
     try {
+      // Total de estudiantes que jugaron alguna vez. Va aparte de la tabla
+      // porque ésta se corta en 50 y el contador quedaba clavado en ese número.
+      // Se filtra por actividad para no contar filas en cero.
+      supabase
+        .from("trivia_estadisticas_usuario")
+        .select("user_id", { count: "exact", head: true })
+        .or("partidas_jugadas.gt.0,puntos_totales.gt.0,victorias_duelo.gt.0,derrotas_duelo.gt.0,empates_duelo.gt.0")
+        .then(({ count, error: countError }) => {
+          if (!countError && typeof count === "number") setTotalClasificados(count);
+        });
+
       const { data, error } = await supabase
         .from("trivia_leaderboard")
         .select("*")
@@ -1150,19 +1177,56 @@ export default function Trivia() {
 
   // Evaluar automáticamente si hay un duelo recién finalizado del jugador sin haber visto el modal (Estilo Preguntados)
   const checkAndTriggerUnseenResults = (duelos: DueloTrivia[], seenList: string[]) => {
+    // Si el jugador está respondiendo, mostrar acá el resultado de otro duelo le
+    // pisa el pool de preguntas y lo obliga a empezar la partida de cero. Queda
+    // anotado como pendiente y se muestra apenas la pantalla se libera.
+    if (partidaEnCursoRef.current) {
+      const tieneResultadoSinVer = duelos.some(d => {
+        const esMio =
+          (user?.id && (d.player1Id === user.id || d.player2Id === user.id)) ||
+          d.player1Nombre === userName ||
+          d.player2Nombre === userName;
+        const terminado = d.status === "finalizado" || (d.player1Completed && d.player2Completed);
+        return esMio && terminado && !seenList.includes(d.id);
+      });
+      if (tieneResultadoSinVer) resultadoDueloPendienteRef.current = true;
+      return;
+    }
+
     // Si el modal ya está abierto con un resultado FINAL (victoria/derrota/empate), no interrumpir
     const isModalOpenWithFinalResult = duelOutcomeModalRef.current && duelOutcomeModalRef.current.resultado !== "esperando_rival";
     if (isModalOpenWithFinalResult) return;
 
-    for (const duel of duelos) {
+    // El duelo cuya pantalla de espera está abierta va primero: es el resultado
+    // que el jugador está mirando. Si lo evaluara otro antes, ese otro bloquearía
+    // la actualización de la pantalla que tiene enfrente.
+    const esperandoId = duelOutcomeModalRef.current?.resultado === "esperando_rival"
+      ? duelOutcomeModalRef.current.dueloId
+      : undefined;
+    const enOrden = esperandoId
+      ? [...duelos].sort((a, b) => Number(b.id === esperandoId) - Number(a.id === esperandoId))
+      : duelos;
+
+    for (const duel of enOrden) {
       const isP1 = (user?.id && duel.player1Id === user.id) || duel.player1Nombre === userName;
       const isP2 = (user?.id && duel.player2Id === user.id) || (duel.player2Nombre && duel.player2Nombre === userName);
 
       if (!isP1 && !isP2) continue;
 
       const isFinished = duel.status === "finalizado" || (duel.player1Completed && duel.player2Completed);
-      const isWaitingThisDuel = duelOutcomeModalRef.current?.resultado === "esperando_rival";
+      // La pantalla de "esperando rival" sólo se convierte en resultado si es la
+      // de ESTE duelo; si es la de otro, pisarla mostraba el veredicto equivocado.
+      const isWaitingThisDuel =
+        duelOutcomeModalRef.current?.resultado === "esperando_rival" &&
+        duelOutcomeModalRef.current?.dueloId === duel.id;
       const isUnseen = !seenList.includes(duel.id);
+
+      // Con la pantalla de espera de otro duelo abierta, el resultado se guarda
+      // para después en vez de reemplazarla.
+      if (isFinished && isUnseen && duelOutcomeModalRef.current && !isWaitingThisDuel) {
+        resultadoDueloPendienteRef.current = true;
+        return;
+      }
 
       if (isFinished && (isUnseen || isWaitingThisDuel)) {
         const myScore = isP1 ? (duel.player1Puntos || 0) : (duel.player2Puntos || 0);
@@ -1204,10 +1268,10 @@ export default function Trivia() {
           duelQuestions = elegirPreguntas(duelQuestions, 5, allQuestionsCombined);
         }
         setQuestionsPool(prepareQuestionPool(duelQuestions));
-      registrarVistas(duelQuestions);
         registrarVistas(duelQuestions);
 
         setDuelOutcomeModal({
+          dueloId: duel.id,
           resultado: res,
           puntosGanados: ptsBonus,
           rivalNombre: oppName,
@@ -1352,6 +1416,22 @@ export default function Trivia() {
       supabase.removeChannel(channel);
     };
   }, [user?.id, userName]);
+
+  // Un duelo que se resuelve mientras jugás otro queda en espera para no
+  // interrumpirte. Acá se cobra esa deuda: apenas la pantalla queda libre (sin
+  // partida, sin ruleta y sin ningún modal de resultado), se relee la lista y el
+  // veredicto aparece. Se relee en vez de guardar el que llegó, para mostrar el
+  // estado final del servidor y no una foto vieja.
+  useEffect(() => {
+    if (!resultadoDueloPendienteRef.current) return;
+
+    const pantallaLibre =
+      !inGame && !gameOver && !postMatchModal && !duelOutcomeModal && !ruletaDuelo && !createdDueloModal;
+    if (!pantallaLibre) return;
+
+    resultadoDueloPendienteRef.current = false;
+    fetchDuelosFromSupabase();
+  }, [inGame, gameOver, postMatchModal, duelOutcomeModal, ruletaDuelo, createdDueloModal]);
 
   // Auto-cargar sala si se navega con parámetro ?dueloId=... (desde Notificaciones)
   useEffect(() => {
@@ -1564,10 +1644,15 @@ export default function Trivia() {
     };
 
     try {
-      await supabase.from("trivia_duelos").insert(dbRow);
+      // Si el insert falla, la sala no existe para nadie más: mostrarle igual el
+      // modal de "sala creada" lo dejaba esperando un rival que nunca podía entrar.
+      const { error } = await supabase.from("trivia_duelos").insert(dbRow);
+      if (error) throw error;
       fetchDuelosFromSupabase();
     } catch (err) {
       console.error("Error al crear duelo en Supabase:", err);
+      toast.error("No se pudo abrir la sala. Probá de nuevo en un momento.");
+      return;
     }
 
     const nuevoDueloFrontend: DueloTrivia = {
@@ -1689,6 +1774,7 @@ export default function Trivia() {
 
       setActiveDuelRoom(duelo);
       setDuelOutcomeModal({
+        dueloId: duelo.id,
         resultado: "esperando_rival",
         puntosGanados: 0,
         rivalNombre: oppName,
@@ -1988,6 +2074,7 @@ export default function Trivia() {
           fetchRankingFromSupabase();
         } else {
           setDuelOutcomeModal({
+            dueloId: activeDuelRoom.id,
             resultado: "esperando_rival",
             puntosGanados: 0,
             rivalNombre,
@@ -2658,12 +2745,12 @@ export default function Trivia() {
                 <div className="hidden sm:block absolute right-2 -bottom-2 opacity-5 dark:opacity-10 text-blue-500 pointer-events-none">
                   <Users className="w-28 h-28" />
                 </div>
-                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 block truncate">Clasificados</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 block truncate">Jugadores</span>
                 <div>
                   <span className="text-sm sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white font-mono leading-none block">
-                    {Math.max(leaderboardList.length, 1)}
+                    {Math.max(totalClasificados, leaderboardList.length, 1)}
                   </span>
-                  <span className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium pt-1">estudiantes activos</span>
+                  <span className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium pt-1">jugaron al menos una vez</span>
                 </div>
               </div>
 
@@ -2979,7 +3066,7 @@ export default function Trivia() {
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                       <span className="text-[11px] text-slate-600 dark:text-slate-300">
-                        Ranking Oficial de la Facultad • Ordenado por Puntos de Rango acumulados en Duelos 1vs1
+                        Ranking Oficial de la Facultad • Top 50 por Puntos de Rango acumulados en Duelos 1vs1
                       </span>
                     </div>
                   </div>
