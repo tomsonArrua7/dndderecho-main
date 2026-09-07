@@ -513,6 +513,15 @@ export const MOCK_LEADERBOARD: LeaderboardEntry[] = [];
  */
 export const INICIO_TEMPORADA_1 = new Date("2026-09-06T19:00:00-03:00").getTime();
 
+/**
+ * Segundos para responder cada pregunta, en todos los modos. Es el mismo valor
+ * que usa el anillo del contador, asi que alcanzarlo con cambiarlo aca: si el
+ * reloj y el anillo salen de numeros distintos, la barra queda desfasada.
+ *
+ * La Prorroga suma segundos aparte y puede superar este maximo a proposito.
+ */
+export const SEGUNDOS_POR_PREGUNTA = 25;
+
 let bancoEnMemoria: TriviaQuestion[] | null = null;
 let cargaEnCurso: Promise<TriviaQuestion[]> | null = null;
 

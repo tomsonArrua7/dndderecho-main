@@ -17,7 +17,7 @@ import {
   Lock,
   Flag
 } from "lucide-react";
-import { TriviaQuestion } from "@/data/triviaData";
+import { TriviaQuestion, SEGUNDOS_POR_PREGUNTA } from "@/data/triviaData";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -58,7 +58,7 @@ export const TriviaInGameView: React.FC<TriviaInGameViewProps> = ({
   currentIndex,
   totalQuestions,
   timeLeft,
-  maxTime = 20,
+  maxTime = SEGUNDOS_POR_PREGUNTA,
   streak,
   selectedOption,
   isAnswered,

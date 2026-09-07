@@ -62,6 +62,7 @@ import {
 import { 
   cargarBancoPreguntas,
   INICIO_TEMPORADA_1,
+  SEGUNDOS_POR_PREGUNTA,
   CATEGORIAS_TRIVIA,
   MOCK_LEADERBOARD,
   RANGOS_JURIDICOS,
@@ -554,7 +555,7 @@ export default function Trivia() {
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
 
   // Timer por pregunta (20 segundos)
-  const [timeLeft, setTimeLeft] = useState(20);
+  const [timeLeft, setTimeLeft] = useState(SEGUNDOS_POR_PREGUNTA);
   const [gameOver, setGameOver] = useState(false);
 
   // El polling de duelos corre sobre closures viejos, así que necesita leer por
@@ -846,7 +847,7 @@ export default function Trivia() {
         setIsAnswered(false);
         setGameOver(false);
         setInGame(true);
-        setTimeLeft(25);
+        setTimeLeft(SEGUNDOS_POR_PREGUNTA);
         setIsParcialFlashModalOpen(false);
         toast.success(`⚡ ¡Parcial Flash de ${materiaLimpia} listo (5 preguntas de ${matchingExisting.length} disponibles)!`);
         return;
@@ -941,7 +942,7 @@ export default function Trivia() {
       setIsAnswered(false);
       setGameOver(false);
       setInGame(true);
-      setTimeLeft(25);
+      setTimeLeft(SEGUNDOS_POR_PREGUNTA);
       setIsParcialFlashModalOpen(false);
       toast.success(`⚡ ¡Parcial Flash de ${materiaLimpia} listo!${newAiQuestions.length > 0 ? ` (+${newAiQuestions.length} preguntas IA sumadas al banco)` : ""}`);
 
@@ -1121,7 +1122,10 @@ export default function Trivia() {
         .or("partidas_jugadas.gt.0,puntos_totales.gt.0,victorias_duelo.gt.0,derrotas_duelo.gt.0,empates_duelo.gt.0")
         .then(({ count, error: countError }) => {
           if (!countError && typeof count === "number") setTotalClasificados(count);
-        });
+        })
+        // Si falla (sin red, por ejemplo) el contador cae al largo de la tabla,
+        // que es el comportamiento anterior. No debe romper la carga del ranking.
+        .catch(() => {});
 
       const { data, error } = await supabase
         .from("trivia_leaderboard")
@@ -1551,7 +1555,7 @@ export default function Trivia() {
     setSelectedOption(null);
     setIsAnswered(false);
     setGameOver(false);
-    setTimeLeft(20);
+    setTimeLeft(SEGUNDOS_POR_PREGUNTA);
     setInGame(true);
   };
 
@@ -1796,7 +1800,7 @@ export default function Trivia() {
     setSelectedOption(null);
     setIsAnswered(false);
     setGameOver(false);
-    setTimeLeft(20);
+    setTimeLeft(SEGUNDOS_POR_PREGUNTA);
     setInGame(true);
   };
 
@@ -1876,7 +1880,7 @@ export default function Trivia() {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswered(false);
-      setTimeLeft(20);
+      setTimeLeft(SEGUNDOS_POR_PREGUNTA);
       setPowerUps(prev => ({
         ...prev,
         disabledOptionIndices: [],
@@ -2101,7 +2105,7 @@ export default function Trivia() {
         currentIndex={currentIndex}
         totalQuestions={questionsPool.length}
         timeLeft={timeLeft}
-        maxTime={activeDuelRoom ? 20 : (questionsPool.length === 5 && timeLeft <= 10 ? 10 : 20)}
+        maxTime={SEGUNDOS_POR_PREGUNTA}
         streak={streak}
         selectedOption={selectedOption}
         isAnswered={isAnswered}
