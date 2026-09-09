@@ -33,6 +33,7 @@ import { useAuth } from "@/context/AuthContext";
 import Index          from "./pages/Index";
 import Auth           from "./pages/Auth";
 import Noticias       from "./pages/Noticias";
+import NoticiaDetalle from "./pages/NoticiaDetalle";
 import Apuntes        from "./pages/Apuntes";
 import Permutero      from "./pages/Permutero";
 import MiEspacio      from "./pages/MiEspacio";
@@ -221,6 +222,7 @@ const AppContent = () => {
         <Route path="/auth"            element={<Auth />} />
         <Route path="/auth/recovery"   element={<Auth />} />
         <Route path="/noticias"        element={<Noticias />} />
+        <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
         <Route path="/apuntes"         element={<Apuntes />} />
         <Route path="/permutero"       element={<Permutero />} />
         <Route path="/recomendaciones"    element={<Recomendaciones />} />
