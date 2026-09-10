@@ -231,7 +231,6 @@ const NoticiaDetalle = () => {
 
         <footer className="mt-12 pt-6 border-t border-border flex items-center justify-between gap-4 flex-wrap">
           {!opinion && firma}
-          {opinion && <div className="text-xs text-muted-foreground">Las opiniones son responsabilidad de quien firma.</div>}
 
           <div className="flex items-center gap-2 ml-auto">
             <button
